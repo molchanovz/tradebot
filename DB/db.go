@@ -12,7 +12,7 @@ var Database *gorm.DB
 
 // Инициализация подключения
 func InitDB() error {
-	dsn := "host=localhost user=postgres password=Kvashok2002 dbname=db_bot port=5432 sslmode=disable"
+	dsn := "host=localhost user=postgres password=kvashok2002 dbname=db_bot port=5432 sslmode=disable"
 	var err error
 	Database, err = gorm.Open(postgres.Open(dsn), &gorm.Config{})
 	if err != nil {
