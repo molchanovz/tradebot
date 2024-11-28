@@ -38,7 +38,7 @@ func main() {
 
 	s := gocron.NewScheduler(time.Local)
 
-	_, err = s.Every(20).Second().Do(func() {
+	_, err = s.Every(30).Minute().Do(func() {
 		err := analyzeStocks(apiKey, context.Background(), b)
 		if err != nil {
 			log.Printf("Что-то не так при анализе. %v\n", err)
