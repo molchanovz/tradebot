@@ -56,7 +56,7 @@ func main() {
 	}
 
 	go func() {
-		log.Printf("Планировщик стартанул\n")
+		log.Printf("Планировщик стартанул!\n")
 		s.StartAsync()
 	}()
 
