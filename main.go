@@ -129,13 +129,13 @@ func analyzeStocks(apiKey string, ctx context.Context, b *botlib.Bot) error {
 		if err != nil {
 			return err
 		}
+	}
 
-		err = sqlDB.Close()
-		if err != nil {
-			return err
-		} else {
-			log.Println("Соединение закрыто")
-		}
+	err = sqlDB.Close()
+	if err != nil {
+		return err
+	} else {
+		log.Println("Соединение закрыто")
 	}
 
 	return nil
