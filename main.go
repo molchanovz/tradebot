@@ -19,6 +19,7 @@ var myChatId string
 
 func main() {
 	var apiKey string
+	var token string
 	apiKey, err := initEnv("variables.env", "api_key")
 	if err != nil {
 		log.Panic(err)
@@ -27,8 +28,12 @@ func main() {
 	if err != nil {
 		log.Panic(err)
 	}
+	token, err = initEnv("variables.env", "token")
+	if err != nil {
+		log.Panic(err)
+	}
 
-	b, _ := botlib.New("8125649410:AAHZ-d0fPZeA3LuDIVD_yW4DA7qMnA_galE")
+	b, _ := botlib.New(token)
 	b.RegisterHandler(botlib.HandlerTypeMessageText, "/start", botlib.MatchTypePrefix, startHandler)
 
 	go func() {
@@ -67,7 +72,7 @@ func analyzeStocks(apiKey string, ctx context.Context, b *botlib.Bot) error {
 	}
 
 	log.Printf("Инициализация базы данных")
-	err := DB.InitDB()
+	sqlDB, err := DB.InitDB()
 	if err != nil {
 		return err
 	}
@@ -125,7 +130,12 @@ func analyzeStocks(apiKey string, ctx context.Context, b *botlib.Bot) error {
 			return err
 		}
 
+		err = sqlDB.Close()
+		if err != nil {
+			return err
+		}
 	}
+
 	return nil
 }
 

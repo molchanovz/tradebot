@@ -1,6 +1,7 @@
 package DB
 
 import (
+	"database/sql"
 	"errors"
 	"fmt"
 	"gorm.io/driver/postgres"
@@ -11,14 +12,18 @@ import (
 var Database *gorm.DB
 
 // Инициализация подключения
-func InitDB() error {
+func InitDB() (*sql.DB, error) {
 	dsn := "host=localhost user=postgres password=kvashok2002 dbname=db_bot port=5432 sslmode=disable"
 	var err error
 	Database, err = gorm.Open(postgres.Open(dsn), &gorm.Config{})
 	if err != nil {
-		return errors.New(fmt.Sprintf("Failed to connect to database: %v", err))
+		return nil, errors.New(fmt.Sprintf("Failed to connect to database: %v", err))
 	}
-	return nil
+	sqlDB, err := Database.DB()
+	if err != nil {
+		return nil, fmt.Errorf("failed to get sql.DB from gorm.DB: %w", err)
+	}
+	return sqlDB, nil
 }
 
 type Stock struct {
