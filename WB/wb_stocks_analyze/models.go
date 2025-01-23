@@ -1,4 +1,4 @@
-package API
+package wb_stocks_analyze
 
 type Stock struct {
 	LastChangeDate  string `json:"lastChangeDate"`

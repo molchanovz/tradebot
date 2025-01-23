@@ -1,8 +1,10 @@
 package main
 
 import (
-	"WildberriesGo_bot/API"
 	"WildberriesGo_bot/DB"
+	"WildberriesGo_bot/WB/wb_orders_returns"
+	"WildberriesGo_bot/WB/wb_stickers_fbs"
+	"WildberriesGo_bot/WB/wb_stocks_analyze"
 	"context"
 	"errors"
 	"fmt"
@@ -18,9 +20,10 @@ import (
 var myChatId string
 
 func main() {
-	var apiKey string
+	//var apiKey string
 	var token string
-	apiKey, err := initEnv("variables.env", "api_key")
+	//TODO вставить apiKey вместо _
+	_, err := initEnv("variables.env", "API_KEY_WB")
 	if err != nil {
 		log.Panic(err)
 	}
@@ -35,6 +38,8 @@ func main() {
 
 	b, _ := botlib.New(token)
 	b.RegisterHandler(botlib.HandlerTypeMessageText, "/start", botlib.MatchTypePrefix, startHandler)
+	b.RegisterHandler(botlib.HandlerTypeMessageText, "WB", botlib.MatchTypePrefix, wbHandler)
+	b.RegisterHandler(botlib.HandlerTypeMessageText, "/wbOrders", botlib.MatchTypePrefix, wbOrdersHandler)
 
 	go func() {
 		log.Printf("Бот запущен\n")
@@ -43,13 +48,13 @@ func main() {
 
 	s := gocron.NewScheduler(time.Local)
 
-	_, err = s.Every(30).Minute().Do(func() {
-		err := analyzeStocks(apiKey, context.Background(), b)
-		if err != nil {
-			log.Printf("Что-то не так при анализе. %v\n", err)
-			return
-		}
-	})
+	//_, err = s.Every(30).Minute().Do(func() {
+	//	err := analyzeStocks(apiKey, context.Background(), b)
+	//	if err != nil {
+	//		log.Printf("Что-то не так при анализе. %v\n", err)
+	//		return
+	//	}
+	//})
 	if err != nil {
 		log.Printf("Ошибка при добавлении задачи: %v\n", err)
 		return
@@ -64,8 +69,8 @@ func main() {
 }
 
 func analyzeStocks(apiKey string, ctx context.Context, b *botlib.Bot) error {
-	var stocksApi []API.Stock
-	stocksApi = API.StockFbo(apiKey)
+	var stocksApi []wb_stocks_analyze.Stock
+	stocksApi = wb_stocks_analyze.StockFbo(apiKey)
 
 	if stocksApi == nil {
 		return errors.New("stocks nil")
@@ -146,6 +151,67 @@ func startHandler(ctx context.Context, bot *botlib.Bot, update *models.Update) {
 	name := update.Message.From.FirstName
 	text := fmt.Sprintf("Привет, %v", name)
 	_, err := bot.SendMessage(ctx, &botlib.SendMessageParams{ChatID: chatId, Text: text})
+	if err != nil {
+		log.Printf("%v", err)
+		return
+	}
+}
+func wbHandler(ctx context.Context, bot *botlib.Bot, update *models.Update) {
+	chatId := update.Message.From.ID
+	supplyId := update.Message.Text
+
+	wildberriesKey, err := initEnv("variables.env", "API_KEY_WB")
+	if err != nil {
+		return
+	}
+
+	text := fmt.Sprintf("Подготовка файла ВБ")
+	sendTextMessage(ctx, bot, chatId, text)
+
+	err = wb_stickers_fbs.GetReadyFile(wildberriesKey, supplyId)
+	if err != nil {
+		sendTextMessage(ctx, bot, chatId, err.Error())
+	} else {
+		sendMediaMessage(ctx, bot, chatId, supplyId)
+		wb_stickers_fbs.Clean_files(supplyId)
+	}
+}
+func wbOrdersHandler(ctx context.Context, bot *botlib.Bot, update *models.Update) {
+	chatId := update.Message.From.ID
+
+	wildberriesKey, err := initEnv("variables.env", "API_KEY_WB")
+	if err != nil {
+		return
+	}
+
+	err = wb_orders_returns.WriteToGoogleSheets(wildberriesKey)
+	if err != nil {
+		sendTextMessage(ctx, bot, chatId, err.Error())
+	} else {
+		sendTextMessage(ctx, bot, chatId, "Данные Wb FBS за вчерашний день внесены")
+	}
+}
+
+func sendTextMessage(ctx context.Context, bot *botlib.Bot, chatId int64, text string) {
+	_, err := bot.SendMessage(ctx, &botlib.SendMessageParams{ChatID: chatId, Text: text})
+	if err != nil {
+		log.Printf("%v", err)
+		return
+	}
+}
+func sendMediaMessage(ctx context.Context, bot *botlib.Bot, chatId int64, supplyId string) {
+
+	file, err := os.Open("wb_stickers_fbs/" + supplyId + ".pdf")
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	inputFile := models.InputFileUpload{
+		Filename: supplyId + ".pdf",
+		Data:     file,
+	}
+
+	_, err = bot.SendDocument(ctx, &botlib.SendDocumentParams{ChatID: chatId, Document: &inputFile})
 	if err != nil {
 		log.Printf("%v", err)
 		return
