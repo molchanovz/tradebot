@@ -1,6 +1,7 @@
-package wb_stickers_fbs
+package yandex_stickers_fbs
 
 import (
+	"WildberriesGo_bot/YANDEX/API"
 	"encoding/base64"
 	"fmt"
 	"github.com/fogleman/gg"
@@ -11,8 +12,40 @@ import (
 	"strconv"
 )
 
+//func GetOrderInfo(token, orderId string) {
+//	info, err := API.OrderInfo(token, orderId)
+//	if err != nil {
+//		return
+//	}
+//}
+
+func GetOrdersInfo(token, supplyId string) string {
+	orderIds, err := GetOrdersIds(token, supplyId)
+	if err != nil {
+		return ""
+	}
+	for _, orderId := range orderIds {
+		//Получаем товары в заказе
+		items, err := GetOrderItems(token, orderId)
+		if err != nil {
+			return ""
+		}
+		//Получаем стикеры к товарам
+
+		stickers, err := API.GetStickers(token, orderId)
+		if err != nil {
+			return ""
+		}
+
+		return fmt.Sprintf("items %v, stickers%v", len(items), len(stickers))
+
+		//Соединяем все стикеры и баркоды товаров по одному
+	}
+	return ""
+}
+
 func GetReadyFile(wildberriesKey, supplyId string) error {
-	orders, err := GetOrdersFbs(wildberriesKey, supplyId)
+	orders, err := GetOrdersIds(wildberriesKey, supplyId)
 	if err != nil {
 		return err
 	}

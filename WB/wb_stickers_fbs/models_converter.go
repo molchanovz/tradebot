@@ -3,22 +3,26 @@ package wb_stickers_fbs
 import (
 	"WildberriesGo_bot/WB/API"
 	"encoding/json"
+	"fmt"
 	"log"
 	"sort"
 )
 
-func GetOrders_FBS(wildberriesKey, supplyId string) []OrderWB {
-	jsonString := API.GetOrdersBySupplyId(wildberriesKey, supplyId)
-	var orders Orders
-	err := json.Unmarshal([]byte(jsonString), &orders)
+func GetOrdersFbs(wildberriesKey, supplyId string) ([]OrderWB, error) {
+	jsonString, err := API.GetOrdersBySupplyId(wildberriesKey, supplyId)
 	if err != nil {
-		log.Fatalf("Error decoding JSON: %v", err)
+		return nil, err
+	}
+	var orders Orders
+	err = json.Unmarshal([]byte(jsonString), &orders)
+	if err != nil {
+		return nil, fmt.Errorf("ошибка декодирования JSON: %v", err)
 	}
 	sortOrdersByArticle(orders.Orders)
-	return orders.Orders
+	return orders.Orders, nil
 }
 
-func GetStickers_FBS(wildberriesKey string, orderId int) StickerWB {
+func GetStickersFbs(wildberriesKey string, orderId int) StickerWB {
 	jsonString := API.GetCodesByOrderId(wildberriesKey, orderId)
 	var stickers StickerWB
 	err := json.Unmarshal([]byte(jsonString), &stickers)

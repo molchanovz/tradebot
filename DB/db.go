@@ -11,9 +11,15 @@ import (
 
 var Database *gorm.DB
 
+const (
+	DefaultState   = 0
+	WaitingWbState = 1
+	WaitingYaState = 2
+)
+
 // Инициализация подключения
 func InitDB() (*sql.DB, error) {
-	dsn := "host=localhost user=postgres password=kvashok2002 dbname=db_bot port=5432 sslmode=disable"
+	dsn := "host=localhost user=postgres password=Kvashok2002 dbname=db_bot port=5432 sslmode=disable"
 	var err error
 	Database, err = gorm.Open(postgres.Open(dsn), &gorm.Config{})
 	if err != nil {
@@ -34,4 +40,13 @@ type Stock struct {
 
 func (Stock) TableName() string {
 	return "public.wb_stocks"
+}
+
+type User struct {
+	ChatId int64 `gorm:"column:chatid;unique"`
+	State  int   `gorm:"column:state"`
+}
+
+func (User) TableName() string {
+	return "public.users"
 }

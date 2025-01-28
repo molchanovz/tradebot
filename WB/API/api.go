@@ -49,13 +49,13 @@ func StocksFbo(apiKey string) string {
 	return string(jsonString)
 }
 
-func GetOrdersBySupplyId(wildberriesKey, supplyId string) string {
+func GetOrdersBySupplyId(wildberriesKey, supplyId string) (string, error) {
 
 	url := "https://marketplace-api.wildberries.ru/api/v3/supplies/" + supplyId + "/orders"
 	req, err := http.NewRequest("GET", url, nil)
 
 	if err != nil {
-		log.Fatalf("Ошибка создания запроса: %v", err)
+		return "", fmt.Errorf("ошибка создания запроса: %v", err)
 	}
 
 	// Устанавливаем необходимые заголовки (если нужны)
@@ -66,20 +66,20 @@ func GetOrdersBySupplyId(wildberriesKey, supplyId string) string {
 	client := &http.Client{}
 	resp, err := client.Do(req)
 	if err != nil {
-		log.Fatalf("Ошибка выполнения запроса: %v", err)
+		return "", fmt.Errorf("ошибка выполнения запроса: %v", err)
 	}
 	defer resp.Body.Close()
 
 	// Проверяем статус ответа
 	if resp.StatusCode != http.StatusOK {
-		log.Fatalf("Ошибка: получен статус %d", resp.StatusCode)
+		return "", fmt.Errorf("ошибка: получен статус %v", resp.StatusCode)
 	}
 
 	// Читаем тело ответа
 	jsonString, _ := io.ReadAll(resp.Body)
 
 	// Выводим ответ
-	return string(jsonString)
+	return string(jsonString), nil
 }
 
 func GetCodesByOrderId(wildberriesKey string, orderId int) string {
