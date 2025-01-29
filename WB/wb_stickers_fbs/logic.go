@@ -140,6 +140,14 @@ func Clean_files(supplyId string) {
 	if err != nil {
 		fmt.Println(err)
 	}
+	err = os.RemoveAll("WB/wb_stickers_fbs/generated")
+	if err != nil {
+		fmt.Println(err)
+	}
+	err = os.Mkdir("WB/wb_stickers_fbs/generated", 0755) // 0755 - это права доступа к директории (чтение, запись, выполнение)
+	if err != nil {
+		fmt.Println(err)
+	}
 	err = os.Mkdir("WB/wb_stickers_fbs/ready", 0755) // 0755 - это права доступа к директории (чтение, запись, выполнение)
 	if err != nil {
 		fmt.Println(err)
