@@ -46,7 +46,7 @@ func main() {
 	var sqlDB *sql.DB
 	sqlDB, err = DB.InitDB()
 	if err != nil {
-		log.Panic(err)
+		log.Panic(err.Error())
 	}
 	opts := []botlib.Option{botlib.WithDefaultHandler(defaultHandler)}
 	b, _ := botlib.New(token, opts...)
@@ -189,12 +189,7 @@ func defaultHandler(ctx context.Context, bot *botlib.Bot, update *models.Update)
 		}
 	case DB.WaitingYaState:
 		{
-			ordersIds, err := yandex_stickers_fbs.GetOrdersIds(yandexToken, message)
-			if err != nil {
-				return
-			}
-			str := fmt.Sprint(ordersIds)[1 : len(fmt.Sprint(ordersIds))-1]
-			sendTextMessage(ctx, bot, chatId, str)
+			getYandexFbs(ctx, bot, chatId, message)
 		}
 	}
 
@@ -305,7 +300,19 @@ func wbFbsHandler(ctx context.Context, bot *botlib.Bot, update *models.Update) {
 	log.Printf("У пользователя %v обновлен WaitingWbState", chatId)
 
 	text := fmt.Sprintf("Отправь мне номер отгрузки")
-	sendTextMessage(ctx, bot, chatId, text)
+
+	var buttonBack []models.InlineKeyboardButton
+
+	buttonBack = append(buttonBack, models.InlineKeyboardButton{Text: "Назад", CallbackData: "START"})
+
+	allButtons := [][]models.InlineKeyboardButton{buttonBack}
+	markup := models.InlineKeyboardMarkup{InlineKeyboard: allButtons}
+
+	_, err = bot.EditMessageText(ctx, &botlib.EditMessageTextParams{MessageID: update.CallbackQuery.Message.Message.ID, ChatID: chatId, Text: text, ReplyMarkup: markup})
+	if err != nil {
+		log.Printf("%v", err)
+		return
+	}
 
 }
 func yandexFbsHandler(ctx context.Context, bot *botlib.Bot, update *models.Update) {
@@ -321,7 +328,18 @@ func yandexFbsHandler(ctx context.Context, bot *botlib.Bot, update *models.Updat
 	log.Printf("У пользователя %v обновлен WaitingYaState", chatId)
 
 	text := fmt.Sprintf("Отправь мне номер отгрузки")
-	sendTextMessage(ctx, bot, chatId, text)
+	var buttonBack []models.InlineKeyboardButton
+
+	buttonBack = append(buttonBack, models.InlineKeyboardButton{Text: "Назад", CallbackData: "START"})
+
+	allButtons := [][]models.InlineKeyboardButton{buttonBack}
+	markup := models.InlineKeyboardMarkup{InlineKeyboard: allButtons}
+
+	_, err = bot.EditMessageText(ctx, &botlib.EditMessageTextParams{MessageID: update.CallbackQuery.Message.Message.ID, ChatID: chatId, Text: text, ReplyMarkup: markup})
+	if err != nil {
+		log.Printf("%v", err)
+		return
+	}
 
 }
 
@@ -338,7 +356,8 @@ func getWbFbs(ctx context.Context, bot *botlib.Bot, chatId int64, supplyId strin
 	if err != nil {
 		sendTextMessage(ctx, bot, chatId, err.Error())
 	} else {
-		sendMediaMessage(ctx, bot, chatId, supplyId)
+		filePath := fmt.Sprintf("WB/wb_stickers_fbs/%v.pdf", supplyId)
+		sendMediaMessage(ctx, bot, chatId, filePath)
 		wb_stickers_fbs.Clean_files(supplyId)
 	}
 }
@@ -359,6 +378,20 @@ func wbOrdersHandler(ctx context.Context, bot *botlib.Bot, update *models.Update
 	}
 }
 
+func getYandexFbs(ctx context.Context, bot *botlib.Bot, chatId int64, message string) {
+	text := fmt.Sprintf("Подготовка файла Яндекс")
+	sendTextMessage(ctx, bot, chatId, text)
+
+	err := yandex_stickers_fbs.GetOrdersInfo(yandexToken, message)
+	if err != nil {
+		sendTextMessage(ctx, bot, chatId, err.Error())
+	} else {
+		filePath := fmt.Sprintf("YANDEX/yandex_stickers_fbs/%v.pdf", message)
+		sendMediaMessage(ctx, bot, chatId, filePath)
+		yandex_stickers_fbs.Clean_files(message)
+	}
+}
+
 func sendTextMessage(ctx context.Context, bot *botlib.Bot, chatId int64, text string) {
 	_, err := bot.SendMessage(ctx, &botlib.SendMessageParams{ChatID: chatId, Text: text})
 	if err != nil {
@@ -366,15 +399,15 @@ func sendTextMessage(ctx context.Context, bot *botlib.Bot, chatId int64, text st
 		return
 	}
 }
-func sendMediaMessage(ctx context.Context, bot *botlib.Bot, chatId int64, supplyId string) {
+func sendMediaMessage(ctx context.Context, bot *botlib.Bot, chatId int64, filePath string) {
 
-	file, err := os.Open("WB/wb_stickers_fbs/" + supplyId + ".pdf")
+	file, err := os.Open(filePath)
 	if err != nil {
 		log.Fatal(err)
 	}
 
 	inputFile := models.InputFileUpload{
-		Filename: supplyId + ".pdf",
+		Filename: filePath,
 		Data:     file,
 	}
 

@@ -145,3 +145,26 @@ type Order struct {
 		CancelRequested bool   `json:"cancelRequested"`
 	} `json:"order"`
 }
+
+type Items []struct {
+	Id                       int     `json:"id"`
+	OfferId                  string  `json:"offerId"`
+	OfferName                string  `json:"offerName"`
+	Price                    float64 `json:"price"`
+	BuyerPrice               float64 `json:"buyerPrice"`
+	BuyerPriceBeforeDiscount float64 `json:"buyerPriceBeforeDiscount"`
+	PriceBeforeDiscount      float64 `json:"priceBeforeDiscount"`
+	Count                    int     `json:"count"`
+	Vat                      string  `json:"vat"`
+	ShopSku                  string  `json:"shopSku"`
+	Subsidy                  float64 `json:"subsidy"`
+	PartnerWarehouseId       string  `json:"partnerWarehouseId"`
+	Promos                   []struct {
+		Type    string  `json:"type"`
+		Subsidy float64 `json:"subsidy"`
+	} `json:"promos"`
+	Subsidies []struct {
+		Type   string  `json:"type"`
+		Amount float64 `json:"amount"`
+	} `json:"subsidies"`
+}

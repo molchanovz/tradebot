@@ -12,14 +12,14 @@ import (
 var Database *gorm.DB
 
 const (
-	DefaultState   = 0
 	WaitingWbState = 1
 	WaitingYaState = 2
+	DefaultState   = 3
 )
 
 // Инициализация подключения
 func InitDB() (*sql.DB, error) {
-	dsn := "host=localhost user=postgres password=Kvashok2002 dbname=db_bot port=5432 sslmode=disable"
+	dsn := "host=localhost user=sergey password=1719 dbname=db_bot port=5432 sslmode=disable"
 	var err error
 	Database, err = gorm.Open(postgres.Open(dsn), &gorm.Config{})
 	if err != nil {

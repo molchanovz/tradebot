@@ -21,22 +21,16 @@ func GetOrdersIds(token, supplyId string) ([]int64, error) {
 }
 
 // Получение id всех заказов
-func GetOrderItems(token string, orderId int64) ([]string, error) {
+func GetOrder(token string, orderId int64) (Order, error) {
 	var order Order
 	jsonString, err := API.OrderInfo(token, orderId)
 	if err != nil {
-		return []string{}, err
+		return order, err
 	}
 	err = json.Unmarshal([]byte(jsonString), &order)
 	if err != nil {
 		log.Fatalf("Error decoding JSON: %v", err)
 	}
 
-	var itemOfferIds []string
-
-	for _, item := range order.Order.Items {
-		itemOfferIds = append(itemOfferIds, item.OfferId)
-	}
-
-	return itemOfferIds, nil
+	return order, nil
 }

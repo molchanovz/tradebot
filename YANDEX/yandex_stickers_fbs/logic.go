@@ -2,14 +2,15 @@ package yandex_stickers_fbs
 
 import (
 	"WildberriesGo_bot/YANDEX/API"
-	"encoding/base64"
 	"fmt"
 	"github.com/fogleman/gg"
+	"github.com/gen2brain/go-fitz"
 	"github.com/jung-kurt/gofpdf"
+	"image"
+	"image/jpeg"
 	"log"
 	"os"
 	"os/exec"
-	"strconv"
 )
 
 //func GetOrderInfo(token, orderId string) {
@@ -19,118 +20,163 @@ import (
 //	}
 //}
 
-func GetOrdersInfo(token, supplyId string) string {
+func GetOrdersInfo(token, supplyId string) error {
 	orderIds, err := GetOrdersIds(token, supplyId)
 	if err != nil {
-		return ""
+		return fmt.Errorf("пизда в GetOrdersIds: %v", err)
 	}
+
+	var ordersSlice []string
 	for _, orderId := range orderIds {
 		//Получаем товары в заказе
-		items, err := GetOrderItems(token, orderId)
+		order, err := GetOrder(token, orderId)
+
 		if err != nil {
-			return ""
+			return fmt.Errorf("пизда в GetOrder: %v", err)
 		}
 		//Получаем стикеры к товарам
 
 		stickers, err := API.GetStickers(token, orderId)
 		if err != nil {
-			return ""
+			return fmt.Errorf("пизда в GetStickers, %v", err)
 		}
 
-		return fmt.Sprintf("items %v, stickers%v", len(items), len(stickers))
+		// Создаем файл для записи данных
+		file, err := os.Create(fmt.Sprintf("YANDEX/yandex_stickers_fbs/codes/%v.pdf", order.Order.Id))
+		if err != nil {
+			return err
+		}
 
-		//Соединяем все стикеры и баркоды товаров по одному
+		// Записываем строку в файл
+		_, err = file.Write([]byte(stickers))
+		if err != nil {
+			panic(err)
+		}
+
+		file.Close()
+
+		pdf, err := CreateLabel(fmt.Sprintf("YANDEX/yandex_stickers_fbs/codes/%v.pdf", order.Order.Id), order.Order.Items)
+		if err != nil {
+			return err
+		}
+
+		// Сохраняем итоговый PDF
+		err = pdf.OutputFileAndClose(fmt.Sprintf("YANDEX/yandex_stickers_fbs/ready/%v.pdf", order.Order.Id))
+		if err != nil {
+			fmt.Println("Ошибка при сохранении PDF:", err)
+		} else {
+			fmt.Println("PDF успешно создан:", fmt.Sprintf("YANDEX/yandex_stickers_fbs/ready/%v.pdf", order.Order.Id))
+		}
+
+		ordersSlice = append(ordersSlice, fmt.Sprintf("YANDEX/yandex_stickers_fbs/ready/%v.pdf", order.Order.Id))
 	}
-	return ""
-}
 
-func GetReadyFile(wildberriesKey, supplyId string) error {
-	orders, err := GetOrdersIds(wildberriesKey, supplyId)
+	err = mergePDFsInDirectory(ordersSlice, "YANDEX/yandex_stickers_fbs/"+supplyId+".pdf")
 	if err != nil {
 		return err
 	}
-	var ordersSlice []string
-	for _, order := range orders {
-		stickers := GetStickersFbs(wildberriesKey, order.ID)
-		decodeToPDF(stickers.Stickers[0].File, stickers.Stickers[0].OrderId, order)
-		ordersSlice = append(ordersSlice, "WB/wb_stickers_fbs/ready/"+strconv.Itoa(order.ID)+".pdf")
+	if !fileExists("YANDEX/yandex_stickers_fbs/" + supplyId + ".pdf") {
+		return fmt.Errorf("такого файла не существует")
 	}
-	err = mergePDFsInDirectory(ordersSlice, "WB/wb_stickers_fbs/"+supplyId+".pdf")
-	if err != nil {
-		return err
-	}
-	if !fileExists("WB/wb_stickers_fbs/" + supplyId + ".pdf") {
-		err = fmt.Errorf("такого файла не существует")
-	}
-	return err
+
+	return nil
 }
 
-func decodeToPNG(base64String string, orderId int) string {
-	// Ваш base64 закодированный контент
-	base64Data := base64String
+func CreateLabel(codePath string, items Items) (*gofpdf.Fpdf, error) {
+	// Создаем новый PDF-документ
+	pdf := gofpdf.NewCustom(&gofpdf.InitType{
+		UnitStr: "mm",
+		Size:    gofpdf.SizeType{Wd: 75, Ht: 120}, // Размер листа 75 x 120 мм
+	})
+	pdf.SetMargins(0, 0, 0) // Убираем отступы
 
-	// Декодирование base64 в байты
-	data, err := base64.StdEncoding.DecodeString(base64Data)
+	// Извлекаем страницы из первого PDF-файла
+	pages, err := extractPagesFromPDF(codePath)
 	if err != nil {
-		fmt.Println("Ошибка при декодировании base64:", err)
+		return nil, fmt.Errorf("ошибка при чтении PDF: %v", err)
 	}
 
-	// Определите путь и имя файла для сохранения
-	filePath := "WB/wb_stickers_fbs/codes/" + strconv.Itoa(orderId) + ".png" // Замените на желаемое имя файла и расширение
+	// Добавляем каждую страницу и изображение в новый PDF
+	for i, page := range pages {
+		// Добавляем новую страницу
+		pdf.AddPage()
 
-	// Открытие файла для записи
+		// Сохраняем страницу как временное изображение
+		pageImagePath := fmt.Sprintf("page%d.jpg", i+1)
+		err = saveImageToFile(page, pageImagePath)
+		if err != nil {
+			return nil, fmt.Errorf("ошибка при сохранении страницы как изображения: %v", err)
+		}
+
+		// Размещаем страницу из первого файла (58 x 40 мм) в верхней части листа
+		pdf.Image(pageImagePath, (75-58)/2, 10, 58, 40, false, "", 0, "") // Центрируем по горизонтали
+
+		// Размещаем изображение из PNG-файла ниже страницы (58 x 40 мм)
+		skuImageUrl := fmt.Sprintf("YANDEX/yandex_stickers_fbs/barcodes/%v.png", items[i].ShopSku)
+		isExist := fileExists(skuImageUrl)
+
+		if !isExist {
+			skuImageUrl = ""
+		}
+
+		if skuImageUrl == "" {
+			// Путь к пустому баркоду с артикулом
+			skuImageUrl = "YANDEX/yandex_stickers_fbs/generated/" + items[i].ShopSku + "_generated.png"
+			err := createBarcodeWithSKU(items[i].ShopSku, skuImageUrl, 40)
+			if err != nil {
+				log.Printf("Ошибка при создании изображения с артикулом: %v", err)
+				skuImageUrl = "YANDEX/yandex_stickers_fbs/barcodes/0.png" // Резервный пустой баркод
+			}
+		}
+
+		pdf.Image(skuImageUrl, (75-58)/2, 70, 58, 40, false, "", 0, "") // Центрируем по горизонтали
+
+		// Удаляем временное изображение страницы
+		err := os.Remove(pageImagePath)
+		if err != nil {
+			return nil, err
+		}
+	}
+	return pdf, nil
+}
+
+// Функция для извлечения страниц из PDF
+func extractPagesFromPDF(pdfPath string) ([]image.Image, error) {
+	// Открываем PDF-файл
+	doc, err := fitz.New(pdfPath)
+	if err != nil {
+		return nil, fmt.Errorf("не удалось открыть PDF: %v", err)
+	}
+	defer doc.Close()
+
+	// Извлекаем страницы
+	var pages []image.Image
+	for i := 0; i < doc.NumPage(); i++ {
+		img, err := doc.Image(i)
+		if err != nil {
+			return nil, fmt.Errorf("ошибка при извлечении страницы %d: %v", i, err)
+		}
+		pages = append(pages, img)
+	}
+
+	return pages, nil
+}
+
+// Функция для сохранения изображения в файл
+func saveImageToFile(img image.Image, filePath string) error {
 	file, err := os.Create(filePath)
 	if err != nil {
-		fmt.Println("Ошибка при создании файла:", err)
+		return fmt.Errorf("не удалось создать файл: %v", err)
 	}
 	defer file.Close()
 
-	// Запись данных в файл
-	_, err = file.Write(data)
+	// Сохраняем изображение в формате JPEG
+	err = jpeg.Encode(file, img, &jpeg.Options{Quality: 90})
 	if err != nil {
-		fmt.Println("Ошибка при записи в файл:", err)
+		return fmt.Errorf("ошибка при сохранении изображения: %v", err)
 	}
 
-	return filePath
-}
-
-func decodeToPDF(base64String string, orderId int, order OrderWB) {
-	pageWidthMM := 75.0
-	pageHeightMM := 120.0
-	// Создание нового PDF-документа
-	pdf := gofpdf.New("P", "mm", "", "")
-	// Добавление страницы с заданными размерами
-	pdf.AddPageFormat("P", gofpdf.SizeType{pageWidthMM, pageHeightMM})
-	// Путь к первому PNG-файлу
-	imgPath1 := decodeToPNG(base64String, orderId)
-	// Добавление первого изображения в PDF (без изменения размера изображения)
-	pdf.ImageOptions(imgPath1, (75-58)/2, 13, 58, 40, false, gofpdf.ImageOptions{ImageType: "PNG"}, 0, "")
-
-	var skuImageUrl string
-	for _, barcode := range order.SKUs {
-		skuImageUrl = "WB/wb_stickers_fbs/barcodes/" + barcode + ".png"
-		if fileExists(skuImageUrl) {
-			break
-		}
-		skuImageUrl = ""
-	}
-
-	if skuImageUrl == "" {
-		// Путь к пустому баркоду с артикулом
-		skuImageUrl = "WB/wb_stickers_fbs/generated/" + order.Article + "_generated.png"
-		err := createBarcodeWithSKU(order.Article, skuImageUrl, 40)
-		if err != nil {
-			log.Printf("Ошибка при создании изображения с артикулом: %v", err)
-			skuImageUrl = "WB/wb_stickers_fbs/barcodes/0.png" // Резервный пустой баркод
-		}
-	}
-
-	pdf.ImageOptions(skuImageUrl, (75-58)/2, 67, 58, 40, false, gofpdf.ImageOptions{ImageType: "PNG"}, 0, "")
-	// Сохранение PDF-документа
-	err := pdf.OutputFileAndClose("WB/wb_stickers_fbs/ready/" + strconv.Itoa(orderId) + ".pdf")
-	if err != nil {
-		log.Fatalf("Error saving PDF: %s", err)
-	}
+	return nil
 }
 
 func fileExists(filename string) bool {
@@ -139,6 +185,30 @@ func fileExists(filename string) bool {
 		return false
 	}
 	return !info.IsDir() // Проверяем, что это файл, а не директория
+}
+
+func Clean_files(supplyId string) {
+	err := os.RemoveAll("YANDEX/yandex_stickers_fbs/codes")
+	if err != nil {
+		fmt.Println(err)
+	}
+	err = os.RemoveAll("YANDEX/yandex_stickers_fbs/ready")
+	if err != nil {
+		fmt.Println(err)
+	}
+	err = os.Mkdir("YANDEX/yandex_stickers_fbs/codes", 0755) // 0755 - это права доступа к директории (чтение, запись, выполнение)
+	if err != nil {
+		fmt.Println(err)
+	}
+	err = os.Mkdir("YANDEX/yandex_stickers_fbs/ready", 0755) // 0755 - это права доступа к директории (чтение, запись, выполнение)
+	if err != nil {
+		fmt.Println(err)
+	}
+	err = os.Remove("YANDEX/yandex_stickers_fbs/" + supplyId + ".pdf")
+	if err != nil {
+		fmt.Println(err)
+	}
+
 }
 
 func mergePDFsInDirectory(orderSlice []string, outputFile string) error {
@@ -160,31 +230,6 @@ func mergePDFsInDirectory(orderSlice []string, outputFile string) error {
 	return nil
 }
 
-func Clean_files(supplyId string) {
-	err := os.RemoveAll("WB/wb_stickers_fbs/codes")
-	if err != nil {
-		fmt.Println(err)
-	}
-	err = os.RemoveAll("WB/wb_stickers_fbs/ready")
-	if err != nil {
-		fmt.Println(err)
-	}
-	err = os.Mkdir("WB/wb_stickers_fbs/codes", 0755) // 0755 - это права доступа к директории (чтение, запись, выполнение)
-	if err != nil {
-		fmt.Println(err)
-	}
-	err = os.Mkdir("WB/wb_stickers_fbs/ready", 0755) // 0755 - это права доступа к директории (чтение, запись, выполнение)
-	if err != nil {
-		fmt.Println(err)
-	}
-	err = os.Remove("WB/wb_stickers_fbs/" + supplyId + ".pdf")
-	if err != nil {
-		fmt.Println(err)
-	}
-
-}
-
-// Функция для создания изображения с текстом (артикул товара) и сохранения в PNG
 func createBarcodeWithSKU(sku string, outputPath string, fontSize float64) error {
 	const imgWidth = 580  // Ширина изображения в пикселях
 	const imgHeight = 400 // Высота изображения в пикселях

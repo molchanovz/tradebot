@@ -77,10 +77,7 @@ func OrderInfo(token string, orderId int64) (string, error) {
 }
 
 func GetStickers(token string, orderId int64) (string, error) {
-
-	//https://api.partner.market.yandex.ru/campaigns/90788543/orders/40201726402/delivery/labels?format=A9_HORIZONTALLY
-
-	url := fmt.Sprintf("https://api.partner.market.yandex.ru/campaigns/%v/orders/%vdelivery/labels?format=A9_HORIZONTALLY", campaignId, orderId)
+	url := fmt.Sprintf("https://api.partner.market.yandex.ru/campaigns/%v/orders/%v/delivery/labels?format=A9_HORIZONTALLY", campaignId, orderId)
 
 	req, err := http.NewRequest("GET", url, nil)
 

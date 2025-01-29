@@ -4,6 +4,7 @@ go 1.23.0
 
 require (
 	github.com/fogleman/gg v1.3.0
+	github.com/gen2brain/go-fitz v1.24.14
 	github.com/go-co-op/gocron v1.37.0
 	github.com/go-telegram/bot v1.11.1
 	github.com/joho/godotenv v1.5.1
@@ -18,6 +19,7 @@ require (
 	cloud.google.com/go/auth v0.14.0 // indirect
 	cloud.google.com/go/auth/oauth2adapt v0.2.7 // indirect
 	cloud.google.com/go/compute/metadata v0.6.0 // indirect
+	github.com/ebitengine/purego v0.8.0 // indirect
 	github.com/felixge/httpsnoop v1.0.4 // indirect
 	github.com/go-logr/logr v1.4.2 // indirect
 	github.com/go-logr/stdr v1.2.2 // indirect
@@ -32,6 +34,7 @@ require (
 	github.com/jackc/puddle/v2 v2.2.1 // indirect
 	github.com/jinzhu/inflection v1.0.0 // indirect
 	github.com/jinzhu/now v1.1.5 // indirect
+	github.com/jupiterrider/ffi v0.2.0 // indirect
 	github.com/robfig/cron/v3 v3.0.1 // indirect
 	go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp v0.54.0 // indirect
 	go.opentelemetry.io/otel v1.31.0 // indirect
@@ -39,7 +42,7 @@ require (
 	go.opentelemetry.io/otel/trace v1.31.0 // indirect
 	go.uber.org/atomic v1.9.0 // indirect
 	golang.org/x/crypto v0.32.0 // indirect
-	golang.org/x/image v0.0.0-20190910094157-69e4b8554b2a // indirect
+	golang.org/x/image v0.18.0 // indirect
 	golang.org/x/net v0.34.0 // indirect
 	golang.org/x/sync v0.10.0 // indirect
 	golang.org/x/sys v0.29.0 // indirect
