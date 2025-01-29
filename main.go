@@ -204,16 +204,21 @@ func defaultHandler(ctx context.Context, bot *botlib.Bot, update *models.Update)
 
 }
 
-func startHandler(ctx context.Context, bot *botlib.Bot, update *models.Update) {
-	var chatId int64
-	var text string
+func createStartMarkup() (string, models.InlineKeyboardMarkup) {
 	startMessage := "Выбери маркетплейс для работы"
-
 	var buttonsRow []models.InlineKeyboardButton
 	buttonsRow = append(buttonsRow, models.InlineKeyboardButton{Text: "ВБ", CallbackData: "WB"})
 	buttonsRow = append(buttonsRow, models.InlineKeyboardButton{Text: "ЯНДЕКС", CallbackData: "YANDEX_FBS"})
 	allButtons := [][]models.InlineKeyboardButton{buttonsRow}
 	markup := models.InlineKeyboardMarkup{InlineKeyboard: allButtons}
+	return startMessage, markup
+}
+
+func startHandler(ctx context.Context, bot *botlib.Bot, update *models.Update) {
+	var chatId int64
+	var text string
+
+	startMessage, markup := createStartMarkup()
 
 	if update.Message != nil {
 		chatId = update.Message.From.ID
@@ -350,15 +355,31 @@ func getWbFbs(ctx context.Context, bot *botlib.Bot, chatId int64, supplyId strin
 	}
 
 	text := fmt.Sprintf("Подготовка файла ВБ")
-	sendTextMessage(ctx, bot, chatId, text)
+	message, err := sendTextMessage(ctx, bot, chatId, text)
+	if err != nil {
+		return
+	}
 
 	err = wb_stickers_fbs.GetReadyFile(wildberriesKey, supplyId)
 	if err != nil {
 		sendTextMessage(ctx, bot, chatId, err.Error())
-	} else {
-		filePath := fmt.Sprintf("WB/wb_stickers_fbs/%v.pdf", supplyId)
-		sendMediaMessage(ctx, bot, chatId, filePath)
-		wb_stickers_fbs.Clean_files(supplyId)
+		return
+	}
+
+	filePath := fmt.Sprintf("WB/wb_stickers_fbs/%v.pdf", supplyId)
+	sendMediaMessage(ctx, bot, chatId, filePath)
+	wb_stickers_fbs.Clean_files(supplyId)
+
+	text, markup := createStartMarkup()
+	_, err = bot.SendMessage(ctx, &botlib.SendMessageParams{ChatID: chatId, Text: text, ReplyMarkup: markup})
+	if err != nil {
+		log.Printf("%v", err)
+		return
+	}
+
+	_, err = bot.DeleteMessage(ctx, &botlib.DeleteMessageParams{ChatID: chatId, MessageID: message.ID})
+	if err != nil {
+		return
 	}
 }
 func wbOrdersHandler(ctx context.Context, bot *botlib.Bot, update *models.Update) {
@@ -378,26 +399,46 @@ func wbOrdersHandler(ctx context.Context, bot *botlib.Bot, update *models.Update
 	}
 }
 
-func getYandexFbs(ctx context.Context, bot *botlib.Bot, chatId int64, message string) {
+func getYandexFbs(ctx context.Context, bot *botlib.Bot, chatId int64, supplyId string) {
 	text := fmt.Sprintf("Подготовка файла Яндекс")
-	sendTextMessage(ctx, bot, chatId, text)
-
-	err := yandex_stickers_fbs.GetOrdersInfo(yandexToken, message)
+	message, err := sendTextMessage(ctx, bot, chatId, text)
 	if err != nil {
-		sendTextMessage(ctx, bot, chatId, err.Error())
-	} else {
-		filePath := fmt.Sprintf("YANDEX/yandex_stickers_fbs/%v.pdf", message)
-		sendMediaMessage(ctx, bot, chatId, filePath)
-		yandex_stickers_fbs.Clean_files(message)
+		return
 	}
-}
 
-func sendTextMessage(ctx context.Context, bot *botlib.Bot, chatId int64, text string) {
-	_, err := bot.SendMessage(ctx, &botlib.SendMessageParams{ChatID: chatId, Text: text})
+	err = yandex_stickers_fbs.GetOrdersInfo(yandexToken, supplyId)
+	if err != nil {
+		_, err := sendTextMessage(ctx, bot, chatId, err.Error())
+		if err != nil {
+			log.Println(err)
+			return
+		}
+	} else {
+		filePath := fmt.Sprintf("YANDEX/yandex_stickers_fbs/%v.pdf", supplyId)
+		sendMediaMessage(ctx, bot, chatId, filePath)
+		yandex_stickers_fbs.Clean_files(supplyId)
+	}
+
+	text, markup := createStartMarkup()
+	_, err = bot.SendMessage(ctx, &botlib.SendMessageParams{ChatID: chatId, Text: text, ReplyMarkup: markup})
 	if err != nil {
 		log.Printf("%v", err)
 		return
 	}
+
+	_, err = bot.DeleteMessage(ctx, &botlib.DeleteMessageParams{ChatID: chatId, MessageID: message.ID})
+	if err != nil {
+		return
+	}
+
+}
+
+func sendTextMessage(ctx context.Context, bot *botlib.Bot, chatId int64, text string) (*models.Message, error) {
+	message, err := bot.SendMessage(ctx, &botlib.SendMessageParams{ChatID: chatId, Text: text})
+	if err != nil {
+		return nil, err
+	}
+	return message, nil
 }
 func sendMediaMessage(ctx context.Context, bot *botlib.Bot, chatId int64, filePath string) {
 
