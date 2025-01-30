@@ -96,6 +96,14 @@ func CreateLabel(codePath string, items Items) (*gofpdf.Fpdf, error) {
 		return nil, fmt.Errorf("ошибка при чтении PDF: %v", err)
 	}
 
+	var stringItems []string
+
+	for _, item := range items {
+		for _ = range item.Count {
+			stringItems = append(stringItems, item.OfferId)
+		}
+	}
+
 	// Добавляем каждую страницу и изображение в новый PDF
 	for i, page := range pages {
 		// Добавляем новую страницу
@@ -112,7 +120,7 @@ func CreateLabel(codePath string, items Items) (*gofpdf.Fpdf, error) {
 		pdf.Image(pageImagePath, (75-58)/2, 10, 58, 40, false, "", 0, "") // Центрируем по горизонтали
 
 		// Размещаем изображение из PNG-файла ниже страницы (58 x 40 мм)
-		skuImageUrl := fmt.Sprintf("YANDEX/yandex_stickers_fbs/barcodes/%v.png", items[i].ShopSku)
+		skuImageUrl := fmt.Sprintf("YANDEX/yandex_stickers_fbs/barcodes/%v.png", stringItems[i])
 		isExist := fileExists(skuImageUrl)
 
 		if !isExist {
@@ -121,8 +129,8 @@ func CreateLabel(codePath string, items Items) (*gofpdf.Fpdf, error) {
 
 		if skuImageUrl == "" {
 			// Путь к пустому баркоду с артикулом
-			skuImageUrl = "YANDEX/yandex_stickers_fbs/generated/" + items[i].ShopSku + "_generated.png"
-			err := createBarcodeWithSKU(items[i].ShopSku, skuImageUrl, 40)
+			skuImageUrl = "YANDEX/yandex_stickers_fbs/generated/" + stringItems[i] + "_generated.png"
+			err := createBarcodeWithSKU(stringItems[i], skuImageUrl, 40)
 			if err != nil {
 				log.Printf("Ошибка при создании изображения с артикулом: %v", err)
 				skuImageUrl = "YANDEX/yandex_stickers_fbs/barcodes/0.png" // Резервный пустой баркод
