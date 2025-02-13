@@ -1,6 +1,7 @@
 package ozon_orders_returns
 
 import (
+	"WildberriesGo_bot/OZON/API"
 	"fmt"
 	"github.com/joho/godotenv"
 	"log"
@@ -58,8 +59,10 @@ func WriteToGoogleSheets(ClientId string, ApiKey string) {
 
 func getPostingsMapFBS(ClientId string, ApiKey string) map[string]int {
 	postingsWithCountFBS := make(map[string]int)
-	potings_list_fbs := postingsListFbs(ClientId, ApiKey, daysAgo)
-	for _, posting := range potings_list_fbs.Result.PostingsFBS {
+	since := time.Now().AddDate(0, 0, daysAgo*(-1)-1).Format("2006-01-02") + "T21:00:00.000Z"
+	to := time.Now().AddDate(0, 0, daysAgo*(-1)).Format("2006-01-02") + "T21:00:00.000Z"
+	potingsListFbs := API.PostingsListFbs(ClientId, ApiKey, since, to)
+	for _, posting := range potingsListFbs.Result.PostingsFBS {
 		if posting.Status != "cancelled" {
 			for _, product := range posting.Products {
 				postingsWithCountFBS[product.OfferId] += product.Quantity
@@ -70,7 +73,9 @@ func getPostingsMapFBS(ClientId string, ApiKey string) map[string]int {
 }
 func getPostingsMapFBO(ClientId string, ApiKey string) map[string]int {
 	postingsWithCountFBO := make(map[string]int)
-	postings_list_fbo := postingsListFbo(ClientId, ApiKey, daysAgo)
+	since := time.Now().AddDate(0, 0, daysAgo*(-1)-1).Format("2006-01-02") + "T21:00:00.000Z"
+	to := time.Now().AddDate(0, 0, daysAgo*(-1)).Format("2006-01-02") + "T21:00:00.000Z"
+	postings_list_fbo := API.PostingsListFbo(ClientId, ApiKey, since, to)
 	for _, posting := range postings_list_fbo.Result {
 		if posting.Status != "cancelled" {
 			for _, product := range posting.Products {
@@ -88,11 +93,11 @@ func getReturnsMap(ClientId string, ApiKey string) map[string]int {
 		Лимит у запроса 1000, но нам нужны все возвраты,
 		поэтому делаем цикл с LastID и добавляем в срез returnsFBO
 	*/
-	returns_fbo, LastID := returnsFbo(ClientId, ApiKey, LastID)
-	returnsFBO := make([]ReturnFBO, 0, len(returns_fbo))
+	returns_fbo, LastID := API.ReturnsFbo(ClientId, ApiKey, LastID)
+	returnsFBO := make([]API.ReturnFBO, 0, len(returns_fbo))
 	returnsFBO = append(returnsFBO, returns_fbo...)
 	for LastID != 0 {
-		returns_fbo, LastID = returnsFbo(ClientId, ApiKey, LastID)
+		returns_fbo, LastID = API.ReturnsFbo(ClientId, ApiKey, LastID)
 		returnsFBO = append(returnsFBO, returns_fbo...)
 	}
 	for i := range returnsFBO {
@@ -103,7 +108,7 @@ func getReturnsMap(ClientId string, ApiKey string) map[string]int {
 		day := parsedTime.Day()
 
 		if year == time.Now().Year() && month == time.Now().Month() && day == time.Now().Day()-daysAgo {
-			posting := postingFbo(ClientId, ApiKey, returnsFBO[i].PostingNumber)
+			posting := API.PostingFbo(ClientId, ApiKey, returnsFBO[i].PostingNumber)
 			for _, product := range posting.Result.Products {
 				returnsWithCount[product.OfferId] += product.Quantity
 			}
@@ -112,12 +117,12 @@ func getReturnsMap(ClientId string, ApiKey string) map[string]int {
 
 	LastID = 0
 
-	returns_fbs, LastID := returnsFbs(ClientId, ApiKey, LastID)
-	returnsListFBS := make([]ReturnFBS, 0, len(returns_fbs))
+	returns_fbs, LastID := API.ReturnsFbs(ClientId, ApiKey, LastID)
+	returnsListFBS := make([]API.ReturnFBS, 0, len(returns_fbs))
 	returnsListFBS = append(returnsListFBS, returns_fbs...)
 
 	for LastID != 0 {
-		returns_fbs, LastID = returnsFbs(ClientId, ApiKey, LastID)
+		returns_fbs, LastID = API.ReturnsFbs(ClientId, ApiKey, LastID)
 		returnsListFBS = append(returnsListFBS, returns_fbs...)
 	}
 
@@ -127,7 +132,7 @@ func getReturnsMap(ClientId string, ApiKey string) map[string]int {
 		month := parsedTime.Month()
 		day := parsedTime.Day()
 		if year == time.Now().Year() && month == time.Now().Month() && day == time.Now().Day()-daysAgo {
-			posting := postingFbs(ClientId, ApiKey, returnsListFBS[i].PostingNumber)
+			posting := API.PostingFbs(ClientId, ApiKey, returnsListFBS[i].PostingNumber)
 			for _, product := range posting.Result.Products {
 				returnsWithCount[product.OfferId] += product.Quantity
 			}

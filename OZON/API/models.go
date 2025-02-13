@@ -1,4 +1,4 @@
-package ozon_orders_returns
+package API
 
 import "time"
 
@@ -192,9 +192,54 @@ type PostingsList_FBS struct {
 			Addressee     interface{} `json:"addressee"`
 			Barcodes      interface{} `json:"barcodes"`
 			AnalyticsData interface{} `json:"analytics_data"`
-			FinancialData interface{} `json:"financial_data"`
-			IsExpress     bool        `json:"is_express"`
-			Requirements  struct {
+
+			FinancialData struct {
+				Products []struct {
+					CommissionAmount     float64     `json:"commission_amount"`
+					CommissionPercent    int         `json:"commission_percent"`
+					Payout               float64     `json:"payout"`
+					ProductId            int         `json:"product_id"`
+					OldPrice             float64     `json:"old_price"`
+					Price                float64     `json:"price"`
+					TotalDiscountValue   float64     `json:"total_discount_value"`
+					TotalDiscountPercent float64     `json:"total_discount_percent"`
+					Actions              []string    `json:"actions"`
+					Picking              interface{} `json:"picking"`
+					Quantity             int         `json:"quantity"`
+					ClientPrice          string      `json:"client_price"`
+					ItemServices         struct {
+						MarketplaceServiceItemFulfillment                int     `json:"marketplace_service_item_fulfillment"`
+						MarketplaceServiceItemPickup                     int     `json:"marketplace_service_item_pickup"`
+						MarketplaceServiceItemDropoffPvz                 int     `json:"marketplace_service_item_dropoff_pvz"`
+						MarketplaceServiceItemDropoffSc                  int     `json:"marketplace_service_item_dropoff_sc"`
+						MarketplaceServiceItemDropoffFf                  int     `json:"marketplace_service_item_dropoff_ff"`
+						MarketplaceServiceItemDirectFlowTrans            int     `json:"marketplace_service_item_direct_flow_trans"`
+						MarketplaceServiceItemReturnFlowTrans            int     `json:"marketplace_service_item_return_flow_trans"`
+						MarketplaceServiceItemDelivToCustomer            float64 `json:"marketplace_service_item_deliv_to_customer"`
+						MarketplaceServiceItemReturnNotDelivToCustomer   int     `json:"marketplace_service_item_return_not_deliv_to_customer"`
+						MarketplaceServiceItemReturnPartGoodsCustomer    int     `json:"marketplace_service_item_return_part_goods_customer"`
+						MarketplaceServiceItemReturnAfterDelivToCustomer int     `json:"marketplace_service_item_return_after_deliv_to_customer"`
+					} `json:"item_services"`
+					CurrencyCode string `json:"currency_code"`
+				} `json:"products"`
+				PostingServices struct {
+					MarketplaceServiceItemFulfillment                int `json:"marketplace_service_item_fulfillment"`
+					MarketplaceServiceItemPickup                     int `json:"marketplace_service_item_pickup"`
+					MarketplaceServiceItemDropoffPvz                 int `json:"marketplace_service_item_dropoff_pvz"`
+					MarketplaceServiceItemDropoffSc                  int `json:"marketplace_service_item_dropoff_sc"`
+					MarketplaceServiceItemDropoffFf                  int `json:"marketplace_service_item_dropoff_ff"`
+					MarketplaceServiceItemDirectFlowTrans            int `json:"marketplace_service_item_direct_flow_trans"`
+					MarketplaceServiceItemReturnFlowTrans            int `json:"marketplace_service_item_return_flow_trans"`
+					MarketplaceServiceItemDelivToCustomer            int `json:"marketplace_service_item_deliv_to_customer"`
+					MarketplaceServiceItemReturnNotDelivToCustomer   int `json:"marketplace_service_item_return_not_deliv_to_customer"`
+					MarketplaceServiceItemReturnPartGoodsCustomer    int `json:"marketplace_service_item_return_part_goods_customer"`
+					MarketplaceServiceItemReturnAfterDelivToCustomer int `json:"marketplace_service_item_return_after_deliv_to_customer"`
+				} `json:"posting_services"`
+				ClusterFrom string `json:"cluster_from"`
+				ClusterTo   string `json:"cluster_to"`
+			} `json:"financial_data"`
+			IsExpress    bool `json:"is_express"`
+			Requirements struct {
 				ProductsRequiringGtd           []interface{} `json:"products_requiring_gtd"`
 				ProductsRequiringCountry       []interface{} `json:"products_requiring_country"`
 				ProductsRequiringMandatoryMark []interface{} `json:"products_requiring_mandatory_mark"`
@@ -233,34 +278,34 @@ type PostingsList_FBO struct {
 			WarehouseName        string `json:"warehouse_name"`
 			IsLegal              bool   `json:"is_legal"`
 		} `json:"analytics_data"`
+
 		FinancialData struct {
 			Products []struct {
 				CommissionAmount     float64     `json:"commission_amount"`
 				CommissionPercent    int         `json:"commission_percent"`
 				Payout               float64     `json:"payout"`
 				ProductId            int         `json:"product_id"`
-				CurrencyCode         string      `json:"currency_code"`
-				OldPrice             int         `json:"old_price"`
-				Price                int         `json:"price"`
-				TotalDiscountValue   int         `json:"total_discount_value"`
+				OldPrice             float64     `json:"old_price"`
+				Price                float64     `json:"price"`
+				TotalDiscountValue   float64     `json:"total_discount_value"`
 				TotalDiscountPercent float64     `json:"total_discount_percent"`
 				Actions              []string    `json:"actions"`
 				Picking              interface{} `json:"picking"`
-				Quantity             int         `json:"quantity"`
 				ClientPrice          string      `json:"client_price"`
 				ItemServices         struct {
-					MarketplaceServiceItemFulfillment                float64 `json:"marketplace_service_item_fulfillment"`
+					MarketplaceServiceItemFulfillment                int     `json:"marketplace_service_item_fulfillment"`
 					MarketplaceServiceItemPickup                     int     `json:"marketplace_service_item_pickup"`
 					MarketplaceServiceItemDropoffPvz                 int     `json:"marketplace_service_item_dropoff_pvz"`
 					MarketplaceServiceItemDropoffSc                  int     `json:"marketplace_service_item_dropoff_sc"`
 					MarketplaceServiceItemDropoffFf                  int     `json:"marketplace_service_item_dropoff_ff"`
 					MarketplaceServiceItemDirectFlowTrans            int     `json:"marketplace_service_item_direct_flow_trans"`
 					MarketplaceServiceItemReturnFlowTrans            int     `json:"marketplace_service_item_return_flow_trans"`
-					MarketplaceServiceItemDelivToCustomer            int     `json:"marketplace_service_item_deliv_to_customer"`
+					MarketplaceServiceItemDelivToCustomer            float64 `json:"marketplace_service_item_deliv_to_customer"`
 					MarketplaceServiceItemReturnNotDelivToCustomer   int     `json:"marketplace_service_item_return_not_deliv_to_customer"`
 					MarketplaceServiceItemReturnPartGoodsCustomer    int     `json:"marketplace_service_item_return_part_goods_customer"`
 					MarketplaceServiceItemReturnAfterDelivToCustomer int     `json:"marketplace_service_item_return_after_deliv_to_customer"`
 				} `json:"item_services"`
+				CurrencyCode string `json:"currency_code"`
 			} `json:"products"`
 			PostingServices struct {
 				MarketplaceServiceItemFulfillment                int `json:"marketplace_service_item_fulfillment"`
@@ -275,7 +320,39 @@ type PostingsList_FBO struct {
 				MarketplaceServiceItemReturnPartGoodsCustomer    int `json:"marketplace_service_item_return_part_goods_customer"`
 				MarketplaceServiceItemReturnAfterDelivToCustomer int `json:"marketplace_service_item_return_after_deliv_to_customer"`
 			} `json:"posting_services"`
+			ClusterFrom string `json:"cluster_from"`
+			ClusterTo   string `json:"cluster_to"`
 		} `json:"financial_data"`
 		AdditionalData []interface{} `json:"additional_data"`
 	} `json:"result"`
+}
+
+type StocksList struct {
+	Result struct {
+		Rows []struct {
+			Sku              int      `json:"sku"`
+			WarehouseName    string   `json:"warehouse_name"`
+			ItemCode         string   `json:"item_code"`
+			ItemName         string   `json:"item_name"`
+			PromisedAmount   int      `json:"promised_amount"`
+			FreeToSellAmount int      `json:"free_to_sell_amount"`
+			ReservedAmount   int      `json:"reserved_amount"`
+			Idc              *float64 `json:"idc"`
+		} `json:"rows"`
+	} `json:"result"`
+}
+
+type ClustersList struct {
+	Clusters []struct {
+		LogisticClusters []struct {
+			Warehouses []struct {
+				WarehouseId int64  `json:"warehouse_id"`
+				Type        string `json:"type"`
+				Name        string `json:"name"`
+			} `json:"warehouses"`
+		} `json:"logistic_clusters"`
+		Id   int    `json:"id"`
+		Name string `json:"name"`
+		Type string `json:"type"`
+	} `json:"clusters"`
 }

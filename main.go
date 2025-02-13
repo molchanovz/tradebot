@@ -3,6 +3,7 @@ package main
 import (
 	"WildberriesGo_bot/DB"
 	"WildberriesGo_bot/OZON/ozon_orders_returns"
+	"WildberriesGo_bot/OZON/ozon_stocks"
 	"WildberriesGo_bot/WB/wb_orders_returns"
 	"WildberriesGo_bot/WB/wb_stickers_fbs"
 	"WildberriesGo_bot/WB/wb_stocks_analyze"
@@ -16,9 +17,11 @@ import (
 	botlib "github.com/go-telegram/bot"
 	"github.com/go-telegram/bot/models"
 	"github.com/joho/godotenv"
+	"github.com/xuri/excelize/v2"
 	"log"
 	"os"
 	"os/signal"
+	"strconv"
 	"syscall"
 	"time"
 )
@@ -32,6 +35,7 @@ const (
 	CallbackWbOrdersHandler     = "WB_ORDERS"
 	CallbackYandexOrdersHandler = "YANDEX_ORDERS"
 	CallbackOzonOrdersHandler   = "OZON_ORDERS"
+	CallbackOzonStocksHandler   = "OZON_STOCKS"
 )
 
 var myChatId, yandexToken string
@@ -78,6 +82,7 @@ func main() {
 	b.RegisterHandler(botlib.HandlerTypeCallbackQueryData, CallbackWbOrdersHandler, botlib.MatchTypePrefix, wbOrdersHandler)
 	b.RegisterHandler(botlib.HandlerTypeCallbackQueryData, CallbackYandexOrdersHandler, botlib.MatchTypePrefix, yandexOrdersHandler)
 	b.RegisterHandler(botlib.HandlerTypeCallbackQueryData, CallbackOzonOrdersHandler, botlib.MatchTypePrefix, ozonOrdersHandler)
+	b.RegisterHandler(botlib.HandlerTypeCallbackQueryData, CallbackOzonStocksHandler, botlib.MatchTypePrefix, ozonStocksHandler)
 
 	//b.RegisterHandler(botlib.HandlerTypeCallbackQueryData, "YANDEX_FBS", botlib.MatchTypePrefix, wbOrdersHandler)
 
@@ -343,6 +348,7 @@ func ozonHandler(ctx context.Context, bot *botlib.Bot, update *models.Update) {
 
 	var buttonsRow, buttonBack []models.InlineKeyboardButton
 	buttonsRow = append(buttonsRow, models.InlineKeyboardButton{Text: "Вчерашние заказы", CallbackData: CallbackOzonOrdersHandler})
+	buttonsRow = append(buttonsRow, models.InlineKeyboardButton{Text: "Остатки", CallbackData: CallbackOzonStocksHandler})
 
 	buttonBack = append(buttonBack, models.InlineKeyboardButton{Text: "Назад", CallbackData: "START"})
 
@@ -427,12 +433,20 @@ func getWbFbs(ctx context.Context, bot *botlib.Bot, chatId int64, supplyId strin
 
 	err = wb_stickers_fbs.GetReadyFile(wildberriesKey, supplyId)
 	if err != nil {
-		sendTextMessage(ctx, bot, chatId, err.Error())
+		_, err = sendTextMessage(ctx, bot, chatId, err.Error())
+		if err != nil {
+			log.Println(err)
+			return
+		}
 		return
 	}
 
 	filePath := fmt.Sprintf("WB/wb_stickers_fbs/%v.pdf", supplyId)
-	sendMediaMessage(ctx, bot, chatId, filePath)
+	err = sendMediaMessage(ctx, bot, chatId, filePath)
+	if err != nil {
+		log.Println(err)
+		return
+	}
 	wb_stickers_fbs.Clean_files(supplyId)
 
 	text, markup := createStartMarkup()
@@ -452,6 +466,7 @@ func wbOrdersHandler(ctx context.Context, bot *botlib.Bot, update *models.Update
 
 	wildberriesKey, err := initEnv("variables.env", "API_KEY_WB")
 	if err != nil {
+		log.Println(err)
 		return
 	}
 
@@ -460,11 +475,13 @@ func wbOrdersHandler(ctx context.Context, bot *botlib.Bot, update *models.Update
 	if err != nil {
 		_, err = sendTextMessage(ctx, bot, chatId, err.Error())
 		if err != nil {
+			log.Println(err)
 			return
 		}
 	} else {
 		_, err = sendTextMessage(ctx, bot, chatId, "Заказы озон за вчерашний день были внесены")
 		if err != nil {
+			log.Println(err)
 			return
 		}
 	}
@@ -503,6 +520,40 @@ func ozonOrdersHandler(ctx context.Context, bot *botlib.Bot, update *models.Upda
 		log.Printf("%v", err)
 		return
 	}
+
+}
+func ozonStocksHandler(ctx context.Context, bot *botlib.Bot, update *models.Update) {
+	daysAgo := 14
+	K := 1.5
+
+	chatId := update.CallbackQuery.From.ID
+	ClientId, err := initEnv("variables.env", "ClientId")
+	if err != nil {
+		log.Println(err)
+		return
+	}
+	OzonKey, err := initEnv("variables.env", "OzonKey")
+	if err != nil {
+		log.Println(err)
+		return
+	}
+
+	postings := ozon_stocks.GetPostings(ClientId, OzonKey, daysAgo)
+
+	stocks := ozon_stocks.GetStocks(ClientId, OzonKey)
+
+	filePath, err := generateExcel(postings, stocks, K)
+	if err != nil {
+		log.Println("Ошибка при создании Excel:", err)
+		return
+	}
+
+	err = sendMediaMessage(ctx, bot, chatId, filePath)
+	if err != nil {
+		return
+	}
+
+	os.Remove(filePath)
 
 }
 
@@ -547,11 +598,11 @@ func sendTextMessage(ctx context.Context, bot *botlib.Bot, chatId int64, text st
 	}
 	return message, nil
 }
-func sendMediaMessage(ctx context.Context, bot *botlib.Bot, chatId int64, filePath string) {
+func sendMediaMessage(ctx context.Context, bot *botlib.Bot, chatId int64, filePath string) error {
 
 	file, err := os.Open(filePath)
 	if err != nil {
-		log.Fatal(err)
+		return err
 	}
 
 	inputFile := models.InputFileUpload{
@@ -561,9 +612,9 @@ func sendMediaMessage(ctx context.Context, bot *botlib.Bot, chatId int64, filePa
 
 	_, err = bot.SendDocument(ctx, &botlib.SendDocumentParams{ChatID: chatId, Document: &inputFile})
 	if err != nil {
-		log.Printf("%v", err)
-		return
+		return err
 	}
+	return nil
 }
 
 func initEnv(path, name string) (string, error) {
@@ -579,4 +630,52 @@ func initEnv(path, name string) (string, error) {
 		return "", fmt.Errorf("переменная среды " + name + " не установлена")
 	}
 	return env, err
+}
+
+func generateExcel(postings map[string]map[string]int, stocks map[string]map[string]int, K float64) (string, error) {
+	file := excelize.NewFile()
+	sheetName := "Stock Analysis"
+	file.SetSheetName("Sheet1", sheetName)
+
+	// Заголовки
+	headers := []string{"Кластер", "Артикул", "Заказано", "Остатки"}
+	for i, h := range headers {
+		cell := string(rune('A'+i)) + "1"
+		file.SetCellValue(sheetName, cell, h)
+	}
+
+	row := 2
+	for cluster, postingsMap := range postings {
+		if postingsMap == nil {
+			continue
+		}
+
+		if clusterStocks, exists := stocks[cluster]; exists {
+			for article, postingCount := range postingsMap {
+				stock := clusterStocks[article]
+				if float64(stock)/float64(postingCount) < K {
+					file.SetCellValue(sheetName, "A"+strconv.Itoa(row), cluster)
+					file.SetCellValue(sheetName, "B"+strconv.Itoa(row), article)
+					file.SetCellValue(sheetName, "C"+strconv.Itoa(row), postingCount)
+					file.SetCellValue(sheetName, "D"+strconv.Itoa(row), stock)
+					row++
+				}
+			}
+		} else {
+			for article, postingCount := range postingsMap {
+				file.SetCellValue(sheetName, "A"+strconv.Itoa(row), cluster)
+				file.SetCellValue(sheetName, "B"+strconv.Itoa(row), article)
+				file.SetCellValue(sheetName, "C"+strconv.Itoa(row), postingCount)
+				file.SetCellValue(sheetName, "D"+strconv.Itoa(row), 0)
+				row++
+			}
+		}
+	}
+
+	// Сохраняем файл
+	filePath := "stock_analysis.xlsx"
+	if err := file.SaveAs(filePath); err != nil {
+		return "", err
+	}
+	return filePath, nil
 }
