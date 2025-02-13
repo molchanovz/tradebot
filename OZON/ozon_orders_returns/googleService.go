@@ -1,4 +1,4 @@
-package wb_orders_returns
+package ozon_orders_returns
 
 import (
 	"context"
@@ -103,19 +103,19 @@ func read(spreadsheetId, readRange string) [][]interface{} {
 	}
 }
 
-func write(spreadsheetId, writeRange string, values [][]interface{}) error {
+func write(spreadsheetId, writeRange string, values [][]interface{}) {
 	ctx := context.Background()
 
 	// Чтение файла с учетными данными клиента
 	b, err := os.ReadFile("credentials.json")
 	if err != nil {
-		return fmt.Errorf("unable to read client secret file: %v", err)
+		log.Fatalf("Unable to read client secret file: %v", err)
 	}
 
 	// Настройка OAuth 2.0 конфигурации
 	config, err := google.ConfigFromJSON(b, "https://www.googleapis.com/auth/spreadsheets")
 	if err != nil {
-		return fmt.Errorf("unable to parse client secret file to config: %v", err)
+		log.Fatalf("Unable to parse client secret file to config: %v", err)
 	}
 
 	// Получение клиента OAuth 2.0
@@ -124,21 +124,20 @@ func write(spreadsheetId, writeRange string, values [][]interface{}) error {
 	// Создание сервиса для работы с Google Sheets
 	srv, err := sheets.NewService(ctx, option.WithHTTPClient(client))
 	if err != nil {
-		return fmt.Errorf("unable to retrieve Sheets client: %v", err)
+		log.Fatalf("Unable to retrieve Sheets client: %v", err)
 	}
 
 	// Создание объекта ValueRange, который содержит данные для записи
 	body := &sheets.ValueRange{
-		Values: values, // Здесь передаем срез данных, которые мы хотим записать
+		Values: values,
 	}
 
 	// Вызов метода Update для записи данных
 	_, err = srv.Spreadsheets.Values.Update(spreadsheetId, writeRange, body).
 		ValueInputOption("RAW").Do()
 	if err != nil {
-		return fmt.Errorf("unable to update data in sheet: %v", err)
+		log.Fatalf("Unable to update data in sheet: %v", err)
 	}
 
-	log.Println("Data written successfully")
-	return nil
+	fmt.Println("Data written successfully")
 }

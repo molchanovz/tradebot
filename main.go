@@ -2,9 +2,11 @@ package main
 
 import (
 	"WildberriesGo_bot/DB"
+	"WildberriesGo_bot/OZON/ozon_orders_returns"
 	"WildberriesGo_bot/WB/wb_orders_returns"
 	"WildberriesGo_bot/WB/wb_stickers_fbs"
 	"WildberriesGo_bot/WB/wb_stocks_analyze"
+	"WildberriesGo_bot/YANDEX/yandex_orders_returns"
 	"WildberriesGo_bot/YANDEX/yandex_stickers_fbs"
 	"context"
 	"database/sql"
@@ -21,9 +23,18 @@ import (
 	"time"
 )
 
-var myChatId string
+const (
+	CallbackWbHandler           = "WB"
+	CallbackYandexHandler       = "YANDEX"
+	CallbackOzonHandler         = "OZON"
+	CallbackWbFbsHandler        = "WB_FBS"
+	CallbackYandexFbsHandler    = "YANDEX_FBS"
+	CallbackWbOrdersHandler     = "WB_ORDERS"
+	CallbackYandexOrdersHandler = "YANDEX_ORDERS"
+	CallbackOzonOrdersHandler   = "OZON_ORDERS"
+)
 
-var yandexToken = "ACMA:fxJtgnlQjQZsjcTkpP3omw0pyyhEbhFMADBjFPRD:c354e75a"
+var myChatId, yandexToken string
 
 func main() {
 	//var apiKey string
@@ -41,6 +52,10 @@ func main() {
 	if err != nil {
 		log.Panic(err)
 	}
+	yandexToken, err = initEnv("variables.env", "yandexToken")
+	if err != nil {
+		log.Panic(err)
+	}
 
 	log.Printf("Инициализация базы данных")
 	var sqlDB *sql.DB
@@ -54,10 +69,15 @@ func main() {
 	b.RegisterHandler(botlib.HandlerTypeMessageText, "/start", botlib.MatchTypePrefix, startHandler)
 	b.RegisterHandler(botlib.HandlerTypeCallbackQueryData, "START", botlib.MatchTypePrefix, startHandler)
 
-	b.RegisterHandler(botlib.HandlerTypeCallbackQueryData, "WB", botlib.MatchTypeExact, wbHandler)
-	b.RegisterHandler(botlib.HandlerTypeCallbackQueryData, "WB_FBS", botlib.MatchTypeExact, wbFbsHandler)
-	b.RegisterHandler(botlib.HandlerTypeCallbackQueryData, "YANDEX_FBS", botlib.MatchTypeExact, yandexFbsHandler)
-	b.RegisterHandler(botlib.HandlerTypeCallbackQueryData, "WB_ORDERS", botlib.MatchTypePrefix, wbOrdersHandler)
+	b.RegisterHandler(botlib.HandlerTypeCallbackQueryData, CallbackWbHandler, botlib.MatchTypeExact, wbHandler)
+	b.RegisterHandler(botlib.HandlerTypeCallbackQueryData, CallbackYandexHandler, botlib.MatchTypeExact, yandexHandler)
+	b.RegisterHandler(botlib.HandlerTypeCallbackQueryData, CallbackOzonHandler, botlib.MatchTypeExact, ozonHandler)
+
+	b.RegisterHandler(botlib.HandlerTypeCallbackQueryData, CallbackWbFbsHandler, botlib.MatchTypeExact, wbFbsHandler)
+	b.RegisterHandler(botlib.HandlerTypeCallbackQueryData, CallbackYandexFbsHandler, botlib.MatchTypeExact, yandexFbsHandler)
+	b.RegisterHandler(botlib.HandlerTypeCallbackQueryData, CallbackWbOrdersHandler, botlib.MatchTypePrefix, wbOrdersHandler)
+	b.RegisterHandler(botlib.HandlerTypeCallbackQueryData, CallbackYandexOrdersHandler, botlib.MatchTypePrefix, yandexOrdersHandler)
+	b.RegisterHandler(botlib.HandlerTypeCallbackQueryData, CallbackOzonOrdersHandler, botlib.MatchTypePrefix, ozonOrdersHandler)
 
 	//b.RegisterHandler(botlib.HandlerTypeCallbackQueryData, "YANDEX_FBS", botlib.MatchTypePrefix, wbOrdersHandler)
 
@@ -207,8 +227,9 @@ func defaultHandler(ctx context.Context, bot *botlib.Bot, update *models.Update)
 func createStartMarkup() (string, models.InlineKeyboardMarkup) {
 	startMessage := "Выбери маркетплейс для работы"
 	var buttonsRow []models.InlineKeyboardButton
-	buttonsRow = append(buttonsRow, models.InlineKeyboardButton{Text: "ВБ", CallbackData: "WB"})
-	buttonsRow = append(buttonsRow, models.InlineKeyboardButton{Text: "ЯНДЕКС", CallbackData: "YANDEX_FBS"})
+	buttonsRow = append(buttonsRow, models.InlineKeyboardButton{Text: "ВБ", CallbackData: CallbackWbHandler})
+	buttonsRow = append(buttonsRow, models.InlineKeyboardButton{Text: "ЯНДЕКС", CallbackData: CallbackYandexHandler})
+	buttonsRow = append(buttonsRow, models.InlineKeyboardButton{Text: "ОЗОН", CallbackData: CallbackOzonHandler})
 	allButtons := [][]models.InlineKeyboardButton{buttonsRow}
 	markup := models.InlineKeyboardMarkup{InlineKeyboard: allButtons}
 	return startMessage, markup
@@ -292,6 +313,50 @@ func wbHandler(ctx context.Context, bot *botlib.Bot, update *models.Update) {
 	}
 
 }
+func yandexHandler(ctx context.Context, bot *botlib.Bot, update *models.Update) {
+	chatId := update.CallbackQuery.From.ID
+	messageId := update.CallbackQuery.Message.Message.ID
+
+	text := "Кабинет Яндекс"
+
+	var buttonsRow, buttonBack []models.InlineKeyboardButton
+	buttonsRow = append(buttonsRow, models.InlineKeyboardButton{Text: "Этикетки FBS", CallbackData: CallbackYandexFbsHandler})
+	buttonsRow = append(buttonsRow, models.InlineKeyboardButton{Text: "Вчерашние заказы", CallbackData: CallbackYandexOrdersHandler})
+
+	buttonBack = append(buttonBack, models.InlineKeyboardButton{Text: "Назад", CallbackData: "START"})
+
+	allButtons := [][]models.InlineKeyboardButton{buttonsRow, buttonBack}
+	markup := models.InlineKeyboardMarkup{InlineKeyboard: allButtons}
+
+	_, err := bot.EditMessageText(ctx, &botlib.EditMessageTextParams{ChatID: chatId, MessageID: messageId, Text: text, ReplyMarkup: markup})
+	if err != nil {
+		log.Printf("%v", err)
+		return
+	}
+
+}
+func ozonHandler(ctx context.Context, bot *botlib.Bot, update *models.Update) {
+	chatId := update.CallbackQuery.From.ID
+	messageId := update.CallbackQuery.Message.Message.ID
+
+	text := "Кабинет Озон"
+
+	var buttonsRow, buttonBack []models.InlineKeyboardButton
+	buttonsRow = append(buttonsRow, models.InlineKeyboardButton{Text: "Вчерашние заказы", CallbackData: CallbackOzonOrdersHandler})
+
+	buttonBack = append(buttonBack, models.InlineKeyboardButton{Text: "Назад", CallbackData: "START"})
+
+	allButtons := [][]models.InlineKeyboardButton{buttonsRow, buttonBack}
+	markup := models.InlineKeyboardMarkup{InlineKeyboard: allButtons}
+
+	_, err := bot.EditMessageText(ctx, &botlib.EditMessageTextParams{ChatID: chatId, MessageID: messageId, Text: text, ReplyMarkup: markup})
+	if err != nil {
+		log.Printf("%v", err)
+		return
+	}
+
+}
+
 func wbFbsHandler(ctx context.Context, bot *botlib.Bot, update *models.Update) {
 	chatId := update.CallbackQuery.From.ID
 
@@ -393,10 +458,52 @@ func wbOrdersHandler(ctx context.Context, bot *botlib.Bot, update *models.Update
 	err = wb_orders_returns.WriteToGoogleSheets(wildberriesKey)
 
 	if err != nil {
-		sendTextMessage(ctx, bot, chatId, err.Error())
+		_, err = sendTextMessage(ctx, bot, chatId, err.Error())
+		if err != nil {
+			return
+		}
 	} else {
-		sendTextMessage(ctx, bot, chatId, "Данные Wb FBS за вчерашний день внесены")
+		_, err = sendTextMessage(ctx, bot, chatId, "Заказы озон за вчерашний день были внесены")
+		if err != nil {
+			return
+		}
 	}
+}
+func yandexOrdersHandler(ctx context.Context, bot *botlib.Bot, update *models.Update) {
+	chatId := update.CallbackQuery.From.ID
+
+	err := yandex_orders_returns.WriteToGoogleSheets(yandexToken)
+	if err != nil {
+		log.Printf("%v", err)
+		return
+	}
+
+	_, err = sendTextMessage(ctx, bot, chatId, "Заказы яндекс за вчерашний день были внесены")
+	if err != nil {
+		log.Printf("%v", err)
+		return
+	}
+
+}
+func ozonOrdersHandler(ctx context.Context, bot *botlib.Bot, update *models.Update) {
+	chatId := update.CallbackQuery.From.ID
+
+	ClientId, err := initEnv("variables.env", "ClientId")
+	if err != nil {
+		log.Panic(err)
+	}
+	OzonKey, err := initEnv("variables.env", "OzonKey")
+	if err != nil {
+		log.Panic(err)
+	}
+	ozon_orders_returns.WriteToGoogleSheets(ClientId, OzonKey)
+
+	_, err = sendTextMessage(ctx, bot, chatId, "Заказы озон за вчерашний день были внесены")
+	if err != nil {
+		log.Printf("%v", err)
+		return
+	}
+
 }
 
 func getYandexFbs(ctx context.Context, bot *botlib.Bot, chatId int64, supplyId string) {

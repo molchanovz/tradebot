@@ -1,4 +1,4 @@
-package wb_orders_returns
+package yandex_orders_returns
 
 import (
 	"context"

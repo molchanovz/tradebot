@@ -16,9 +16,24 @@
         </introspection-scope>
       </schema-mapping>
     </data-source>
-    <data-source name="db_bot server" uuid="a6ab19f1-430f-448a-baea-4aaa160b7aad">
-      <database-info product="" version="" jdbc-version="" driver-name="" driver-version="" dbms="POSTGRES" />
-      <schema-mapping />
+    <data-source name="db_bot server" uuid="fa69afd6-fbee-41a8-b090-a8ea4c4e2a18">
+      <database-info product="PostgreSQL" version="16.6 (Ubuntu 16.6-0ubuntu0.24.04.1)" jdbc-version="4.2" driver-name="PostgreSQL JDBC Driver" driver-version="42.7.3" dbms="POSTGRES" exact-version="16.6" exact-driver-version="42.7">
+        <identifier-quote-string>&quot;</identifier-quote-string>
+      </database-info>
+      <case-sensitivity plain-identifiers="lower" quoted-identifiers="exact" />
+      <secret-storage>master_key</secret-storage>
+      <user-name>sergey</user-name>
+      <schema-mapping>
+        <introspection-scope>
+          <node kind="database" qname="@">
+            <node kind="schema" qname="@" />
+          </node>
+        </introspection-scope>
+      </schema-mapping>
+      <ssh-properties>
+        <enabled>true</enabled>
+        <ssh-config-id>2906329d-5312-4f9f-9ae0-a04985908edb</ssh-config-id>
+      </ssh-properties>
     </data-source>
   </component>
 </project>

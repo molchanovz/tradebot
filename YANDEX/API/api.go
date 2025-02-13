@@ -1,9 +1,11 @@
 package API
 
 import (
+	"bytes"
 	"fmt"
 	"io"
 	"net/http"
+	"time"
 )
 
 var campaignId = 90788543
@@ -106,5 +108,48 @@ func GetStickers(token string, orderId int64) (string, error) {
 	jsonString, _ := io.ReadAll(resp.Body)
 
 	// Выводим ответ
+	return string(jsonString), nil
+}
+
+func GetOrdersFbo(yandexKey string, daysAgo int) (string, error) {
+
+	date := time.Now().AddDate(0, 0, -daysAgo)
+
+	println(date.Format("2006-01-02"))
+
+	url := "https://api.partner.market.yandex.ru/campaigns/49152956/stats/orders"
+
+	body := []byte(fmt.Sprintf(`{
+  "dateFrom": "%v",
+  "dateTo": "%v",
+  "statuses": [
+    "DELIVERY", "DELIVERED", "PARTIALLY_DELIVERED", "PARTIALLY_RETURNED", "PENDING", "PICKUP", "PROCESSING", "RESERVED", "RETURNED", "UNKNOWN", "UNPAID", "LOST"
+  ],
+  "hasCis": false,
+    "fake":false
+}`, date.Format("2006-01-02"), date.Format("2006-01-02")))
+
+	req, err := http.NewRequest("POST", url, bytes.NewBuffer(body))
+
+	if err != nil {
+		return "", fmt.Errorf("ошибка создания запроса: %v", err)
+	}
+
+	req.Header.Set("Content-Type", "application/json")
+	req.Header.Set("Api-Key", yandexKey)
+
+	client := &http.Client{}
+	resp, err := client.Do(req)
+	if err != nil {
+		return "", fmt.Errorf("ошибка выполнения запроса: %v", err)
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusOK {
+		return "", fmt.Errorf("ошибка: получен статус %v", resp.StatusCode)
+	}
+
+	jsonString, _ := io.ReadAll(resp.Body)
+
 	return string(jsonString), nil
 }

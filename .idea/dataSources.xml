@@ -14,7 +14,7 @@
       </jdbc-additional-properties>
       <working-dir>$ProjectFileDir$</working-dir>
     </data-source>
-    <data-source source="LOCAL" name="db_bot server" uuid="a6ab19f1-430f-448a-baea-4aaa160b7aad">
+    <data-source source="LOCAL" name="db_bot server" uuid="fa69afd6-fbee-41a8-b090-a8ea4c4e2a18">
       <driver-ref>postgresql</driver-ref>
       <synchronize>true</synchronize>
       <jdbc-driver>org.postgresql.Driver</jdbc-driver>
