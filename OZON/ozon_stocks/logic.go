@@ -59,9 +59,9 @@ func GetStocks(ClientId, OzonKey string) map[string]map[string]int {
 			stocksMap[cluster] = make(map[string]int)
 		}
 		if _, exists := stocksMap[cluster][stock.ItemCode]; exists {
-			stocksMap[cluster][stock.ItemCode] += stock.FreeToSellAmount
+			stocksMap[cluster][stock.ItemCode] += stock.FreeToSellAmount + stock.PromisedAmount
 		} else {
-			stocksMap[cluster][stock.ItemCode] = stock.FreeToSellAmount
+			stocksMap[cluster][stock.ItemCode] = stock.FreeToSellAmount + stock.PromisedAmount
 		}
 
 	}
