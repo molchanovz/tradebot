@@ -31,7 +31,7 @@ const (
 )
 
 func GetOrdersInfo(token, supplyId string) error {
-	orderIds, err := GetOrdersIds(token, supplyId)
+	orderIds, err := yandex.GetOrdersIds(token, supplyId)
 	if err != nil {
 		return fmt.Errorf("ошибка в GetOrdersIds: %v", err)
 	}
@@ -39,7 +39,7 @@ func GetOrdersInfo(token, supplyId string) error {
 	var ordersSlice []string
 	for _, orderId := range orderIds {
 		//Получаем товары в заказе
-		order, err := GetOrder(token, orderId)
+		order, err := yandex.GetOrder(token, orderId)
 
 		if err != nil {
 			return fmt.Errorf("ошибка в GetOrder: %v", err)
@@ -92,7 +92,7 @@ func GetOrdersInfo(token, supplyId string) error {
 	return nil
 }
 
-func CreateLabel(codePath string, items Items) (*gofpdf.Fpdf, error) {
+func CreateLabel(codePath string, items yandex.Items) (*gofpdf.Fpdf, error) {
 	// Создаем новый PDF-документ
 	pdf := gofpdf.NewCustom(&gofpdf.InitType{
 		UnitStr: "mm",

@@ -111,7 +111,7 @@ func GetStickers(token string, orderId int64) (string, error) {
 	return string(jsonString), nil
 }
 
-func GetOrdersFbo(yandexKey string, daysAgo int) (string, error) {
+func getOrdersFbo(yandexKey string, daysAgo int) (string, error) {
 
 	date := time.Now().AddDate(0, 0, -daysAgo)
 

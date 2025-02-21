@@ -1,6 +1,39 @@
-package wb_orders_returns
+package wb
 
 import "time"
+
+type OrderWB struct {
+	OrderUID              string   `json:"orderUid"`
+	Article               string   `json:"article"`
+	ColorCode             string   `json:"colorCode"`
+	RID                   string   `json:"rid"`
+	CreatedAt             string   `json:"createdAt"`
+	Offices               []string `json:"offices"`
+	SKUs                  []string `json:"skus"`
+	ID                    int      `json:"id"`
+	WarehouseID           int      `json:"warehouseId"`
+	NmID                  int      `json:"nmId"`
+	ChrtID                int      `json:"chrtId"`
+	Price                 int      `json:"price"`
+	ConvertedPrice        int      `json:"convertedPrice"`
+	CurrencyCode          int      `json:"currencyCode"`
+	ConvertedCurrencyCode int      `json:"convertedCurrencyCode"`
+	CargoType             int      `json:"cargoType"`
+	IsZeroOrder           bool     `json:"isZeroOrder"`
+}
+type Orders struct {
+	Orders []OrderWB `json:"orders"`
+}
+
+type StickerWB struct {
+	Stickers []struct {
+		OrderId int    `json:"orderId"`
+		PartA   string `json:"partA"`
+		PartB   string `json:"partB"`
+		Barcode string `json:"barcode"`
+		File    string `json:"file"`
+	} `json:"stickers"`
+}
 
 type OrdersListALL []struct {
 	Date            string  `json:"date"`
@@ -70,7 +103,7 @@ type OrdersListFBS struct {
 	} `json:"orders"`
 }
 
-type SalesAndReturns []struct {
+type SalesReturns []struct {
 	Date              string  `json:"date"`
 	LastChangeDate    string  `json:"lastChangeDate"`
 	WarehouseName     string  `json:"warehouseName"`
@@ -107,4 +140,25 @@ type OrdersWithStatuses struct {
 		SupplierStatus string `json:"supplierStatus"`
 		WbStatus       string `json:"wbStatus"`
 	} `json:"orders"`
+}
+
+type Stock struct {
+	LastChangeDate  string `json:"lastChangeDate"`
+	WarehouseName   string `json:"warehouseName"`
+	SupplierArticle string `json:"supplierArticle"`
+	NmId            int    `json:"nmId"`
+	Barcode         string `json:"barcode"`
+	Quantity        int    `json:"quantity"`
+	InWayToClient   int    `json:"inWayToClient"`
+	InWayFromClient int    `json:"inWayFromClient"`
+	QuantityFull    int    `json:"quantityFull"`
+	Category        string `json:"category"`
+	Subject         string `json:"subject"`
+	Brand           string `json:"brand"`
+	TechSize        string `json:"techSize"`
+	Price           int    `json:"Price"`
+	Discount        int    `json:"Discount"`
+	IsSupply        bool   `json:"isSupply"`
+	IsRealization   bool   `json:"isRealization"`
+	SCCode          string `json:"SCCode"`
 }

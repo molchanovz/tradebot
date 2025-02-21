@@ -11,7 +11,7 @@ import (
 )
 
 const (
-	daysAgo       = 2
+	daysAgo       = 1
 	spreadsheetId = "138vQwwc5g3aGFbZXRBnC8U1c1pecRqD3VI6LhQ8QbKI"
 )
 

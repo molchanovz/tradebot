@@ -8,6 +8,7 @@ import (
 	"WildberriesGo_bot/pkg/WB/wb_stocks_analyze"
 	"WildberriesGo_bot/pkg/YANDEX/yandex_orders_returns"
 	"WildberriesGo_bot/pkg/YANDEX/yandex_stickers_fbs"
+	"WildberriesGo_bot/pkg/api/wb"
 	"WildberriesGo_bot/pkg/database/postgresql"
 	"context"
 	"database/sql"
@@ -22,6 +23,7 @@ import (
 	"os"
 	"os/signal"
 	"strconv"
+	"strings"
 	"syscall"
 	"time"
 )
@@ -36,6 +38,7 @@ const (
 	CallbackYandexOrdersHandler = "YANDEX_ORDERS"
 	CallbackOzonOrdersHandler   = "OZON_ORDERS"
 	CallbackOzonStocksHandler   = "OZON_STOCKS"
+	CallbackWbStocksHandler     = "WB_STOCKS"
 )
 
 var myChatId, yandexToken string
@@ -83,6 +86,7 @@ func main() {
 	b.RegisterHandler(botlib.HandlerTypeCallbackQueryData, CallbackYandexOrdersHandler, botlib.MatchTypePrefix, yandexOrdersHandler)
 	b.RegisterHandler(botlib.HandlerTypeCallbackQueryData, CallbackOzonOrdersHandler, botlib.MatchTypePrefix, ozonOrdersHandler)
 	b.RegisterHandler(botlib.HandlerTypeCallbackQueryData, CallbackOzonStocksHandler, botlib.MatchTypePrefix, ozonStocksHandler)
+	b.RegisterHandler(botlib.HandlerTypeCallbackQueryData, CallbackWbStocksHandler, botlib.MatchTypePrefix, wbStocksHandler)
 
 	//b.RegisterHandler(botlib.HandlerTypeCallbackQueryData, "YANDEX_FBS", botlib.MatchTypePrefix, wbOrdersHandler)
 
@@ -127,8 +131,8 @@ func main() {
 }
 
 func analyzeStocks(apiKey string, ctx context.Context, b *botlib.Bot) error {
-	var stocksApi []wb_stocks_analyze.Stock
-	stocksApi = wb_stocks_analyze.StockFbo(apiKey)
+	var stocksApi []wb.Stock
+	stocksApi = wb.GetStockFbo(apiKey)
 
 	if stocksApi == nil {
 		return errors.New("stocks nil")
@@ -303,8 +307,9 @@ func wbHandler(ctx context.Context, bot *botlib.Bot, update *models.Update) {
 	text := "Кабинет ВБ"
 
 	var buttonsRow, buttonBack []models.InlineKeyboardButton
-	buttonsRow = append(buttonsRow, models.InlineKeyboardButton{Text: "Этикетки FBS", CallbackData: "WB_FBS"})
-	buttonsRow = append(buttonsRow, models.InlineKeyboardButton{Text: "Вчерашние заказы", CallbackData: "WB_ORDERS"})
+	buttonsRow = append(buttonsRow, models.InlineKeyboardButton{Text: "Этикетки FBS", CallbackData: CallbackWbFbsHandler})
+	buttonsRow = append(buttonsRow, models.InlineKeyboardButton{Text: "Вчерашние заказы", CallbackData: CallbackWbOrdersHandler})
+	buttonsRow = append(buttonsRow, models.InlineKeyboardButton{Text: "Остатки", CallbackData: CallbackWbStocksHandler})
 
 	buttonBack = append(buttonBack, models.InlineKeyboardButton{Text: "Назад", CallbackData: "START"})
 
@@ -479,7 +484,7 @@ func wbOrdersHandler(ctx context.Context, bot *botlib.Bot, update *models.Update
 			return
 		}
 	} else {
-		_, err = sendTextMessage(ctx, bot, chatId, "Заказы озон за вчерашний день были внесены")
+		_, err = sendTextMessage(ctx, bot, chatId, "Заказы вб за вчерашний день были внесены")
 		if err != nil {
 			log.Println(err)
 			return
@@ -554,6 +559,51 @@ func ozonStocksHandler(ctx context.Context, bot *botlib.Bot, update *models.Upda
 	}
 
 	os.Remove(filePath)
+
+}
+func wbStocksHandler(ctx context.Context, bot *botlib.Bot, update *models.Update) {
+	daysAgo := 14
+	//K := 1.5
+
+	chatId := update.CallbackQuery.From.ID
+
+	WbKey, err := initEnv("variables.env", "API_KEY_WB")
+	if err != nil {
+		log.Println(err)
+		return
+	}
+
+	postings := wb_stocks_analyze.GetOrders(WbKey, daysAgo)
+	str := strings.Builder{}
+	for cluster, value := range postings {
+		if cluster == "" {
+			continue
+		}
+		str.WriteString(cluster + "\n")
+		for article, count := range value {
+			str.WriteString(fmt.Sprintf("  %v %v\n", article, count))
+		}
+	}
+
+	_, err = sendTextMessage(ctx, bot, chatId, str.String())
+	if err != nil {
+		return
+	}
+
+	//stocks := ozon_stocks.GetStocks(ClientId, OzonKey)
+
+	//filePath, err := generateExcel(postings, stocks, K)
+	//if err != nil {
+	//	log.Println("Ошибка при создании Excel:", err)
+	//	return
+	//}
+
+	//err = sendMediaMessage(ctx, bot, chatId, filePath)
+	//if err != nil {
+	//	return
+	//}
+	//
+	//os.Remove(filePath)
 
 }
 

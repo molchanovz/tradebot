@@ -1,11 +1,12 @@
 package yandex_orders_returns
 
 import (
+	"WildberriesGo_bot/pkg/api/yandex"
 	"strconv"
 	"time"
 )
 
-var daysAgo = 2
+var daysAgo = 1
 var spreadsheetId = "1JOZDRKZe7S-nx7OifZrJnzfjXgURwartaiDeo9qVzWY"
 
 func WriteToGoogleSheets(ApiKey string) error {
@@ -96,7 +97,7 @@ func writeData(writeRange, colName string, data map[string]int) error {
 
 func ordersMapFBO(yandexToken string, daysAgo int) (map[string]int, error) {
 	postingsWithCountALL := make(map[string]int)
-	ordersFbo, err := GetOrdersFbo(yandexToken, daysAgo)
+	ordersFbo, err := yandex.GetOrdersFbo(yandexToken, daysAgo)
 	if err != nil {
 		return postingsWithCountALL, err
 	}

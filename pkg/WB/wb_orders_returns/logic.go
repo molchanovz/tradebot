@@ -1,13 +1,14 @@
 package wb_orders_returns
 
 import (
+	"WildberriesGo_bot/pkg/api/wb"
 	"fmt"
 	"strconv"
 	"strings"
 	"time"
 )
 
-var daysAgo = 2
+var daysAgo = 1
 var spreadsheetId = "1WPUFcYFkgen0DXRFwZDfI_kXAGQeClpYi-xN-iB_w1M"
 
 func WriteToGoogleSheets(ApiKey string) error {
@@ -75,7 +76,7 @@ func writeData(writeRange, colName string, data map[string]int) error {
 
 func ordersMapFBS(ApiKey string) map[string]int {
 	postingsWithCountFBS := make(map[string]int)
-	postingsList := ordersFBS(ApiKey, daysAgo)
+	postingsList := wb.GetOrdersFBS(ApiKey, daysAgo)
 
 	isOrderCanceled := func(status string) bool {
 
@@ -92,7 +93,7 @@ func ordersMapFBS(ApiKey string) map[string]int {
 	}
 
 	for _, posting := range postingsList.OrdersFBS {
-		status := postingStatus(ApiKey, posting.Id)
+		status := wb.GetPostingStatus(ApiKey, posting.Id)
 		if !isOrderCanceled(status) {
 			postingsWithCountFBS[posting.Article] += 1
 		}
@@ -101,7 +102,7 @@ func ordersMapFBS(ApiKey string) map[string]int {
 }
 func ordersMapALL(apiKey string) map[string]int {
 	postingsWithCountALL := make(map[string]int)
-	postingsList := allOrders(apiKey, daysAgo)
+	postingsList := wb.GetAllOrders(apiKey, daysAgo, 1)
 	for _, posting := range postingsList {
 		if posting.OrderType == "Клиентский" && posting.IsCancel == false {
 			postingsWithCountALL[posting.SupplierArticle]++
@@ -113,7 +114,7 @@ func ordersMapALL(apiKey string) map[string]int {
 }
 func returnsMap(apiKey string) map[string]int {
 	returnsWithCount := make(map[string]int)
-	returnsList := salesAndReturns(apiKey, daysAgo)
+	returnsList := wb.GetSalesAndReturns(apiKey, daysAgo)
 	for _, someReturn := range returnsList {
 		if strings.HasPrefix(someReturn.SaleID, "R") {
 			returnsWithCount[someReturn.SupplierArticle]++

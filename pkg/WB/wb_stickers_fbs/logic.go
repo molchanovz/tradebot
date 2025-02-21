@@ -1,6 +1,7 @@
 package wb_stickers_fbs
 
 import (
+	"WildberriesGo_bot/pkg/api/wb"
 	"encoding/base64"
 	"fmt"
 	"github.com/fogleman/gg"
@@ -21,13 +22,13 @@ const (
 )
 
 func GetReadyFile(wildberriesKey, supplyId string) error {
-	orders, err := GetOrdersFbs(wildberriesKey, supplyId)
+	orders, err := wb.GetOrdersFbs(wildberriesKey, supplyId)
 	if err != nil {
 		return err
 	}
 	var ordersSlice []string
 	for _, order := range orders {
-		stickers := GetStickersFbs(wildberriesKey, order.ID)
+		stickers := wb.GetStickersFbs(wildberriesKey, order.ID)
 		decodeToPDF(stickers.Stickers[0].File, stickers.Stickers[0].OrderId, order)
 		ordersSlice = append(ordersSlice, readyPath+strconv.Itoa(order.ID)+".pdf")
 	}
@@ -70,7 +71,7 @@ func decodeToPNG(base64String string, orderId int) string {
 	return filePath
 }
 
-func decodeToPDF(base64String string, orderId int, order OrderWB) {
+func decodeToPDF(base64String string, orderId int, order wb.OrderWB) {
 	pageWidthMM := 75.0
 	pageHeightMM := 120.0
 	// Создание нового PDF-документа

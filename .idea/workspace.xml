@@ -4,277 +4,27 @@
     <option name="autoReloadType" value="ALL" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="640077d7-ce81-4039-9739-8ad3e3a8d41a" name="Changes" comment="fix stock.PromisedAmount">
+    <list default="true" id="640077d7-ce81-4039-9739-8ad3e3a8d41a" name="Changes" comment="edit files path">
+      <change afterPath="$PROJECT_DIR$/pkg/WB/wb_stocks_analyze/logic.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/DB/db.go" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/database/postgresql/db.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/DB/init.sql" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/database/postgresql/init.sql" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/OZON/API/api.go" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/api/ozon/api.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/OZON/API/models.go" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/api/ozon/models.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/OZON/API/models_converter.go" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/api/ozon/models_converter.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/OZON/ozon_orders_returns/googleService.go" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/OZON/ozon_orders_returns/googleService.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/OZON/ozon_orders_returns/logic.go" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/OZON/ozon_orders_returns/logic.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/OZON/ozon_stocks/logic.go" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/OZON/ozon_stocks/logic.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/WB/API/api.go" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/api/wb/api.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/WB/wb_orders_returns/googleService.go" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/WB/wb_orders_returns/googleService.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/WB/wb_orders_returns/logic.go" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/WB/wb_orders_returns/logic.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/WB/wb_orders_returns/models.go" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/WB/wb_orders_returns/models.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/WB/wb_orders_returns/models_converter.go" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/WB/wb_orders_returns/models_converter.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/WB/wb_stickers_fbs/barcodes/0.png" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/WB/wb_stickers_fbs/barcodes/0.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/WB/wb_stickers_fbs/barcodes/2000270948031.png" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/WB/wb_stickers_fbs/barcodes/2000270948031.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/WB/wb_stickers_fbs/barcodes/2017025276004.png" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/WB/wb_stickers_fbs/barcodes/2017025276004.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/WB/wb_stickers_fbs/barcodes/2017028892003.png" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/WB/wb_stickers_fbs/barcodes/2017028892003.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/WB/wb_stickers_fbs/barcodes/2017330702007.png" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/WB/wb_stickers_fbs/barcodes/2017330702007.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/WB/wb_stickers_fbs/barcodes/2018068102008.png" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/WB/wb_stickers_fbs/barcodes/2018068102008.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/WB/wb_stickers_fbs/barcodes/2018073158007.png" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/WB/wb_stickers_fbs/barcodes/2018073158007.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/WB/wb_stickers_fbs/barcodes/2018078418007.png" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/WB/wb_stickers_fbs/barcodes/2018078418007.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/WB/wb_stickers_fbs/barcodes/2018078951009.png" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/WB/wb_stickers_fbs/barcodes/2018078951009.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/WB/wb_stickers_fbs/barcodes/2028434815623.png" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/WB/wb_stickers_fbs/barcodes/2028434815623.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/WB/wb_stickers_fbs/barcodes/2028435207625.png" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/WB/wb_stickers_fbs/barcodes/2028435207625.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/WB/wb_stickers_fbs/barcodes/2036688888645.png" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/WB/wb_stickers_fbs/barcodes/2036688888645.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/WB/wb_stickers_fbs/barcodes/2036801640754.png" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/WB/wb_stickers_fbs/barcodes/2036801640754.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/WB/wb_stickers_fbs/barcodes/2036804624096.png" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/WB/wb_stickers_fbs/barcodes/2036804624096.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/WB/wb_stickers_fbs/barcodes/2036804648504.png" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/WB/wb_stickers_fbs/barcodes/2036804648504.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/WB/wb_stickers_fbs/barcodes/2036804688340.png" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/WB/wb_stickers_fbs/barcodes/2036804688340.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/WB/wb_stickers_fbs/barcodes/2036804732043.png" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/WB/wb_stickers_fbs/barcodes/2036804732043.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/WB/wb_stickers_fbs/barcodes/2036804738991.png" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/WB/wb_stickers_fbs/barcodes/2036804738991.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/WB/wb_stickers_fbs/barcodes/2036804751150.png" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/WB/wb_stickers_fbs/barcodes/2036804751150.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/WB/wb_stickers_fbs/barcodes/2036804760855.png" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/WB/wb_stickers_fbs/barcodes/2036804760855.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/WB/wb_stickers_fbs/barcodes/2036804768189.png" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/WB/wb_stickers_fbs/barcodes/2036804768189.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/WB/wb_stickers_fbs/barcodes/2036804776412.png" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/WB/wb_stickers_fbs/barcodes/2036804776412.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/WB/wb_stickers_fbs/barcodes/2036804782123.png" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/WB/wb_stickers_fbs/barcodes/2036804782123.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/WB/wb_stickers_fbs/barcodes/2036804790777.png" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/WB/wb_stickers_fbs/barcodes/2036804790777.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/WB/wb_stickers_fbs/barcodes/2036804800049.png" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/WB/wb_stickers_fbs/barcodes/2036804800049.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/WB/wb_stickers_fbs/barcodes/2037494567434.png" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/WB/wb_stickers_fbs/barcodes/2037494567434.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/WB/wb_stickers_fbs/barcodes/2037525190433.png" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/WB/wb_stickers_fbs/barcodes/2037525190433.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/WB/wb_stickers_fbs/barcodes/2037525190440.png" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/WB/wb_stickers_fbs/barcodes/2037525190440.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/WB/wb_stickers_fbs/barcodes/2037525190457.png" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/WB/wb_stickers_fbs/barcodes/2037525190457.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/WB/wb_stickers_fbs/barcodes/2037525190464.png" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/WB/wb_stickers_fbs/barcodes/2037525190464.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/WB/wb_stickers_fbs/barcodes/2037525190471.png" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/WB/wb_stickers_fbs/barcodes/2037525190471.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/WB/wb_stickers_fbs/barcodes/2037525190488.png" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/WB/wb_stickers_fbs/barcodes/2037525190488.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/WB/wb_stickers_fbs/barcodes/2037525190495.png" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/WB/wb_stickers_fbs/barcodes/2037525190495.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/WB/wb_stickers_fbs/barcodes/2037525190501.png" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/WB/wb_stickers_fbs/barcodes/2037525190501.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/WB/wb_stickers_fbs/barcodes/2037525190518.png" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/WB/wb_stickers_fbs/barcodes/2037525190518.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/WB/wb_stickers_fbs/barcodes/2037525190525.png" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/WB/wb_stickers_fbs/barcodes/2037525190525.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/WB/wb_stickers_fbs/barcodes/2037525190532.png" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/WB/wb_stickers_fbs/barcodes/2037525190532.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/WB/wb_stickers_fbs/barcodes/2037525190549.png" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/WB/wb_stickers_fbs/barcodes/2037525190549.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/WB/wb_stickers_fbs/barcodes/2037525190556.png" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/WB/wb_stickers_fbs/barcodes/2037525190556.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/WB/wb_stickers_fbs/barcodes/2037525190563.png" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/WB/wb_stickers_fbs/barcodes/2037525190563.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/WB/wb_stickers_fbs/barcodes/2037525190570.png" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/WB/wb_stickers_fbs/barcodes/2037525190570.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/WB/wb_stickers_fbs/barcodes/2037525190587.png" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/WB/wb_stickers_fbs/barcodes/2037525190587.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/WB/wb_stickers_fbs/barcodes/2037549055398.png" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/WB/wb_stickers_fbs/barcodes/2037549055398.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/WB/wb_stickers_fbs/barcodes/2037549481555.png" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/WB/wb_stickers_fbs/barcodes/2037549481555.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/WB/wb_stickers_fbs/barcodes/2037672796342.png" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/WB/wb_stickers_fbs/barcodes/2037672796342.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/WB/wb_stickers_fbs/barcodes/2037705803559.png" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/WB/wb_stickers_fbs/barcodes/2037705803559.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/WB/wb_stickers_fbs/barcodes/2037705803566.png" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/WB/wb_stickers_fbs/barcodes/2037705803566.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/WB/wb_stickers_fbs/barcodes/2037705803573.png" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/WB/wb_stickers_fbs/barcodes/2037705803573.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/WB/wb_stickers_fbs/barcodes/2037705815958.png" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/WB/wb_stickers_fbs/barcodes/2037705815958.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/WB/wb_stickers_fbs/barcodes/2037705815965.png" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/WB/wb_stickers_fbs/barcodes/2037705815965.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/WB/wb_stickers_fbs/barcodes/2037705815972.png" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/WB/wb_stickers_fbs/barcodes/2037705815972.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/WB/wb_stickers_fbs/barcodes/2037706026209.png" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/WB/wb_stickers_fbs/barcodes/2037706026209.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/WB/wb_stickers_fbs/barcodes/2037706026216.png" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/WB/wb_stickers_fbs/barcodes/2037706026216.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/WB/wb_stickers_fbs/barcodes/2037706026230.png" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/WB/wb_stickers_fbs/barcodes/2037706026230.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/WB/wb_stickers_fbs/barcodes/2037706026247.png" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/WB/wb_stickers_fbs/barcodes/2037706026247.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/WB/wb_stickers_fbs/barcodes/2037706026254.png" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/WB/wb_stickers_fbs/barcodes/2037706026254.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/WB/wb_stickers_fbs/barcodes/2037706145160.png" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/WB/wb_stickers_fbs/barcodes/2037706145160.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/WB/wb_stickers_fbs/barcodes/2037706145177.png" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/WB/wb_stickers_fbs/barcodes/2037706145177.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/WB/wb_stickers_fbs/barcodes/2037706145184.png" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/WB/wb_stickers_fbs/barcodes/2037706145184.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/WB/wb_stickers_fbs/barcodes/2037706195042.png" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/WB/wb_stickers_fbs/barcodes/2037706195042.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/WB/wb_stickers_fbs/barcodes/2037716112275.png" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/WB/wb_stickers_fbs/barcodes/2037716112275.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/WB/wb_stickers_fbs/barcodes/2037726456338.png" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/WB/wb_stickers_fbs/barcodes/2037726456338.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/WB/wb_stickers_fbs/barcodes/2037726459667.png" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/WB/wb_stickers_fbs/barcodes/2037726459667.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/WB/wb_stickers_fbs/barcodes/2037726459735.png" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/WB/wb_stickers_fbs/barcodes/2037726459735.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/WB/wb_stickers_fbs/barcodes/2037773564727.png" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/WB/wb_stickers_fbs/barcodes/2037773564727.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/WB/wb_stickers_fbs/barcodes/2037782768284.png" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/WB/wb_stickers_fbs/barcodes/2037782768284.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/WB/wb_stickers_fbs/barcodes/2037824957560.png" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/WB/wb_stickers_fbs/barcodes/2037824957560.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/WB/wb_stickers_fbs/barcodes/2037849593828.png" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/WB/wb_stickers_fbs/barcodes/2037849593828.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/WB/wb_stickers_fbs/barcodes/2037849593835.png" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/WB/wb_stickers_fbs/barcodes/2037849593835.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/WB/wb_stickers_fbs/barcodes/2037849675326.png" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/WB/wb_stickers_fbs/barcodes/2037849675326.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/WB/wb_stickers_fbs/barcodes/2037873296504.png" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/WB/wb_stickers_fbs/barcodes/2037873296504.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/WB/wb_stickers_fbs/barcodes/2037925322625.png" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/WB/wb_stickers_fbs/barcodes/2037925322625.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/WB/wb_stickers_fbs/barcodes/2038129708291.png" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/WB/wb_stickers_fbs/barcodes/2038129708291.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/WB/wb_stickers_fbs/barcodes/2038146272577.png" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/WB/wb_stickers_fbs/barcodes/2038146272577.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/WB/wb_stickers_fbs/barcodes/2038146594006.png" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/WB/wb_stickers_fbs/barcodes/2038146594006.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/WB/wb_stickers_fbs/barcodes/2038254465236.png" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/WB/wb_stickers_fbs/barcodes/2038254465236.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/WB/wb_stickers_fbs/barcodes/2038610086501.png" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/WB/wb_stickers_fbs/barcodes/2038610086501.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/WB/wb_stickers_fbs/barcodes/2038610333575.png" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/WB/wb_stickers_fbs/barcodes/2038610333575.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/WB/wb_stickers_fbs/barcodes/2039313821185.png" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/WB/wb_stickers_fbs/barcodes/2039313821185.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/WB/wb_stickers_fbs/barcodes/2039313834482.png" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/WB/wb_stickers_fbs/barcodes/2039313834482.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/WB/wb_stickers_fbs/barcodes/2039314105239.png" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/WB/wb_stickers_fbs/barcodes/2039314105239.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/WB/wb_stickers_fbs/barcodes/2039321301303.png" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/WB/wb_stickers_fbs/barcodes/2039321301303.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/WB/wb_stickers_fbs/barcodes/2039347727231.png" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/WB/wb_stickers_fbs/barcodes/2039347727231.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/WB/wb_stickers_fbs/barcodes/2039566831030.png" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/WB/wb_stickers_fbs/barcodes/2039566831030.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/WB/wb_stickers_fbs/barcodes/2039566845785.png" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/WB/wb_stickers_fbs/barcodes/2039566845785.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/WB/wb_stickers_fbs/barcodes/2039882905729.png" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/WB/wb_stickers_fbs/barcodes/2039882905729.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/WB/wb_stickers_fbs/barcodes/2039905395483.png" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/WB/wb_stickers_fbs/barcodes/2039905395483.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/WB/wb_stickers_fbs/barcodes/2039916795487.png" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/WB/wb_stickers_fbs/barcodes/2039916795487.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/WB/wb_stickers_fbs/barcodes/2039916795630.png" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/WB/wb_stickers_fbs/barcodes/2039916795630.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/WB/wb_stickers_fbs/barcodes/2039956463902.png" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/WB/wb_stickers_fbs/barcodes/2039956463902.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/WB/wb_stickers_fbs/barcodes/2040015750130.png" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/WB/wb_stickers_fbs/barcodes/2040015750130.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/WB/wb_stickers_fbs/barcodes/2040042560894.png" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/WB/wb_stickers_fbs/barcodes/2040042560894.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/WB/wb_stickers_fbs/barcodes/2040224230997.png" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/WB/wb_stickers_fbs/barcodes/2040224230997.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/WB/wb_stickers_fbs/barcodes/2040276513260.png" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/WB/wb_stickers_fbs/barcodes/2040276513260.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/WB/wb_stickers_fbs/barcodes/2040276738007.png" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/WB/wb_stickers_fbs/barcodes/2040276738007.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/WB/wb_stickers_fbs/barcodes/2040505065355.png" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/WB/wb_stickers_fbs/barcodes/2040505065355.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/WB/wb_stickers_fbs/barcodes/2040505065362.png" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/WB/wb_stickers_fbs/barcodes/2040505065362.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/WB/wb_stickers_fbs/barcodes/2040505065379.png" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/WB/wb_stickers_fbs/barcodes/2040505065379.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/WB/wb_stickers_fbs/barcodes/7930052830078.png" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/WB/wb_stickers_fbs/barcodes/7930052830078.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/WB/wb_stickers_fbs/barcodes/7930052830085.png" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/WB/wb_stickers_fbs/barcodes/7930052830085.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/WB/wb_stickers_fbs/barcodes/7930052830092.png" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/WB/wb_stickers_fbs/barcodes/7930052830092.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/WB/wb_stickers_fbs/barcodes/7930052830108.png" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/WB/wb_stickers_fbs/barcodes/7930052830108.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/WB/wb_stickers_fbs/barcodes/7930052830115.png" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/WB/wb_stickers_fbs/barcodes/7930052830115.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/WB/wb_stickers_fbs/barcodes/7930052830122.png" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/WB/wb_stickers_fbs/barcodes/7930052830122.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/WB/wb_stickers_fbs/barcodes/7930052830139.png" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/WB/wb_stickers_fbs/barcodes/7930052830139.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/WB/wb_stickers_fbs/barcodes/7930052830146.png" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/WB/wb_stickers_fbs/barcodes/7930052830146.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/WB/wb_stickers_fbs/barcodes/7930052830153.png" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/WB/wb_stickers_fbs/barcodes/7930052830153.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/WB/wb_stickers_fbs/barcodes/7930052830160.png" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/WB/wb_stickers_fbs/barcodes/7930052830160.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/WB/wb_stickers_fbs/barcodes/7930052830177.png" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/WB/wb_stickers_fbs/barcodes/7930052830177.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/WB/wb_stickers_fbs/barcodes/7930052830184.png" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/WB/wb_stickers_fbs/barcodes/7930052830184.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/WB/wb_stickers_fbs/barcodes/7930052830191.png" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/WB/wb_stickers_fbs/barcodes/7930052830191.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/WB/wb_stickers_fbs/barcodes/7930052830207.png" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/WB/wb_stickers_fbs/barcodes/7930052830207.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/WB/wb_stickers_fbs/barcodes/7930052830283.png" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/WB/wb_stickers_fbs/barcodes/7930052830283.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/WB/wb_stickers_fbs/barcodes/7930052830290.png" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/WB/wb_stickers_fbs/barcodes/7930052830290.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/WB/wb_stickers_fbs/barcodes/7930052830337.png" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/WB/wb_stickers_fbs/barcodes/7930052830337.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/WB/wb_stickers_fbs/barcodes/7930052830351.png" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/WB/wb_stickers_fbs/barcodes/7930052830351.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/WB/wb_stickers_fbs/barcodes/7930052830368.png" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/WB/wb_stickers_fbs/barcodes/7930052830368.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/WB/wb_stickers_fbs/barcodes/7930052830375.png" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/WB/wb_stickers_fbs/barcodes/7930052830375.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/WB/wb_stickers_fbs/barcodes/7930052830399.png" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/WB/wb_stickers_fbs/barcodes/7930052830399.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/WB/wb_stickers_fbs/barcodes/7930052830405.png" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/WB/wb_stickers_fbs/barcodes/7930052830405.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/WB/wb_stickers_fbs/barcodes/7930052830412.png" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/WB/wb_stickers_fbs/barcodes/7930052830412.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/WB/wb_stickers_fbs/logic.go" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/WB/wb_stickers_fbs/logic.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/WB/wb_stickers_fbs/models.go" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/WB/wb_stickers_fbs/models.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/WB/wb_stickers_fbs/models_converter.go" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/WB/wb_stickers_fbs/models_converter.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/WB/wb_stocks_analyze/models.go" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/WB/wb_stocks_analyze/models.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/WB/wb_stocks_analyze/models_converter.go" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/WB/wb_stocks_analyze/models_converter.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/YANDEX/API/api.go" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/api/yandex/api.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/YANDEX/models/models.go" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/api/yandex/models.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/YANDEX/models/models_converter.go" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/api/yandex/models_converter.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/YANDEX/yandex_orders_returns/googleService.go" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/YANDEX/yandex_orders_returns/googleService.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/YANDEX/yandex_orders_returns/logic.go" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/YANDEX/yandex_orders_returns/logic.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/YANDEX/yandex_stickers_fbs/barcodes/0.png" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/YANDEX/yandex_stickers_fbs/barcodes/0.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/YANDEX/yandex_stickers_fbs/barcodes/2039905395483.png" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/YANDEX/yandex_stickers_fbs/barcodes/2039905395483.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/YANDEX/yandex_stickers_fbs/barcodes/2039956463902.png" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/YANDEX/yandex_stickers_fbs/barcodes/2039956463902.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/YANDEX/yandex_stickers_fbs/barcodes/2040015750130.png" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/YANDEX/yandex_stickers_fbs/barcodes/2040015750130.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/YANDEX/yandex_stickers_fbs/barcodes/2040042560894.png" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/YANDEX/yandex_stickers_fbs/barcodes/2040042560894.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/YANDEX/yandex_stickers_fbs/barcodes/SM-DH-30L.png" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/YANDEX/yandex_stickers_fbs/barcodes/SM-DH-30L.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/YANDEX/yandex_stickers_fbs/barcodes/SM-DH-35L.png" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/YANDEX/yandex_stickers_fbs/barcodes/SM-DH-35L.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/YANDEX/yandex_stickers_fbs/barcodes/SM-DH-40L.png" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/YANDEX/yandex_stickers_fbs/barcodes/SM-DH-40L.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/YANDEX/yandex_stickers_fbs/barcodes/Schlang32-1.png" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/YANDEX/yandex_stickers_fbs/barcodes/Schlang32-1.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/YANDEX/yandex_stickers_fbs/barcodes/Schlang32-10.png" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/YANDEX/yandex_stickers_fbs/barcodes/Schlang32-10.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/YANDEX/yandex_stickers_fbs/barcodes/Schlang32-11.png" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/YANDEX/yandex_stickers_fbs/barcodes/Schlang32-11.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/YANDEX/yandex_stickers_fbs/barcodes/Schlang32-12.png" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/YANDEX/yandex_stickers_fbs/barcodes/Schlang32-12.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/YANDEX/yandex_stickers_fbs/barcodes/Schlang32-13.png" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/YANDEX/yandex_stickers_fbs/barcodes/Schlang32-13.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/YANDEX/yandex_stickers_fbs/barcodes/Schlang32-14.png" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/YANDEX/yandex_stickers_fbs/barcodes/Schlang32-14.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/YANDEX/yandex_stickers_fbs/barcodes/Schlang32-15.png" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/YANDEX/yandex_stickers_fbs/barcodes/Schlang32-15.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/YANDEX/yandex_stickers_fbs/barcodes/Schlang32-2.png" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/YANDEX/yandex_stickers_fbs/barcodes/Schlang32-2.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/YANDEX/yandex_stickers_fbs/barcodes/Schlang32-3.png" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/YANDEX/yandex_stickers_fbs/barcodes/Schlang32-3.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/YANDEX/yandex_stickers_fbs/barcodes/Schlang32-4.png" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/YANDEX/yandex_stickers_fbs/barcodes/Schlang32-4.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/YANDEX/yandex_stickers_fbs/barcodes/Schlang32-5.png" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/YANDEX/yandex_stickers_fbs/barcodes/Schlang32-5.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/YANDEX/yandex_stickers_fbs/barcodes/Schlang32-50.png" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/YANDEX/yandex_stickers_fbs/barcodes/Schlang32-50.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/YANDEX/yandex_stickers_fbs/barcodes/Schlang32-6.png" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/YANDEX/yandex_stickers_fbs/barcodes/Schlang32-6.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/YANDEX/yandex_stickers_fbs/barcodes/Schlang32-7.png" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/YANDEX/yandex_stickers_fbs/barcodes/Schlang32-7.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/YANDEX/yandex_stickers_fbs/barcodes/Schlang32-8.png" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/YANDEX/yandex_stickers_fbs/barcodes/Schlang32-8.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/YANDEX/yandex_stickers_fbs/barcodes/Schlang32-9.png" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/YANDEX/yandex_stickers_fbs/barcodes/Schlang32-9.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/YANDEX/yandex_stickers_fbs/barcodes/Schlang38-1.png" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/YANDEX/yandex_stickers_fbs/barcodes/Schlang38-1.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/YANDEX/yandex_stickers_fbs/barcodes/Schlang38-10.png" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/YANDEX/yandex_stickers_fbs/barcodes/Schlang38-10.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/YANDEX/yandex_stickers_fbs/barcodes/Schlang38-11.png" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/YANDEX/yandex_stickers_fbs/barcodes/Schlang38-11.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/YANDEX/yandex_stickers_fbs/barcodes/Schlang38-12.png" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/YANDEX/yandex_stickers_fbs/barcodes/Schlang38-12.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/YANDEX/yandex_stickers_fbs/barcodes/Schlang38-13.png" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/YANDEX/yandex_stickers_fbs/barcodes/Schlang38-13.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/YANDEX/yandex_stickers_fbs/barcodes/Schlang38-14.png" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/YANDEX/yandex_stickers_fbs/barcodes/Schlang38-14.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/YANDEX/yandex_stickers_fbs/barcodes/Schlang38-15.png" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/YANDEX/yandex_stickers_fbs/barcodes/Schlang38-15.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/YANDEX/yandex_stickers_fbs/barcodes/Schlang38-2.png" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/YANDEX/yandex_stickers_fbs/barcodes/Schlang38-2.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/YANDEX/yandex_stickers_fbs/barcodes/Schlang38-3.png" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/YANDEX/yandex_stickers_fbs/barcodes/Schlang38-3.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/YANDEX/yandex_stickers_fbs/barcodes/Schlang38-4.png" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/YANDEX/yandex_stickers_fbs/barcodes/Schlang38-4.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/YANDEX/yandex_stickers_fbs/barcodes/Schlang38-5.png" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/YANDEX/yandex_stickers_fbs/barcodes/Schlang38-5.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/YANDEX/yandex_stickers_fbs/barcodes/Schlang38-50.png" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/YANDEX/yandex_stickers_fbs/barcodes/Schlang38-50.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/YANDEX/yandex_stickers_fbs/barcodes/Schlang38-6.png" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/YANDEX/yandex_stickers_fbs/barcodes/Schlang38-6.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/YANDEX/yandex_stickers_fbs/barcodes/Schlang38-7.png" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/YANDEX/yandex_stickers_fbs/barcodes/Schlang38-7.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/YANDEX/yandex_stickers_fbs/barcodes/Schlang38-8.png" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/YANDEX/yandex_stickers_fbs/barcodes/Schlang38-8.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/YANDEX/yandex_stickers_fbs/barcodes/Schlang38-9.png" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/YANDEX/yandex_stickers_fbs/barcodes/Schlang38-9.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/YANDEX/yandex_stickers_fbs/barcodes/VM-1 EASY.png" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/YANDEX/yandex_stickers_fbs/barcodes/VM-1 EASY.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/YANDEX/yandex_stickers_fbs/barcodes/VM-1 EASY_SPH.png" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/YANDEX/yandex_stickers_fbs/barcodes/VM-1 EASY_SPH.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/YANDEX/yandex_stickers_fbs/barcodes/VM-1.png" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/YANDEX/yandex_stickers_fbs/barcodes/VM-1.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/YANDEX/yandex_stickers_fbs/barcodes/VM-1_SPH.png" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/YANDEX/yandex_stickers_fbs/barcodes/VM-1_SPH.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/YANDEX/yandex_stickers_fbs/barcodes/VM-5.png" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/YANDEX/yandex_stickers_fbs/barcodes/VM-5.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/YANDEX/yandex_stickers_fbs/barcodes/VM-5t.png" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/YANDEX/yandex_stickers_fbs/barcodes/VM-5t.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/YANDEX/yandex_stickers_fbs/barcodes/VM-8.png" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/YANDEX/yandex_stickers_fbs/barcodes/VM-8.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/YANDEX/yandex_stickers_fbs/barcodes/VM-8t.png" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/YANDEX/yandex_stickers_fbs/barcodes/VM-8t.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/YANDEX/yandex_stickers_fbs/barcodes/VM-ALG-1.png" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/YANDEX/yandex_stickers_fbs/barcodes/VM-ALG-1.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/YANDEX/yandex_stickers_fbs/barcodes/VM-ALG-3.png" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/YANDEX/yandex_stickers_fbs/barcodes/VM-ALG-3.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/YANDEX/yandex_stickers_fbs/barcodes/VM-ALG-5.png" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/YANDEX/yandex_stickers_fbs/barcodes/VM-ALG-5.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/YANDEX/yandex_stickers_fbs/barcodes/VM-CL-BISTRIY-1kg-20g.png" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/YANDEX/yandex_stickers_fbs/barcodes/VM-CL-BISTRIY-1kg-20g.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/YANDEX/yandex_stickers_fbs/barcodes/VM-CL-BISTRIY-3kg-20g.png" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/YANDEX/yandex_stickers_fbs/barcodes/VM-CL-BISTRIY-3kg-20g.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/YANDEX/yandex_stickers_fbs/barcodes/VM-CL-BISTRIY-5kg-20g.png" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/YANDEX/yandex_stickers_fbs/barcodes/VM-CL-BISTRIY-5kg-20g.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/YANDEX/yandex_stickers_fbs/barcodes/VM-CL-COMPLEX-1kg-200g.png" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/YANDEX/yandex_stickers_fbs/barcodes/VM-CL-COMPLEX-1kg-200g.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/YANDEX/yandex_stickers_fbs/barcodes/VM-CL-COMPLEX-1kg-20g.png" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/YANDEX/yandex_stickers_fbs/barcodes/VM-CL-COMPLEX-1kg-20g.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/YANDEX/yandex_stickers_fbs/barcodes/VM-CL-COMPLEX-3kg-200g.png" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/YANDEX/yandex_stickers_fbs/barcodes/VM-CL-COMPLEX-3kg-200g.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/YANDEX/yandex_stickers_fbs/barcodes/VM-CL-COMPLEX-3kg-20g.png" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/YANDEX/yandex_stickers_fbs/barcodes/VM-CL-COMPLEX-3kg-20g.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/YANDEX/yandex_stickers_fbs/barcodes/VM-CL-COMPLEX-5kg-200g.png" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/YANDEX/yandex_stickers_fbs/barcodes/VM-CL-COMPLEX-5kg-200g.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/YANDEX/yandex_stickers_fbs/barcodes/VM-CL-COMPLEX-5kg-20g.png" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/YANDEX/yandex_stickers_fbs/barcodes/VM-CL-COMPLEX-5kg-20g.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/YANDEX/yandex_stickers_fbs/barcodes/VM-CL-MEDLENNIY-1kg-200g.png" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/YANDEX/yandex_stickers_fbs/barcodes/VM-CL-MEDLENNIY-1kg-200g.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/YANDEX/yandex_stickers_fbs/barcodes/VM-CL-MEDLENNIY-3kg-200g.png" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/YANDEX/yandex_stickers_fbs/barcodes/VM-CL-MEDLENNIY-3kg-200g.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/YANDEX/yandex_stickers_fbs/barcodes/VM-CL-MEDLENNIY-5kg-200g.png" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/YANDEX/yandex_stickers_fbs/barcodes/VM-CL-MEDLENNIY-5kg-200g.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/YANDEX/yandex_stickers_fbs/barcodes/VM-Complex-bez-hlora-1litr.png" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/YANDEX/yandex_stickers_fbs/barcodes/VM-Complex-bez-hlora-1litr.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/YANDEX/yandex_stickers_fbs/barcodes/VM-Dozator-Bolshoy-S-Termometrom.png" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/YANDEX/yandex_stickers_fbs/barcodes/VM-Dozator-Bolshoy-S-Termometrom.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/YANDEX/yandex_stickers_fbs/barcodes/VM-Dozator-Maliy-S-Termometrom.png" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/YANDEX/yandex_stickers_fbs/barcodes/VM-Dozator-Maliy-S-Termometrom.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/YANDEX/yandex_stickers_fbs/barcodes/VM-ECO-ALG-1.png" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/YANDEX/yandex_stickers_fbs/barcodes/VM-ECO-ALG-1.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/YANDEX/yandex_stickers_fbs/barcodes/VM-ECO-ALG-3.png" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/YANDEX/yandex_stickers_fbs/barcodes/VM-ECO-ALG-3.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/YANDEX/yandex_stickers_fbs/barcodes/VM-ECO-ALG-5.png" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/YANDEX/yandex_stickers_fbs/barcodes/VM-ECO-ALG-5.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/YANDEX/yandex_stickers_fbs/barcodes/VM-ECO-COMPLEX-1kg-200g.png" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/YANDEX/yandex_stickers_fbs/barcodes/VM-ECO-COMPLEX-1kg-200g.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/YANDEX/yandex_stickers_fbs/barcodes/VM-ECO-COMPLEX-1kg-20g.png" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/YANDEX/yandex_stickers_fbs/barcodes/VM-ECO-COMPLEX-1kg-20g.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/YANDEX/yandex_stickers_fbs/barcodes/VM-ECO-COMPLEX-3kg-200g.png" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/YANDEX/yandex_stickers_fbs/barcodes/VM-ECO-COMPLEX-3kg-200g.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/YANDEX/yandex_stickers_fbs/barcodes/VM-ECO-COMPLEX-3kg-20g.png" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/YANDEX/yandex_stickers_fbs/barcodes/VM-ECO-COMPLEX-3kg-20g.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/YANDEX/yandex_stickers_fbs/barcodes/VM-ECO-COMPLEX-5kg-200g.png" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/YANDEX/yandex_stickers_fbs/barcodes/VM-ECO-COMPLEX-5kg-200g.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/YANDEX/yandex_stickers_fbs/barcodes/VM-ECO-COMPLEX-5kg-20g.png" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/YANDEX/yandex_stickers_fbs/barcodes/VM-ECO-COMPLEX-5kg-20g.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/YANDEX/yandex_stickers_fbs/barcodes/VM-ECO-MEDLENNIY-1kg-200g.png" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/YANDEX/yandex_stickers_fbs/barcodes/VM-ECO-MEDLENNIY-1kg-200g.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/YANDEX/yandex_stickers_fbs/barcodes/VM-ECO-MEDLENNIY-3kg-200g.png" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/YANDEX/yandex_stickers_fbs/barcodes/VM-ECO-MEDLENNIY-3kg-200g.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/YANDEX/yandex_stickers_fbs/barcodes/VM-ECO-MEDLENNIY-5kg-200g.png" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/YANDEX/yandex_stickers_fbs/barcodes/VM-ECO-MEDLENNIY-5kg-200g.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/YANDEX/yandex_stickers_fbs/barcodes/VM-Koagulyant-Granuly-1kg.png" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/YANDEX/yandex_stickers_fbs/barcodes/VM-Koagulyant-Granuly-1kg.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/YANDEX/yandex_stickers_fbs/barcodes/VM-Koagulyant-v-kartrijah-500g.png" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/YANDEX/yandex_stickers_fbs/barcodes/VM-Koagulyant-v-kartrijah-500g.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/YANDEX/yandex_stickers_fbs/barcodes/VM-Koagulyant-v-kartrijah.png" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/YANDEX/yandex_stickers_fbs/barcodes/VM-Koagulyant-v-kartrijah.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/YANDEX/yandex_stickers_fbs/barcodes/VM-Koagulyant-zhidkiy-1L.png" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/YANDEX/yandex_stickers_fbs/barcodes/VM-Koagulyant-zhidkiy-1L.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/YANDEX/yandex_stickers_fbs/barcodes/VM-Koagulyant-zhidkiy-3L.png" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/YANDEX/yandex_stickers_fbs/barcodes/VM-Koagulyant-zhidkiy-3L.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/YANDEX/yandex_stickers_fbs/barcodes/VM-Koagulyant-zhidkiy-5L.png" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/YANDEX/yandex_stickers_fbs/barcodes/VM-Koagulyant-zhidkiy-5L.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/YANDEX/yandex_stickers_fbs/barcodes/VM-Pool-vac.png" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/YANDEX/yandex_stickers_fbs/barcodes/VM-Pool-vac.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/YANDEX/yandex_stickers_fbs/barcodes/VM-Sachok-Classic.png" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/YANDEX/yandex_stickers_fbs/barcodes/VM-Sachok-Classic.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/YANDEX/yandex_stickers_fbs/barcodes/VM-Sachok-ClassicXL.png" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/YANDEX/yandex_stickers_fbs/barcodes/VM-Sachok-ClassicXL.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/YANDEX/yandex_stickers_fbs/barcodes/VM-Sachok-Deluxe.png" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/YANDEX/yandex_stickers_fbs/barcodes/VM-Sachok-Deluxe.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/YANDEX/yandex_stickers_fbs/barcodes/VM-Sachok-DeluxeXL.png" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/YANDEX/yandex_stickers_fbs/barcodes/VM-Sachok-DeluxeXL.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/YANDEX/yandex_stickers_fbs/barcodes/VM-Sachok-Glubokiy.png" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/YANDEX/yandex_stickers_fbs/barcodes/VM-Sachok-Glubokiy.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/YANDEX/yandex_stickers_fbs/barcodes/VM-Sachok-Razborniy-150cm.png" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/YANDEX/yandex_stickers_fbs/barcodes/VM-Sachok-Razborniy-150cm.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/YANDEX/yandex_stickers_fbs/barcodes/VM-Shariki.png" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/YANDEX/yandex_stickers_fbs/barcodes/VM-Shariki.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/YANDEX/yandex_stickers_fbs/barcodes/VM-ShetkaClassic-Roller.png" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/YANDEX/yandex_stickers_fbs/barcodes/VM-ShetkaClassic-Roller.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/YANDEX/yandex_stickers_fbs/barcodes/VM-ShetkaClassic.png" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/YANDEX/yandex_stickers_fbs/barcodes/VM-ShetkaClassic.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/YANDEX/yandex_stickers_fbs/barcodes/VM-ShetkaDeluxe.png" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/YANDEX/yandex_stickers_fbs/barcodes/VM-ShetkaDeluxe.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/YANDEX/yandex_stickers_fbs/barcodes/VM-ShetkaOrange.png" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/YANDEX/yandex_stickers_fbs/barcodes/VM-ShetkaOrange.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/YANDEX/yandex_stickers_fbs/barcodes/VM-ShetkaPremium-Gibkaya.png" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/YANDEX/yandex_stickers_fbs/barcodes/VM-ShetkaPremium-Gibkaya.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/YANDEX/yandex_stickers_fbs/barcodes/VM-ShetkaPremium.png" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/YANDEX/yandex_stickers_fbs/barcodes/VM-ShetkaPremium.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/YANDEX/yandex_stickers_fbs/barcodes/VM-Shtanga-270cm.png" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/YANDEX/yandex_stickers_fbs/barcodes/VM-Shtanga-270cm.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/YANDEX/yandex_stickers_fbs/barcodes/VM-Solar-Shower-20l.png" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/YANDEX/yandex_stickers_fbs/barcodes/VM-Solar-Shower-20l.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/YANDEX/yandex_stickers_fbs/barcodes/VM-Solar-Shower-35l.png" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/YANDEX/yandex_stickers_fbs/barcodes/VM-Solar-Shower-35l.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/YANDEX/yandex_stickers_fbs/barcodes/VM-Solar-Shower-40l.png" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/YANDEX/yandex_stickers_fbs/barcodes/VM-Solar-Shower-40l.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/YANDEX/yandex_stickers_fbs/barcodes/VM-Termometr-Classic.png" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/YANDEX/yandex_stickers_fbs/barcodes/VM-Termometr-Classic.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/YANDEX/yandex_stickers_fbs/barcodes/VM-Termometr-Jimmy-Boy-Blue.png" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/YANDEX/yandex_stickers_fbs/barcodes/VM-Termometr-Jimmy-Boy-Blue.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/YANDEX/yandex_stickers_fbs/barcodes/VM-Termometr-Jimmy-Boy.png" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/YANDEX/yandex_stickers_fbs/barcodes/VM-Termometr-Jimmy-Boy.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/YANDEX/yandex_stickers_fbs/barcodes/VM-Termometr-S-Zondom.png" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/YANDEX/yandex_stickers_fbs/barcodes/VM-Termometr-S-Zondom.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/YANDEX/yandex_stickers_fbs/barcodes/VM-WINTER-ALG-3.png" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/YANDEX/yandex_stickers_fbs/barcodes/VM-WINTER-ALG-3.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/YANDEX/yandex_stickers_fbs/barcodes/VM-WINTER-ALG-5.png" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/YANDEX/yandex_stickers_fbs/barcodes/VM-WINTER-ALG-5.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/YANDEX/yandex_stickers_fbs/barcodes/VM-dlya_napitkov_1L.png" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/YANDEX/yandex_stickers_fbs/barcodes/VM-dlya_napitkov_1L.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/YANDEX/yandex_stickers_fbs/barcodes/VM-dlya_napitkov_500mL.png" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/YANDEX/yandex_stickers_fbs/barcodes/VM-dlya_napitkov_500mL.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/YANDEX/yandex_stickers_fbs/barcodes/VM-ot_nakipi_ 500mL.png" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/YANDEX/yandex_stickers_fbs/barcodes/VM-ot_nakipi_ 500mL.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/YANDEX/yandex_stickers_fbs/barcodes/VM-ot_nakipi_1L.png" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/YANDEX/yandex_stickers_fbs/barcodes/VM-ot_nakipi_1L.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/YANDEX/yandex_stickers_fbs/barcodes/VM-vacuum-cleaner.png" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/YANDEX/yandex_stickers_fbs/barcodes/VM-vacuum-cleaner.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/YANDEX/yandex_stickers_fbs/barcodes/VMBUGSONH3172.png" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/YANDEX/yandex_stickers_fbs/barcodes/VMBUGSONH3172.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/YANDEX/yandex_stickers_fbs/barcodes/VMFRISBEE1102.png" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/YANDEX/yandex_stickers_fbs/barcodes/VMFRISBEE1102.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/YANDEX/yandex_stickers_fbs/barcodes/VMMIA1005.png" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/YANDEX/yandex_stickers_fbs/barcodes/VMMIA1005.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/YANDEX/yandex_stickers_fbs/barcodes/VMTYPHOR1.png" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/YANDEX/yandex_stickers_fbs/barcodes/VMTYPHOR1.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/YANDEX/yandex_stickers_fbs/barcodes/VM_AROUND_MAX.png" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/YANDEX/yandex_stickers_fbs/barcodes/VM_AROUND_MAX.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/YANDEX/yandex_stickers_fbs/barcodes/VM_HYSON_100P.png" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/YANDEX/yandex_stickers_fbs/barcodes/VM_HYSON_100P.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/YANDEX/yandex_stickers_fbs/barcodes/intex28067lestnica132cm.png" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/YANDEX/yandex_stickers_fbs/barcodes/intex28067lestnica132cm.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/YANDEX/yandex_stickers_fbs/barcodes/vm-1_Schlang.png" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/YANDEX/yandex_stickers_fbs/barcodes/vm-1_Schlang.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/YANDEX/yandex_stickers_fbs/logic.go" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/YANDEX/yandex_stickers_fbs/logic.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/YANDEX/yandex_stickers_fbs/model_converter.go" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/YANDEX/yandex_stickers_fbs/model_converter.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/YANDEX/yandex_stickers_fbs/models.go" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/YANDEX/yandex_stickers_fbs/models.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/main.go" beforeDir="false" afterPath="$PROJECT_DIR$/cmd/main.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmd/main.go" beforeDir="false" afterPath="$PROJECT_DIR$/cmd/main.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pkg/OZON/ozon_orders_returns/logic.go" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/OZON/ozon_orders_returns/logic.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pkg/WB/wb_orders_returns/logic.go" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/WB/wb_orders_returns/logic.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pkg/WB/wb_orders_returns/models.go" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/pkg/WB/wb_orders_returns/models_converter.go" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/pkg/WB/wb_stickers_fbs/logic.go" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/WB/wb_stickers_fbs/logic.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pkg/WB/wb_stickers_fbs/models.go" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/api/wb/models.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pkg/WB/wb_stickers_fbs/models_converter.go" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/api/wb/models_converter.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pkg/WB/wb_stocks_analyze/models.go" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/pkg/WB/wb_stocks_analyze/models_converter.go" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/pkg/YANDEX/yandex_orders_returns/logic.go" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/YANDEX/yandex_orders_returns/logic.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pkg/YANDEX/yandex_orders_returns/models.go" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/api/yandex/models.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pkg/YANDEX/yandex_orders_returns/models_converter.go" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/api/yandex/models_converter.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pkg/YANDEX/yandex_stickers_fbs/logic.go" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/YANDEX/yandex_stickers_fbs/logic.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pkg/YANDEX/yandex_stickers_fbs/model_converter.go" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/pkg/YANDEX/yandex_stickers_fbs/models.go" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/pkg/api/wb/api.go" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/api/wb/api.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pkg/api/yandex/api.go" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/api/yandex/api.go" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -320,6 +70,7 @@
   &quot;keyToString&quot;: {
     &quot;DefaultGoTemplateProperty&quot;: &quot;Go File&quot;,
     &quot;Go Build.go build WildberriesGo_bot.executor&quot;: &quot;Run&quot;,
+    &quot;Go Build.go build WildberriesGo_bot/cmd.executor&quot;: &quot;Run&quot;,
     &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
     &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
     &quot;RunOnceActivity.go.formatter.settings.were.checked&quot;: &quot;true&quot;,
@@ -349,25 +100,25 @@
     </key>
     <key name="MoveFile.RECENT_KEYS">
       <recent name="$PROJECT_DIR$/pkg/api/yandex" />
+      <recent name="$PROJECT_DIR$/pkg/api/wb" />
       <recent name="$PROJECT_DIR$/pkg/api" />
       <recent name="$PROJECT_DIR$/pkg/database/postgresql" />
       <recent name="$PROJECT_DIR$/pkg" />
-      <recent name="$PROJECT_DIR$/cmd" />
     </key>
   </component>
   <component name="RunManager">
-    <configuration name="go build WildberriesGo_bot" type="GoApplicationRunConfiguration" factoryName="Go Application" temporary="true" nameIsGenerated="true">
+    <configuration name="go build WildberriesGo_bot/cmd" type="GoApplicationRunConfiguration" factoryName="Go Application" temporary="true" nameIsGenerated="true">
       <module name="WildberriesGo_bot" />
       <working_directory value="$PROJECT_DIR$" />
       <kind value="PACKAGE" />
-      <package value="WildberriesGo_bot" />
+      <package value="WildberriesGo_bot/cmd" />
       <directory value="$PROJECT_DIR$" />
-      <filePath value="$PROJECT_DIR$/main.go" />
+      <filePath value="$PROJECT_DIR$/cmd/main.go" />
       <method v="2" />
     </configuration>
     <recent_temporary>
       <list>
-        <item itemvalue="Go Build.go build WildberriesGo_bot" />
+        <item itemvalue="Go Build.go build WildberriesGo_bot/cmd" />
       </list>
     </recent_temporary>
   </component>
@@ -398,7 +149,8 @@
     <MESSAGE value="add yandex last orders" />
     <MESSAGE value="add ozon stocks analyze" />
     <MESSAGE value="fix stock.PromisedAmount" />
-    <option name="LAST_COMMIT_MESSAGE" value="fix stock.PromisedAmount" />
+    <MESSAGE value="edit files path" />
+    <option name="LAST_COMMIT_MESSAGE" value="edit files path" />
   </component>
   <component name="VgoProject">
     <settings-migrated>true</settings-migrated>

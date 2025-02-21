@@ -12,7 +12,7 @@ import (
 	"time"
 )
 
-func StocksFbo(apiKey string) string {
+func stocksFbo(apiKey string) string {
 
 	url := "https://statistics-api.wildberries.ru/api/v1/supplier/stocks"
 	body := []byte(``)
@@ -49,7 +49,7 @@ func StocksFbo(apiKey string) string {
 	return string(jsonString)
 }
 
-func GetOrdersBySupplyId(wildberriesKey, supplyId string) (string, error) {
+func getOrdersBySupplyId(wildberriesKey, supplyId string) (string, error) {
 
 	url := "https://marketplace-api.wildberries.ru/api/v3/supplies/" + supplyId + "/orders"
 	req, err := http.NewRequest("GET", url, nil)
@@ -82,7 +82,7 @@ func GetOrdersBySupplyId(wildberriesKey, supplyId string) (string, error) {
 	return string(jsonString), nil
 }
 
-func GetCodesByOrderId(wildberriesKey string, orderId int) string {
+func getCodesByOrderId(wildberriesKey string, orderId int) string {
 
 	params := url.Values{}
 	params.Add("type", "png")
@@ -142,7 +142,7 @@ func GetCodesByOrderId(wildberriesKey string, orderId int) string {
 /*
 API метод для получения фбс заказов
 */
-func OrdersFBS(apiKey string, daysAgo int) string {
+func ordersFBS(apiKey string, daysAgo int) string {
 
 	url := "https://marketplace-api.wildberries.ru/api/v3/orders"
 	body := []byte(``)
@@ -182,7 +182,7 @@ func OrdersFBS(apiKey string, daysAgo int) string {
 	return string(jsonString)
 }
 
-func OrdersFBS_status(wildberriesKey string, orderId int) string {
+func ordersFBSStatus(wildberriesKey string, orderId int) string {
 
 	baseURL := "https://marketplace-api.wildberries.ru/api/v3/orders/status"
 
@@ -233,7 +233,7 @@ func OrdersFBS_status(wildberriesKey string, orderId int) string {
 /*
 API метод для получения всех заказов за дату, равную (now() - daysAgo). Максимум 1 запрос в минуту
 */
-func ApiOrdersALL(apiKey string, daysAgo int) string {
+func apiOrdersALL(apiKey string, daysAgo, flag int) string {
 
 	date := time.Now().AddDate(0, 0, -daysAgo)
 
@@ -251,7 +251,7 @@ func ApiOrdersALL(apiKey string, daysAgo int) string {
 
 	q := req.URL.Query()
 	q.Add("dateFrom", date.Format("2006-01-02"))
-	q.Add("flag", "1")
+	q.Add("flag", strconv.Itoa(flag))
 	req.URL.RawQuery = q.Encode()
 
 	// Выполняем запрос
@@ -274,7 +274,7 @@ func ApiOrdersALL(apiKey string, daysAgo int) string {
 	return string(jsonString)
 }
 
-func ApiSalesAndReturns(apiKey string, daysAgo int) string {
+func apiSalesAndReturns(apiKey string, daysAgo int) string {
 
 	date := time.Now().AddDate(0, 0, -daysAgo)
 
