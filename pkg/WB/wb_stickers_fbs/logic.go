@@ -27,8 +27,9 @@ func GetReadyFile(wildberriesKey, supplyId string) error {
 		return err
 	}
 	var ordersSlice []string
-	for _, order := range orders {
+	for i, order := range orders {
 		stickers := wb.GetStickersFbs(wildberriesKey, order.ID)
+		println(i)
 		decodeToPDF(stickers.Stickers[0].File, stickers.Stickers[0].OrderId, order)
 		ordersSlice = append(ordersSlice, readyPath+strconv.Itoa(order.ID)+".pdf")
 	}
