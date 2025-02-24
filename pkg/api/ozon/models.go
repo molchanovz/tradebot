@@ -356,3 +356,86 @@ type ClustersList struct {
 		Type string `json:"type"`
 	} `json:"clusters"`
 }
+
+type Returns struct {
+	Returns []struct {
+		Id               int    `json:"id"`
+		CompanyId        int    `json:"company_id"`
+		ReturnReasonName string `json:"return_reason_name"`
+		Type             string `json:"type"`
+		Schema           string `json:"schema"`
+		OrderId          int64  `json:"order_id"`
+		OrderNumber      string `json:"order_number"`
+		Place            struct {
+			Id      int64  `json:"id"`
+			Name    string `json:"name"`
+			Address string `json:"address"`
+		} `json:"place"`
+		TargetPlace struct {
+			Id      int64  `json:"id"`
+			Name    string `json:"name"`
+			Address string `json:"address"`
+		} `json:"target_place"`
+		Storage struct {
+			Sum struct {
+				CurrencyCode string `json:"currency_code"`
+				Price        int    `json:"price"`
+			} `json:"sum"`
+			TarifficationFirstDate time.Time `json:"tariffication_first_date"`
+			TarifficationStartDate time.Time `json:"tariffication_start_date"`
+			ArrivedMoment          time.Time `json:"arrived_moment"`
+			Days                   int       `json:"days"`
+			UtilizationSum         struct {
+				CurrencyCode string `json:"currency_code"`
+				Price        int    `json:"price"`
+			} `json:"utilization_sum"`
+			UtilizationForecastDate time.Time `json:"utilization_forecast_date"`
+		} `json:"storage"`
+		Product struct {
+			Sku     int    `json:"sku"`
+			OfferId string `json:"offer_id"`
+			Name    string `json:"name"`
+			Price   struct {
+				CurrencyCode string `json:"currency_code"`
+				Price        int    `json:"price"`
+			} `json:"price"`
+			PriceWithoutCommission struct {
+				CurrencyCode string  `json:"currency_code"`
+				Price        float64 `json:"price"`
+			} `json:"price_without_commission"`
+			CommissionPercent int `json:"commission_percent"`
+			Commission        struct {
+				CurrencyCode string  `json:"currency_code"`
+				Price        float64 `json:"price"`
+			} `json:"commission"`
+			Quantity int `json:"quantity"`
+		} `json:"product"`
+		Logistic struct {
+			TechnicalReturnMoment           time.Time `json:"technical_return_moment"`
+			FinalMoment                     time.Time `json:"final_moment"`
+			CancelledWithCompensationMoment time.Time `json:"cancelled_with_compensation_moment"`
+			ReturnDate                      time.Time `json:"return_date"`
+			Barcode                         string    `json:"barcode"`
+		} `json:"logistic"`
+		Visual struct {
+			Status struct {
+				Id          int    `json:"id"`
+				DisplayName string `json:"display_name"`
+				SysName     string `json:"sys_name"`
+			} `json:"status"`
+			ChangeMoment time.Time `json:"change_moment"`
+		} `json:"visual"`
+		Exemplars []struct {
+			Id int64 `json:"id"`
+		} `json:"exemplars"`
+		AdditionalInfo struct {
+			IsOpened      bool `json:"is_opened"`
+			IsSuperEconom bool `json:"is_super_econom"`
+		} `json:"additional_info"`
+		ClearingId       int64  `json:"clearing_id"`
+		PostingNumber    string `json:"posting_number"`
+		ReturnClearingId int64  `json:"return_clearing_id"`
+		SourceId         int64  `json:"source_id"`
+	} `json:"returns"`
+	HasNext bool `json:"has_next"`
+}

@@ -547,7 +547,7 @@ func ozonStocksHandler(ctx context.Context, bot *botlib.Bot, update *models.Upda
 
 	stocks := ozon_stocks.GetStocks(ClientId, OzonKey)
 
-	filePath, err := generateExcel(postings, stocks, K)
+	filePath, err := generateExcel(postings, stocks, K, "ozon")
 	if err != nil {
 		log.Println("Ошибка при создании Excel:", err)
 		return
@@ -563,7 +563,7 @@ func ozonStocksHandler(ctx context.Context, bot *botlib.Bot, update *models.Upda
 }
 func wbStocksHandler(ctx context.Context, bot *botlib.Bot, update *models.Update) {
 	daysAgo := 14
-	//K := 1.5
+	K := 100.0
 
 	chatId := update.CallbackQuery.From.ID
 
@@ -573,9 +573,9 @@ func wbStocksHandler(ctx context.Context, bot *botlib.Bot, update *models.Update
 		return
 	}
 
-	postings := wb_stocks_analyze.GetOrders(WbKey, daysAgo)
+	orders := wb_stocks_analyze.GetOrders(WbKey, daysAgo)
 	str := strings.Builder{}
-	for cluster, value := range postings {
+	for cluster, value := range orders {
 		if cluster == "" {
 			continue
 		}
@@ -585,25 +585,31 @@ func wbStocksHandler(ctx context.Context, bot *botlib.Bot, update *models.Update
 		}
 	}
 
-	_, err = sendTextMessage(ctx, bot, chatId, str.String())
+	stocks, lostWarehouses := wb_stocks_analyze.GetStocks(WbKey)
+
+	filePath, err := generateExcel(orders, stocks, K, "wb")
 	if err != nil {
+		log.Println("Ошибка при создании Excel:", err)
 		return
 	}
 
-	//stocks := ozon_stocks.GetStocks(ClientId, OzonKey)
+	err = sendMediaMessage(ctx, bot, chatId, filePath)
+	if err != nil {
+		return
+	}
+	os.Remove(filePath)
 
-	//filePath, err := generateExcel(postings, stocks, K)
-	//if err != nil {
-	//	log.Println("Ошибка при создании Excel:", err)
-	//	return
-	//}
+	if len(lostWarehouses) > 0 {
+		warehousesStr := strings.Builder{}
 
-	//err = sendMediaMessage(ctx, bot, chatId, filePath)
-	//if err != nil {
-	//	return
-	//}
-	//
-	//os.Remove(filePath)
+		for warehouse := range lostWarehouses {
+			warehousesStr.WriteString(warehouse + "\n")
+		}
+		_, err := sendTextMessage(ctx, bot, chatId, fmt.Sprintf("Нужно добавить:\n"+warehousesStr.String()))
+		if err != nil {
+			return
+		}
+	}
 
 }
 
@@ -682,7 +688,7 @@ func initEnv(path, name string) (string, error) {
 	return env, err
 }
 
-func generateExcel(postings map[string]map[string]int, stocks map[string]map[string]int, K float64) (string, error) {
+func generateExcel(postings map[string]map[string]int, stocks map[string]map[string]int, K float64, mp string) (string, error) {
 	file := excelize.NewFile()
 	sheetName := "Stock Analysis"
 	file.SetSheetName("Sheet1", sheetName)
@@ -723,7 +729,7 @@ func generateExcel(postings map[string]map[string]int, stocks map[string]map[str
 	}
 
 	// Сохраняем файл
-	filePath := "stock_analysis.xlsx"
+	filePath := mp + "_stock_analysis.xlsx"
 	if err := file.SaveAs(filePath); err != nil {
 		return "", err
 	}

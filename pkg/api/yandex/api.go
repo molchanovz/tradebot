@@ -28,13 +28,13 @@ func ShipmentInfo(token, supplyId string) (string, error) {
 	client := &http.Client{}
 	resp, err := client.Do(req)
 	if err != nil {
-		return "", fmt.Errorf("ошибка выполнения запроса: %v", err)
+		return "", fmt.Errorf("ошибка выполнения запроса ShipmentInfo: %v", err)
 	}
 	defer resp.Body.Close()
 
 	// Проверяем статус ответа
 	if resp.StatusCode != http.StatusOK {
-		return "", fmt.Errorf("ошибка: получен статус %v", resp.StatusCode)
+		return "", fmt.Errorf("ошибка ShipmentInfo: получен статус %v", resp.StatusCode)
 	}
 
 	// Читаем тело ответа

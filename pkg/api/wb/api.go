@@ -66,13 +66,13 @@ func getOrdersBySupplyId(wildberriesKey, supplyId string) (string, error) {
 	client := &http.Client{}
 	resp, err := client.Do(req)
 	if err != nil {
-		return "", fmt.Errorf("ошибка выполнения запроса: %v", err)
+		return "", fmt.Errorf("ошибка выполнения запроса getOrdersBySupplyId: %v", err)
 	}
 	defer resp.Body.Close()
 
 	// Проверяем статус ответа
 	if resp.StatusCode != http.StatusOK {
-		return "", fmt.Errorf("ошибка: получен статус %v", resp.StatusCode)
+		return "", fmt.Errorf("ошибка getOrdersBySupplyId: получен статус %v", resp.StatusCode)
 	}
 
 	// Читаем тело ответа
@@ -123,13 +123,13 @@ func getCodesByOrderId(wildberriesKey string, orderId int) string {
 	client := &http.Client{}
 	resp, err := client.Do(req)
 	if err != nil {
-		log.Fatalf("Ошибка выполнения запроса: %v", err)
+		log.Fatalf("Ошибка выполнения запроса getCodesByOrderId: %v", err)
 	}
 	defer resp.Body.Close()
 
 	// Проверяем статус ответа
 	if resp.StatusCode != http.StatusOK {
-		log.Fatalf("Ошибка: получен статус %d", resp.StatusCode)
+		log.Fatalf("Ошибка getCodesByOrderId: получен статус %d", resp.StatusCode)
 	}
 
 	// Читаем тело ответа

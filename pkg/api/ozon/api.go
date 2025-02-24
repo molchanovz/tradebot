@@ -51,7 +51,7 @@ func V2PostingFboGet(ClientId, ApiKey, PostingNumber string) string {
 }
 
 // V3ReturnsCompanyFbo метод получения ФБО возвратов со статусом ReturnedToOzon. Получаем возвраты только тогда, когда возврат приедет на склад озон
-func V3ReturnsCompanyFbo(ClientId, ApiKey string, LastID int) string {
+func V3ReturnsCompanyFbo(ClientId, ApiKey string, daysAgo, LastID int) string {
 
 	url := "https://api-seller.ozon.ru/v3/returns/company/fbo"
 	body := []byte(`{
@@ -83,6 +83,45 @@ func V3ReturnsCompanyFbo(ClientId, ApiKey string, LastID int) string {
 
 	if resp.StatusCode != http.StatusOK {
 		log.Fatalf("Ошибка v3_returns_company_fbo: получен статус %s", resp.Status)
+	}
+
+	jsonString, _ := io.ReadAll(resp.Body)
+
+	return string(jsonString)
+}
+func returnsList(ClientId, ApiKey string, LastID int, since, to string) string {
+
+	url := "https://api-seller.ozon.ru/v1/returns/list"
+	body := []byte(fmt.Sprintf(`{
+  "filter": {
+    "visual_status_change_moment": {
+      "time_from": "%v",
+      "time_to": "%v"
+    }
+  },
+  "limit": 500,
+  "last_id": %v
+}`, since, to, LastID))
+
+	req, err := http.NewRequest("POST", url, bytes.NewBuffer(body))
+
+	if err != nil {
+		log.Fatalf("Ошибка создания запроса: %v", err)
+	}
+
+	req.Header.Set("Content-Type", "application/json")
+	req.Header.Set("Client-Id", ClientId)
+	req.Header.Set("Api-Key", ApiKey)
+
+	client := &http.Client{}
+	resp, err := client.Do(req)
+	if err != nil {
+		log.Fatalf("Ошибка выполнения запроса: %v", err)
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusOK {
+		log.Fatalf("Ошибка ReturnsList: получен статус %s", resp.Status)
 	}
 
 	jsonString, _ := io.ReadAll(resp.Body)

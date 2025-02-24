@@ -5,15 +5,6 @@ import (
 	"log"
 )
 
-func ReturnsFbo(ClientId, ApiKey string, LastID int) ([]ReturnFBO, int) {
-	var returns ReturnsFBO
-	jsonString := V3ReturnsCompanyFbo(ClientId, ApiKey, LastID) // assuming this function returns the JSON string
-	err := json.Unmarshal([]byte(jsonString), &returns)
-	if err != nil {
-		log.Fatalf("Error decoding JSON: %v", err)
-	}
-	return returns.Returns, returns.LastID
-}
 func PostingFbo(ClientId, ApiKey, PostingNumber string) PostingFBO {
 	var posting PostingFBO
 	jsonString := V2PostingFboGet(ClientId, ApiKey, PostingNumber) // assuming this function returns the JSON string
@@ -24,15 +15,16 @@ func PostingFbo(ClientId, ApiKey, PostingNumber string) PostingFBO {
 	return posting
 }
 
-func ReturnsFbs(ClientId, ApiKey string, LastID int) ([]ReturnFBS, int) {
-	var returns ReturnsFBS
-	jsonString := V3ReturnsCompanyFbs(ClientId, ApiKey, LastID) // assuming this function returns the JSON string
-	err := json.Unmarshal([]byte(jsonString), &returns)
+func ReturnsList(ClientId, ApiKey string, LastID int, since, to string) Returns {
+	var returns Returns
+	jsonSrting := returnsList(ClientId, ApiKey, LastID, since, to)
+	err := json.Unmarshal([]byte(jsonSrting), &returns)
 	if err != nil {
 		log.Fatalf("Error decoding JSON: %v", err)
 	}
-	return returns.Returns, returns.LastID
+	return returns
 }
+
 func PostingFbs(ClientId, ApiKey, PostingNumber string) PostingFBS {
 	var posting PostingFBS
 	jsonString := V3PostingFbsGet(ClientId, ApiKey, PostingNumber) // assuming this function returns the JSON string

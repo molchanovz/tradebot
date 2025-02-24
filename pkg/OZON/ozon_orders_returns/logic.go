@@ -11,7 +11,7 @@ import (
 )
 
 const (
-	daysAgo       = 1
+	daysAgo       = 3
 	spreadsheetId = "138vQwwc5g3aGFbZXRBnC8U1c1pecRqD3VI6LhQ8QbKI"
 )
 
@@ -46,8 +46,12 @@ func WriteToGoogleSheets(ClientId string, ApiKey string) {
 	writeRange = sheetsName + "!D2:E100"
 	write(spreadsheetId, writeRange, values)
 
+	since := time.Now().AddDate(0, 0, daysAgo*(-1)-1).Format("2006-01-02") + "T21:00:00.000Z"
+	to := time.Now().AddDate(0, 0, daysAgo*(-1)).Format("2006-01-02") + "T21:00:00.000Z"
 	//Заполнение возвратов
-	returnsWithCount := getReturnsMap(ClientId, ApiKey)
+	println(since)
+	println(to)
+	returnsWithCount := getReturnsMap(ClientId, ApiKey, since, to)
 	values = [][]interface{}{}
 	values = append(values, []interface{}{"Возвраты"})
 	for article, count := range returnsWithCount {
@@ -86,71 +90,28 @@ func getPostingsMapFBO(ClientId string, ApiKey string) map[string]int {
 	return postingsWithCountFBO
 }
 
-func getReturnsMap(ClientId string, ApiKey string) map[string]int {
+func getReturnsMap(ClientId, ApiKey, since, to string) map[string]int {
 	LastID := 0
+	hasNext := true
 	returnsWithCount := make(map[string]int)
+	var returns ozon.Returns
 	/*
 		Лимит у запроса 1000, но нам нужны все возвраты,
 		поэтому делаем цикл с LastID и добавляем в срез returnsFBO
 	*/
-	returns_fbo, LastID := ozon.ReturnsFbo(ClientId, ApiKey, LastID)
-	returnsFBO := make([]ozon.ReturnFBO, 0, len(returns_fbo))
-	returnsFBO = append(returnsFBO, returns_fbo...)
-	for LastID != 0 {
-		returns_fbo, LastID = ozon.ReturnsFbo(ClientId, ApiKey, LastID)
-		returnsFBO = append(returnsFBO, returns_fbo...)
-	}
-	for i := range returnsFBO {
-		parsedTime := dateParser(returnsFBO[i].ReturnedToOzonMoment)
-		// Получаем год, месяц и день
-		year := parsedTime.Year()
-		month := parsedTime.Month()
-		day := parsedTime.Day()
-
-		if year == time.Now().Year() && month == time.Now().Month() && day == time.Now().Day()-daysAgo {
-			posting := ozon.PostingFbo(ClientId, ApiKey, returnsFBO[i].PostingNumber)
-			for _, product := range posting.Result.Products {
-				returnsWithCount[product.OfferId] += product.Quantity
+	for hasNext {
+		returns = ozon.ReturnsList(ClientId, ApiKey, LastID, since, to)
+		for _, value := range returns.Returns {
+			if value.Visual.Status.SysName == "ReturnedToOzon" {
+				returnsWithCount[value.Product.OfferId] += value.Product.Quantity
 			}
+			LastID = value.Id
 		}
-	}
-
-	LastID = 0
-
-	returns_fbs, LastID := ozon.ReturnsFbs(ClientId, ApiKey, LastID)
-	returnsListFBS := make([]ozon.ReturnFBS, 0, len(returns_fbs))
-	returnsListFBS = append(returnsListFBS, returns_fbs...)
-
-	for LastID != 0 {
-		returns_fbs, LastID = ozon.ReturnsFbs(ClientId, ApiKey, LastID)
-		returnsListFBS = append(returnsListFBS, returns_fbs...)
-	}
-
-	for i := range returnsListFBS {
-		parsedTime := dateParser(returnsListFBS[i].ReturnDate)
-		year := parsedTime.Year()
-		month := parsedTime.Month()
-		day := parsedTime.Day()
-		if year == time.Now().Year() && month == time.Now().Month() && day == time.Now().Day()-daysAgo {
-			posting := ozon.PostingFbs(ClientId, ApiKey, returnsListFBS[i].PostingNumber)
-			for _, product := range posting.Result.Products {
-				returnsWithCount[product.OfferId] += product.Quantity
-			}
-
-		}
+		hasNext = returns.HasNext
 	}
 	return returnsWithCount
 }
 
-func dateParser(date string) time.Time {
-
-	parsedTime, err := time.Parse(time.RFC3339, date)
-	if err != nil {
-		fmt.Println("Ошибка разбора даты:", err)
-		return time.Time{}
-	}
-	return parsedTime
-}
 func initEnv(path, name string) (string, error) {
 	err := godotenv.Load(path)
 	if err != nil {

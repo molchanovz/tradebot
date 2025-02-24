@@ -4,25 +4,14 @@
     <option name="autoReloadType" value="ALL" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="640077d7-ce81-4039-9739-8ad3e3a8d41a" name="Changes" comment="edit files path">
-      <change afterPath="$PROJECT_DIR$/pkg/WB/wb_stocks_analyze/logic.go" afterDir="false" />
+    <list default="true" id="640077d7-ce81-4039-9739-8ad3e3a8d41a" name="Changes" comment="replace api/models files">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/cmd/main.go" beforeDir="false" afterPath="$PROJECT_DIR$/cmd/main.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/pkg/OZON/ozon_orders_returns/logic.go" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/OZON/ozon_orders_returns/logic.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/pkg/WB/wb_orders_returns/logic.go" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/WB/wb_orders_returns/logic.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pkg/WB/wb_orders_returns/models.go" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/pkg/WB/wb_orders_returns/models_converter.go" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/pkg/WB/wb_stickers_fbs/logic.go" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/WB/wb_stickers_fbs/logic.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pkg/WB/wb_stickers_fbs/models.go" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/api/wb/models.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pkg/WB/wb_stickers_fbs/models_converter.go" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/api/wb/models_converter.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pkg/WB/wb_stocks_analyze/models.go" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/pkg/WB/wb_stocks_analyze/models_converter.go" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/pkg/WB/wb_stocks_analyze/logic.go" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/WB/wb_stocks_analyze/logic.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/pkg/YANDEX/yandex_orders_returns/logic.go" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/YANDEX/yandex_orders_returns/logic.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pkg/YANDEX/yandex_orders_returns/models.go" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/api/yandex/models.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pkg/YANDEX/yandex_orders_returns/models_converter.go" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/api/yandex/models_converter.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pkg/YANDEX/yandex_stickers_fbs/logic.go" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/YANDEX/yandex_stickers_fbs/logic.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pkg/YANDEX/yandex_stickers_fbs/model_converter.go" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/pkg/YANDEX/yandex_stickers_fbs/models.go" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/pkg/api/ozon/api.go" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/api/ozon/api.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/pkg/api/wb/api.go" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/api/wb/api.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/pkg/api/yandex/api.go" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/api/yandex/api.go" afterDir="false" />
     </list>
@@ -150,7 +139,8 @@
     <MESSAGE value="add ozon stocks analyze" />
     <MESSAGE value="fix stock.PromisedAmount" />
     <MESSAGE value="edit files path" />
-    <option name="LAST_COMMIT_MESSAGE" value="edit files path" />
+    <MESSAGE value="replace api/models files" />
+    <option name="LAST_COMMIT_MESSAGE" value="replace api/models files" />
   </component>
   <component name="VgoProject">
     <settings-migrated>true</settings-migrated>
