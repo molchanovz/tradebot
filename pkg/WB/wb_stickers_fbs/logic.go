@@ -10,6 +10,7 @@ import (
 	"os"
 	"os/exec"
 	"strconv"
+	"time"
 )
 
 const (
@@ -32,6 +33,9 @@ func GetReadyFile(wildberriesKey, supplyId string) error {
 		println(i)
 		decodeToPDF(stickers.Stickers[0].File, stickers.Stickers[0].OrderId, order)
 		ordersSlice = append(ordersSlice, readyPath+strconv.Itoa(order.ID)+".pdf")
+		if i%10 == 0 {
+			time.Sleep(2 * time.Second)
+		}
 	}
 	err = mergePDFsInDirectory(ordersSlice, DirectoryPath+supplyId+".pdf")
 	if err != nil {
