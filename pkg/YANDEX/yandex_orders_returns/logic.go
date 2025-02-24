@@ -6,7 +6,7 @@ import (
 	"time"
 )
 
-var daysAgo = 3
+var daysAgo = 1
 var spreadsheetId = "1JOZDRKZe7S-nx7OifZrJnzfjXgURwartaiDeo9qVzWY"
 
 func WriteToGoogleSheets(ApiKey string) error {
