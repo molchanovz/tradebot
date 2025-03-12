@@ -12,7 +12,7 @@ import (
 
 const (
 	daysAgo       = 1
-	spreadsheetId = "138vQwwc5g3aGFbZXRBnC8U1c1pecRqD3VI6LhQ8QbKI"
+	spreadsheetId = "13VI6x59ht10mMlfH3F8n5_jXbXB1kypBDH0vIDnsb3M"
 )
 
 // WriteToGoogleSheets Заполнение гугл таблицы с id = spreadsheetId

@@ -4,16 +4,8 @@
     <option name="autoReloadType" value="ALL" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="640077d7-ce81-4039-9739-8ad3e3a8d41a" name="Changes" comment="replace api/models files">
+    <list default="true" id="640077d7-ce81-4039-9739-8ad3e3a8d41a" name="Changes" comment="add Tula in map">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmd/main.go" beforeDir="false" afterPath="$PROJECT_DIR$/cmd/main.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pkg/OZON/ozon_orders_returns/logic.go" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/OZON/ozon_orders_returns/logic.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pkg/WB/wb_orders_returns/logic.go" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/WB/wb_orders_returns/logic.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pkg/WB/wb_stocks_analyze/logic.go" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/WB/wb_stocks_analyze/logic.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pkg/YANDEX/yandex_orders_returns/logic.go" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/YANDEX/yandex_orders_returns/logic.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pkg/api/ozon/api.go" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/api/ozon/api.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pkg/api/wb/api.go" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/api/wb/api.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pkg/api/yandex/api.go" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/api/yandex/api.go" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -140,7 +132,11 @@
     <MESSAGE value="fix stock.PromisedAmount" />
     <MESSAGE value="edit files path" />
     <MESSAGE value="replace api/models files" />
-    <option name="LAST_COMMIT_MESSAGE" value="replace api/models files" />
+    <MESSAGE value="fix ozon returns" />
+    <MESSAGE value="add logs GetReadyFile" />
+    <MESSAGE value="add time.sleep" />
+    <MESSAGE value="add Tula in map" />
+    <option name="LAST_COMMIT_MESSAGE" value="add Tula in map" />
   </component>
   <component name="VgoProject">
     <settings-migrated>true</settings-migrated>

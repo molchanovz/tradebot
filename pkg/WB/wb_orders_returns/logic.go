@@ -9,7 +9,7 @@ import (
 )
 
 var daysAgo = 1
-var spreadsheetId = "1WPUFcYFkgen0DXRFwZDfI_kXAGQeClpYi-xN-iB_w1M"
+var spreadsheetId = "1e5wiZUXTv419NJW_RUFGMNOY2C8KCXTwAXFwQztBhRo"
 
 func WriteToGoogleSheets(ApiKey string) error {
 	date := time.Now().AddDate(0, 0, -daysAgo)
