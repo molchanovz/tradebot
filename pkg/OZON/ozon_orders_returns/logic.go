@@ -11,13 +11,13 @@ import (
 )
 
 const (
-	daysAgo       = 1
+	DaysAgo       = 1
 	spreadsheetId = "13VI6x59ht10mMlfH3F8n5_jXbXB1kypBDH0vIDnsb3M"
 )
 
 // WriteToGoogleSheets Заполнение гугл таблицы с id = spreadsheetId
 func WriteToGoogleSheets(ClientId string, ApiKey string) {
-	date := time.Now().AddDate(0, 0, -daysAgo)
+	date := time.Now().AddDate(0, 0, -DaysAgo)
 	sheetsName := "Заказы OZON-" + strconv.Itoa(date.Day())
 
 	var values [][]interface{}
@@ -46,8 +46,8 @@ func WriteToGoogleSheets(ClientId string, ApiKey string) {
 	writeRange = sheetsName + "!D2:E100"
 	write(spreadsheetId, writeRange, values)
 
-	since := time.Now().AddDate(0, 0, daysAgo*(-1)-1).Format("2006-01-02") + "T21:00:00.000Z"
-	to := time.Now().AddDate(0, 0, daysAgo*(-1)).Format("2006-01-02") + "T21:00:00.000Z"
+	since := time.Now().AddDate(0, 0, DaysAgo*(-1)-1).Format("2006-01-02") + "T21:00:00.000Z"
+	to := time.Now().AddDate(0, 0, DaysAgo*(-1)).Format("2006-01-02") + "T21:00:00.000Z"
 	//Заполнение возвратов
 	println(since)
 	println(to)
@@ -63,8 +63,8 @@ func WriteToGoogleSheets(ClientId string, ApiKey string) {
 
 func getPostingsMapFBS(ClientId string, ApiKey string) map[string]int {
 	postingsWithCountFBS := make(map[string]int)
-	since := time.Now().AddDate(0, 0, daysAgo*(-1)-1).Format("2006-01-02") + "T21:00:00.000Z"
-	to := time.Now().AddDate(0, 0, daysAgo*(-1)).Format("2006-01-02") + "T21:00:00.000Z"
+	since := time.Now().AddDate(0, 0, DaysAgo*(-1)-1).Format("2006-01-02") + "T21:00:00.000Z"
+	to := time.Now().AddDate(0, 0, DaysAgo*(-1)).Format("2006-01-02") + "T21:00:00.000Z"
 	potingsListFbs := ozon.PostingsListFbs(ClientId, ApiKey, since, to)
 	for _, posting := range potingsListFbs.Result.PostingsFBS {
 		if posting.Status != "cancelled" {
@@ -77,8 +77,8 @@ func getPostingsMapFBS(ClientId string, ApiKey string) map[string]int {
 }
 func getPostingsMapFBO(ClientId string, ApiKey string) map[string]int {
 	postingsWithCountFBO := make(map[string]int)
-	since := time.Now().AddDate(0, 0, daysAgo*(-1)-1).Format("2006-01-02") + "T21:00:00.000Z"
-	to := time.Now().AddDate(0, 0, daysAgo*(-1)).Format("2006-01-02") + "T21:00:00.000Z"
+	since := time.Now().AddDate(0, 0, DaysAgo*(-1)-1).Format("2006-01-02") + "T21:00:00.000Z"
+	to := time.Now().AddDate(0, 0, DaysAgo*(-1)).Format("2006-01-02") + "T21:00:00.000Z"
 	postings_list_fbo := ozon.PostingsListFbo(ClientId, ApiKey, since, to)
 	for _, posting := range postings_list_fbo.Result {
 		if posting.Status != "cancelled" {

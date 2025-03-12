@@ -1,16 +1,16 @@
 package yandex_orders_returns
 
 import (
+	"WildberriesGo_bot/pkg/OZON/ozon_orders_returns"
 	"WildberriesGo_bot/pkg/api/yandex"
 	"strconv"
 	"time"
 )
 
-var daysAgo = 1
 var spreadsheetId = "1amHmD0OP5r0psfgD4vk02DthJ7kCgsziMNkJEAAsJ2Y"
 
 func WriteToGoogleSheets(ApiKey string) error {
-	date := time.Now().AddDate(0, 0, -daysAgo)
+	date := time.Now().AddDate(0, 0, -ozon_orders_returns.DaysAgo)
 	sheetsName := "Заказы YM-" + strconv.Itoa(date.Day())
 
 	var values [][]interface{}
@@ -24,7 +24,7 @@ func WriteToGoogleSheets(ApiKey string) error {
 	}
 
 	//Запись ALL заказов
-	postingsWithCountFBO, _ := ordersMapFBO(ApiKey, daysAgo)
+	postingsWithCountFBO, _ := ordersMapFBO(ApiKey, ozon_orders_returns.DaysAgo)
 	writeRange = sheetsName + "!A2:B100"
 	colName := "Заказы FBO"
 	err = writeData(writeRange, colName, postingsWithCountFBO)
@@ -70,7 +70,7 @@ func writeData(writeRange, colName string, data map[string]int) error {
 
 //func ordersMapFBS(ApiKey string) map[string]int {
 //	postingsWithCountFBS := make(map[string]int)
-//	postingsList := ordersFBS(ApiKey, daysAgo)
+//	postingsList := ordersFBS(ApiKey, DaysAgo)
 //
 //	isOrderCanceled := func(status string) bool {
 //
@@ -111,7 +111,7 @@ func ordersMapFBO(yandexToken string, daysAgo int) (map[string]int, error) {
 
 //func returnsMap(apiKey string) map[string]int {
 //	returnsWithCount := make(map[string]int)
-//	returnsList := salesAndReturns(apiKey, daysAgo)
+//	returnsList := salesAndReturns(apiKey, DaysAgo)
 //	for _, someReturn := range returnsList {
 //		if strings.HasPrefix(someReturn.SaleID, "R") {
 //			returnsWithCount[someReturn.SupplierArticle]++

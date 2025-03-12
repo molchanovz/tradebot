@@ -1,6 +1,7 @@
 package wb_orders_returns
 
 import (
+	"WildberriesGo_bot/pkg/OZON/ozon_orders_returns"
 	"WildberriesGo_bot/pkg/api/wb"
 	"fmt"
 	"strconv"
@@ -8,11 +9,10 @@ import (
 	"time"
 )
 
-var daysAgo = 1
 var spreadsheetId = "1e5wiZUXTv419NJW_RUFGMNOY2C8KCXTwAXFwQztBhRo"
 
 func WriteToGoogleSheets(ApiKey string) error {
-	date := time.Now().AddDate(0, 0, -daysAgo)
+	date := time.Now().AddDate(0, 0, -ozon_orders_returns.DaysAgo)
 	sheetsName := "Заказы WB-" + strconv.Itoa(date.Day())
 
 	var values [][]interface{}
@@ -76,7 +76,7 @@ func writeData(writeRange, colName string, data map[string]int) error {
 
 func ordersMapFBS(ApiKey string) map[string]int {
 	postingsWithCountFBS := make(map[string]int)
-	postingsList := wb.GetOrdersFBS(ApiKey, daysAgo)
+	postingsList := wb.GetOrdersFBS(ApiKey, ozon_orders_returns.DaysAgo)
 
 	isOrderCanceled := func(status string) bool {
 
@@ -102,7 +102,7 @@ func ordersMapFBS(ApiKey string) map[string]int {
 }
 func ordersMapALL(apiKey string) map[string]int {
 	postingsWithCountALL := make(map[string]int)
-	postingsList := wb.GetAllOrders(apiKey, daysAgo, 1)
+	postingsList := wb.GetAllOrders(apiKey, ozon_orders_returns.DaysAgo, 1)
 	for _, posting := range postingsList {
 		if posting.OrderType == "Клиентский" && posting.IsCancel == false {
 			postingsWithCountALL[posting.SupplierArticle]++
@@ -114,7 +114,7 @@ func ordersMapALL(apiKey string) map[string]int {
 }
 func returnsMap(apiKey string) map[string]int {
 	returnsWithCount := make(map[string]int)
-	returnsList := wb.GetSalesAndReturns(apiKey, daysAgo)
+	returnsList := wb.GetSalesAndReturns(apiKey, ozon_orders_returns.DaysAgo)
 	for _, someReturn := range returnsList {
 		if strings.HasPrefix(someReturn.SaleID, "R") {
 			returnsWithCount[someReturn.SupplierArticle]++
