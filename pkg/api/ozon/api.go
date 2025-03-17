@@ -211,7 +211,7 @@ func V3PostingFbsGet(ClientId, ApiKey, PostingNumber string) string {
 }
 
 // V3PostingFbsList метод получения ФБС заказов
-func V3PostingFbsList(ClientId, ApiKey, since, to string) string {
+func V3PostingFbsList(ClientId, ApiKey, since, to string, offset int) string {
 
 	url := "https://api-seller.ozon.ru/v3/posting/fbs/list"
 	body := []byte(fmt.Sprintf(`{
@@ -221,14 +221,14 @@ func V3PostingFbsList(ClientId, ApiKey, since, to string) string {
     "to": "%v"
 },
   "limit": 1000,
-  "offset": 0,
+  "offset": %v,
   "with": {
     "analytics_data": false,
     "barcodes": false,
     "financial_data": true,
     "translit": false
   }
-}`, since, to))
+}`, since, to, offset))
 
 	req, err := http.NewRequest("POST", url, bytes.NewBuffer(body))
 
@@ -262,7 +262,7 @@ func V3PostingFbsList(ClientId, ApiKey, since, to string) string {
 }
 
 // V2PostingFboList метод получения ФБО заказов
-func V2PostingFboList(ClientId, ApiKey, since, to string) string {
+func V2PostingFboList(ClientId, ApiKey, since, to string, offset int) string {
 
 	url := "https://api-seller.ozon.ru/v2/posting/fbo/list"
 	body := []byte(fmt.Sprintf(`{
@@ -272,13 +272,13 @@ func V2PostingFboList(ClientId, ApiKey, since, to string) string {
     "to": "%v"
   },
   "limit": 1000,
-  "offset": 0,
+  "offset": %v,
   "translit": false,
   "with": {
     "analytics_data": false,
     "financial_data": true
   }
-}`, since, to))
+}`, since, to, offset))
 
 	req, err := http.NewRequest("POST", url, bytes.NewBuffer(body))
 
@@ -300,8 +300,10 @@ func V2PostingFboList(ClientId, ApiKey, since, to string) string {
 	defer resp.Body.Close()
 
 	// Проверяем статус ответа
+
 	if resp.StatusCode != http.StatusOK {
-		log.Fatalf("Ошибка v2_posting_fbo_get: получен статус %s", resp.Status)
+		errString, _ := io.ReadAll(resp.Body)
+		log.Fatalf("Ошибка v2_posting_fbo_get: получен статус %s. %s", resp.Status, errString)
 	}
 
 	// Читаем тело ответа

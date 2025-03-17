@@ -65,7 +65,7 @@ func getPostingsMapFBS(ClientId string, ApiKey string) map[string]int {
 	postingsWithCountFBS := make(map[string]int)
 	since := time.Now().AddDate(0, 0, DaysAgo*(-1)-1).Format("2006-01-02") + "T21:00:00.000Z"
 	to := time.Now().AddDate(0, 0, DaysAgo*(-1)).Format("2006-01-02") + "T21:00:00.000Z"
-	potingsListFbs := ozon.PostingsListFbs(ClientId, ApiKey, since, to)
+	potingsListFbs := ozon.PostingsListFbs(ClientId, ApiKey, since, to, 0)
 	for _, posting := range potingsListFbs.Result.PostingsFBS {
 		if posting.Status != "cancelled" {
 			for _, product := range posting.Products {
@@ -79,7 +79,7 @@ func getPostingsMapFBO(ClientId string, ApiKey string) map[string]int {
 	postingsWithCountFBO := make(map[string]int)
 	since := time.Now().AddDate(0, 0, DaysAgo*(-1)-1).Format("2006-01-02") + "T21:00:00.000Z"
 	to := time.Now().AddDate(0, 0, DaysAgo*(-1)).Format("2006-01-02") + "T21:00:00.000Z"
-	postings_list_fbo := ozon.PostingsListFbo(ClientId, ApiKey, since, to)
+	postings_list_fbo := ozon.PostingsListFbo(ClientId, ApiKey, since, to, 0)
 	for _, posting := range postings_list_fbo.Result {
 		if posting.Status != "cancelled" {
 			for _, product := range posting.Products {

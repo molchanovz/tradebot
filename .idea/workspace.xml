@@ -4,8 +4,12 @@
     <option name="autoReloadType" value="ALL" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="640077d7-ce81-4039-9739-8ad3e3a8d41a" name="Changes" comment="add Tula in map">
+    <list default="true" id="640077d7-ce81-4039-9739-8ad3e3a8d41a" name="Changes" comment="fix daysAgo">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pkg/OZON/ozon_orders_returns/logic.go" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/OZON/ozon_orders_returns/logic.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pkg/OZON/ozon_stocks/logic.go" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/OZON/ozon_stocks/logic.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pkg/api/ozon/api.go" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/api/ozon/api.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pkg/api/ozon/models_converter.go" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/api/ozon/models_converter.go" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -136,7 +140,9 @@
     <MESSAGE value="add logs GetReadyFile" />
     <MESSAGE value="add time.sleep" />
     <MESSAGE value="add Tula in map" />
-    <option name="LAST_COMMIT_MESSAGE" value="add Tula in map" />
+    <MESSAGE value="fix spreadsheetIds" />
+    <MESSAGE value="fix daysAgo" />
+    <option name="LAST_COMMIT_MESSAGE" value="fix daysAgo" />
   </component>
   <component name="VgoProject">
     <settings-migrated>true</settings-migrated>
