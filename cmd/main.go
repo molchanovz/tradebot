@@ -700,29 +700,35 @@ func generateExcel(postings map[string]map[string]int, stocks map[string]map[str
 		file.SetCellValue(sheetName, cell, h)
 	}
 
+	articles := make(map[string]struct{})
+
+	// Собираем все уникальные артикулы
+	for _, postingsMap := range postings {
+		for article := range postingsMap {
+			articles[article] = struct{}{}
+		}
+	}
+	for _, stocksMap := range stocks {
+		for article := range stocksMap {
+			articles[article] = struct{}{}
+		}
+	}
+
 	row := 2
 	for cluster, postingsMap := range postings {
-		if postingsMap == nil {
-			continue
-		}
 
-		if clusterStocks, exists := stocks[cluster]; exists {
-			for article, postingCount := range postingsMap {
-				stock := clusterStocks[article]
-				if float64(stock)/float64(postingCount) < K {
-					file.SetCellValue(sheetName, "A"+strconv.Itoa(row), cluster)
-					file.SetCellValue(sheetName, "B"+strconv.Itoa(row), article)
-					file.SetCellValue(sheetName, "C"+strconv.Itoa(row), postingCount)
-					file.SetCellValue(sheetName, "D"+strconv.Itoa(row), stock)
-					row++
-				}
+		for article := range articles {
+			postingCount := postingsMap[article]
+			stock := 0
+			if clusterStocks, stocksExists := stocks[cluster]; stocksExists {
+				stock = clusterStocks[article]
 			}
-		} else {
-			for article, postingCount := range postingsMap {
+
+			if stock == 0 || (postingCount > 0 && float64(stock)/float64(postingCount) < K) {
 				file.SetCellValue(sheetName, "A"+strconv.Itoa(row), cluster)
 				file.SetCellValue(sheetName, "B"+strconv.Itoa(row), article)
 				file.SetCellValue(sheetName, "C"+strconv.Itoa(row), postingCount)
-				file.SetCellValue(sheetName, "D"+strconv.Itoa(row), 0)
+				file.SetCellValue(sheetName, "D"+strconv.Itoa(row), stock)
 				row++
 			}
 		}
@@ -735,3 +741,68 @@ func generateExcel(postings map[string]map[string]int, stocks map[string]map[str
 	}
 	return filePath, nil
 }
+
+//func generateExcel(postings map[string]map[string]int, stocks map[string]map[string]int, K float64, mp string) (string, error) {
+//	file := excelize.NewFile()
+//	sheetName := "Stock Analysis"
+//	file.SetSheetName("Sheet1", sheetName)
+//
+//	// Заголовки
+//	headers := []string{"Кластер", "Артикул", "Заказано", "Остатки"}
+//	for i, h := range headers {
+//		cell := string(rune('A'+i)) + "1"
+//		file.SetCellValue(sheetName, cell, h)
+//	}
+//
+//	articles := make(map[string]interface{})
+//
+//	for _, postingsMap := range postings {
+//		for article := range postingsMap {
+//			articles[article] = nil
+//		}
+//	}
+//
+//	row := 2
+//	for cluster, postingsMap := range postings {
+//		if postingsMap == nil {
+//			continue
+//		}
+//
+//		if clusterStocks, exists := stocks[cluster]; exists {
+//			for article, postingCount := range postingsMap {
+//				stock := clusterStocks[article]
+//
+//				if float64(stock)/float64(postingCount) < K {
+//					file.SetCellValue(sheetName, "A"+strconv.Itoa(row), cluster)
+//					file.SetCellValue(sheetName, "B"+strconv.Itoa(row), article)
+//					file.SetCellValue(sheetName, "C"+strconv.Itoa(row), postingCount)
+//					file.SetCellValue(sheetName, "D"+strconv.Itoa(row), stock)
+//					row++
+//				}
+//			}
+//		} else {
+//			for article := range articles {
+//				if countFromPostings, exists := postingsMap[article]; !exists {
+//					file.SetCellValue(sheetName, "A"+strconv.Itoa(row), cluster)
+//					file.SetCellValue(sheetName, "B"+strconv.Itoa(row), article)
+//					file.SetCellValue(sheetName, "C"+strconv.Itoa(row), 0)
+//					file.SetCellValue(sheetName, "D"+strconv.Itoa(row), 0)
+//				} else {
+//					file.SetCellValue(sheetName, "A"+strconv.Itoa(row), cluster)
+//					file.SetCellValue(sheetName, "B"+strconv.Itoa(row), article)
+//					file.SetCellValue(sheetName, "C"+strconv.Itoa(row), countFromPostings)
+//					file.SetCellValue(sheetName, "D"+strconv.Itoa(row), 0)
+//				}
+//
+//			}
+//			row++
+//		}
+//	}
+//
+//	// Сохраняем файл
+//	filePath := mp + "_stock_analysis.xlsx"
+//	if err := file.SaveAs(filePath); err != nil {
+//		return "", err
+//	}
+//	return filePath, nil
+//}
