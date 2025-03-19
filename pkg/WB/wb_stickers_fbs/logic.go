@@ -17,7 +17,7 @@ const (
 	DirectoryPath = "pkg/WB/wb_stickers_fbs/"
 
 	codesPath     = DirectoryPath + "codes/"
-	barcodesPath  = DirectoryPath + "barcodes/"
+	barcodesPath  = "pkg/barcodes/"
 	generatedPath = DirectoryPath + "generated/"
 	readyPath     = DirectoryPath + "ready/"
 )
@@ -89,11 +89,10 @@ func decodeToPDF(base64String string, orderId int, order wb.OrderWB) {
 	pdf.ImageOptions(imgPath1, (75-58)/2, 13, 58, 40, false, gofpdf.ImageOptions{ImageType: "PNG"}, 0, "")
 
 	var skuImageUrl string
-	for _, barcode := range order.SKUs {
-		skuImageUrl = barcodesPath + barcode + ".png"
-		if fileExists(skuImageUrl) {
-			break
-		}
+
+	skuImageUrl = barcodesPath + order.Article + ".png"
+
+	if !fileExists(skuImageUrl) {
 		skuImageUrl = ""
 	}
 

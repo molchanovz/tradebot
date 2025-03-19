@@ -4,7 +4,7 @@
     <option name="autoReloadType" value="ALL" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="640077d7-ce81-4039-9739-8ad3e3a8d41a" name="Changes" comment="fix wb clusters, fix api">
+    <list default="true" id="640077d7-ce81-4039-9739-8ad3e3a8d41a" name="Changes" comment="fix/add yandex barcodes">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -60,7 +60,7 @@
     &quot;git-widget-placeholder&quot;: &quot;master&quot;,
     &quot;go.import.settings.migrated&quot;: &quot;true&quot;,
     &quot;go.sdk.automatically.set&quot;: &quot;true&quot;,
-    &quot;last_opened_file_path&quot;: &quot;/Users/sergey/GolandProjects/WildberriesGo_bot&quot;,
+    &quot;last_opened_file_path&quot;: &quot;/Users/sergey/GolandProjects/WildberriesGo_bot/pkg/YANDEX/yandex_stickers_fbs/barcodes&quot;,
     &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
     &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
     &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;
@@ -73,11 +73,11 @@
 }</component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/pkg/YANDEX/yandex_stickers_fbs/barcodes" />
       <recent name="$PROJECT_DIR$" />
       <recent name="$PROJECT_DIR$/OZON" />
       <recent name="$PROJECT_DIR$/YANDEX/models" />
       <recent name="$PROJECT_DIR$/YANDEX" />
-      <recent name="$PROJECT_DIR$/WB/wb_stickers_fbs/barcodes" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
       <recent name="$PROJECT_DIR$/pkg/api/yandex" />
@@ -139,7 +139,8 @@
     <MESSAGE value="fix spreadsheetIds" />
     <MESSAGE value="fix daysAgo" />
     <MESSAGE value="fix wb clusters, fix api" />
-    <option name="LAST_COMMIT_MESSAGE" value="fix wb clusters, fix api" />
+    <MESSAGE value="fix/add yandex barcodes" />
+    <option name="LAST_COMMIT_MESSAGE" value="fix/add yandex barcodes" />
   </component>
   <component name="VgoProject">
     <settings-migrated>true</settings-migrated>

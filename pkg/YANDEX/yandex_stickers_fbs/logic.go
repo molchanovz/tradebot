@@ -27,7 +27,7 @@ const (
 	codesPath     = DirectoryPath + "codes/"
 	readyPath     = DirectoryPath + "ready/"
 	generatedPath = DirectoryPath + "generated/"
-	barcodesPath  = DirectoryPath + "barcodes/"
+	barcodesPath  = "pkg/barcodes/"
 )
 
 func GetOrdersInfo(token, supplyId string) error {
