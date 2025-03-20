@@ -5,7 +5,22 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="640077d7-ce81-4039-9739-8ad3e3a8d41a" name="Changes" comment="fix/add yandex barcodes">
+      <change afterPath="$PROJECT_DIR$/pkg/app/app.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pkg/bot/bot.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pkg/bot/logic.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pkg/db/models.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pkg/googleService/googleService.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pkg/scheduler/scheduler.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmd/main.go" beforeDir="false" afterPath="$PROJECT_DIR$/cmd/main.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pkg/OZON/ozon_orders_returns/googleService.go" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/pkg/OZON/ozon_orders_returns/logic.go" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/OZON/ozon_orders_returns/logic.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pkg/WB/wb_orders_returns/googleService.go" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/pkg/WB/wb_orders_returns/logic.go" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/WB/wb_orders_returns/logic.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pkg/YANDEX/yandex_orders_returns/googleService.go" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/pkg/YANDEX/yandex_orders_returns/logic.go" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/YANDEX/yandex_orders_returns/logic.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pkg/database/postgresql/db.go" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/db/db.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pkg/database/postgresql/init.sql" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/db/init.sql" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -60,7 +75,7 @@
     &quot;git-widget-placeholder&quot;: &quot;master&quot;,
     &quot;go.import.settings.migrated&quot;: &quot;true&quot;,
     &quot;go.sdk.automatically.set&quot;: &quot;true&quot;,
-    &quot;last_opened_file_path&quot;: &quot;/Users/sergey/GolandProjects/WildberriesGo_bot/pkg/YANDEX/yandex_stickers_fbs/barcodes&quot;,
+    &quot;last_opened_file_path&quot;: &quot;/Users/sergey&quot;,
     &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
     &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
     &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;
@@ -80,11 +95,11 @@
       <recent name="$PROJECT_DIR$/YANDEX" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/pkg/bot" />
       <recent name="$PROJECT_DIR$/pkg/api/yandex" />
       <recent name="$PROJECT_DIR$/pkg/api/wb" />
       <recent name="$PROJECT_DIR$/pkg/api" />
       <recent name="$PROJECT_DIR$/pkg/database/postgresql" />
-      <recent name="$PROJECT_DIR$/pkg" />
     </key>
   </component>
   <component name="RunManager">
@@ -144,5 +159,16 @@
   </component>
   <component name="VgoProject">
     <settings-migrated>true</settings-migrated>
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" type="DlvLineBreakpoint">
+          <url>file://$PROJECT_DIR$/pkg/bot/logic.go</url>
+          <line>86</line>
+          <option name="timeStamp" value="4" />
+        </line-breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
   </component>
 </project>

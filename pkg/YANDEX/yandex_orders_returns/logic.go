@@ -3,6 +3,7 @@ package yandex_orders_returns
 import (
 	"WildberriesGo_bot/pkg/OZON/ozon_orders_returns"
 	"WildberriesGo_bot/pkg/api/yandex"
+	"WildberriesGo_bot/pkg/googleService"
 	"strconv"
 	"time"
 )
@@ -18,7 +19,8 @@ func WriteToGoogleSheets(ApiKey string) error {
 	values = append(values, []interface{}{"Отчет за " + date.Format("02.01.2006")})
 
 	writeRange := sheetsName + "!A1"
-	err := write(spreadsheetId, writeRange, values)
+	googleServ := googleService.NewGoogleService("token.json", "credentials.json")
+	err := googleServ.Write(spreadsheetId, writeRange, values)
 	if err != nil {
 		return err
 	}
@@ -61,7 +63,9 @@ func writeData(writeRange, colName string, data map[string]int) error {
 		values = append(values, []interface{}{article, count})
 	}
 
-	err := write(spreadsheetId, writeRange, values)
+	googleServ := googleService.NewGoogleService("token.json", "credentials.json")
+
+	err := googleServ.Write(spreadsheetId, writeRange, values)
 	if err != nil {
 		return err
 	}

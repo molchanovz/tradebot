@@ -1,35 +1,45 @@
-package yandex_orders_returns
+package googleService
 
 import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"log"
-	"net/http"
-	"os"
-
 	"golang.org/x/oauth2"
 	"golang.org/x/oauth2/google"
 	"google.golang.org/api/option"
 	"google.golang.org/api/sheets/v4"
+	"log"
+	"net/http"
+	"os"
 )
 
+type GoogleService struct {
+	tokenPath       string
+	credentialsPath string
+}
+
+func NewGoogleService(tokenPath, credentialsPath string) GoogleService {
+	return GoogleService{
+		tokenPath:       tokenPath,
+		credentialsPath: credentialsPath,
+	}
+}
+
 // Retrieve a token, saves the token, then returns the generated client.
-func getClient(config *oauth2.Config) *http.Client {
+func (gs GoogleService) getClient(config *oauth2.Config) *http.Client {
 	// The file token.json stores the user's access and refresh tokens, and is
 	// created automatically when the authorization flow completes for the first
 	// time.
-	tokFile := "token.json"
-	tok, err := tokenFromFile(tokFile)
+	tok, err := gs.tokenFromFile(gs.tokenPath)
 	if err != nil {
-		tok = getTokenFromWeb(config)
-		saveToken(tokFile, tok)
+		tok = gs.getTokenFromWeb(config)
+		gs.saveToken(gs.tokenPath, tok)
 	}
 	return config.Client(context.Background(), tok)
 }
 
 // Request a token from the web, then returns the retrieved token.
-func getTokenFromWeb(config *oauth2.Config) *oauth2.Token {
+func (GoogleService) getTokenFromWeb(config *oauth2.Config) *oauth2.Token {
 	authURL := config.AuthCodeURL("state-token", oauth2.AccessTypeOffline)
 	fmt.Printf("Go to the following link in your browser then type the "+
 		"authorization code: \n%v\n", authURL)
@@ -47,7 +57,7 @@ func getTokenFromWeb(config *oauth2.Config) *oauth2.Token {
 }
 
 // Retrieves a token from a local file.
-func tokenFromFile(file string) (*oauth2.Token, error) {
+func (GoogleService) tokenFromFile(file string) (*oauth2.Token, error) {
 	f, err := os.Open(file)
 	if err != nil {
 		return nil, err
@@ -58,7 +68,7 @@ func tokenFromFile(file string) (*oauth2.Token, error) {
 	return tok, err
 }
 
-func saveToken(path string, token *oauth2.Token) {
+func (GoogleService) saveToken(path string, token *oauth2.Token) {
 	fmt.Printf("Saving credential file to: %s\n", path)
 	f, err := os.OpenFile(path, os.O_RDWR|os.O_CREATE|os.O_TRUNC, 0600)
 	if err != nil {
@@ -68,9 +78,9 @@ func saveToken(path string, token *oauth2.Token) {
 	json.NewEncoder(f).Encode(token)
 }
 
-func read(spreadsheetId, readRange string) [][]interface{} {
+func (gs GoogleService) read(spreadsheetId, readRange string) [][]interface{} {
 	ctx := context.Background()
-	b, err := os.ReadFile("credentials.json")
+	b, err := os.ReadFile(gs.credentialsPath)
 	if err != nil {
 		log.Fatalf("Unable to read client secret file: %v", err)
 	}
@@ -80,7 +90,7 @@ func read(spreadsheetId, readRange string) [][]interface{} {
 	if err != nil {
 		log.Fatalf("Unable to parse client secret file to config: %v", err)
 	}
-	client := getClient(config)
+	client := gs.getClient(config)
 
 	srv, err := sheets.NewService(ctx, option.WithHTTPClient(client))
 	if err != nil {
@@ -103,42 +113,42 @@ func read(spreadsheetId, readRange string) [][]interface{} {
 	}
 }
 
-func write(spreadsheetId, writeRange string, values [][]interface{}) error {
+func (gs GoogleService) Write(spreadsheetId, writeRange string, values [][]interface{}) error {
 	ctx := context.Background()
 
 	// Чтение файла с учетными данными клиента
-	b, err := os.ReadFile("credentials.json")
+	b, err := os.ReadFile(gs.credentialsPath)
 	if err != nil {
-		return fmt.Errorf("unable to read client secret file: %v", err)
+		return fmt.Errorf("Unable to read client secret file: %v", err)
 	}
 
 	// Настройка OAuth 2.0 конфигурации
 	config, err := google.ConfigFromJSON(b, "https://www.googleapis.com/auth/spreadsheets")
 	if err != nil {
-		return fmt.Errorf("unable to parse client secret file to config: %v", err)
+		return fmt.Errorf("Unable to parse client secret file to config: %v", err)
 	}
 
 	// Получение клиента OAuth 2.0
-	client := getClient(config)
+	client := gs.getClient(config)
 
 	// Создание сервиса для работы с Google Sheets
 	srv, err := sheets.NewService(ctx, option.WithHTTPClient(client))
 	if err != nil {
-		return fmt.Errorf("unable to retrieve Sheets client: %v", err)
+		return fmt.Errorf("Unable to retrieve Sheets client: %v", err)
 	}
 
 	// Создание объекта ValueRange, который содержит данные для записи
 	body := &sheets.ValueRange{
-		Values: values, // Здесь передаем срез данных, которые мы хотим записать
+		Values: values,
 	}
 
 	// Вызов метода Update для записи данных
 	_, err = srv.Spreadsheets.Values.Update(spreadsheetId, writeRange, body).
 		ValueInputOption("RAW").Do()
 	if err != nil {
-		return fmt.Errorf("unable to update data in sheet: %v", err)
+		return fmt.Errorf("Unable to update data in sheet: %v", err)
 	}
 
-	log.Println("Data written successfully")
+	fmt.Println("Data written successfully")
 	return nil
 }

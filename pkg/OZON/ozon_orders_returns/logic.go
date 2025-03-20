@@ -2,6 +2,7 @@ package ozon_orders_returns
 
 import (
 	"WildberriesGo_bot/pkg/api/ozon"
+	"WildberriesGo_bot/pkg/googleService"
 	"fmt"
 	"github.com/joho/godotenv"
 	"log"
@@ -24,7 +25,12 @@ func WriteToGoogleSheets(ClientId string, ApiKey string) {
 	values = append(values, []interface{}{"Отчет за " + date.Format("02.01.2006")})
 
 	writeRange := sheetsName + "!A1"
-	write(spreadsheetId, writeRange, values)
+
+	googleServ := googleService.NewGoogleService("token.json", "credentials.json")
+	err := googleServ.Write(spreadsheetId, writeRange, values)
+	if err != nil {
+		return
+	}
 
 	//Заполнение заказов FBS в writeRange
 	postingsWithCountFBS := getPostingsMapFBS(ClientId, ApiKey)
@@ -34,7 +40,7 @@ func WriteToGoogleSheets(ClientId string, ApiKey string) {
 		values = append(values, []interface{}{article, count})
 	}
 	writeRange = sheetsName + "!A2:B100"
-	write(spreadsheetId, writeRange, values)
+	googleServ.Write(spreadsheetId, writeRange, values)
 
 	//Заполнение заказов FBO в writeRange
 	postingsWithCountFBO := getPostingsMapFBO(ClientId, ApiKey)
@@ -44,7 +50,7 @@ func WriteToGoogleSheets(ClientId string, ApiKey string) {
 		values = append(values, []interface{}{article, count})
 	}
 	writeRange = sheetsName + "!D2:E100"
-	write(spreadsheetId, writeRange, values)
+	googleServ.Write(spreadsheetId, writeRange, values)
 
 	since := time.Now().AddDate(0, 0, DaysAgo*(-1)-1).Format("2006-01-02") + "T21:00:00.000Z"
 	to := time.Now().AddDate(0, 0, DaysAgo*(-1)).Format("2006-01-02") + "T21:00:00.000Z"
@@ -58,7 +64,7 @@ func WriteToGoogleSheets(ClientId string, ApiKey string) {
 		values = append(values, []interface{}{article, count})
 	}
 	writeRange = sheetsName + "!G2:H100"
-	write(spreadsheetId, writeRange, values)
+	googleServ.Write(spreadsheetId, writeRange, values)
 }
 
 func getPostingsMapFBS(ClientId string, ApiKey string) map[string]int {
