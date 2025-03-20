@@ -3,7 +3,6 @@ package app
 import (
 	"WildberriesGo_bot/pkg/bot"
 	"WildberriesGo_bot/pkg/db"
-	"WildberriesGo_bot/pkg/scheduler"
 	"fmt"
 	"github.com/joho/godotenv"
 	"gorm.io/gorm"
@@ -22,10 +21,10 @@ func NewApplication(envPath string) Application {
 }
 
 func (a Application) Start() {
-	wbToken, err := initEnv(a.envPath, "API_KEY_WB")
-	if err != nil {
-		fmt.Printf("%v", err)
-	}
+	//wbToken, err := initEnv(a.envPath, "API_KEY_WB")
+	//if err != nil {
+	//	fmt.Printf("%v", err)
+	//}
 	myChatId, err := initEnv(a.envPath, "myChatId")
 	if err != nil {
 		fmt.Printf("%v", err)
@@ -52,11 +51,11 @@ func (a Application) Start() {
 	botService := bot.NewBotService(token, sqlDB, myChatId)
 	botService.Start()
 
-	schedulerService := scheduler.NewService(botService.GetManager(), wbToken)
-	err = schedulerService.Start()
-	if err != nil {
-		return
-	}
+	//schedulerService := scheduler.NewService(botService.GetManager(), wbToken)
+	//err = schedulerService.Start()
+	//if err != nil {
+	//	return
+	//}
 
 	defer func(sqlDB *gorm.DB) {
 		database, err := sqlDB.DB()

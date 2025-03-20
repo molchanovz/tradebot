@@ -45,8 +45,11 @@ func GetOrders(apiKey string, daysAgo int) map[string]map[string]int {
 	return ordersMap
 }
 
-func GetStocks(apiKey string) (map[string]map[string]int, map[string]int) {
-	stocks := wb.GetStockFbo(apiKey)
+func GetStocks(apiKey string) (map[string]map[string]int, map[string]int, error) {
+	stocks, err := wb.GetStockFbo(apiKey)
+	if err != nil {
+		return nil, nil, err
+	}
 
 	stocksMap := make(map[string]map[string]int)
 
@@ -66,5 +69,5 @@ func GetStocks(apiKey string) (map[string]map[string]int, map[string]int) {
 
 		stocksMap[stock.WarehouseName][stock.SupplierArticle] += stock.Quantity
 	}
-	return stocksMap, lostWarehouses
+	return stocksMap, lostWarehouses, nil
 }

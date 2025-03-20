@@ -12,7 +12,7 @@ import (
 	"time"
 )
 
-func stocksFbo(apiKey string) string {
+func stocksFbo(apiKey string) (string, error) {
 
 	url := "https://statistics-api.wildberries.ru/api/v1/supplier/stocks"
 	body := []byte(``)
@@ -39,14 +39,14 @@ func stocksFbo(apiKey string) string {
 
 	// Проверяем статус ответа
 	if resp.StatusCode != http.StatusOK {
-		log.Fatalf("Ошибка получения ФБС заказов: получен статус %s", resp.Status)
+		return "", fmt.Errorf("Ошибка получения ФБО остатков: получен статус %v", resp.Status)
 	}
 
 	// Читаем тело ответа
 	jsonString, _ := io.ReadAll(resp.Body)
 
 	// Выводим ответ
-	return string(jsonString)
+	return string(jsonString), nil
 }
 
 func getOrdersBySupplyId(wildberriesKey, supplyId string) (string, error) {

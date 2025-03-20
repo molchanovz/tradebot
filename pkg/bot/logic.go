@@ -471,16 +471,29 @@ func wbStocksHandler(ctx context.Context, bot *botlib.Bot, update *models.Update
 		}
 	}
 
-	stocks, lostWarehouses := wb_stocks_analyze.GetStocks(WbKey)
+	stocks, lostWarehouses, err := wb_stocks_analyze.GetStocks(WbKey)
+	if err != nil {
+		_, err = sendTextMessage(ctx, bot, chatId, fmt.Sprintf("Ошибка при анализе остатков: %v", err))
+		if err != nil {
+			log.Println("Ошибка отправки сообщения:", err)
+			return
+		}
+		return
+	}
 
 	filePath, err := generateExcel(orders, stocks, K, "wb")
 	if err != nil {
-		log.Println("Ошибка при создании Excel:", err)
+		_, err = sendTextMessage(ctx, bot, chatId, fmt.Sprintf("Ошибка при генерации экселя: %v", err))
+		if err != nil {
+			log.Println("Ошибка отправки сообщения:", err)
+			return
+		}
 		return
 	}
 
 	err = sendMediaMessage(ctx, bot, chatId, filePath)
 	if err != nil {
+		log.Println("Ошибка отправки сообщения:", err)
 		return
 	}
 	os.Remove(filePath)
@@ -634,7 +647,7 @@ func generateExcel(postings map[string]map[string]int, stocks map[string]map[str
 
 func (m *Manager) AnalyzeStocks(apiKey string, ctx context.Context, b *botlib.Bot) error {
 	var stocksApi []wb.Stock
-	stocksApi = wb.GetStockFbo(apiKey)
+	stocksApi, _ = wb.GetStockFbo(apiKey)
 
 	if stocksApi == nil {
 		return errors.New("stocks nil")

@@ -77,12 +77,15 @@ func GetPostingStatus(ApiKey string, postingId int) string {
 	return postingStatuses.Orders[0].WbStatus
 }
 
-func GetStockFbo(apiKey string) []Stock {
+func GetStockFbo(apiKey string) ([]Stock, error) {
 	var stocks []Stock
-	stocksString := stocksFbo(apiKey)
-	err := json.Unmarshal([]byte(stocksString), &stocks)
+	stocksString, err := stocksFbo(apiKey)
 	if err != nil {
-		log.Fatalf("Error decoding JSON: %v", err)
+		return nil, err
 	}
-	return stocks
+	err = json.Unmarshal([]byte(stocksString), &stocks)
+	if err != nil {
+		return nil, fmt.Errorf("Error decoding JSON: %v", err)
+	}
+	return stocks, nil
 }
