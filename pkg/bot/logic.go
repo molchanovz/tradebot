@@ -593,7 +593,7 @@ func initEnv(path, name string) (string, error) {
 }
 func generateExcel(postings map[string]map[string]int, stocks map[string]map[string]int, K float64, mp string) (string, error) {
 	file := excelize.NewFile()
-	sheetName := "Stock Analysis"
+	sheetName := "StocksFBO Analysis"
 	file.SetSheetName("Sheet1", sheetName)
 
 	// Заголовки
@@ -646,49 +646,57 @@ func generateExcel(postings map[string]map[string]int, stocks map[string]map[str
 }
 
 func (m *Manager) AnalyzeStocks(apiKey string, ctx context.Context, b *botlib.Bot) error {
-	var stocksApi []wb.Stock
-	stocksApi, _ = wb.GetStockFbo(apiKey)
-
-	if stocksApi == nil {
-		return errors.New("stocks nil")
+	stocksFBO, err := wb.GetStockFbo(apiKey)
+	if err != nil {
+		return err
 	}
 
-	stocksMap := make(map[string]int)
+	if stocksFBO == nil {
+		return errors.New("newStocks nil")
+	}
+
+	type customStock struct {
+		stockFBO int
+		stockFBS int
+	}
+
+	stocksMap := make(map[string]customStock)
 
 	// Заполнение мапы артикулов
-	for i := range stocksApi {
-		if _, hasArticle := stocksMap[stocksApi[i].SupplierArticle]; hasArticle {
-			stocksMap[stocksApi[i].SupplierArticle] += stocksApi[i].Quantity
+	for i := range stocksFBO {
+		if stock, hasArticle := stocksMap[stocksFBO[i].SupplierArticle]; hasArticle {
+			stock.stockFBO += stocksFBO[i].Quantity
 		} else {
-			stocksMap[stocksApi[i].SupplierArticle] = stocksApi[i].Quantity
+			stock.stockFBO = stocksFBO[i].Quantity
 		}
 	}
 
-	for article, quantity := range stocksMap {
+	for article, newStocks := range stocksMap {
 		var stocksDB []db.Stock
 		// Смотрим есть ли артикул в бд
 		result := m.db.Where("article = ?", article).Find(&stocksDB)
 		if result.Error != nil {
-			log.Println("Error finding stocksApi:", result.Error)
+			log.Println("Error finding stocksDB:", result.Error)
 		}
 
 		// если артикула нет - заполняем бд
 		if len(stocksDB) == 0 {
-			stock := db.Stock{Article: article, Stock: &quantity, Date: time.Now()}
-			err := m.db.Create(&stock).Error
+			stock := db.Stock{Article: article, StocksFBO: &newStocks.stockFBO, Date: time.Now()}
+			err = m.db.Create(&stock).Error
 			if err != nil {
 				return err
 			}
 			continue
 		}
 
-		if *stocksDB[0].Stock == quantity {
+		if newStocks.stockFBO == *stocksDB[0].StocksFBO {
 			continue
 		}
+
 		// Если стало нулем
-		if quantity == 0 {
+		if newStocks.stockFBO == 0 && *stocksDB[0].StocksFBO != 0 {
 			// Отправляем уведомление
-			_, err := b.SendMessage(ctx, &botlib.SendMessageParams{
+			_, err = b.SendMessage(ctx, &botlib.SendMessageParams{
 				ChatID: m.myChatId,
 				Text:   fmt.Sprintf("Нужно добавить наличие fbs для %v", article),
 			})
@@ -699,13 +707,14 @@ func (m *Manager) AnalyzeStocks(apiKey string, ctx context.Context, b *botlib.Bo
 
 		fmt.Println("Обновляем ", stocksDB[0].Article)
 
-		err := m.db.Model(&db.Stock{}).Where("article = ?", stocksDB[0].Article).Updates(db.Stock{
-			Stock: &quantity,
-			Date:  time.Now(),
+		err = m.db.Model(&db.Stock{}).Where("article = ?", stocksDB[0].Article).Updates(db.Stock{
+			StocksFBO: &newStocks.stockFBO,
+			Date:      time.Now(),
 		}).Error
 		if err != nil {
 			return err
 		}
+
 	}
 
 	return nil
@@ -713,7 +722,7 @@ func (m *Manager) AnalyzeStocks(apiKey string, ctx context.Context, b *botlib.Bo
 
 //func generateExcel(postings map[string]map[string]int, stocks map[string]map[string]int, K float64, mp string) (string, error) {
 //	file := excelize.NewFile()
-//	sheetName := "Stock Analysis"
+//	sheetName := "StocksFBO Analysis"
 //	file.SetSheetName("Sheet1", sheetName)
 //
 //	// Заголовки

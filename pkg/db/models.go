@@ -3,9 +3,10 @@ package db
 import "time"
 
 type Stock struct {
-	Article string    `gorm:"column:article;unique"`
-	Date    time.Time `gorm:"column:date"`
-	Stock   *int      `gorm:"column:stock"`
+	Article   string    `gorm:"column:article;unique"`
+	Date      time.Time `gorm:"column:date"`
+	StocksFBO *int      `gorm:"column:stock_fbo"`
+	StocksFBS *int      `gorm:"column:stock_fbs"`
 }
 
 type User struct {

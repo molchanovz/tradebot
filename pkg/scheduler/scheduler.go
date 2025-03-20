@@ -20,11 +20,12 @@ func NewService(botManager *bot.Manager, wbToken string) Service {
 
 func (s *Service) Start() error {
 	scheduler := gocron.NewScheduler(time.Local)
-	_, err := scheduler.Every(30).Minute().Do(func() {
+	_, err := scheduler.Every(30).Minute().Do(func() error {
 		err := s.botManager.AnalyzeStocks(s.wbToken, context.Background(), s.botManager.GetBot())
 		if err != nil {
-			return
+			return err
 		}
+		return nil
 	})
 	if err != nil {
 		return fmt.Errorf("Ошибка при добавлении задачи: %v\n", err)
