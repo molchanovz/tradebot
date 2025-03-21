@@ -55,6 +55,7 @@ func (a Application) Start() {
 	schedulerService := scheduler.NewService(botService.GetManager(), wbToken)
 	err = schedulerService.Start()
 	if err != nil {
+		log.Println(err)
 		return
 	}
 

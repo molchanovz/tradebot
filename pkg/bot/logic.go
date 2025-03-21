@@ -662,13 +662,23 @@ func (m *Manager) AnalyzeStocks(apiKey string, ctx context.Context, b *botlib.Bo
 
 	stocksMap := make(map[string]customStock)
 
+	//TODO чето не работает.
+
 	// Заполнение мапы артикулов
 	for i := range stocksFBO {
 		if stock, hasArticle := stocksMap[stocksFBO[i].SupplierArticle]; hasArticle {
 			stock.stockFBO += stocksFBO[i].Quantity
+			stocksMap[stocksFBO[i].SupplierArticle] = stock
 		} else {
-			stock.stockFBO = stocksFBO[i].Quantity
+			stock := customStock{
+				stockFBO: stocksFBO[i].Quantity,
+			}
+			stocksMap[stocksFBO[i].SupplierArticle] = stock
 		}
+	}
+
+	if len(stocksMap) == 0 {
+		return errors.New("stocksMap nil")
 	}
 
 	for article, newStocks := range stocksMap {
@@ -676,7 +686,7 @@ func (m *Manager) AnalyzeStocks(apiKey string, ctx context.Context, b *botlib.Bo
 		// Смотрим есть ли артикул в бд
 		result := m.db.Where("article = ?", article).Find(&stocksDB)
 		if result.Error != nil {
-			log.Println("Error finding stocksDB:", result.Error)
+			return result.Error
 		}
 
 		// если артикула нет - заполняем бд
@@ -686,10 +696,12 @@ func (m *Manager) AnalyzeStocks(apiKey string, ctx context.Context, b *botlib.Bo
 			if err != nil {
 				return err
 			}
+
 			continue
 		}
 
 		if newStocks.stockFBO == *stocksDB[0].StocksFBO {
+
 			continue
 		}
 
@@ -705,7 +717,7 @@ func (m *Manager) AnalyzeStocks(apiKey string, ctx context.Context, b *botlib.Bo
 			}
 		}
 
-		fmt.Println("Обновляем ", stocksDB[0].Article)
+		log.Println("Обновляем ", stocksDB[0].Article)
 
 		err = m.db.Model(&db.Stock{}).Where("article = ?", stocksDB[0].Article).Updates(db.Stock{
 			StocksFBO: &newStocks.stockFBO,
@@ -714,7 +726,6 @@ func (m *Manager) AnalyzeStocks(apiKey string, ctx context.Context, b *botlib.Bo
 		if err != nil {
 			return err
 		}
-
 	}
 
 	return nil
