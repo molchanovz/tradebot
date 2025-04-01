@@ -4,23 +4,25 @@
     <option name="autoReloadType" value="ALL" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="640077d7-ce81-4039-9739-8ad3e3a8d41a" name="Changes" comment="fix/add yandex barcodes">
-      <change afterPath="$PROJECT_DIR$/pkg/app/app.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/pkg/bot/bot.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/pkg/bot/logic.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/pkg/db/models.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/pkg/googleService/googleService.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/pkg/scheduler/scheduler.go" afterDir="false" />
+    <list default="true" id="640077d7-ce81-4039-9739-8ad3e3a8d41a" name="Changes" comment="edit AnalyzeStocks(): fix FBO stocks">
+      <change afterPath="$PROJECT_DIR$/pkg/OZON/OrdersAndReturns/logic.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pkg/OZON/service.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pkg/WB/service.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pkg/YANDEX/service.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/dataSources.local.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources.local.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/dataSources/9b72206f-fbb5-43b6-9126-d9522b27e82f.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources/9b72206f-fbb5-43b6-9126-d9522b27e82f.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/dataSources/9b72206f-fbb5-43b6-9126-d9522b27e82f/storage_v2/_src_/database/db_bot.hko2sA/schema/public.abK9xQ.meta" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources/9b72206f-fbb5-43b6-9126-d9522b27e82f/storage_v2/_src_/database/db_bot.hko2sA/schema/public.abK9xQ.meta" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmd/main.go" beforeDir="false" afterPath="$PROJECT_DIR$/cmd/main.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pkg/OZON/ozon_orders_returns/googleService.go" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/pkg/OZON/ozon_orders_returns/logic.go" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/OZON/ozon_orders_returns/logic.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pkg/WB/wb_orders_returns/googleService.go" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/pkg/WB/wb_orders_returns/logic.go" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/WB/wb_orders_returns/logic.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pkg/YANDEX/yandex_orders_returns/googleService.go" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/pkg/YANDEX/yandex_orders_returns/logic.go" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/YANDEX/yandex_orders_returns/logic.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pkg/database/postgresql/db.go" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/db/db.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pkg/database/postgresql/init.sql" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/db/init.sql" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pkg/OZON/ozon_orders_returns/logic.go" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/pkg/OZON/ozon_stocks/logic.go" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/OZON/Stocks/logic.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pkg/WB/wb_orders_returns/logic.go" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/WB/OrdersAndReturns/logic.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pkg/WB/wb_stickers_fbs/logic.go" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/WB/StickersFbs/logic.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pkg/YANDEX/yandex_orders_returns/logic.go" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/YANDEX/OrdersAndReturns/logic.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pkg/YANDEX/yandex_stickers_fbs/logic.go" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/YANDEX/yandex_stickers_fbs/logic.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pkg/api/ozon/api.go" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/api/ozon/api.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pkg/app/app.go" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/app/app.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pkg/bot/bot.go" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/bot/bot.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pkg/bot/logic.go" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/bot/logic.go" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -75,7 +77,7 @@
     &quot;git-widget-placeholder&quot;: &quot;master&quot;,
     &quot;go.import.settings.migrated&quot;: &quot;true&quot;,
     &quot;go.sdk.automatically.set&quot;: &quot;true&quot;,
-    &quot;last_opened_file_path&quot;: &quot;/Users/sergey&quot;,
+    &quot;last_opened_file_path&quot;: &quot;/Users/sergey/GolandProjects/WildberriesGo_bot&quot;,
     &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
     &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
     &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;
@@ -88,18 +90,18 @@
 }</component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/pkg/WB" />
       <recent name="$PROJECT_DIR$/pkg/YANDEX/yandex_stickers_fbs/barcodes" />
       <recent name="$PROJECT_DIR$" />
       <recent name="$PROJECT_DIR$/OZON" />
       <recent name="$PROJECT_DIR$/YANDEX/models" />
-      <recent name="$PROJECT_DIR$/YANDEX" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/pkg/OZON" />
+      <recent name="$PROJECT_DIR$/pkg/db" />
+      <recent name="$PROJECT_DIR$/pkg/db/database" />
+      <recent name="$PROJECT_DIR$/pkg/db/models" />
       <recent name="$PROJECT_DIR$/pkg/bot" />
-      <recent name="$PROJECT_DIR$/pkg/api/yandex" />
-      <recent name="$PROJECT_DIR$/pkg/api/wb" />
-      <recent name="$PROJECT_DIR$/pkg/api" />
-      <recent name="$PROJECT_DIR$/pkg/database/postgresql" />
     </key>
   </component>
   <component name="RunManager">
@@ -155,20 +157,14 @@
     <MESSAGE value="fix daysAgo" />
     <MESSAGE value="fix wb clusters, fix api" />
     <MESSAGE value="fix/add yandex barcodes" />
-    <option name="LAST_COMMIT_MESSAGE" value="fix/add yandex barcodes" />
+    <MESSAGE value="edit app services" />
+    <MESSAGE value="fix logs" />
+    <MESSAGE value="run schedulers" />
+    <MESSAGE value="edit AnalyzeStocks(): add stocks FBO/FBS" />
+    <MESSAGE value="edit AnalyzeStocks(): fix FBO stocks" />
+    <option name="LAST_COMMIT_MESSAGE" value="edit AnalyzeStocks(): fix FBO stocks" />
   </component>
   <component name="VgoProject">
     <settings-migrated>true</settings-migrated>
-  </component>
-  <component name="XDebuggerManager">
-    <breakpoint-manager>
-      <breakpoints>
-        <line-breakpoint enabled="true" type="DlvLineBreakpoint">
-          <url>file://$PROJECT_DIR$/pkg/bot/logic.go</url>
-          <line>86</line>
-          <option name="timeStamp" value="4" />
-        </line-breakpoint>
-      </breakpoints>
-    </breakpoint-manager>
   </component>
 </project>

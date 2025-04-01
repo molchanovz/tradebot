@@ -40,7 +40,6 @@ func GetOrdersInfo(token, supplyId string) error {
 	for _, orderId := range orderIds {
 		//Получаем товары в заказе
 		order, err := yandex.GetOrder(token, orderId)
-
 		if err != nil {
 			return fmt.Errorf("ошибка в GetOrder: %v", err)
 		}
@@ -60,24 +59,23 @@ func GetOrdersInfo(token, supplyId string) error {
 		// Записываем строку в файл
 		_, err = file.Write([]byte(stickers))
 		if err != nil {
-			panic(err)
+			return fmt.Errorf("ошибка в записи в файл: %v", err)
 		}
 
 		file.Close()
 
 		pdf, err := CreateLabel(fmt.Sprintf("%v.pdf", codesPath+strconv.Itoa(int(order.Order.Id))), order.Order.Items)
 		if err != nil {
-			return err
+			return fmt.Errorf("ошибка в CreateLabel: %v", err)
 		}
 
 		// Сохраняем итоговый PDF
 		err = pdf.OutputFileAndClose(fmt.Sprintf("%v.pdf", readyPath+strconv.Itoa(int(order.Order.Id))))
 		if err != nil {
-			fmt.Println("Ошибка при сохранении PDF:", err)
+			return fmt.Errorf("Ошибка при сохранении PDF:", err)
 		} else {
 			fmt.Println("PDF успешно создан:", fmt.Sprintf("%v.pdf", readyPath+strconv.Itoa(int(order.Order.Id))))
 		}
-
 		ordersSlice = append(ordersSlice, fmt.Sprintf("%v.pdf", readyPath+strconv.Itoa(int(order.Order.Id))))
 	}
 

@@ -1,6 +1,9 @@
 package app
 
 import (
+	"WildberriesGo_bot/pkg/OZON"
+	"WildberriesGo_bot/pkg/WB"
+	"WildberriesGo_bot/pkg/YANDEX"
 	"WildberriesGo_bot/pkg/bot"
 	"WildberriesGo_bot/pkg/db"
 	"WildberriesGo_bot/pkg/scheduler"
@@ -22,6 +25,14 @@ func NewApplication(envPath string) Application {
 }
 
 func (a Application) Start() {
+	clientId, err := initEnv(a.envPath, "ClientId")
+	if err != nil {
+		fmt.Printf("%v", err)
+	}
+	ozonToken, err := initEnv(a.envPath, "OzonKey")
+	if err != nil {
+		fmt.Printf("%v", err)
+	}
 	wbToken, err := initEnv(a.envPath, "API_KEY_WB")
 	if err != nil {
 		fmt.Printf("%v", err)
@@ -30,14 +41,14 @@ func (a Application) Start() {
 	if err != nil {
 		fmt.Printf("%v", err)
 	}
-	token, err := initEnv(a.envPath, "token")
+	botToken, err := initEnv(a.envPath, "token")
 	if err != nil {
 		fmt.Printf("%v", err)
 	}
-	//yandexToken, err := initEnv(a.envPath, "yandexToken")
-	//if err != nil {
-	//	fmt.Printf("%v", err)
-	//}
+	yandexToken, err := initEnv(a.envPath, "yandexToken")
+	if err != nil {
+		fmt.Printf("%v", err)
+	}
 	dsn, err := initEnv(a.envPath, "DSN")
 	if err != nil {
 		fmt.Printf("%v", err)
@@ -49,7 +60,11 @@ func (a Application) Start() {
 		fmt.Printf("%v", err)
 	}
 
-	botService := bot.NewBotService(token, sqlDB, myChatId)
+	ozonService := OZON.NewService(clientId, ozonToken)
+	wbService := WB.NewService(wbToken)
+	yandexService := YANDEX.NewService(yandexToken)
+
+	botService := bot.NewBotService(*ozonService, *wbService, *yandexService, botToken, sqlDB, myChatId)
 	botService.Start()
 
 	schedulerService := scheduler.NewService(botService.GetManager(), wbToken)
@@ -60,16 +75,20 @@ func (a Application) Start() {
 	}
 
 	defer func(sqlDB *gorm.DB) {
+
 		database, err := sqlDB.DB()
 		if err != nil {
-			log.Panic(err)
+			log.Println(err)
+			return
 		}
+
 		err = database.Close()
-		if err == nil {
-			log.Println("Соединение закрыто")
-		} else {
-			log.Panic(err)
+		if err != nil {
+			log.Println(err)
+			return
 		}
+
+		log.Println("Соединение закрыто")
 	}(sqlDB)
 
 	stopChan := make(chan os.Signal, 1)

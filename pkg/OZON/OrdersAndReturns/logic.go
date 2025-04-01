@@ -1,24 +1,31 @@
-package ozon_orders_returns
+package OrdersAndReturns
 
 import (
 	"WildberriesGo_bot/pkg/api/ozon"
 	"WildberriesGo_bot/pkg/googleService"
-	"fmt"
-	"github.com/joho/godotenv"
-	"log"
-	"os"
 	"strconv"
 	"time"
 )
 
-const (
-	DaysAgo       = 1
-	spreadsheetId = "13VI6x59ht10mMlfH3F8n5_jXbXB1kypBDH0vIDnsb3M"
-)
+type OzonManager struct {
+	daysAgo                        int
+	spreadsheetId, clientId, token string
+	googleService                  googleService.GoogleService
+}
+
+func NewOzonManager(clientId, token, spreadsheetId string, daysAgo int) OzonManager {
+	return OzonManager{
+		clientId:      clientId,
+		token:         token,
+		daysAgo:       daysAgo,
+		spreadsheetId: spreadsheetId,
+		googleService: googleService.NewGoogleService("token.json", "credentials.json"),
+	}
+}
 
 // WriteToGoogleSheets Заполнение гугл таблицы с id = spreadsheetId
-func WriteToGoogleSheets(ClientId string, ApiKey string) {
-	date := time.Now().AddDate(0, 0, -DaysAgo)
+func (m OzonManager) WriteToGoogleSheets() error {
+	date := time.Now().AddDate(0, 0, -m.daysAgo)
 	sheetsName := "Заказы OZON-" + strconv.Itoa(date.Day())
 
 	var values [][]interface{}
@@ -26,52 +33,59 @@ func WriteToGoogleSheets(ClientId string, ApiKey string) {
 
 	writeRange := sheetsName + "!A1"
 
-	googleServ := googleService.NewGoogleService("token.json", "credentials.json")
-	err := googleServ.Write(spreadsheetId, writeRange, values)
+	err := m.googleService.Write(m.spreadsheetId, writeRange, values)
 	if err != nil {
-		return
+		return err
 	}
 
 	//Заполнение заказов FBS в writeRange
-	postingsWithCountFBS := getPostingsMapFBS(ClientId, ApiKey)
+	postingsWithCountFBS := m.getPostingsMapFBS()
 	values = [][]interface{}{}
 	values = append(values, []interface{}{"Заказы FBS"})
 	for article, count := range postingsWithCountFBS {
 		values = append(values, []interface{}{article, count})
 	}
 	writeRange = sheetsName + "!A2:B100"
-	googleServ.Write(spreadsheetId, writeRange, values)
+	err = m.googleService.Write(m.spreadsheetId, writeRange, values)
+	if err != nil {
+		return err
+	}
 
-	//Заполнение заказов FBO в writeRange
-	postingsWithCountFBO := getPostingsMapFBO(ClientId, ApiKey)
+	postingsWithCountFBO := m.getPostingsMapFBO()
 	values = [][]interface{}{}
 	values = append(values, []interface{}{"Заказы FBO"})
 	for article, count := range postingsWithCountFBO {
 		values = append(values, []interface{}{article, count})
 	}
 	writeRange = sheetsName + "!D2:E100"
-	googleServ.Write(spreadsheetId, writeRange, values)
+	err = m.googleService.Write(m.spreadsheetId, writeRange, values)
+	if err != nil {
+		return err
+	}
 
-	since := time.Now().AddDate(0, 0, DaysAgo*(-1)-1).Format("2006-01-02") + "T21:00:00.000Z"
-	to := time.Now().AddDate(0, 0, DaysAgo*(-1)).Format("2006-01-02") + "T21:00:00.000Z"
+	since := time.Now().AddDate(0, 0, m.daysAgo*(-1)-1).Format("2006-01-02") + "T21:00:00.000Z"
+	to := time.Now().AddDate(0, 0, m.daysAgo*(-1)).Format("2006-01-02") + "T21:00:00.000Z"
 	//Заполнение возвратов
-	println(since)
-	println(to)
-	returnsWithCount := getReturnsMap(ClientId, ApiKey, since, to)
+	returnsWithCount := m.getReturnsMap(since, to)
 	values = [][]interface{}{}
 	values = append(values, []interface{}{"Возвраты"})
 	for article, count := range returnsWithCount {
 		values = append(values, []interface{}{article, count})
 	}
 	writeRange = sheetsName + "!G2:H100"
-	googleServ.Write(spreadsheetId, writeRange, values)
+	err = m.googleService.Write(m.spreadsheetId, writeRange, values)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
 
-func getPostingsMapFBS(ClientId string, ApiKey string) map[string]int {
+func (m OzonManager) getPostingsMapFBS() map[string]int {
 	postingsWithCountFBS := make(map[string]int)
-	since := time.Now().AddDate(0, 0, DaysAgo*(-1)-1).Format("2006-01-02") + "T21:00:00.000Z"
-	to := time.Now().AddDate(0, 0, DaysAgo*(-1)).Format("2006-01-02") + "T21:00:00.000Z"
-	potingsListFbs := ozon.PostingsListFbs(ClientId, ApiKey, since, to, 0)
+	since := time.Now().AddDate(0, 0, m.daysAgo*(-1)-1).Format("2006-01-02") + "T21:00:00.000Z"
+	to := time.Now().AddDate(0, 0, m.daysAgo*(-1)).Format("2006-01-02") + "T21:00:00.000Z"
+	potingsListFbs := ozon.PostingsListFbs(m.clientId, m.token, since, to, 0)
 	for _, posting := range potingsListFbs.Result.PostingsFBS {
 		if posting.Status != "cancelled" {
 			for _, product := range posting.Products {
@@ -81,11 +95,11 @@ func getPostingsMapFBS(ClientId string, ApiKey string) map[string]int {
 	}
 	return postingsWithCountFBS
 }
-func getPostingsMapFBO(ClientId string, ApiKey string) map[string]int {
+func (m OzonManager) getPostingsMapFBO() map[string]int {
 	postingsWithCountFBO := make(map[string]int)
-	since := time.Now().AddDate(0, 0, DaysAgo*(-1)-1).Format("2006-01-02") + "T21:00:00.000Z"
-	to := time.Now().AddDate(0, 0, DaysAgo*(-1)).Format("2006-01-02") + "T21:00:00.000Z"
-	postings_list_fbo := ozon.PostingsListFbo(ClientId, ApiKey, since, to, 0)
+	since := time.Now().AddDate(0, 0, m.daysAgo*(-1)-1).Format("2006-01-02") + "T21:00:00.000Z"
+	to := time.Now().AddDate(0, 0, m.daysAgo*(-1)).Format("2006-01-02") + "T21:00:00.000Z"
+	postings_list_fbo := ozon.PostingsListFbo(m.clientId, m.token, since, to, 0)
 	for _, posting := range postings_list_fbo.Result {
 		if posting.Status != "cancelled" {
 			for _, product := range posting.Products {
@@ -95,8 +109,7 @@ func getPostingsMapFBO(ClientId string, ApiKey string) map[string]int {
 	}
 	return postingsWithCountFBO
 }
-
-func getReturnsMap(ClientId, ApiKey, since, to string) map[string]int {
+func (m OzonManager) getReturnsMap(since, to string) map[string]int {
 	LastID := 0
 	hasNext := true
 	returnsWithCount := make(map[string]int)
@@ -106,7 +119,7 @@ func getReturnsMap(ClientId, ApiKey, since, to string) map[string]int {
 		поэтому делаем цикл с LastID и добавляем в срез returnsFBO
 	*/
 	for hasNext {
-		returns = ozon.ReturnsList(ClientId, ApiKey, LastID, since, to)
+		returns = ozon.ReturnsList(m.clientId, m.token, LastID, since, to)
 		for _, value := range returns.Returns {
 			if value.Visual.Status.SysName == "ReturnedToOzon" {
 				returnsWithCount[value.Product.OfferId] += value.Product.Quantity
@@ -116,19 +129,4 @@ func getReturnsMap(ClientId, ApiKey, since, to string) map[string]int {
 		hasNext = returns.HasNext
 	}
 	return returnsWithCount
-}
-
-func initEnv(path, name string) (string, error) {
-	err := godotenv.Load(path)
-	if err != nil {
-		log.Printf("Ошибка загрузки файла %s: %v\n", path, err)
-		return "", fmt.Errorf("ошибка загрузки файла " + path)
-	}
-	// Получаем значения переменных среды
-	env := os.Getenv(name)
-
-	if env == "" {
-		return "", fmt.Errorf("переменная среды " + name + " не установлена")
-	}
-	return env, err
 }

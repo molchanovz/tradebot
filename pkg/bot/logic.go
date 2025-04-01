@@ -1,12 +1,11 @@
 package bot
 
 import (
-	"WildberriesGo_bot/pkg/OZON/ozon_orders_returns"
-	"WildberriesGo_bot/pkg/OZON/ozon_stocks"
-	"WildberriesGo_bot/pkg/WB/wb_orders_returns"
-	"WildberriesGo_bot/pkg/WB/wb_stickers_fbs"
+	"WildberriesGo_bot/pkg/OZON"
+	"WildberriesGo_bot/pkg/WB"
+	"WildberriesGo_bot/pkg/WB/StickersFbs"
 	"WildberriesGo_bot/pkg/WB/wb_stocks_analyze"
-	"WildberriesGo_bot/pkg/YANDEX/yandex_orders_returns"
+	"WildberriesGo_bot/pkg/YANDEX"
 	"WildberriesGo_bot/pkg/YANDEX/yandex_stickers_fbs"
 	"WildberriesGo_bot/pkg/api/wb"
 	"WildberriesGo_bot/pkg/db"
@@ -39,15 +38,21 @@ const (
 )
 
 type Manager struct {
-	b        *botlib.Bot
-	db       *gorm.DB
-	myChatId string
+	b             *botlib.Bot
+	db            *gorm.DB
+	ozonService   OZON.Service
+	wbService     WB.Service
+	yandexService YANDEX.Service
+	myChatId      string
 }
 
-func NewBotManager(db *gorm.DB, myChatId string) *Manager {
+func NewBotManager(ozonService OZON.Service, wbService WB.Service, yandexService YANDEX.Service, db *gorm.DB, myChatId string) *Manager {
 	return &Manager{
-		db:       db,
-		myChatId: myChatId,
+		ozonService:   ozonService,
+		wbService:     wbService,
+		yandexService: yandexService,
+		db:            db,
+		myChatId:      myChatId,
 	}
 }
 
@@ -68,10 +73,10 @@ func (m *Manager) RegisterBotHandlers() {
 
 	m.b.RegisterHandler(botlib.HandlerTypeCallbackQueryData, CallbackWbFbsHandler, botlib.MatchTypeExact, m.wbFbsHandler)
 	m.b.RegisterHandler(botlib.HandlerTypeCallbackQueryData, CallbackYandexFbsHandler, botlib.MatchTypeExact, m.yandexFbsHandler)
-	m.b.RegisterHandler(botlib.HandlerTypeCallbackQueryData, CallbackWbOrdersHandler, botlib.MatchTypePrefix, wbOrdersHandler)
-	m.b.RegisterHandler(botlib.HandlerTypeCallbackQueryData, CallbackYandexOrdersHandler, botlib.MatchTypePrefix, yandexOrdersHandler)
-	m.b.RegisterHandler(botlib.HandlerTypeCallbackQueryData, CallbackOzonOrdersHandler, botlib.MatchTypePrefix, ozonOrdersHandler)
-	m.b.RegisterHandler(botlib.HandlerTypeCallbackQueryData, CallbackOzonStocksHandler, botlib.MatchTypePrefix, ozonStocksHandler)
+	m.b.RegisterHandler(botlib.HandlerTypeCallbackQueryData, CallbackWbOrdersHandler, botlib.MatchTypePrefix, m.wbOrdersHandler)
+	m.b.RegisterHandler(botlib.HandlerTypeCallbackQueryData, CallbackYandexOrdersHandler, botlib.MatchTypePrefix, m.yandexOrdersHandler)
+	m.b.RegisterHandler(botlib.HandlerTypeCallbackQueryData, CallbackOzonOrdersHandler, botlib.MatchTypePrefix, m.ozonOrdersHandler)
+	m.b.RegisterHandler(botlib.HandlerTypeCallbackQueryData, CallbackOzonStocksHandler, botlib.MatchTypePrefix, m.ozonStocksHandler)
 	m.b.RegisterHandler(botlib.HandlerTypeCallbackQueryData, CallbackWbStocksHandler, botlib.MatchTypePrefix, wbStocksHandler)
 
 	//b.RegisterHandler(botlib.HandlerTypeCallbackQueryData, "YANDEX_FBS", botlib.MatchTypePrefix, wbOrdersHandler)
@@ -96,7 +101,7 @@ func (m *Manager) DefaultHandler(ctx context.Context, bot *botlib.Bot, update *m
 		}
 	case db.WaitingWbState:
 		{
-			getWbFbs(ctx, bot, chatId, message)
+			m.getWbFbs(ctx, bot, chatId, message)
 		}
 	case db.WaitingYaState:
 		{
@@ -306,19 +311,14 @@ func (m *Manager) yandexFbsHandler(ctx context.Context, bot *botlib.Bot, update 
 
 }
 
-func getWbFbs(ctx context.Context, bot *botlib.Bot, chatId int64, supplyId string) {
-	wildberriesKey, err := initEnv("variables.env", "API_KEY_WB")
-	if err != nil {
-		return
-	}
-
+func (m *Manager) getWbFbs(ctx context.Context, bot *botlib.Bot, chatId int64, supplyId string) {
 	text := fmt.Sprintf("Подготовка файла ВБ")
 	message, err := sendTextMessage(ctx, bot, chatId, text)
 	if err != nil {
 		return
 	}
 
-	err = wb_stickers_fbs.GetReadyFile(wildberriesKey, supplyId)
+	err = m.wbService.GetStickersFbsManager().GetReadyFile(supplyId)
 	if err != nil {
 		_, err = sendTextMessage(ctx, bot, chatId, err.Error())
 		if err != nil {
@@ -328,13 +328,13 @@ func getWbFbs(ctx context.Context, bot *botlib.Bot, chatId int64, supplyId strin
 		return
 	}
 
-	filePath := fmt.Sprintf("%v%v.pdf", wb_stickers_fbs.DirectoryPath, supplyId)
+	filePath := fmt.Sprintf("%v%v.pdf", StickersFbs.DirectoryPath, supplyId)
 	err = sendMediaMessage(ctx, bot, chatId, filePath)
 	if err != nil {
 		log.Println(err)
 		return
 	}
-	wb_stickers_fbs.Clean_files(supplyId)
+	StickersFbs.CleanFiles(supplyId)
 
 	text, markup := createStartMarkup()
 	_, err = bot.SendMessage(ctx, &botlib.SendMessageParams{ChatID: chatId, Text: text, ReplyMarkup: markup})
@@ -348,17 +348,10 @@ func getWbFbs(ctx context.Context, bot *botlib.Bot, chatId int64, supplyId strin
 		return
 	}
 }
-func wbOrdersHandler(ctx context.Context, bot *botlib.Bot, update *models.Update) {
+func (m *Manager) wbOrdersHandler(ctx context.Context, bot *botlib.Bot, update *models.Update) {
 	chatId := update.CallbackQuery.From.ID
 
-	wildberriesKey, err := initEnv("variables.env", "API_KEY_WB")
-	if err != nil {
-		log.Println(err)
-		return
-	}
-
-	err = wb_orders_returns.WriteToGoogleSheets(wildberriesKey)
-
+	err := m.wbService.GetOrdersAndReturnsManager().WriteToGoogleSheets()
 	if err != nil {
 		_, err = sendTextMessage(ctx, bot, chatId, err.Error())
 		if err != nil {
@@ -373,14 +366,10 @@ func wbOrdersHandler(ctx context.Context, bot *botlib.Bot, update *models.Update
 		}
 	}
 }
-func yandexOrdersHandler(ctx context.Context, bot *botlib.Bot, update *models.Update) {
+func (m *Manager) yandexOrdersHandler(ctx context.Context, bot *botlib.Bot, update *models.Update) {
 	chatId := update.CallbackQuery.From.ID
 
-	yandexToken, err := initEnv("variables.env", "yandexToken")
-	if err != nil {
-		log.Panic(err)
-	}
-	err = yandex_orders_returns.WriteToGoogleSheets(yandexToken)
+	err := m.yandexService.GetOrdersAndReturnsManager().WriteToGoogleSheets()
 	if err != nil {
 		log.Printf("%v", err)
 		return
@@ -393,18 +382,13 @@ func yandexOrdersHandler(ctx context.Context, bot *botlib.Bot, update *models.Up
 	}
 
 }
-func ozonOrdersHandler(ctx context.Context, bot *botlib.Bot, update *models.Update) {
+func (m *Manager) ozonOrdersHandler(ctx context.Context, bot *botlib.Bot, update *models.Update) {
 	chatId := update.CallbackQuery.From.ID
 
-	ClientId, err := initEnv("variables.env", "ClientId")
+	err := m.ozonService.GetOrdersAndReturnsManager().WriteToGoogleSheets()
 	if err != nil {
-		log.Panic(err)
+		return
 	}
-	OzonKey, err := initEnv("variables.env", "OzonKey")
-	if err != nil {
-		log.Panic(err)
-	}
-	ozon_orders_returns.WriteToGoogleSheets(ClientId, OzonKey)
 
 	_, err = sendTextMessage(ctx, bot, chatId, "Заказы озон за вчерашний день были внесены")
 	if err != nil {
@@ -413,25 +397,15 @@ func ozonOrdersHandler(ctx context.Context, bot *botlib.Bot, update *models.Upda
 	}
 
 }
-func ozonStocksHandler(ctx context.Context, bot *botlib.Bot, update *models.Update) {
-	daysAgo := 14
+func (m *Manager) ozonStocksHandler(ctx context.Context, bot *botlib.Bot, update *models.Update) {
+
 	K := 1.5
 
 	chatId := update.CallbackQuery.From.ID
-	ClientId, err := initEnv("variables.env", "ClientId")
-	if err != nil {
-		log.Println(err)
-		return
-	}
-	OzonKey, err := initEnv("variables.env", "OzonKey")
-	if err != nil {
-		log.Println(err)
-		return
-	}
 
-	postings := ozon_stocks.GetPostings(ClientId, OzonKey, daysAgo)
+	postings := m.ozonService.GetStocksManager().GetPostings()
 
-	stocks := ozon_stocks.GetStocks(ClientId, OzonKey)
+	stocks := m.ozonService.GetStocksManager().GetStocks()
 
 	filePath, err := generateExcel(postings, stocks, K, "ozon")
 	if err != nil {

@@ -1,16 +1,32 @@
-package ozon_stocks
+package Stocks
 
 import (
 	"WildberriesGo_bot/pkg/api/ozon"
+	"WildberriesGo_bot/pkg/googleService"
 	"time"
 )
 
-func GetPostings(ClientId, OzonKey string, daysAgo int) map[string]map[string]int {
-	since := time.Now().AddDate(0, 0, daysAgo*(-1)-1).Format("2006-01-02") + "T21:00:00.000Z"
+type Manager struct {
+	daysAgo         int
+	clientId, token string
+	googleService   googleService.GoogleService
+}
+
+func NewManager(clientId, token string, daysAgo int) Manager {
+	return Manager{
+		clientId:      clientId,
+		token:         token,
+		daysAgo:       daysAgo,
+		googleService: googleService.NewGoogleService("token.json", "credentials.json"),
+	}
+}
+
+func (m Manager) GetPostings() map[string]map[string]int {
+	since := time.Now().AddDate(0, 0, m.daysAgo*(-1)-1).Format("2006-01-02") + "T21:00:00.000Z"
 	to := time.Now().AddDate(0, 0, 0).Format("2006-01-02") + "T21:00:00.000Z"
 
-	postingsListFbs := ozon.PostingsListFbs(ClientId, OzonKey, since, to, 0)
-	postingsListFbo := ozon.PostingsListFbo(ClientId, OzonKey, since, to, 0)
+	postingsListFbs := ozon.PostingsListFbs(m.clientId, m.token, since, to, 0)
+	postingsListFbo := ozon.PostingsListFbo(m.clientId, m.token, since, to, 0)
 
 	postingsMap := make(map[string]map[string]int)
 
@@ -33,10 +49,10 @@ func GetPostings(ClientId, OzonKey string, daysAgo int) map[string]map[string]in
 	}
 	return postingsMap
 }
-func GetStocks(ClientId, OzonKey string) map[string]map[string]int {
-	stocksList := ozon.Stocks(ClientId, OzonKey)
+func (m Manager) GetStocks() map[string]map[string]int {
+	stocksList := ozon.Stocks(m.clientId, m.token)
 
-	clusters := ozon.Clusters(ClientId, OzonKey)
+	clusters := ozon.Clusters(m.clientId, m.token)
 
 	clustersMap := make(map[string]string)
 

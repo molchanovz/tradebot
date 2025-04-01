@@ -42,7 +42,7 @@ func V2PostingFboGet(ClientId, ApiKey, PostingNumber string) string {
 	defer resp.Body.Close()
 
 	if resp.StatusCode != http.StatusOK {
-		log.Fatalf("Ошибка v2_posting_fbo_get: получен статус %s", resp.Status)
+		log.Fatalf("Ошибка V2PostingFboGet: получен статус %s", resp.Status)
 	}
 
 	jsonString, _ := io.ReadAll(resp.Body)
@@ -251,7 +251,7 @@ func V3PostingFbsList(ClientId, ApiKey, since, to string, offset int) string {
 
 	// Проверяем статус ответа
 	if resp.StatusCode != http.StatusOK {
-		log.Fatalf("Ошибка v2_posting_fbo_get: получен статус %s", resp.Status)
+		log.Fatalf("Ошибка V3PostingFbsList: получен статус %s", resp.Status)
 	}
 
 	// Читаем тело ответа
@@ -303,7 +303,7 @@ func V2PostingFboList(ClientId, ApiKey, since, to string, offset int) string {
 
 	if resp.StatusCode != http.StatusOK {
 		errString, _ := io.ReadAll(resp.Body)
-		log.Fatalf("Ошибка v2_posting_fbo_get: получен статус %s. %s", resp.Status, errString)
+		log.Fatalf("Ошибка V2PostingFboList: получен статус %s. %s", resp.Status, errString)
 	}
 
 	// Читаем тело ответа
@@ -342,7 +342,7 @@ func v2StockOnWarehouses(ClientId, ApiKey string) string {
 
 	// Проверяем статус ответа
 	if resp.StatusCode != http.StatusOK {
-		log.Fatalf("Ошибка v2_posting_fbo_get: получен статус %s", resp.Status)
+		log.Fatalf("Ошибка v2StockOnWarehouses: получен статус %s", resp.Status)
 	}
 
 	// Читаем тело ответа
@@ -379,7 +379,7 @@ func v1Clusters(ClientId, ApiKey string) string {
 
 	// Проверяем статус ответа
 	if resp.StatusCode != http.StatusOK {
-		log.Fatalf("Ошибка v2_posting_fbo_get: получен статус %s", resp.Status)
+		log.Fatalf("Ошибка v1Clusters: получен статус %s", resp.Status)
 	}
 
 	// Читаем тело ответа

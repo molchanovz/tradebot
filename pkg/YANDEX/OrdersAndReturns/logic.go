@@ -1,17 +1,29 @@
-package yandex_orders_returns
+package OrdersAndReturns
 
 import (
-	"WildberriesGo_bot/pkg/OZON/ozon_orders_returns"
 	"WildberriesGo_bot/pkg/api/yandex"
 	"WildberriesGo_bot/pkg/googleService"
 	"strconv"
 	"time"
 )
 
-var spreadsheetId = "1amHmD0OP5r0psfgD4vk02DthJ7kCgsziMNkJEAAsJ2Y"
+type Manager struct {
+	token, spreadsheetId string
+	daysAgo              int
+	googleService        googleService.GoogleService
+}
 
-func WriteToGoogleSheets(ApiKey string) error {
-	date := time.Now().AddDate(0, 0, -ozon_orders_returns.DaysAgo)
+func NewManager(token, spreadsheetId string, daysAgo int) *Manager {
+	return &Manager{
+		spreadsheetId: spreadsheetId,
+		daysAgo:       daysAgo,
+		token:         token,
+		googleService: googleService.NewGoogleService("token.json", "credentials.json"),
+	}
+}
+
+func (m Manager) WriteToGoogleSheets() error {
+	date := time.Now().AddDate(0, 0, -m.daysAgo)
 	sheetsName := "Заказы YM-" + strconv.Itoa(date.Day())
 
 	var values [][]interface{}
@@ -19,17 +31,21 @@ func WriteToGoogleSheets(ApiKey string) error {
 	values = append(values, []interface{}{"Отчет за " + date.Format("02.01.2006")})
 
 	writeRange := sheetsName + "!A1"
-	googleServ := googleService.NewGoogleService("token.json", "credentials.json")
-	err := googleServ.Write(spreadsheetId, writeRange, values)
+	err := m.googleService.Write(m.spreadsheetId, writeRange, values)
 	if err != nil {
 		return err
 	}
 
-	//Запись ALL заказов
-	postingsWithCountFBO, _ := ordersMapFBO(ApiKey, ozon_orders_returns.DaysAgo)
+	//Запись FBO заказов
+	postingsWithCountFBO, _ := m.ordersMapFBO()
 	writeRange = sheetsName + "!A2:B100"
 	colName := "Заказы FBO"
-	err = writeData(writeRange, colName, postingsWithCountFBO)
+	values = [][]interface{}{}
+	values = append(values, []interface{}{colName})
+	for article, count := range postingsWithCountFBO {
+		values = append(values, []interface{}{article, count})
+	}
+	err = m.googleService.Write(m.spreadsheetId, writeRange, values)
 	if err != nil {
 		return err
 	}
@@ -52,23 +68,6 @@ func WriteToGoogleSheets(ApiKey string) error {
 	//	return err
 	//}
 
-	return nil
-}
-
-func writeData(writeRange, colName string, data map[string]int) error {
-	var values [][]interface{}
-
-	values = append(values, []interface{}{colName})
-	for article, count := range data {
-		values = append(values, []interface{}{article, count})
-	}
-
-	googleServ := googleService.NewGoogleService("token.json", "credentials.json")
-
-	err := googleServ.Write(spreadsheetId, writeRange, values)
-	if err != nil {
-		return err
-	}
 	return nil
 }
 
@@ -99,9 +98,9 @@ func writeData(writeRange, colName string, data map[string]int) error {
 //	return postingsWithCountFBS
 //}
 
-func ordersMapFBO(yandexToken string, daysAgo int) (map[string]int, error) {
+func (m Manager) ordersMapFBO() (map[string]int, error) {
 	postingsWithCountALL := make(map[string]int)
-	ordersFbo, err := yandex.GetOrdersFbo(yandexToken, daysAgo)
+	ordersFbo, err := yandex.GetOrdersFbo(m.token, m.daysAgo)
 	if err != nil {
 		return postingsWithCountALL, err
 	}

@@ -1,7 +1,8 @@
-package wb_stickers_fbs
+package StickersFbs
 
 import (
 	"WildberriesGo_bot/pkg/api/wb"
+	"WildberriesGo_bot/pkg/googleService"
 	"encoding/base64"
 	"fmt"
 	"github.com/fogleman/gg"
@@ -22,15 +23,26 @@ const (
 	readyPath     = DirectoryPath + "ready/"
 )
 
-func GetReadyFile(wildberriesKey, supplyId string) error {
-	orders, err := wb.GetOrdersFbs(wildberriesKey, supplyId)
+type WbManager struct {
+	token         string
+	googleService googleService.GoogleService
+}
+
+func NewWbManager(token string) WbManager {
+	return WbManager{
+		token:         token,
+		googleService: googleService.NewGoogleService("token.json", "credentials.json"),
+	}
+}
+
+func (m WbManager) GetReadyFile(supplyId string) error {
+	orders, err := wb.GetOrdersFbs(m.token, supplyId)
 	if err != nil {
 		return err
 	}
 	var ordersSlice []string
 	for i, order := range orders {
-		stickers := wb.GetStickersFbs(wildberriesKey, order.ID)
-		println(i)
+		stickers := wb.GetStickersFbs(m.token, order.ID)
 		decodeToPDF(stickers.Stickers[0].File, stickers.Stickers[0].OrderId, order)
 		ordersSlice = append(ordersSlice, readyPath+strconv.Itoa(order.ID)+".pdf")
 		if i%10 == 0 {
@@ -141,7 +153,7 @@ func mergePDFsInDirectory(orderSlice []string, outputFile string) error {
 	return nil
 }
 
-func Clean_files(supplyId string) {
+func CleanFiles(supplyId string) {
 	err := os.RemoveAll(codesPath)
 	if err != nil {
 		fmt.Println(err)
