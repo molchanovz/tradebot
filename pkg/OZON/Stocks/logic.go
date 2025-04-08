@@ -6,14 +6,14 @@ import (
 	"time"
 )
 
-type Manager struct {
+type OzonManager struct {
 	daysAgo         int
 	clientId, token string
 	googleService   googleService.GoogleService
 }
 
-func NewManager(clientId, token string, daysAgo int) Manager {
-	return Manager{
+func NewManager(clientId, token string, daysAgo int) OzonManager {
+	return OzonManager{
 		clientId:      clientId,
 		token:         token,
 		daysAgo:       daysAgo,
@@ -21,11 +21,11 @@ func NewManager(clientId, token string, daysAgo int) Manager {
 	}
 }
 
-func (m Manager) GetPostings() map[string]map[string]int {
+func (m OzonManager) GetPostings() map[string]map[string]int {
 	since := time.Now().AddDate(0, 0, m.daysAgo*(-1)-1).Format("2006-01-02") + "T21:00:00.000Z"
 	to := time.Now().AddDate(0, 0, 0).Format("2006-01-02") + "T21:00:00.000Z"
 
-	postingsListFbs := ozon.PostingsListFbs(m.clientId, m.token, since, to, 0)
+	postingsListFbs := ozon.PostingsListFbs(m.clientId, m.token, since, to, 0, "")
 	postingsListFbo := ozon.PostingsListFbo(m.clientId, m.token, since, to, 0)
 
 	postingsMap := make(map[string]map[string]int)
@@ -49,7 +49,7 @@ func (m Manager) GetPostings() map[string]map[string]int {
 	}
 	return postingsMap
 }
-func (m Manager) GetStocks() map[string]map[string]int {
+func (m OzonManager) GetStocks() map[string]map[string]int {
 	stocksList := ozon.Stocks(m.clientId, m.token)
 
 	clusters := ozon.Clusters(m.clientId, m.token)

@@ -15,12 +15,12 @@ import (
 )
 
 const (
-	DirectoryPath = "pkg/WB/wb_stickers_fbs/"
+	WbDirectoryPath = "pkg/WB/stickersFbs/"
 
-	codesPath     = DirectoryPath + "codes/"
+	codesPath     = WbDirectoryPath + "codes/"
 	barcodesPath  = "pkg/barcodes/"
-	generatedPath = DirectoryPath + "generated/"
-	readyPath     = DirectoryPath + "ready/"
+	generatedPath = WbDirectoryPath + "generated/"
+	readyPath     = WbDirectoryPath + "ready/"
 )
 
 type WbManager struct {
@@ -49,11 +49,11 @@ func (m WbManager) GetReadyFile(supplyId string) error {
 			time.Sleep(2 * time.Second)
 		}
 	}
-	err = mergePDFsInDirectory(ordersSlice, DirectoryPath+supplyId+".pdf")
+	err = mergePDFsInDirectory(ordersSlice, WbDirectoryPath+supplyId+".pdf")
 	if err != nil {
 		return err
 	}
-	if !fileExists(DirectoryPath + supplyId + ".pdf") {
+	if !fileExists(WbDirectoryPath + supplyId + ".pdf") {
 		err = fmt.Errorf("такого файла не существует")
 	}
 	return err
@@ -178,7 +178,7 @@ func CleanFiles(supplyId string) {
 	if err != nil {
 		fmt.Println(err)
 	}
-	err = os.Remove(DirectoryPath + supplyId + ".pdf")
+	err = os.Remove(WbDirectoryPath + supplyId + ".pdf")
 	if err != nil {
 		fmt.Println(err)
 	}

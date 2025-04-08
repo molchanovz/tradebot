@@ -85,7 +85,7 @@ func (m OzonManager) getPostingsMapFBS() map[string]int {
 	postingsWithCountFBS := make(map[string]int)
 	since := time.Now().AddDate(0, 0, m.daysAgo*(-1)-1).Format("2006-01-02") + "T21:00:00.000Z"
 	to := time.Now().AddDate(0, 0, m.daysAgo*(-1)).Format("2006-01-02") + "T21:00:00.000Z"
-	potingsListFbs := ozon.PostingsListFbs(m.clientId, m.token, since, to, 0)
+	potingsListFbs := ozon.PostingsListFbs(m.clientId, m.token, since, to, 0, "")
 	for _, posting := range potingsListFbs.Result.PostingsFBS {
 		if posting.Status != "cancelled" {
 			for _, product := range posting.Products {

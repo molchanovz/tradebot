@@ -35,9 +35,9 @@ func PostingFbs(ClientId, ApiKey, PostingNumber string) PostingFBS {
 	return posting
 }
 
-func PostingsListFbs(ClientId, ApiKey, since, to string, offset int) PostingsList_FBS {
-	var postingList PostingsList_FBS
-	jsonString := V3PostingFbsList(ClientId, ApiKey, since, to, offset)
+func PostingsListFbs(ClientId, ApiKey, since, to string, offset int, status string) PostingslistFbs {
+	var postingList PostingslistFbs
+	jsonString := V3PostingFbsList(ClientId, ApiKey, since, to, offset, status)
 	err := json.Unmarshal([]byte(jsonString), &postingList)
 	if err != nil {
 		log.Fatalf("Error decoding JSON: %v", err)
@@ -73,3 +73,13 @@ func Clusters(ClientId, ApiKey string) ClustersList {
 	}
 	return clusters
 }
+
+//func GetLabel(ClientId, ApiKey, PostingNumber string) PackageLabel {
+//	var label PackageLabel
+//	jsonString := V2PostingFbsPackageLabel(ClientId, ApiKey, PostingNumber)
+//	err := json.Unmarshal([]byte(jsonString), &label)
+//	if err != nil {
+//		log.Fatalf("Error decoding JSON: %v", err)
+//	}
+//	return label
+//}

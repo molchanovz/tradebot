@@ -11,7 +11,7 @@ import (
 const (
 	WaitingWbState = 1
 	WaitingYaState = 2
-	DefaultState   = 3
+	DefaultState   = 4
 )
 
 type DataBaseService struct {

@@ -211,14 +211,15 @@ func V3PostingFbsGet(ClientId, ApiKey, PostingNumber string) string {
 }
 
 // V3PostingFbsList метод получения ФБС заказов
-func V3PostingFbsList(ClientId, ApiKey, since, to string, offset int) string {
+func V3PostingFbsList(ClientId, ApiKey, since, to string, offset int, status string) string {
 
 	url := "https://api-seller.ozon.ru/v3/posting/fbs/list"
 	body := []byte(fmt.Sprintf(`{
   "dir": "ASC",
   "filter": {
     "since": "%v",
-    "to": "%v"
+    "to": "%v",
+	"status": "%v"
 },
   "limit": 1000,
   "offset": %v,
@@ -228,7 +229,7 @@ func V3PostingFbsList(ClientId, ApiKey, since, to string, offset int) string {
     "financial_data": true,
     "translit": false
   }
-}`, since, to, offset))
+}`, since, to, status, offset))
 
 	req, err := http.NewRequest("POST", url, bytes.NewBuffer(body))
 
@@ -252,6 +253,45 @@ func V3PostingFbsList(ClientId, ApiKey, since, to string, offset int) string {
 	// Проверяем статус ответа
 	if resp.StatusCode != http.StatusOK {
 		log.Fatalf("Ошибка V3PostingFbsList: получен статус %s", resp.Status)
+	}
+
+	// Читаем тело ответа
+	jsonString, _ := io.ReadAll(resp.Body)
+
+	// Выводим ответ
+	return string(jsonString)
+}
+func V2PostingFbsPackageLabel(ClientId, ApiKey, PostingNumber string) string {
+	println(PostingNumber)
+	url := "https://api-seller.ozon.ru/v2/posting/fbs/package-label"
+	body := []byte(fmt.Sprintf(`{
+  "posting_number": [
+    "%v"
+  ]
+}`, PostingNumber))
+
+	req, err := http.NewRequest("POST", url, bytes.NewBuffer(body))
+
+	if err != nil {
+		log.Fatalf("Ошибка создания запроса: %v", err)
+	}
+
+	// Устанавливаем необходимые заголовки (если нужны)
+	req.Header.Set("Content-Type", "application/json")
+	req.Header.Set("Client-Id", ClientId)
+	req.Header.Set("Api-Key", ApiKey)
+
+	// Выполняем запрос
+	client := &http.Client{}
+	resp, err := client.Do(req)
+	if err != nil {
+		log.Fatalf("Ошибка выполнения запроса: %v", err)
+	}
+	defer resp.Body.Close()
+
+	// Проверяем статус ответа
+	if resp.StatusCode != http.StatusOK {
+		log.Fatalf("Ошибка V2PostingFbsPackageLabel: получен статус %s", resp.Status)
 	}
 
 	// Читаем тело ответа
@@ -388,102 +428,3 @@ func v1Clusters(ClientId, ApiKey string) string {
 	// Выводим ответ
 	return string(jsonString)
 }
-
-//func v1ReportPostingsCreate(Client_Id, Api_Key string) string {
-//
-//	url := "https://api-seller.ozon.ru/v1/report/postings/create"
-//	body := []byte(`{
-//  "filter": {
-//    "processed_at_from": "` + time.Now().AddDate(0, 0, -1).Format("2006-01-02T15:04:05.000Z") + `",
-//    "processed_at_to": "` + time.Now().Format("2006-01-02T15:04:05.000Z") + `",
-//    "delivery_schema": [
-//      "fbo"
-//    ],
-//    "sku": [],
-//    "cancel_reason_id": [],
-//    "offer_id": "",
-//    "status_alias": [],
-//    "statuses": [],
-//    "title": ""
-//  },
-//  "language": "DEFAULT"
-//}`)
-//
-//	req, err := http.NewRequest("POST", url, bytes.NewBuffer(body))
-//
-//	if err != nil {
-//		log.Fatalf("Ошибка создания запроса: %v", err)
-//	}
-//
-//	// Устанавливаем необходимые заголовки (если нужны)
-//	req.Header.Set("Content-Type", "application/json")
-//	req.Header.Set("Client-Id", Client_Id)
-//	req.Header.Set("Api-Key", Api_Key)
-//
-//	// Выполняем запрос
-//	client := &http.Client{}
-//	resp, err := client.Do(req)
-//	if err != nil {
-//		log.Fatalf("Ошибка выполнения запроса: %v", err)
-//	}
-//	defer resp.Body.Close()
-//
-//	// Проверяем статус ответа
-//	if resp.StatusCode != http.StatusOK {
-//		log.Fatalf("Ошибка v2_posting_fbo_get: получен статус %s", resp.Status)
-//	}
-//
-//	// Читаем тело ответа
-//	jsonString, _ := io.ReadAll(resp.Body)
-//
-//	// Выводим ответ
-//	return string(jsonString)
-//}
-//func v1ReportInfo(Client_Id, Api_Key string) string {
-//	jsonString := v1ReportPostingsCreate(Client_Id, Api_Key)
-//	var response ReportResponse
-//
-//	// Парсим JSON-ответ
-//	err := json.Unmarshal([]byte(jsonString), &response)
-//	if err != nil {
-//		log.Fatalf("Ошибка при парсинге JSON: %v", err)
-//	}
-//
-//	// Получаем значение поля code
-//	code := response.Result.Code
-//
-//	url := "https://api-seller.ozon.ru/v1/report/info"
-//	body := []byte(`{
-//  	"code": "` + code + `"
-//	}`)
-//
-//	req, err := http.NewRequest("POST", url, bytes.NewBuffer(body))
-//
-//	if err != nil {
-//		log.Fatalf("Ошибка создания запроса: %v", err)
-//	}
-//
-//	// Устанавливаем необходимые заголовки (если нужны)
-//	req.Header.Set("Content-Type", "application/json")
-//	req.Header.Set("Client-Id", Client_Id)
-//	req.Header.Set("Api-Key", Api_Key)
-//
-//	// Выполняем запрос
-//	client := &http.Client{}
-//	resp, err := client.Do(req)
-//	if err != nil {
-//		log.Fatalf("Ошибка выполнения запроса: %v", err)
-//	}
-//	defer resp.Body.Close()
-//
-//	// Проверяем статус ответа
-//	if resp.StatusCode != http.StatusOK {
-//		log.Fatalf("Ошибка v2_posting_fbo_get: получен статус %s", resp.Status)
-//	}
-//
-//	// Читаем тело ответа
-//	jsonBytes, _ := io.ReadAll(resp.Body)
-//	jsonString = string(jsonBytes)
-//	// Выводим ответ
-//	return string(jsonString)
-//}

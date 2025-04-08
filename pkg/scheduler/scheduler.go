@@ -1,7 +1,7 @@
 package scheduler
 
 import (
-	"WildberriesGo_bot/pkg/bot"
+	"WildberriesGo_bot/pkg/bot/handlers"
 	"context"
 	"fmt"
 	"github.com/go-co-op/gocron"
@@ -10,11 +10,11 @@ import (
 )
 
 type Service struct {
-	botManager *bot.Manager
+	botManager *handlers.Manager
 	wbToken    string
 }
 
-func NewService(botManager *bot.Manager, wbToken string) Service {
+func NewService(botManager *handlers.Manager, wbToken string) Service {
 	return Service{botManager: botManager, wbToken: wbToken}
 }
 
