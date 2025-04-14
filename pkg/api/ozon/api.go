@@ -262,7 +262,6 @@ func V3PostingFbsList(ClientId, ApiKey, since, to string, offset int, status str
 	return string(jsonString)
 }
 func V2PostingFbsPackageLabel(ClientId, ApiKey, PostingNumber string) string {
-	println(PostingNumber)
 	url := "https://api-seller.ozon.ru/v2/posting/fbs/package-label"
 	body := []byte(fmt.Sprintf(`{
   "posting_number": [
