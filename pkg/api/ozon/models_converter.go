@@ -2,6 +2,7 @@ package ozon
 
 import (
 	"encoding/json"
+	"fmt"
 	"log"
 )
 
@@ -15,14 +16,14 @@ func PostingFbo(ClientId, ApiKey, PostingNumber string) PostingFBO {
 	return posting
 }
 
-func ReturnsList(ClientId, ApiKey string, LastID int, since, to string) Returns {
+func ReturnsList(ClientId, ApiKey string, LastID int, since, to string) (Returns, error) {
 	var returns Returns
 	jsonSrting := returnsList(ClientId, ApiKey, LastID, since, to)
 	err := json.Unmarshal([]byte(jsonSrting), &returns)
 	if err != nil {
-		log.Fatalf("Error decoding JSON: %v", err)
+		return returns, fmt.Errorf("error decoding JSON: %v", err)
 	}
-	return returns
+	return returns, nil
 }
 
 func PostingFbs(ClientId, ApiKey, PostingNumber string) PostingFBS {

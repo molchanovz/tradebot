@@ -403,7 +403,7 @@ type Returns struct {
 				CurrencyCode string  `json:"currency_code"`
 				Price        float64 `json:"price"`
 			} `json:"price_without_commission"`
-			CommissionPercent int `json:"commission_percent"`
+			CommissionPercent float64 `json:"commission_percent"`
 			Commission        struct {
 				CurrencyCode string  `json:"currency_code"`
 				Price        float64 `json:"price"`
