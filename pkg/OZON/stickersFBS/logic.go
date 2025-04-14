@@ -72,7 +72,7 @@ func fileExists(filename string) bool {
 	if os.IsNotExist(err) {
 		return false
 	}
-	return !info.IsDir() // Проверяем, что это файл, а не директория
+	return !info.IsDir()
 }
 
 func (m OzonManager) CleanFiles(supplyId string) {
@@ -84,7 +84,7 @@ func (m OzonManager) CleanFiles(supplyId string) {
 	if err != nil {
 		fmt.Println(err)
 	}
-	err = os.Mkdir(codesPath, 0755) // 0755 - это права доступа к директории (чтение, запись, выполнение)
+	err = os.Mkdir(codesPath, 0755)
 	if err != nil {
 		fmt.Println(err)
 	}
@@ -92,11 +92,11 @@ func (m OzonManager) CleanFiles(supplyId string) {
 	if err != nil {
 		fmt.Println(err)
 	}
-	err = os.Mkdir(generatedPath, 0755) // 0755 - это права доступа к директории (чтение, запись, выполнение)
+	err = os.Mkdir(generatedPath, 0755)
 	if err != nil {
 		fmt.Println(err)
 	}
-	err = os.Mkdir(readyPath, 0755) // 0755 - это права доступа к директории (чтение, запись, выполнение)
+	err = os.Mkdir(readyPath, 0755)
 	if err != nil {
 		fmt.Println(err)
 	}
