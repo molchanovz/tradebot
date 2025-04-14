@@ -25,6 +25,21 @@ func NewApplication(envPath string) Application {
 }
 
 func (a Application) Start() {
+	myChatId, err := initEnv(a.envPath, "myChatId")
+	if err != nil {
+		fmt.Printf("%v", err)
+	}
+
+	dsn, err := initEnv(a.envPath, "DSN")
+	if err != nil {
+		fmt.Printf("%v", err)
+	}
+	dataBaseService := db.NewDataBaseService(dsn)
+	sqlDB, err := dataBaseService.InitDB()
+	if err != nil {
+		fmt.Printf("%v", err)
+	}
+
 	clientId, err := initEnv(a.envPath, "ClientId")
 	if err != nil {
 		fmt.Printf("%v", err)
@@ -33,37 +48,24 @@ func (a Application) Start() {
 	if err != nil {
 		fmt.Printf("%v", err)
 	}
+	ozonService := OZON.NewService(clientId, ozonToken)
+
 	wbToken, err := initEnv(a.envPath, "API_KEY_WB")
 	if err != nil {
 		fmt.Printf("%v", err)
 	}
-	myChatId, err := initEnv(a.envPath, "myChatId")
-	if err != nil {
-		fmt.Printf("%v", err)
-	}
-	botToken, err := initEnv(a.envPath, "token")
-	if err != nil {
-		fmt.Printf("%v", err)
-	}
+	wbService := WB.NewService(wbToken)
+
 	yandexToken, err := initEnv(a.envPath, "yandexToken")
 	if err != nil {
 		fmt.Printf("%v", err)
 	}
-	dsn, err := initEnv(a.envPath, "DSN")
-	if err != nil {
-		fmt.Printf("%v", err)
-	}
-
-	dataBaseService := db.NewDataBaseService(dsn)
-	sqlDB, err := dataBaseService.InitDB()
-	if err != nil {
-		fmt.Printf("%v", err)
-	}
-
-	ozonService := OZON.NewService(clientId, ozonToken)
-	wbService := WB.NewService(wbToken)
 	yandexService := YANDEX.NewService(yandexToken)
 
+	botToken, err := initEnv(a.envPath, "token")
+	if err != nil {
+		fmt.Printf("%v", err)
+	}
 	botService := bot.NewBotService(*ozonService, *wbService, *yandexService, botToken, sqlDB, myChatId)
 	botService.Start()
 
