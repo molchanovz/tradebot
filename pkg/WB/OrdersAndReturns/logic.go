@@ -2,7 +2,7 @@ package OrdersAndReturns
 
 import (
 	"WildberriesGo_bot/pkg/api/wb"
-	"WildberriesGo_bot/pkg/googleService"
+	"WildberriesGo_bot/pkg/google"
 	"fmt"
 	"strconv"
 	"strings"
@@ -12,7 +12,7 @@ import (
 type WbManager struct {
 	daysAgo              int
 	spreadsheetId, token string
-	googleService        googleService.GoogleService
+	googleSheets         google.SheetsService
 }
 
 func NewWbManager(token, spreadsheetId string, daysAgo int) WbManager {
@@ -20,7 +20,7 @@ func NewWbManager(token, spreadsheetId string, daysAgo int) WbManager {
 		token:         token,
 		daysAgo:       daysAgo,
 		spreadsheetId: spreadsheetId,
-		googleService: googleService.NewGoogleService("token.json", "credentials.json"),
+		googleSheets:  google.NewSheetsService("token.json", "credentials.json"),
 	}
 }
 
@@ -34,7 +34,7 @@ func (m WbManager) WriteToGoogleSheets() error {
 
 	writeRange := sheetsName + "!A1"
 
-	err := m.googleService.Write(m.spreadsheetId, writeRange, values)
+	err := m.googleSheets.Write(m.spreadsheetId, writeRange, values)
 	if err != nil {
 		return err
 	}
@@ -48,7 +48,7 @@ func (m WbManager) WriteToGoogleSheets() error {
 	for article, count := range postingsWithCountFBO {
 		values = append(values, []interface{}{article, count})
 	}
-	err = m.googleService.Write(m.spreadsheetId, writeRange, values)
+	err = m.googleSheets.Write(m.spreadsheetId, writeRange, values)
 	if err != nil {
 		return err
 	}
@@ -62,7 +62,7 @@ func (m WbManager) WriteToGoogleSheets() error {
 	for article, count := range postingsWithCountFBS {
 		values = append(values, []interface{}{article, count})
 	}
-	err = m.googleService.Write(m.spreadsheetId, writeRange, values)
+	err = m.googleSheets.Write(m.spreadsheetId, writeRange, values)
 	if err != nil {
 		return err
 	}
@@ -76,7 +76,7 @@ func (m WbManager) WriteToGoogleSheets() error {
 	for article, count := range returnsWithCount {
 		values = append(values, []interface{}{article, count})
 	}
-	err = m.googleService.Write(m.spreadsheetId, writeRange, values)
+	err = m.googleSheets.Write(m.spreadsheetId, writeRange, values)
 	if err != nil {
 		return err
 	}

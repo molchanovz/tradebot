@@ -3,14 +3,10 @@ package bot
 import (
 	"WildberriesGo_bot/pkg/OZON"
 	"WildberriesGo_bot/pkg/WB"
-	"WildberriesGo_bot/pkg/WB/StickersFbs"
-	"WildberriesGo_bot/pkg/WB/wb_stocks_analyze"
 	"WildberriesGo_bot/pkg/YANDEX"
 	"WildberriesGo_bot/pkg/YANDEX/yandex_stickers_fbs"
-	"WildberriesGo_bot/pkg/api/wb"
 	"WildberriesGo_bot/pkg/db"
 	"context"
-	"errors"
 	"fmt"
 	botlib "github.com/go-telegram/bot"
 	"github.com/go-telegram/bot/models"
@@ -20,8 +16,6 @@ import (
 	"log"
 	"os"
 	"strconv"
-	"strings"
-	"time"
 )
 
 const (
@@ -35,6 +29,8 @@ const (
 	CallbackOzonOrdersHandler   = "OZON_ORDERS"
 	CallbackOzonStocksHandler   = "OZON_STOCKS"
 	CallbackWbStocksHandler     = "WB_STOCKS"
+	CallbackOzonStickersHandler = "OZON_STICKERS"
+	CallbackClustersHandler     = "OZON_CLUSTERS"
 )
 
 type Manager struct {
@@ -78,6 +74,8 @@ func (m *Manager) RegisterBotHandlers() {
 	m.b.RegisterHandler(botlib.HandlerTypeCallbackQueryData, CallbackOzonOrdersHandler, botlib.MatchTypePrefix, m.ozonOrdersHandler)
 	m.b.RegisterHandler(botlib.HandlerTypeCallbackQueryData, CallbackOzonStocksHandler, botlib.MatchTypePrefix, m.ozonStocksHandler)
 	m.b.RegisterHandler(botlib.HandlerTypeCallbackQueryData, CallbackWbStocksHandler, botlib.MatchTypePrefix, wbStocksHandler)
+	m.b.RegisterHandler(botlib.HandlerTypeCallbackQueryData, CallbackOzonStickersHandler, botlib.MatchTypePrefix, m.ozonStickersHandler)
+	m.b.RegisterHandler(botlib.HandlerTypeCallbackQueryData, CallbackClustersHandler, botlib.MatchTypePrefix, m.ozonClustersHandler)
 
 	//b.RegisterHandler(botlib.HandlerTypeCallbackQueryData, "YANDEX_FBS", botlib.MatchTypePrefix, wbOrdersHandler)
 
@@ -187,29 +185,6 @@ func (m *Manager) startHandler(ctx context.Context, bot *botlib.Bot, update *mod
 	}
 }
 
-func wbHandler(ctx context.Context, bot *botlib.Bot, update *models.Update) {
-	chatId := update.CallbackQuery.From.ID
-	messageId := update.CallbackQuery.Message.Message.ID
-
-	text := "Кабинет ВБ"
-
-	var buttonsRow, buttonBack []models.InlineKeyboardButton
-	buttonsRow = append(buttonsRow, models.InlineKeyboardButton{Text: "Этикетки FBS", CallbackData: CallbackWbFbsHandler})
-	buttonsRow = append(buttonsRow, models.InlineKeyboardButton{Text: "Вчерашние заказы", CallbackData: CallbackWbOrdersHandler})
-	buttonsRow = append(buttonsRow, models.InlineKeyboardButton{Text: "Остатки", CallbackData: CallbackWbStocksHandler})
-
-	buttonBack = append(buttonBack, models.InlineKeyboardButton{Text: "Назад", CallbackData: "START"})
-
-	allButtons := [][]models.InlineKeyboardButton{buttonsRow, buttonBack}
-	markup := models.InlineKeyboardMarkup{InlineKeyboard: allButtons}
-
-	_, err := bot.EditMessageText(ctx, &botlib.EditMessageTextParams{ChatID: chatId, MessageID: messageId, Text: text, ReplyMarkup: markup})
-	if err != nil {
-		log.Printf("%v", err)
-		return
-	}
-
-}
 func yandexHandler(ctx context.Context, bot *botlib.Bot, update *models.Update) {
 	chatId := update.CallbackQuery.From.ID
 	messageId := update.CallbackQuery.Message.Message.ID
@@ -232,57 +207,7 @@ func yandexHandler(ctx context.Context, bot *botlib.Bot, update *models.Update) 
 	}
 
 }
-func ozonHandler(ctx context.Context, bot *botlib.Bot, update *models.Update) {
-	chatId := update.CallbackQuery.From.ID
-	messageId := update.CallbackQuery.Message.Message.ID
 
-	text := "Кабинет Озон"
-
-	var buttonsRow, buttonBack []models.InlineKeyboardButton
-	buttonsRow = append(buttonsRow, models.InlineKeyboardButton{Text: "Вчерашние заказы", CallbackData: CallbackOzonOrdersHandler})
-	buttonsRow = append(buttonsRow, models.InlineKeyboardButton{Text: "Остатки", CallbackData: CallbackOzonStocksHandler})
-
-	buttonBack = append(buttonBack, models.InlineKeyboardButton{Text: "Назад", CallbackData: "START"})
-
-	allButtons := [][]models.InlineKeyboardButton{buttonsRow, buttonBack}
-	markup := models.InlineKeyboardMarkup{InlineKeyboard: allButtons}
-
-	_, err := bot.EditMessageText(ctx, &botlib.EditMessageTextParams{ChatID: chatId, MessageID: messageId, Text: text, ReplyMarkup: markup})
-	if err != nil {
-		log.Printf("%v", err)
-		return
-	}
-
-}
-
-func (m *Manager) wbFbsHandler(ctx context.Context, bot *botlib.Bot, update *models.Update) {
-	chatId := update.CallbackQuery.From.ID
-
-	err := m.db.Model(&db.User{}).Where("chatId = ?", chatId).Updates(db.User{
-		ChatId: chatId,
-		State:  db.WaitingWbState,
-	}).Error
-	if err != nil {
-		log.Println("Ошибка обновления WaitingWbState пользователя: ", err)
-	}
-	log.Printf("У пользователя %v обновлен WaitingWbState", chatId)
-
-	text := fmt.Sprintf("Отправь мне номер отгрузки")
-
-	var buttonBack []models.InlineKeyboardButton
-
-	buttonBack = append(buttonBack, models.InlineKeyboardButton{Text: "Назад", CallbackData: "START"})
-
-	allButtons := [][]models.InlineKeyboardButton{buttonBack}
-	markup := models.InlineKeyboardMarkup{InlineKeyboard: allButtons}
-
-	_, err = bot.EditMessageText(ctx, &botlib.EditMessageTextParams{MessageID: update.CallbackQuery.Message.Message.ID, ChatID: chatId, Text: text, ReplyMarkup: markup})
-	if err != nil {
-		log.Printf("%v", err)
-		return
-	}
-
-}
 func (m *Manager) yandexFbsHandler(ctx context.Context, bot *botlib.Bot, update *models.Update) {
 	chatId := update.CallbackQuery.From.ID
 
@@ -311,61 +236,6 @@ func (m *Manager) yandexFbsHandler(ctx context.Context, bot *botlib.Bot, update 
 
 }
 
-func (m *Manager) getWbFbs(ctx context.Context, bot *botlib.Bot, chatId int64, supplyId string) {
-	text := fmt.Sprintf("Подготовка файла ВБ")
-	message, err := sendTextMessage(ctx, bot, chatId, text)
-	if err != nil {
-		return
-	}
-
-	err = m.wbService.GetStickersFbsManager().GetReadyFile(supplyId)
-	if err != nil {
-		_, err = sendTextMessage(ctx, bot, chatId, err.Error())
-		if err != nil {
-			log.Println(err)
-			return
-		}
-		return
-	}
-
-	filePath := fmt.Sprintf("%v%v.pdf", StickersFbs.DirectoryPath, supplyId)
-	err = sendMediaMessage(ctx, bot, chatId, filePath)
-	if err != nil {
-		log.Println(err)
-		return
-	}
-	StickersFbs.CleanFiles(supplyId)
-
-	text, markup := createStartMarkup()
-	_, err = bot.SendMessage(ctx, &botlib.SendMessageParams{ChatID: chatId, Text: text, ReplyMarkup: markup})
-	if err != nil {
-		log.Printf("%v", err)
-		return
-	}
-
-	_, err = bot.DeleteMessage(ctx, &botlib.DeleteMessageParams{ChatID: chatId, MessageID: message.ID})
-	if err != nil {
-		return
-	}
-}
-func (m *Manager) wbOrdersHandler(ctx context.Context, bot *botlib.Bot, update *models.Update) {
-	chatId := update.CallbackQuery.From.ID
-
-	err := m.wbService.GetOrdersAndReturnsManager().WriteToGoogleSheets()
-	if err != nil {
-		_, err = sendTextMessage(ctx, bot, chatId, err.Error())
-		if err != nil {
-			log.Println(err)
-			return
-		}
-	} else {
-		_, err = sendTextMessage(ctx, bot, chatId, "Заказы вб за вчерашний день были внесены")
-		if err != nil {
-			log.Println(err)
-			return
-		}
-	}
-}
 func (m *Manager) yandexOrdersHandler(ctx context.Context, bot *botlib.Bot, update *models.Update) {
 	chatId := update.CallbackQuery.From.ID
 
@@ -382,108 +252,11 @@ func (m *Manager) yandexOrdersHandler(ctx context.Context, bot *botlib.Bot, upda
 	}
 
 }
-func (m *Manager) ozonOrdersHandler(ctx context.Context, bot *botlib.Bot, update *models.Update) {
-	chatId := update.CallbackQuery.From.ID
 
-	err := m.ozonService.GetOrdersAndReturnsManager().WriteToGoogleSheets()
-	if err != nil {
-		return
-	}
+func (m *Manager) ozonClustersHandler(ctx context.Context, bot *botlib.Bot, update *models.Update) {
+	clusters := m.ozonService.GetStocksManager().GetClusters()
 
-	_, err = sendTextMessage(ctx, bot, chatId, "Заказы озон за вчерашний день были внесены")
-	if err != nil {
-		log.Printf("%v", err)
-		return
-	}
-
-}
-func (m *Manager) ozonStocksHandler(ctx context.Context, bot *botlib.Bot, update *models.Update) {
-
-	K := 1.5
-
-	chatId := update.CallbackQuery.From.ID
-
-	postings := m.ozonService.GetStocksManager().GetPostings()
-
-	stocks := m.ozonService.GetStocksManager().GetStocks()
-
-	filePath, err := generateExcel(postings, stocks, K, "ozon")
-	if err != nil {
-		log.Println("Ошибка при создании Excel:", err)
-		return
-	}
-
-	err = sendMediaMessage(ctx, bot, chatId, filePath)
-	if err != nil {
-		return
-	}
-
-	os.Remove(filePath)
-
-}
-func wbStocksHandler(ctx context.Context, bot *botlib.Bot, update *models.Update) {
-	daysAgo := 14
-	K := 100.0
-
-	chatId := update.CallbackQuery.From.ID
-
-	WbKey, err := initEnv("variables.env", "API_KEY_WB")
-	if err != nil {
-		log.Println(err)
-		return
-	}
-
-	orders := wb_stocks_analyze.GetOrders(WbKey, daysAgo)
-	str := strings.Builder{}
-	for cluster, value := range orders {
-		if cluster == "" {
-			continue
-		}
-		str.WriteString(cluster + "\n")
-		for article, count := range value {
-			str.WriteString(fmt.Sprintf("  %v %v\n", article, count))
-		}
-	}
-
-	stocks, lostWarehouses, err := wb_stocks_analyze.GetStocks(WbKey)
-	if err != nil {
-		_, err = sendTextMessage(ctx, bot, chatId, fmt.Sprintf("Ошибка при анализе остатков: %v", err))
-		if err != nil {
-			log.Println("Ошибка отправки сообщения:", err)
-			return
-		}
-		return
-	}
-
-	filePath, err := generateExcel(orders, stocks, K, "wb")
-	if err != nil {
-		_, err = sendTextMessage(ctx, bot, chatId, fmt.Sprintf("Ошибка при генерации экселя: %v", err))
-		if err != nil {
-			log.Println("Ошибка отправки сообщения:", err)
-			return
-		}
-		return
-	}
-
-	err = sendMediaMessage(ctx, bot, chatId, filePath)
-	if err != nil {
-		log.Println("Ошибка отправки сообщения:", err)
-		return
-	}
-	os.Remove(filePath)
-
-	if len(lostWarehouses) > 0 {
-		warehousesStr := strings.Builder{}
-
-		for warehouse := range lostWarehouses {
-			warehousesStr.WriteString(warehouse + "\n")
-		}
-		_, err := sendTextMessage(ctx, bot, chatId, fmt.Sprintf("Нужно добавить:\n"+warehousesStr.String()))
-		if err != nil {
-			return
-		}
-	}
-
+	fmt.Println(clusters.Clusters)
 }
 
 func getYandexFbs(ctx context.Context, bot *botlib.Bot, chatId int64, supplyId string) {
@@ -617,92 +390,6 @@ func generateExcel(postings map[string]map[string]int, stocks map[string]map[str
 		return "", err
 	}
 	return filePath, nil
-}
-
-func (m *Manager) AnalyzeStocks(apiKey string, ctx context.Context, b *botlib.Bot) error {
-	stocksFBO, err := wb.GetStockFbo(apiKey)
-	if err != nil {
-		return err
-	}
-
-	if stocksFBO == nil {
-		return errors.New("newStocks nil")
-	}
-
-	type customStock struct {
-		stockFBO int
-		stockFBS int
-	}
-
-	stocksMap := make(map[string]customStock)
-
-	//TODO чето не работает.
-
-	// Заполнение мапы артикулов
-	for i := range stocksFBO {
-		if stock, hasArticle := stocksMap[stocksFBO[i].SupplierArticle]; hasArticle {
-			stock.stockFBO += stocksFBO[i].Quantity
-			stocksMap[stocksFBO[i].SupplierArticle] = stock
-		} else {
-			stock := customStock{
-				stockFBO: stocksFBO[i].Quantity,
-			}
-			stocksMap[stocksFBO[i].SupplierArticle] = stock
-		}
-	}
-
-	if len(stocksMap) == 0 {
-		return errors.New("stocksMap nil")
-	}
-
-	for article, newStocks := range stocksMap {
-		var stocksDB []db.Stock
-		// Смотрим есть ли артикул в бд
-		result := m.db.Where("article = ?", article).Find(&stocksDB)
-		if result.Error != nil {
-			return result.Error
-		}
-
-		// если артикула нет - заполняем бд
-		if len(stocksDB) == 0 {
-			stock := db.Stock{Article: article, StocksFBO: &newStocks.stockFBO, Date: time.Now()}
-			err = m.db.Create(&stock).Error
-			if err != nil {
-				return err
-			}
-
-			continue
-		}
-
-		if newStocks.stockFBO == *stocksDB[0].StocksFBO {
-
-			continue
-		}
-
-		// Если стало нулем
-		if newStocks.stockFBO == 0 && *stocksDB[0].StocksFBO != 0 {
-			// Отправляем уведомление
-			_, err = b.SendMessage(ctx, &botlib.SendMessageParams{
-				ChatID: m.myChatId,
-				Text:   fmt.Sprintf("Нужно добавить наличие fbs для %v", article),
-			})
-			if err != nil {
-				return err
-			}
-		}
-
-		log.Println("Обновляем ", stocksDB[0].Article)
-
-		err = m.db.Model(&db.Stock{}).Where("article = ?", stocksDB[0].Article).Updates(db.Stock{
-			StocksFBO: &newStocks.stockFBO,
-			Date:      time.Now(),
-		}).Error
-		if err != nil {
-			return err
-		}
-	}
-
-	return nil
 }
 
 //func generateExcel(postings map[string]map[string]int, stocks map[string]map[string]int, K float64, mp string) (string, error) {

@@ -2,7 +2,7 @@ package OrdersAndReturns
 
 import (
 	"WildberriesGo_bot/pkg/api/yandex"
-	"WildberriesGo_bot/pkg/googleService"
+	"WildberriesGo_bot/pkg/google"
 	"strconv"
 	"time"
 )
@@ -10,7 +10,7 @@ import (
 type Manager struct {
 	token, spreadsheetId string
 	daysAgo              int
-	googleService        googleService.GoogleService
+	googleSheets         google.SheetsService
 }
 
 func NewManager(token, spreadsheetId string, daysAgo int) *Manager {
@@ -18,7 +18,7 @@ func NewManager(token, spreadsheetId string, daysAgo int) *Manager {
 		spreadsheetId: spreadsheetId,
 		daysAgo:       daysAgo,
 		token:         token,
-		googleService: googleService.NewGoogleService("token.json", "credentials.json"),
+		googleSheets:  google.NewSheetsService("token.json", "credentials.json"),
 	}
 }
 
@@ -31,7 +31,7 @@ func (m Manager) WriteToGoogleSheets() error {
 	values = append(values, []interface{}{"Отчет за " + date.Format("02.01.2006")})
 
 	writeRange := sheetsName + "!A1"
-	err := m.googleService.Write(m.spreadsheetId, writeRange, values)
+	err := m.googleSheets.Write(m.spreadsheetId, writeRange, values)
 	if err != nil {
 		return err
 	}
@@ -45,7 +45,7 @@ func (m Manager) WriteToGoogleSheets() error {
 	for article, count := range postingsWithCountFBO {
 		values = append(values, []interface{}{article, count})
 	}
-	err = m.googleService.Write(m.spreadsheetId, writeRange, values)
+	err = m.googleSheets.Write(m.spreadsheetId, writeRange, values)
 	if err != nil {
 		return err
 	}

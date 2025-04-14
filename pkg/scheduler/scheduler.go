@@ -1,7 +1,7 @@
 package scheduler
 
 import (
-	"WildberriesGo_bot/pkg/bot"
+	"WildberriesGo_bot/pkg/bot/handlers"
 	"context"
 	"fmt"
 	"github.com/go-co-op/gocron"

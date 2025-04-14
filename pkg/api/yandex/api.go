@@ -115,8 +115,6 @@ func getOrdersFbo(yandexKey string, daysAgo int) (string, error) {
 
 	date := time.Now().AddDate(0, 0, -daysAgo)
 
-	println(date.Format("2006-01-02"))
-
 	url := "https://api.partner.market.yandex.ru/campaigns/49152956/stats/orders"
 
 	body := []byte(fmt.Sprintf(`{

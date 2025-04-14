@@ -1,4 +1,4 @@
-package googleService
+package google
 
 import (
 	"context"
@@ -13,20 +13,20 @@ import (
 	"os"
 )
 
-type GoogleService struct {
+type SheetsService struct {
 	tokenPath       string
 	credentialsPath string
 }
 
-func NewGoogleService(tokenPath, credentialsPath string) GoogleService {
-	return GoogleService{
+func NewSheetsService(tokenPath, credentialsPath string) SheetsService {
+	return SheetsService{
 		tokenPath:       tokenPath,
 		credentialsPath: credentialsPath,
 	}
 }
 
 // Retrieve a token, saves the token, then returns the generated client.
-func (gs GoogleService) getClient(config *oauth2.Config) *http.Client {
+func (gs SheetsService) getClient(config *oauth2.Config) *http.Client {
 	// The file token.json stores the user's access and refresh tokens, and is
 	// created automatically when the authorization flow completes for the first
 	// time.
@@ -39,7 +39,7 @@ func (gs GoogleService) getClient(config *oauth2.Config) *http.Client {
 }
 
 // Request a token from the web, then returns the retrieved token.
-func (GoogleService) getTokenFromWeb(config *oauth2.Config) *oauth2.Token {
+func (SheetsService) getTokenFromWeb(config *oauth2.Config) *oauth2.Token {
 	authURL := config.AuthCodeURL("state-token", oauth2.AccessTypeOffline)
 	fmt.Printf("Go to the following link in your browser then type the "+
 		"authorization code: \n%v\n", authURL)
@@ -57,7 +57,7 @@ func (GoogleService) getTokenFromWeb(config *oauth2.Config) *oauth2.Token {
 }
 
 // Retrieves a token from a local file.
-func (GoogleService) tokenFromFile(file string) (*oauth2.Token, error) {
+func (SheetsService) tokenFromFile(file string) (*oauth2.Token, error) {
 	f, err := os.Open(file)
 	if err != nil {
 		return nil, err
@@ -68,7 +68,7 @@ func (GoogleService) tokenFromFile(file string) (*oauth2.Token, error) {
 	return tok, err
 }
 
-func (GoogleService) saveToken(path string, token *oauth2.Token) {
+func (SheetsService) saveToken(path string, token *oauth2.Token) {
 	fmt.Printf("Saving credential file to: %s\n", path)
 	f, err := os.OpenFile(path, os.O_RDWR|os.O_CREATE|os.O_TRUNC, 0600)
 	if err != nil {
@@ -78,7 +78,7 @@ func (GoogleService) saveToken(path string, token *oauth2.Token) {
 	json.NewEncoder(f).Encode(token)
 }
 
-func (gs GoogleService) read(spreadsheetId, readRange string) [][]interface{} {
+func (gs SheetsService) read(spreadsheetId, readRange string) [][]interface{} {
 	ctx := context.Background()
 	b, err := os.ReadFile(gs.credentialsPath)
 	if err != nil {
@@ -113,7 +113,7 @@ func (gs GoogleService) read(spreadsheetId, readRange string) [][]interface{} {
 	}
 }
 
-func (gs GoogleService) Write(spreadsheetId, writeRange string, values [][]interface{}) error {
+func (gs SheetsService) Write(spreadsheetId, writeRange string, values [][]interface{}) error {
 	ctx := context.Background()
 
 	// Чтение файла с учетными данными клиента

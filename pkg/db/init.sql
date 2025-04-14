@@ -5,9 +5,6 @@ create table wb_stocks
     stock   bigint
 );
 
-alter table wb_stocks
-    owner to postgres;
-
 create unique index wb_stocks_article_uindex
     on wb_stocks (article);
 
@@ -18,7 +15,4 @@ create table users
             primary key,
     state  integer not null
 );
-
-alter table users
-    owner to postgres;
 

@@ -1,8 +1,8 @@
-package OrdersAndReturns
+package orders_and_returns
 
 import (
 	"WildberriesGo_bot/pkg/api/ozon"
-	"WildberriesGo_bot/pkg/googleService"
+	"WildberriesGo_bot/pkg/google"
 	"strconv"
 	"time"
 )
@@ -10,7 +10,7 @@ import (
 type OzonManager struct {
 	daysAgo                        int
 	spreadsheetId, clientId, token string
-	googleService                  googleService.GoogleService
+	googleService                  google.SheetsService
 }
 
 func NewOzonManager(clientId, token, spreadsheetId string, daysAgo int) OzonManager {
@@ -19,7 +19,7 @@ func NewOzonManager(clientId, token, spreadsheetId string, daysAgo int) OzonMana
 		token:         token,
 		daysAgo:       daysAgo,
 		spreadsheetId: spreadsheetId,
-		googleService: googleService.NewGoogleService("token.json", "credentials.json"),
+		googleService: google.NewSheetsService("token.json", "credentials.json"),
 	}
 }
 
@@ -66,7 +66,11 @@ func (m OzonManager) WriteToGoogleSheets() error {
 	since := time.Now().AddDate(0, 0, m.daysAgo*(-1)-1).Format("2006-01-02") + "T21:00:00.000Z"
 	to := time.Now().AddDate(0, 0, m.daysAgo*(-1)).Format("2006-01-02") + "T21:00:00.000Z"
 	//Заполнение возвратов
-	returnsWithCount := m.getReturnsMap(since, to)
+	returnsWithCount, err := m.getReturnsMap(since, to)
+	if err != nil {
+		return err
+	}
+
 	values = [][]interface{}{}
 	values = append(values, []interface{}{"Возвраты"})
 	for article, count := range returnsWithCount {
@@ -85,7 +89,7 @@ func (m OzonManager) getPostingsMapFBS() map[string]int {
 	postingsWithCountFBS := make(map[string]int)
 	since := time.Now().AddDate(0, 0, m.daysAgo*(-1)-1).Format("2006-01-02") + "T21:00:00.000Z"
 	to := time.Now().AddDate(0, 0, m.daysAgo*(-1)).Format("2006-01-02") + "T21:00:00.000Z"
-	potingsListFbs := ozon.PostingsListFbs(m.clientId, m.token, since, to, 0)
+	potingsListFbs := ozon.PostingsListFbs(m.clientId, m.token, since, to, 0, "")
 	for _, posting := range potingsListFbs.Result.PostingsFBS {
 		if posting.Status != "cancelled" {
 			for _, product := range posting.Products {
@@ -109,17 +113,19 @@ func (m OzonManager) getPostingsMapFBO() map[string]int {
 	}
 	return postingsWithCountFBO
 }
-func (m OzonManager) getReturnsMap(since, to string) map[string]int {
+func (m OzonManager) getReturnsMap(since, to string) (map[string]int, error) {
 	LastID := 0
 	hasNext := true
 	returnsWithCount := make(map[string]int)
-	var returns ozon.Returns
 	/*
 		Лимит у запроса 1000, но нам нужны все возвраты,
 		поэтому делаем цикл с LastID и добавляем в срез returnsFBO
 	*/
 	for hasNext {
-		returns = ozon.ReturnsList(m.clientId, m.token, LastID, since, to)
+		returns, err := ozon.ReturnsList(m.clientId, m.token, LastID, since, to)
+		if err != nil {
+			return returnsWithCount, err
+		}
 		for _, value := range returns.Returns {
 			if value.Visual.Status.SysName == "ReturnedToOzon" {
 				returnsWithCount[value.Product.OfferId] += value.Product.Quantity
@@ -128,5 +134,5 @@ func (m OzonManager) getReturnsMap(since, to string) map[string]int {
 		}
 		hasNext = returns.HasNext
 	}
-	return returnsWithCount
+	return returnsWithCount, nil
 }

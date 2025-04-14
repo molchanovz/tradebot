@@ -150,7 +150,7 @@ type ReportResponse struct {
 	} `json:"result"`
 }
 
-type PostingsList_FBS struct {
+type PostingslistFbs struct {
 	Result struct {
 		PostingsFBS []struct {
 			PostingNumber  string `json:"posting_number"`
@@ -403,7 +403,7 @@ type Returns struct {
 				CurrencyCode string  `json:"currency_code"`
 				Price        float64 `json:"price"`
 			} `json:"price_without_commission"`
-			CommissionPercent int `json:"commission_percent"`
+			CommissionPercent float64 `json:"commission_percent"`
 			Commission        struct {
 				CurrencyCode string  `json:"currency_code"`
 				Price        float64 `json:"price"`
@@ -438,4 +438,10 @@ type Returns struct {
 		SourceId         int64  `json:"source_id"`
 	} `json:"returns"`
 	HasNext bool `json:"has_next"`
+}
+
+type PackageLabel struct {
+	ContentType string `json:"content_type"`
+	FileName    string `json:"file_name"`
+	FileContent string `json:"file_content"`
 }

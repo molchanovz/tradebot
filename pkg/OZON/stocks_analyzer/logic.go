@@ -1,31 +1,31 @@
-package Stocks
+package stocks_analyzer
 
 import (
 	"WildberriesGo_bot/pkg/api/ozon"
-	"WildberriesGo_bot/pkg/googleService"
+	"WildberriesGo_bot/pkg/google"
 	"time"
 )
 
-type Manager struct {
+type OzonManager struct {
 	daysAgo         int
 	clientId, token string
-	googleService   googleService.GoogleService
+	googleService   google.SheetsService
 }
 
-func NewManager(clientId, token string, daysAgo int) Manager {
-	return Manager{
+func NewManager(clientId, token string, daysAgo int) OzonManager {
+	return OzonManager{
 		clientId:      clientId,
 		token:         token,
 		daysAgo:       daysAgo,
-		googleService: googleService.NewGoogleService("token.json", "credentials.json"),
+		googleService: google.NewSheetsService("token.json", "credentials.json"),
 	}
 }
 
-func (m Manager) GetPostings() map[string]map[string]int {
+func (m OzonManager) GetPostings() map[string]map[string]int {
 	since := time.Now().AddDate(0, 0, m.daysAgo*(-1)-1).Format("2006-01-02") + "T21:00:00.000Z"
 	to := time.Now().AddDate(0, 0, 0).Format("2006-01-02") + "T21:00:00.000Z"
 
-	postingsListFbs := ozon.PostingsListFbs(m.clientId, m.token, since, to, 0)
+	postingsListFbs := ozon.PostingsListFbs(m.clientId, m.token, since, to, 0, "")
 	postingsListFbo := ozon.PostingsListFbo(m.clientId, m.token, since, to, 0)
 
 	postingsMap := make(map[string]map[string]int)
@@ -34,6 +34,7 @@ func (m Manager) GetPostings() map[string]map[string]int {
 		if _, exists := postingsMap[order.FinancialData.ClusterTo]; !exists {
 			postingsMap[order.FinancialData.ClusterTo] = make(map[string]int)
 		}
+
 		for _, product := range order.Products {
 			postingsMap[order.FinancialData.ClusterTo][product.OfferId] += product.Quantity
 		}
@@ -47,9 +48,10 @@ func (m Manager) GetPostings() map[string]map[string]int {
 			postingsMap[order.FinancialData.ClusterTo][product.OfferId] += product.Quantity
 		}
 	}
+
 	return postingsMap
 }
-func (m Manager) GetStocks() map[string]map[string]int {
+func (m OzonManager) GetStocks() map[string]map[string]int {
 	stocksList := ozon.Stocks(m.clientId, m.token)
 
 	clusters := ozon.Clusters(m.clientId, m.token)
@@ -82,4 +84,7 @@ func (m Manager) GetStocks() map[string]map[string]int {
 
 	}
 	return stocksMap
+}
+func (m OzonManager) GetClusters() ozon.ClustersList {
+	return ozon.Clusters(m.clientId, m.token)
 }
