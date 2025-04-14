@@ -2,7 +2,7 @@ package StickersFbs
 
 import (
 	"WildberriesGo_bot/pkg/api/wb"
-	"WildberriesGo_bot/pkg/googleService"
+	"WildberriesGo_bot/pkg/google"
 	"encoding/base64"
 	"fmt"
 	"github.com/fogleman/gg"
@@ -24,14 +24,14 @@ const (
 )
 
 type WbManager struct {
-	token         string
-	googleService googleService.GoogleService
+	token        string
+	googleSheets google.SheetsService
 }
 
 func NewWbManager(token string) WbManager {
 	return WbManager{
-		token:         token,
-		googleService: googleService.NewGoogleService("token.json", "credentials.json"),
+		token:        token,
+		googleSheets: google.NewSheetsService("token.json", "credentials.json"),
 	}
 }
 

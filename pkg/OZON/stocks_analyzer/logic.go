@@ -1,15 +1,15 @@
-package Stocks
+package stocks_analyzer
 
 import (
 	"WildberriesGo_bot/pkg/api/ozon"
-	"WildberriesGo_bot/pkg/googleService"
+	"WildberriesGo_bot/pkg/google"
 	"time"
 )
 
 type OzonManager struct {
 	daysAgo         int
 	clientId, token string
-	googleService   googleService.GoogleService
+	googleService   google.SheetsService
 }
 
 func NewManager(clientId, token string, daysAgo int) OzonManager {
@@ -17,7 +17,7 @@ func NewManager(clientId, token string, daysAgo int) OzonManager {
 		clientId:      clientId,
 		token:         token,
 		daysAgo:       daysAgo,
-		googleService: googleService.NewGoogleService("token.json", "credentials.json"),
+		googleService: google.NewSheetsService("token.json", "credentials.json"),
 	}
 }
 
@@ -34,6 +34,7 @@ func (m OzonManager) GetPostings() map[string]map[string]int {
 		if _, exists := postingsMap[order.FinancialData.ClusterTo]; !exists {
 			postingsMap[order.FinancialData.ClusterTo] = make(map[string]int)
 		}
+
 		for _, product := range order.Products {
 			postingsMap[order.FinancialData.ClusterTo][product.OfferId] += product.Quantity
 		}
@@ -47,6 +48,7 @@ func (m OzonManager) GetPostings() map[string]map[string]int {
 			postingsMap[order.FinancialData.ClusterTo][product.OfferId] += product.Quantity
 		}
 	}
+
 	return postingsMap
 }
 func (m OzonManager) GetStocks() map[string]map[string]int {
@@ -82,4 +84,7 @@ func (m OzonManager) GetStocks() map[string]map[string]int {
 
 	}
 	return stocksMap
+}
+func (m OzonManager) GetClusters() ozon.ClustersList {
+	return ozon.Clusters(m.clientId, m.token)
 }

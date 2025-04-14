@@ -126,7 +126,7 @@ func (m *Manager) wbOrdersHandler(ctx context.Context, bot *botlib.Bot, update *
 }
 func wbStocksHandler(ctx context.Context, bot *botlib.Bot, update *models.Update) {
 	daysAgo := 14
-	K := 100.0
+	K := 1.5
 
 	chatId := update.CallbackQuery.From.ID
 
@@ -137,16 +137,6 @@ func wbStocksHandler(ctx context.Context, bot *botlib.Bot, update *models.Update
 	}
 
 	orders := wb_stocks_analyze.GetOrders(WbKey, daysAgo)
-	str := strings.Builder{}
-	for cluster, value := range orders {
-		if cluster == "" {
-			continue
-		}
-		str.WriteString(cluster + "\n")
-		for article, count := range value {
-			str.WriteString(fmt.Sprintf("  %v %v\n", article, count))
-		}
-	}
 
 	stocks, lostWarehouses, err := wb_stocks_analyze.GetStocks(WbKey)
 	if err != nil {
@@ -245,7 +235,6 @@ func (m *Manager) AnalyzeStocks(apiKey string, ctx context.Context, b *botlib.Bo
 		}
 
 		if newStocks.stockFBO == *stocksDB[0].StocksFBO {
-
 			continue
 		}
 

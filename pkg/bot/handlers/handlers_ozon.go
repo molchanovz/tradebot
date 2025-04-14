@@ -20,6 +20,7 @@ func ozonHandler(ctx context.Context, bot *botlib.Bot, update *models.Update) {
 	buttonsRow = append(buttonsRow, models.InlineKeyboardButton{Text: "Вчерашние заказы", CallbackData: CallbackOzonOrdersHandler})
 	buttonsRow = append(buttonsRow, models.InlineKeyboardButton{Text: "Остатки", CallbackData: CallbackOzonStocksHandler})
 	buttonsRow = append(buttonsRow, models.InlineKeyboardButton{Text: "Этикетки FBS", CallbackData: CallbackOzonStickersHandler})
+	//buttonsRow = append(buttonsRow, models.InlineKeyboardButton{Text: "Кластеры", CallbackData: CallbackClustersHandler})
 
 	buttonBack = append(buttonBack, models.InlineKeyboardButton{Text: "Назад", CallbackData: "START"})
 
@@ -39,7 +40,11 @@ func (m *Manager) ozonOrdersHandler(ctx context.Context, bot *botlib.Bot, update
 
 	err := m.ozonService.GetOrdersAndReturnsManager().WriteToGoogleSheets()
 	if err != nil {
-		log.Printf("%v", err)
+		_, err = sendTextMessage(ctx, bot, chatId, err.Error())
+		if err != nil {
+			log.Printf("%v", err)
+			return
+		}
 		return
 	}
 
@@ -92,7 +97,7 @@ func (m *Manager) ozonStickersHandler(ctx context.Context, bot *botlib.Bot, upda
 		return
 	}
 
-	filePath := fmt.Sprintf("%v.pdf", StickersFBS.OzonDirectoryPath+"ozon")
+	filePath := fmt.Sprintf("%v.pdf", stickersFBS.OzonDirectoryPath+"ozon")
 	err = sendMediaMessage(ctx, bot, chatId, filePath)
 	if err != nil {
 		log.Println(err)

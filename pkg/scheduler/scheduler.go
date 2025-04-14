@@ -10,11 +10,11 @@ import (
 )
 
 type Service struct {
-	botManager *handlers.Manager
+	botManager *bot.Manager
 	wbToken    string
 }
 
-func NewService(botManager *handlers.Manager, wbToken string) Service {
+func NewService(botManager *bot.Manager, wbToken string) Service {
 	return Service{botManager: botManager, wbToken: wbToken}
 }
 

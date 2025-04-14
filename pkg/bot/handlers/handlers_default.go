@@ -30,6 +30,7 @@ const (
 	CallbackOzonStocksHandler   = "OZON_STOCKS"
 	CallbackWbStocksHandler     = "WB_STOCKS"
 	CallbackOzonStickersHandler = "OZON_STICKERS"
+	CallbackClustersHandler     = "OZON_CLUSTERS"
 )
 
 type Manager struct {
@@ -74,6 +75,7 @@ func (m *Manager) RegisterBotHandlers() {
 	m.b.RegisterHandler(botlib.HandlerTypeCallbackQueryData, CallbackOzonStocksHandler, botlib.MatchTypePrefix, m.ozonStocksHandler)
 	m.b.RegisterHandler(botlib.HandlerTypeCallbackQueryData, CallbackWbStocksHandler, botlib.MatchTypePrefix, wbStocksHandler)
 	m.b.RegisterHandler(botlib.HandlerTypeCallbackQueryData, CallbackOzonStickersHandler, botlib.MatchTypePrefix, m.ozonStickersHandler)
+	m.b.RegisterHandler(botlib.HandlerTypeCallbackQueryData, CallbackClustersHandler, botlib.MatchTypePrefix, m.ozonClustersHandler)
 
 	//b.RegisterHandler(botlib.HandlerTypeCallbackQueryData, "YANDEX_FBS", botlib.MatchTypePrefix, wbOrdersHandler)
 
@@ -249,6 +251,12 @@ func (m *Manager) yandexOrdersHandler(ctx context.Context, bot *botlib.Bot, upda
 		return
 	}
 
+}
+
+func (m *Manager) ozonClustersHandler(ctx context.Context, bot *botlib.Bot, update *models.Update) {
+	clusters := m.ozonService.GetStocksManager().GetClusters()
+
+	fmt.Println(clusters.Clusters)
 }
 
 func getYandexFbs(ctx context.Context, bot *botlib.Bot, chatId int64, supplyId string) {

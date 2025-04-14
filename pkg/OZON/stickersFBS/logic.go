@@ -1,4 +1,4 @@
-package StickersFBS
+package stickersFBS
 
 import (
 	"WildberriesGo_bot/pkg/api/ozon"
