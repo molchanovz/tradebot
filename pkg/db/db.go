@@ -9,9 +9,11 @@ import (
 )
 
 const (
-	WaitingWbState = 1
-	WaitingYaState = 2
-	DefaultState   = 4
+	EnabledStatus = iota + 1
+	DisabledStatus
+	DeletedStatus
+	WaitingWbState
+	WaitingYaState
 )
 
 type DataBaseService struct {
@@ -32,7 +34,7 @@ func (dbs DataBaseService) InitDB() (*gorm.DB, error) {
 }
 
 func (Stock) TableName() string {
-	return "public.wb_stocks"
+	return "public.stocks"
 }
 
 func (User) TableName() string {

@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+
+<DBMODEL Version="1.92" TYPE="PostgreSQL">
+
+<MODELSETTINGS MDDVERSION="1.16.0 (build 1173)" ModelProject="" ModelName="tradebot" ModelCompany="" ModelAuthor="" ModelCopyright="" ModelVersion="" ModelVersionAI="0" ModelSaveScriptsWithVersion="0" ModelCreated="2025-04-14 14:05:19" ModelUpdated="2025-04-15 10:31:46" Description="" Annotation="" ZoomFac="100.00" XPos="0" YPos="0" PrintLink="" GenSettings="object GenSettings1: TGenSettings\n  TextCharCase = tccMixed\n  ModelCheck = True\n  DropIfExists = True\n  NotValidConstraints = False\n  ConcurrentlyIndexes = False\n  ISQL = False\n  ExecuteAfterGeneration = True\n  DBOptions = [dbgoCreate, dbgoBeginScript, dbgoEndScript]\n  ViewOptions = [viewgoCreate, viewgoCreateRule]\n  SPOptions = [spgoCreate]\n  TableOptions = [tblgoCreate, tblgoBeginScript, tblgoEndScript, tblgoComment, tblgoCreatePK, tblgoCreateFK, tblgoCreateIndex, tblgoCreateRule, tblgoCreateTrigger, tblgoCreateCHECK, tblgoFieldDefault]\n  OwnerOptions = [owngoSchema, owngoTable, owngoView, owngoSP, owngoSequence, owngoUDT]\n  ACLOptions = [aclgoSchema, aclgoTable, aclgoView, aclgoSP, aclgoSequence]\n  ModifyOptions = [mgoKeepTbls, mgoBackupTbls, mgoTraceRenaming]\n  RoleCreate = True\n  RoleWhenCreate = rocrInScript\n  SQLTypeNames = False\nend\n" DisplaySettings="object DisplaySettings1: TDisplaySettings\n  ObjectsDisplay = [edoColumns, edoInhColumns, edoIndices, edoConstraints, edoTriggers, edoRules, edoColTypes, edoFKs, rdoRefName, spdoParameters, spdoResult, spdoParamTypes, spdoParamKind, vdoAttributes, vdoTargets, vdoRules]\n  Color = clWhite\n  ShowIcons = True\n  SnapGrid = True\n  DisplaySnap = True\n  SnapSize = 10\n  ShowPages = True\n  EntityFillColor = clWhite\n  EntityLineColor = clNavy\n  EntityFontColor = clBlack\n  SPFillColor = clCream\n  SPLineColor = clNavy\n  SPFontColor = clBlack\n  ViewFillColor = clMoneyGreen\n  ViewLineColor = clNavy\n  ViewFontColor = clBlack\n  RefNotation = 0\n  RefColor = clNavy\n  RefLabelColor = clWhite\n  RefLabelFontColor = clBlack\n  MinimapShapesStyle = mmssFillAndBorder\n  MinimapVisibleAreaStyle = mmvasBitmapShading\n  MinimapBackColor = clWhite\nend\n" DefaultDelete="3" DefaultUpdate="3" DefaultDataType="23" DefaultSchemaID="0" NamePatterns="" QueryDelimiter=";" DBQuoteCharacter="\A" EncloseNames="1" PKColumnsFirst="0" HPageCount="5" VPageCount="5" />
+
+<DATABASE Name="Database_1" CharacterSet="" Collate="" CType="" Tablespace="" Owner="" Template="" Comments="" Description="" Annotation="" BeginScript="" EndScript="" Generate="0" />
+
+<STAMPS>
+</STAMPS>
+
+<ROLES>
+</ROLES>
+
+<SCHEMAS>
+<SCHEMA ID="0" Name="public" Owner="" Generate="0" Comments="" System="1" ACL=""></SCHEMA>
+</SCHEMAS>
+
+<SEQUENCES>
+</SEQUENCES>
+
+<DOMAINS>
+</DOMAINS>
+
+<COMPOSITES>
+<COMPOSITE ID="10003" Name="cabinets" SchemaName="public" OwnerName="" Comments="" MasterTableOID="1022">
+	<COLUMNS>
+	</COLUMNS>
+</COMPOSITE>
+<COMPOSITE ID="10002" Name="users" SchemaName="public" OwnerName="" Comments="" MasterTableOID="1017">
+	<COLUMNS>
+	</COLUMNS>
+</COMPOSITE>
+<COMPOSITE ID="10000" Name="stocks" SchemaName="public" OwnerName="" Comments="" MasterTableOID="1000">
+	<COLUMNS>
+	</COLUMNS>
+</COMPOSITE>
+</COMPOSITES>
+
+<SCALARS>
+</SCALARS>
+
+<ENUMS>
+<ENUM ID="10001" Name="marketplaces" SchemaName="public" Values="wildberries,ozon,yandex" Comments="" OwnerName=""></ENUM>
+</ENUMS>
+
+<TABLESPACES>
+</TABLESPACES>
+
+<METADATA>
+<ENTITIES>
+<ENTITY ID="1000" Name="stocks" SchemaOID="0" SchemaName="public" OwnerID="0" OwnerName="" TablespaceID="0" XPos="76" YPos="145" Temporary="0" Unlogged="0" OnCommit="" Inherits="" FillColor="16777215" LineColor="8388608" FontColor="0" CharacterSet="" Collate="" Comments="" Description="" Annotation="" BeginScript="" EndScript="" Generate="1" ACL="" StorageParams="" >
+	<COLUMNS>
+		<COLUMN ID="4" Name="stock_id" Pos="0" Datatype="23" Type="int4" Width="0" Prec="0" NotNull="1" AutoInc="1" Collation="" PrimaryKey="1" IsFKey="0" DefaultValue="" QuoteDefault="0" Comments=""></COLUMN>
+		<COLUMN ID="5" Name="article" Pos="1" Datatype="1043" Type="varchar" Width="64" Prec="0" NotNull="1" AutoInc="0" Collation="" PrimaryKey="0" IsFKey="0" DefaultValue="" QuoteDefault="0" Comments=""></COLUMN>
+		<COLUMN ID="6" Name="updated_at" Pos="2" Datatype="1184" Type="timestamp with time zone" Width="-1" Prec="0" NotNull="1" AutoInc="0" Collation="" PrimaryKey="0" IsFKey="0" DefaultValue="now()" QuoteDefault="0" Comments=""></COLUMN>
+		<COLUMN ID="9" Name="marketplace" Pos="3" Datatype="10001" Type="marketplaces" Width="0" Prec="0" NotNull="1" AutoInc="0" Collation="" PrimaryKey="0" IsFKey="0" DefaultValue="" QuoteDefault="1" Comments=""></COLUMN>
+		<COLUMN ID="7" Name="stocks_fbo" Pos="4" Datatype="23" Type="int4" Width="0" Prec="0" NotNull="0" AutoInc="0" Collation="" PrimaryKey="0" IsFKey="0" DefaultValue="" QuoteDefault="0" Comments=""></COLUMN>
+		<COLUMN ID="8" Name="stocks_fbs" Pos="5" Datatype="23" Type="int4" Width="0" Prec="0" NotNull="0" AutoInc="0" Collation="" PrimaryKey="0" IsFKey="0" DefaultValue="" QuoteDefault="0" Comments=""></COLUMN>
+	</COLUMNS>
+	<CONSTRAINTS>
+		<CONSTRAINT ID="2" Name="" Kind="2" Expression="" ReferenceIndex="1016" FillFactor="" Comments="" TablespaceID="0" Deferrable="0" Method="0">
+			<CONSTRAINTCOLUMNS COMMATEXT="4"></CONSTRAINTCOLUMNS>
+			<CONSTRAINTOPERATORS COMMATEXT=""></CONSTRAINTOPERATORS>
+		</CONSTRAINT>
+	</CONSTRAINTS>
+</ENTITY>
+
+<ENTITY ID="1017" Name="users" SchemaOID="0" SchemaName="public" OwnerID="0" OwnerName="" TablespaceID="0" XPos="410" YPos="230" Temporary="0" Unlogged="0" OnCommit="" Inherits="" FillColor="16777215" LineColor="8388608" FontColor="0" CharacterSet="" Collate="" Comments="" Description="" Annotation="" BeginScript="" EndScript="" Generate="1" ACL="" StorageParams="" >
+	<COLUMNS>
+		<COLUMN ID="18" Name="user_id" Pos="0" Datatype="23" Type="int4" Width="0" Prec="0" NotNull="1" AutoInc="1" Collation="" PrimaryKey="1" IsFKey="0" DefaultValue="" QuoteDefault="0" Comments=""></COLUMN>
+		<COLUMN ID="19" Name="tg_id" Pos="1" Datatype="20" Type="int8" Width="0" Prec="0" NotNull="1" AutoInc="0" Collation="" PrimaryKey="0" IsFKey="0" DefaultValue="" QuoteDefault="0" Comments=""></COLUMN>
+		<COLUMN ID="20" Name="status" Pos="2" Datatype="21" Type="int2" Width="0" Prec="0" NotNull="1" AutoInc="0" Collation="" PrimaryKey="0" IsFKey="0" DefaultValue="1" QuoteDefault="0" Comments=""></COLUMN>
+	</COLUMNS>
+	<REFERENCES_BEGIN>
+		<REFERENCE_BEGIN ID="21" />
+	</REFERENCES_BEGIN>
+	<CONSTRAINTS>
+		<CONSTRAINT ID="15" Name="" Kind="2" Expression="" ReferenceIndex="1417386" FillFactor="" Comments="" TablespaceID="0" Deferrable="0" Method="0">
+			<CONSTRAINTCOLUMNS COMMATEXT="18"></CONSTRAINTCOLUMNS>
+			<CONSTRAINTOPERATORS COMMATEXT=""></CONSTRAINTOPERATORS>
+		</CONSTRAINT>
+	</CONSTRAINTS>
+</ENTITY>
+
+<ENTITY ID="1022" Name="cabinets" SchemaOID="0" SchemaName="public" OwnerID="0" OwnerName="" TablespaceID="0" XPos="130" YPos="350" Temporary="0" Unlogged="0" OnCommit="" Inherits="" FillColor="16777215" LineColor="8388608" FontColor="0" CharacterSet="" Collate="" Comments="" Description="" Annotation="" BeginScript="" EndScript="" Generate="1" ACL="" StorageParams="" >
+	<COLUMNS>
+		<COLUMN ID="21" Name="cabinets_id" Pos="0" Datatype="23" Type="int4" Width="0" Prec="0" NotNull="1" AutoInc="0" Collation="" PrimaryKey="1" IsFKey="0" DefaultValue="" QuoteDefault="0" Comments=""></COLUMN>
+		<COLUMN ID="25" Name="name" Pos="1" Datatype="1043" Type="varchar" Width="64" Prec="0" NotNull="1" AutoInc="0" Collation="" PrimaryKey="0" IsFKey="0" DefaultValue="" QuoteDefault="0" Comments=""></COLUMN>
+		<COLUMN ID="26" Name="client_id" Pos="2" Datatype="1043" Type="varchar" Width="64" Prec="0" NotNull="0" AutoInc="0" Collation="" PrimaryKey="0" IsFKey="0" DefaultValue="" QuoteDefault="0" Comments=""></COLUMN>
+		<COLUMN ID="27" Name="key" Pos="3" Datatype="1043" Type="varchar" Width="256" Prec="0" NotNull="1" AutoInc="0" Collation="" PrimaryKey="0" IsFKey="0" DefaultValue="" QuoteDefault="0" Comments=""></COLUMN>
+		<COLUMN ID="28" Name="user_id" Pos="4" Datatype="23" Type="int4" Width="0" Prec="0" NotNull="1" AutoInc="0" Collation="" PrimaryKey="0" IsFKey="1" DefaultValue="" QuoteDefault="0" Comments=""></COLUMN>
+	</COLUMNS>
+	<REFERENCES_END>
+		<REFERENCE_END ID="21" />
+	</REFERENCES_END>
+	<CONSTRAINTS>
+		<CONSTRAINT ID="17" Name="" Kind="2" Expression="" ReferenceIndex="1417387" FillFactor="" Comments="" TablespaceID="0" Deferrable="0" Method="0">
+			<CONSTRAINTCOLUMNS COMMATEXT="21"></CONSTRAINTCOLUMNS>
+			<CONSTRAINTOPERATORS COMMATEXT=""></CONSTRAINTOPERATORS>
+		</CONSTRAINT>
+	</CONSTRAINTS>
+</ENTITY>
+
+</ENTITIES>
+
+<REFERENCES>
+<REFERENCE ID="21" Name="Ref_cabinets_to_users" SOURCE="1017" DESTINATION="1022" FKIDS="18=28\n" Direction="0" RefColor="8388608" RefLabelColor="16777215" RefLabelFontColor="0" OnDelete="3" OnUpdate="3" Deferrable="0" MatchType="0" Comments="" Description="" Annotation="" Generate="1" FKConstraint_ID="15" LabelPointNumber="2" LabelPosition="0.5" ManualStartTailPosition="0" ManualEndTailPosition="0" />
+	<USERPOINTS>
+	</USERPOINTS>
+</REFERENCE>
+</REFERENCES>
+
+<NOTES>
+</NOTES>
+
+<STOREDPROCES>
+</STOREDPROCES>
+
+<VIEWS>
+</VIEWS>
+
+</METADATA>
+</DBMODEL>

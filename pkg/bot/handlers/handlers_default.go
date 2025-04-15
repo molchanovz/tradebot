@@ -92,8 +92,8 @@ func (m *Manager) DefaultHandler(ctx context.Context, bot *botlib.Bot, update *m
 		log.Println("Error finding stocksApi:", result.Error)
 	}
 
-	switch user.State {
-	case db.DefaultState:
+	switch user.Status {
+	case db.EnabledStatus:
 		{
 			sendTextMessage(ctx, bot, chatId, "Не понял тебя. Нажми /start еще раз")
 		}
@@ -105,16 +105,18 @@ func (m *Manager) DefaultHandler(ctx context.Context, bot *botlib.Bot, update *m
 		{
 			getYandexFbs(ctx, bot, chatId, message)
 		}
+	default:
+		panic("unhandled default case")
 	}
 
 	err := m.db.Model(&db.User{}).Where("chatId = ?", chatId).Updates(db.User{
-		ChatId: chatId,
-		State:  db.DefaultState,
+		TgId:   chatId,
+		Status: db.EnabledStatus,
 	}).Error
 	if err != nil {
-		log.Println("Ошибка обновления DefaultState пользователя: ", err)
+		log.Println("Ошибка обновления EnabledStatus пользователя: ", err)
 	}
-	log.Printf("У пользователя %v обновлен DefaultState", chatId)
+	log.Printf("У пользователя %v обновлен EnabledStatus", chatId)
 
 }
 
@@ -166,8 +168,8 @@ func (m *Manager) startHandler(ctx context.Context, bot *botlib.Bot, update *mod
 	}
 
 	// если юзера нет - заполняем бд
-	if user.ChatId == 0 {
-		user := db.User{ChatId: chatId, State: db.DefaultState}
+	if user.TgId == 0 {
+		user := db.User{TgId: chatId, Status: db.EnabledStatus}
 		err := m.db.Create(&user).Error
 		if err != nil {
 			log.Println("Ошибка создания пользователя: ", err)
@@ -175,13 +177,13 @@ func (m *Manager) startHandler(ctx context.Context, bot *botlib.Bot, update *mod
 		log.Printf("Пользователь %v создан", chatId)
 	} else {
 		err := m.db.Model(&db.User{}).Where("chatId = ?", chatId).Updates(db.User{
-			ChatId: chatId,
-			State:  db.DefaultState,
+			TgId:   chatId,
+			Status: db.EnabledStatus,
 		}).Error
 		if err != nil {
-			log.Println("Ошибка обновления DefaultState пользователя: ", err)
+			log.Println("Ошибка обновления EnabledStatus пользователя: ", err)
 		}
-		log.Printf("У пользователя %v обновлен DefaultState", chatId)
+		log.Printf("У пользователя %v обновлен EnabledStatus", chatId)
 	}
 }
 
@@ -212,8 +214,8 @@ func (m *Manager) yandexFbsHandler(ctx context.Context, bot *botlib.Bot, update 
 	chatId := update.CallbackQuery.From.ID
 
 	err := m.db.Model(&db.User{}).Where("chatId = ?", chatId).Updates(db.User{
-		ChatId: chatId,
-		State:  db.WaitingYaState,
+		TgId:   chatId,
+		Status: db.WaitingYaState,
 	}).Error
 	if err != nil {
 		log.Println("Ошибка обновления WaitingYaState пользователя: ", err)

@@ -3,13 +3,16 @@ package db
 import "time"
 
 type Stock struct {
-	Article   string    `gorm:"column:article;unique"`
-	Date      time.Time `gorm:"column:date"`
-	StocksFBO *int      `gorm:"column:stocks_fbo"`
-	StocksFBS *int      `gorm:"column:stocks_fbs"`
+	ID          int       `gorm:"column:stock_id;unique"`
+	Article     string    `gorm:"column:article"`
+	UpdatedAt   time.Time `gorm:"column:updated_at"`
+	Marketplace string    `gorm:"column:marketplace"`
+	StocksFBO   *int      `gorm:"column:stocks_fbo"`
+	StocksFBS   *int      `gorm:"column:stocks_fbs"`
 }
 
 type User struct {
-	ChatId int64 `gorm:"column:chatid;unique"`
-	State  int   `gorm:"column:state"`
+	ID     int   `gorm:"column:user_id;unique"`
+	TgId   int64 `gorm:"column:tg_id;unique"`
+	Status int   `gorm:"column:status"`
 }

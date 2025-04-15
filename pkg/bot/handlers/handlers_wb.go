@@ -44,8 +44,8 @@ func (m *Manager) wbFbsHandler(ctx context.Context, bot *botlib.Bot, update *mod
 	chatId := update.CallbackQuery.From.ID
 
 	err := m.db.Model(&db.User{}).Where("chatId = ?", chatId).Updates(db.User{
-		ChatId: chatId,
-		State:  db.WaitingWbState,
+		TgId:   chatId,
+		Status: db.WaitingWbState,
 	}).Error
 	if err != nil {
 		log.Println("Ошибка обновления WaitingWbState пользователя: ", err)
@@ -126,7 +126,7 @@ func (m *Manager) wbOrdersHandler(ctx context.Context, bot *botlib.Bot, update *
 }
 func wbStocksHandler(ctx context.Context, bot *botlib.Bot, update *models.Update) {
 	daysAgo := 14
-	K := 1.5
+	K := 100.0
 
 	chatId := update.CallbackQuery.From.ID
 
@@ -218,14 +218,14 @@ func (m *Manager) AnalyzeStocks(apiKey string, ctx context.Context, b *botlib.Bo
 	for article, newStocks := range stocksMap {
 		var stocksDB []db.Stock
 		// Смотрим есть ли артикул в бд
-		result := m.db.Where("article = ?", article).Find(&stocksDB)
+		result := m.db.Where("article = ? and marketplace = ?", article, "wildberries").Find(&stocksDB)
 		if result.Error != nil {
 			return result.Error
 		}
 
 		// если артикула нет - заполняем бд
 		if len(stocksDB) == 0 {
-			stock := db.Stock{Article: article, StocksFBO: &newStocks.stockFBO, Date: time.Now()}
+			stock := db.Stock{Article: article, StocksFBO: &newStocks.stockFBO, UpdatedAt: time.Now(), Marketplace: "wildberries"}
 			err = m.db.Create(&stock).Error
 			if err != nil {
 				return err
@@ -242,8 +242,9 @@ func (m *Manager) AnalyzeStocks(apiKey string, ctx context.Context, b *botlib.Bo
 		if newStocks.stockFBO == 0 && *stocksDB[0].StocksFBO != 0 {
 			// Отправляем уведомление
 			_, err = b.SendMessage(ctx, &botlib.SendMessageParams{
-				ChatID: m.myChatId,
-				Text:   fmt.Sprintf("Нужно добавить наличие fbs для %v", article),
+				ChatID:    m.myChatId,
+				Text:      fmt.Sprintf("Нужно добавить наличие <b>WB</b> FBS для <code>%v</code>", article),
+				ParseMode: models.ParseModeHTML,
 			})
 			if err != nil {
 				return err
@@ -252,9 +253,9 @@ func (m *Manager) AnalyzeStocks(apiKey string, ctx context.Context, b *botlib.Bo
 
 		log.Println("Обновляем ", stocksDB[0].Article)
 
-		err = m.db.Model(&db.Stock{}).Where("article = ?", stocksDB[0].Article).Updates(db.Stock{
+		err = m.db.Model(&db.Stock{}).Where("article = ? and marketplace = ?", stocksDB[0].Article, "wildberries").Updates(db.Stock{
 			StocksFBO: &newStocks.stockFBO,
-			Date:      time.Now(),
+			UpdatedAt: time.Now(),
 		}).Error
 		if err != nil {
 			return err

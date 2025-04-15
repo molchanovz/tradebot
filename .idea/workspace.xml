@@ -4,27 +4,18 @@
     <option name="autoReloadType" value="ALL" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="640077d7-ce81-4039-9739-8ad3e3a8d41a" name="Changes" comment="code refactoring">
+    <list default="true" id="640077d7-ce81-4039-9739-8ad3e3a8d41a" name="Changes" comment="fix initEnv">
+      <change beforePath="$PROJECT_DIR$/.idea/dataSources.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/dataSources/9b72206f-fbb5-43b6-9126-d9522b27e82f.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources/9b72206f-fbb5-43b6-9126-d9522b27e82f.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/dataSources/9b72206f-fbb5-43b6-9126-d9522b27e82f/storage_v2/_src_/database/db_bot.hko2sA.meta" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/dataSources/9b72206f-fbb5-43b6-9126-d9522b27e82f/storage_v2/_src_/database/db_bot.hko2sA/schema/information_schema.FNRwLQ.meta" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/dataSources/9b72206f-fbb5-43b6-9126-d9522b27e82f/storage_v2/_src_/database/db_bot.hko2sA/schema/pg_catalog.0S1ZNQ.meta" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/dataSources/9b72206f-fbb5-43b6-9126-d9522b27e82f/storage_v2/_src_/database/db_bot.hko2sA/schema/public.abK9xQ.meta" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pkg/OZON/OrdersAndReturns/logic.go" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/OZON/orders_and_returns/logic.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pkg/OZON/StickersFBS/logic.go" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/OZON/stickersFBS/logic.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pkg/OZON/Stocks/logic.go" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/OZON/stocks_analyzer/logic.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pkg/OZON/service.go" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/OZON/service.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pkg/WB/OrdersAndReturns/logic.go" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/WB/OrdersAndReturns/logic.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pkg/WB/StickersFbs/logic.go" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/WB/StickersFbs/logic.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pkg/WB/service.go" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/WB/service.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pkg/WB/wb_stocks_analyze/logic.go" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/WB/wb_stocks_analyze/logic.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pkg/YANDEX/OrdersAndReturns/logic.go" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/YANDEX/OrdersAndReturns/logic.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pkg/YANDEX/service.go" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/YANDEX/service.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pkg/api/ozon/api.go" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/api/ozon/api.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pkg/api/ozon/models_converter.go" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/api/ozon/models_converter.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pkg/api/yandex/api.go" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/api/yandex/api.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/pkg/bot/handlers/handlers_default.go" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/bot/handlers/handlers_default.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pkg/bot/handlers/handlers_ozon.go" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/bot/handlers/handlers_ozon.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/pkg/bot/handlers/handlers_wb.go" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/bot/handlers/handlers_wb.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pkg/db/init.sql" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/db/init.sql" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pkg/googleService/googleService.go" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/google/sheets.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pkg/scheduler/scheduler.go" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/scheduler/scheduler.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pkg/db/db.go" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/db/db.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pkg/db/models.go" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/db/models.go" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -59,6 +50,10 @@
     &quot;accountId&quot;: &quot;61a9d8c1-3ce4-4719-aca3-2fc3d354d079&quot;
   }
 }</component>
+  <component name="KubernetesApiPersistence">{}</component>
+  <component name="KubernetesApiProvider">{
+  &quot;isMigrated&quot;: true
+}</component>
   <component name="MigrationScriptOptions">
     <option name="ignoreImplicitObjects" value="true" />
     <option name="ignoreSourceCode" value="false" />
@@ -81,7 +76,7 @@
     &quot;RunOnceActivity.go.formatter.settings.were.checked&quot;: &quot;true&quot;,
     &quot;RunOnceActivity.go.migrated.go.modules.settings&quot;: &quot;true&quot;,
     &quot;RunOnceActivity.go.modules.go.list.on.any.changes.was.set&quot;: &quot;true&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;refactoring&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;master&quot;,
     &quot;go.import.settings.migrated&quot;: &quot;true&quot;,
     &quot;go.sdk.automatically.set&quot;: &quot;true&quot;,
     &quot;last_opened_file_path&quot;: &quot;/Users/sergey/GolandProjects/WildberriesGo_bot/pkg/OZON&quot;,
@@ -126,6 +121,7 @@
         <item itemvalue="Go Build.go build WildberriesGo_bot/cmd" />
         <item itemvalue="Go Build.go build WildberriesGo_bot/cmd" />
         <item itemvalue="Go Build.go build WildberriesGo_bot/cmd" />
+        <item itemvalue="Go Build.go build WildberriesGo_bot/cmd" />
       </list>
     </recent_temporary>
   </component>
@@ -146,12 +142,6 @@
   </component>
   <component name="VcsManagerConfiguration">
     <option name="CHECK_CODE_SMELLS_BEFORE_PROJECT_COMMIT" value="false" />
-    <MESSAGE value="add friendly UI" />
-    <MESSAGE value="fix items list" />
-    <MESSAGE value="add yandex barcodes" />
-    <MESSAGE value="rename barcodes" />
-    <MESSAGE value="add vm around barcodes" />
-    <MESSAGE value="add yandex last orders" />
     <MESSAGE value="add ozon stocks analyze" />
     <MESSAGE value="fix stock.PromisedAmount" />
     <MESSAGE value="edit files path" />
@@ -171,7 +161,13 @@
     <MESSAGE value="edit AnalyzeStocks(): fix FBO stocks" />
     <MESSAGE value="edit app: add ozon service" />
     <MESSAGE value="code refactoring" />
-    <option name="LAST_COMMIT_MESSAGE" value="code refactoring" />
+    <MESSAGE value="delete println" />
+    <MESSAGE value="fix db: unique index wb stocks article" />
+    <MESSAGE value="fix models" />
+    <MESSAGE value="refactoring 14.04.25" />
+    <MESSAGE value="delete comments" />
+    <MESSAGE value="fix initEnv" />
+    <option name="LAST_COMMIT_MESSAGE" value="fix initEnv" />
   </component>
   <component name="VgoProject">
     <settings-migrated>true</settings-migrated>
@@ -180,14 +176,9 @@
     <breakpoint-manager>
       <breakpoints>
         <line-breakpoint enabled="true" type="DlvLineBreakpoint">
-          <url>file://$PROJECT_DIR$/pkg/OZON/stickersFBS/logic.go</url>
+          <url>file://$PROJECT_DIR$/pkg/OZON/StickersFBS/logic.go</url>
           <line>42</line>
           <option name="timeStamp" value="2" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="DlvLineBreakpoint">
-          <url>file://$PROJECT_DIR$/pkg/bot/handlers/handlers_wb.go</url>
-          <line>150</line>
-          <option name="timeStamp" value="3" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>
