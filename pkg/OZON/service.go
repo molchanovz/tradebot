@@ -8,7 +8,7 @@ import (
 
 const (
 	StocksDaysAgo = 14
-	OrdersDaysAgo = 2
+	OrdersDaysAgo = 1
 	spreadsheetId = "15Uq-DMvY61BLd_Y_e1nWKgTPM4LZihwLUDxBv2Sqs5s"
 )
 

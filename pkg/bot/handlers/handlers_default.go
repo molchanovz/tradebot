@@ -89,7 +89,7 @@ func (m *Manager) DefaultHandler(ctx context.Context, bot *botlib.Bot, update *m
 	// Смотрим есть ли артикул в бд
 	result := m.db.Where("tg_id = ?", chatId).Find(&user)
 	if result.Error != nil {
-		log.Println("Error finding stocksApi:", result.Error)
+		log.Println("Error finding user:", result.Error)
 	}
 
 	switch user.Status {
