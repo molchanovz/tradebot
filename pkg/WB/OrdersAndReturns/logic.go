@@ -40,9 +40,12 @@ func (m WbManager) WriteToGoogleSheets() error {
 	}
 
 	//Запись ALL заказов
-	postingsWithCountFBO := m.getPostingsMapFBO()
+	postingsWithCountFBO, postingsWithCountFBS, err := m.getPostingsMap()
+	if err != nil {
+		return err
+	}
 	writeRange = sheetsName + "!A2:B100"
-	colName := "Заказы FBO+FBS"
+	colName := "Заказы FBO"
 	values = [][]interface{}{}
 	values = append(values, []interface{}{colName})
 	for article, count := range postingsWithCountFBO {
@@ -54,7 +57,6 @@ func (m WbManager) WriteToGoogleSheets() error {
 	}
 
 	//Запись FBS заказов
-	postingsWithCountFBS := m.ordersMapFBS()
 	writeRange = sheetsName + "!D2:E100"
 	colName = "Заказы FBS"
 	values = [][]interface{}{}
@@ -114,17 +116,26 @@ func (m WbManager) ordersMapFBS() map[string]int {
 	}
 	return postingsWithCountFBS
 }
-func (m WbManager) getPostingsMapFBO() map[string]int {
-	postingsWithCountALL := make(map[string]int)
+func (m WbManager) getPostingsMap() (map[string]int, map[string]int, error) {
+	postingsWithCountFBO := make(map[string]int)
+	postingsWithCountFBS := make(map[string]int)
 	postingsList := wb.GetAllOrders(m.token, m.daysAgo, 1)
+
 	for _, posting := range postingsList {
 		if posting.OrderType == "Клиентский" && posting.IsCancel == false {
-			postingsWithCountALL[posting.SupplierArticle]++
+			if posting.WarehouseType == "Склад WB" {
+				postingsWithCountFBO[posting.SupplierArticle]++
+			} else if posting.WarehouseType == "Склад продавца" {
+				postingsWithCountFBS[posting.SupplierArticle]++
+			} else {
+				return postingsWithCountFBO, postingsWithCountFBS, fmt.Errorf("неопознанный тип склада: %v", posting.WarehouseType)
+			}
+
 		} else {
 			fmt.Println("Пропавший заказ ", posting.SupplierArticle, " ", posting.IsCancel)
 		}
 	}
-	return postingsWithCountALL
+	return postingsWithCountFBO, postingsWithCountFBS, nil
 }
 func (m WbManager) getReturnsMap() map[string]int {
 	returnsWithCount := make(map[string]int)

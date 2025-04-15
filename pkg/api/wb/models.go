@@ -39,6 +39,7 @@ type OrdersListALL []struct {
 	Date            string  `json:"date"`
 	LastChangeDate  string  `json:"lastChangeDate"`
 	WarehouseName   string  `json:"warehouseName"`
+	WarehouseType   string  `json:"warehouseType"`
 	CountryName     string  `json:"countryName"`
 	OblastOkrugName string  `json:"oblastOkrugName"`
 	RegionName      string  `json:"regionName"`
@@ -52,7 +53,7 @@ type OrdersListALL []struct {
 	IncomeID        int     `json:"incomeID"`
 	IsSupply        bool    `json:"isSupply"`
 	IsRealization   bool    `json:"isRealization"`
-	TotalPrice      float64 `json:"totalPrice"`
+	TotalPrice      int     `json:"totalPrice"`
 	DiscountPercent int     `json:"discountPercent"`
 	Spp             int     `json:"spp"`
 	FinishedPrice   float64 `json:"finishedPrice"`
