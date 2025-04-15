@@ -1,7 +1,7 @@
 package bot
 
 import (
-	"WildberriesGo_bot/pkg/OZON/StickersFBS"
+	"WildberriesGo_bot/pkg/OZON/stickersFBS"
 	"context"
 	"fmt"
 	botlib "github.com/go-telegram/bot"
