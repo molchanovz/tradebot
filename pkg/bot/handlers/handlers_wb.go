@@ -1,7 +1,7 @@
 package bot
 
 import (
-	"WildberriesGo_bot/pkg/WB/StickersFbs"
+	"WildberriesGo_bot/pkg/WB/stickersFbs"
 	"WildberriesGo_bot/pkg/WB/wb_stocks_analyze"
 	"WildberriesGo_bot/pkg/api/wb"
 	"WildberriesGo_bot/pkg/db"
@@ -86,13 +86,13 @@ func (m *Manager) getWbFbs(ctx context.Context, bot *botlib.Bot, chatId int64, s
 		return
 	}
 
-	filePath := fmt.Sprintf("%v%v.pdf", StickersFbs.WbDirectoryPath, supplyId)
+	filePath := fmt.Sprintf("%v%v.pdf", stickersFbs.WbDirectoryPath, supplyId)
 	err = sendMediaMessage(ctx, bot, chatId, filePath)
 	if err != nil {
 		log.Println(err)
 		return
 	}
-	StickersFbs.CleanFiles(supplyId)
+	stickersFbs.CleanFiles(supplyId)
 
 	text, markup := createStartMarkup()
 	_, err = bot.SendMessage(ctx, &botlib.SendMessageParams{ChatID: chatId, Text: text, ReplyMarkup: markup})

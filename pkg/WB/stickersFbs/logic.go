@@ -1,4 +1,4 @@
-package StickersFbs
+package stickersFbs
 
 import (
 	"WildberriesGo_bot/pkg/api/wb"

@@ -3,7 +3,7 @@ package WB
 import (
 	"WildberriesGo_bot/pkg/OZON"
 	"WildberriesGo_bot/pkg/WB/OrdersAndReturns"
-	"WildberriesGo_bot/pkg/WB/StickersFbs"
+	"WildberriesGo_bot/pkg/WB/stickersFbs"
 )
 
 const (
@@ -15,14 +15,14 @@ const (
 type Service struct {
 	clientId, token           string
 	ordersAndReturnsWbManager OrdersAndReturns.WbManager
-	stickersWbManager         StickersFbs.WbManager
+	stickersWbManager         stickersFbs.WbManager
 }
 
 func NewService(token string) *Service {
 	return &Service{
 		token:                     token,
 		ordersAndReturnsWbManager: OrdersAndReturns.NewWbManager(token, spreadsheetId, OrdersDaysAgo),
-		stickersWbManager:         StickersFbs.NewWbManager(token),
+		stickersWbManager:         stickersFbs.NewWbManager(token),
 	}
 }
 
@@ -30,6 +30,6 @@ func (s Service) GetOrdersAndReturnsManager() OrdersAndReturns.WbManager {
 	return s.ordersAndReturnsWbManager
 }
 
-func (s Service) GetStickersFbsManager() StickersFbs.WbManager {
+func (s Service) GetStickersFbsManager() stickersFbs.WbManager {
 	return s.stickersWbManager
 }
