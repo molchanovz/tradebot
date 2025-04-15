@@ -43,7 +43,7 @@ func wbHandler(ctx context.Context, bot *botlib.Bot, update *models.Update) {
 func (m *Manager) wbFbsHandler(ctx context.Context, bot *botlib.Bot, update *models.Update) {
 	chatId := update.CallbackQuery.From.ID
 
-	err := m.db.Model(&db.User{}).Where("chatId = ?", chatId).Updates(db.User{
+	err := m.db.Model(&db.User{}).Where("tg_id = ?", chatId).Updates(db.User{
 		TgId:   chatId,
 		Status: db.WaitingWbState,
 	}).Error

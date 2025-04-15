@@ -87,7 +87,7 @@ func (m *Manager) DefaultHandler(ctx context.Context, bot *botlib.Bot, update *m
 
 	var user db.User
 	// Смотрим есть ли артикул в бд
-	result := m.db.Where("chatId = ?", chatId).Find(&user)
+	result := m.db.Where("tg_id = ?", chatId).Find(&user)
 	if result.Error != nil {
 		log.Println("Error finding stocksApi:", result.Error)
 	}
@@ -109,7 +109,7 @@ func (m *Manager) DefaultHandler(ctx context.Context, bot *botlib.Bot, update *m
 		panic("unhandled default case")
 	}
 
-	err := m.db.Model(&db.User{}).Where("chatId = ?", chatId).Updates(db.User{
+	err := m.db.Model(&db.User{}).Where("tg_id = ?", chatId).Updates(db.User{
 		TgId:   chatId,
 		Status: db.EnabledStatus,
 	}).Error
@@ -162,7 +162,7 @@ func (m *Manager) startHandler(ctx context.Context, bot *botlib.Bot, update *mod
 
 	var user db.User
 	// Смотрим есть ли юзер в бд
-	result := m.db.Where("chatId = ?", chatId).Find(&user)
+	result := m.db.Where("tg_id = ?", chatId).Find(&user)
 	if result.Error != nil {
 		log.Println("Error finding chatId: ", result.Error)
 	}
@@ -176,7 +176,7 @@ func (m *Manager) startHandler(ctx context.Context, bot *botlib.Bot, update *mod
 		}
 		log.Printf("Пользователь %v создан", chatId)
 	} else {
-		err := m.db.Model(&db.User{}).Where("chatId = ?", chatId).Updates(db.User{
+		err := m.db.Model(&db.User{}).Where("tg_id = ?", chatId).Updates(db.User{
 			TgId:   chatId,
 			Status: db.EnabledStatus,
 		}).Error
@@ -213,7 +213,7 @@ func yandexHandler(ctx context.Context, bot *botlib.Bot, update *models.Update) 
 func (m *Manager) yandexFbsHandler(ctx context.Context, bot *botlib.Bot, update *models.Update) {
 	chatId := update.CallbackQuery.From.ID
 
-	err := m.db.Model(&db.User{}).Where("chatId = ?", chatId).Updates(db.User{
+	err := m.db.Model(&db.User{}).Where("tg_id = ?", chatId).Updates(db.User{
 		TgId:   chatId,
 		Status: db.WaitingYaState,
 	}).Error
