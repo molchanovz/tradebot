@@ -1,8 +1,8 @@
 package OZON
 
 import (
-	"WildberriesGo_bot/pkg/OZON/StickersFBS"
 	"WildberriesGo_bot/pkg/OZON/orders_and_returns"
+	"WildberriesGo_bot/pkg/OZON/stickersFBS"
 	"WildberriesGo_bot/pkg/OZON/stocks_analyzer"
 )
 
