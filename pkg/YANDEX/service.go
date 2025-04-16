@@ -15,9 +15,9 @@ type Service struct {
 	ordersAndReturnsManager *OrdersAndReturns.Manager
 }
 
-func NewService(token string) *Service {
+func NewService(yandexCampaignIdFBO, yandexCampaignIdFBS, token string) *Service {
 	return &Service{token: token,
-		ordersAndReturnsManager: OrdersAndReturns.NewManager(token, spreadsheetId, daysAgo),
+		ordersAndReturnsManager: OrdersAndReturns.NewManager(yandexCampaignIdFBO, yandexCampaignIdFBS, token, spreadsheetId, daysAgo),
 	}
 }
 

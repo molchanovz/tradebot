@@ -376,13 +376,12 @@ func generateExcel(postings map[string]map[string]int, stocks map[string]map[str
 				stock = clusterStocks[article]
 			}
 
-			if stock == 0 || (postingCount > 0 && float64(stock)/float64(postingCount) < K) {
-				file.SetCellValue(sheetName, "A"+strconv.Itoa(row), cluster)
-				file.SetCellValue(sheetName, "B"+strconv.Itoa(row), article)
-				file.SetCellValue(sheetName, "C"+strconv.Itoa(row), postingCount)
-				file.SetCellValue(sheetName, "D"+strconv.Itoa(row), stock)
-				row++
-			}
+			file.SetCellValue(sheetName, "A"+strconv.Itoa(row), cluster)
+			file.SetCellValue(sheetName, "B"+strconv.Itoa(row), article)
+			file.SetCellValue(sheetName, "C"+strconv.Itoa(row), postingCount)
+			file.SetCellValue(sheetName, "D"+strconv.Itoa(row), stock)
+			row++
+
 		}
 	}
 

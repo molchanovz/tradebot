@@ -111,11 +111,11 @@ func GetStickers(token string, orderId int64) (string, error) {
 	return string(jsonString), nil
 }
 
-func getOrdersFbo(yandexKey string, daysAgo int) (string, error) {
+func getOrders(campaignId, yandexKey string, daysAgo int) (string, error) {
 
 	date := time.Now().AddDate(0, 0, -daysAgo)
 
-	url := "https://api.partner.market.yandex.ru/campaigns/49152956/stats/orders"
+	url := fmt.Sprintf("https://api.partner.market.yandex.ru/campaigns/%v/stats/orders", campaignId)
 
 	body := []byte(fmt.Sprintf(`{
   "dateFrom": "%v",

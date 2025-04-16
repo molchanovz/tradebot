@@ -4,18 +4,14 @@
     <option name="autoReloadType" value="ALL" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="640077d7-ce81-4039-9739-8ad3e3a8d41a" name="Changes" comment="fix initEnv">
-      <change beforePath="$PROJECT_DIR$/.idea/dataSources.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/dataSources/9b72206f-fbb5-43b6-9126-d9522b27e82f.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources/9b72206f-fbb5-43b6-9126-d9522b27e82f.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/dataSources/9b72206f-fbb5-43b6-9126-d9522b27e82f/storage_v2/_src_/database/db_bot.hko2sA.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/dataSources/9b72206f-fbb5-43b6-9126-d9522b27e82f/storage_v2/_src_/database/db_bot.hko2sA/schema/information_schema.FNRwLQ.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/dataSources/9b72206f-fbb5-43b6-9126-d9522b27e82f/storage_v2/_src_/database/db_bot.hko2sA/schema/pg_catalog.0S1ZNQ.meta" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/dataSources/9b72206f-fbb5-43b6-9126-d9522b27e82f/storage_v2/_src_/database/db_bot.hko2sA/schema/public.abK9xQ.meta" beforeDir="false" />
+    <list default="true" id="640077d7-ce81-4039-9739-8ad3e3a8d41a" name="Changes" comment="edit logic: wb orders fbo/fbs">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pkg/YANDEX/OrdersAndReturns/logic.go" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/YANDEX/OrdersAndReturns/logic.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pkg/YANDEX/service.go" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/YANDEX/service.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pkg/api/yandex/api.go" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/api/yandex/api.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pkg/api/yandex/models_converter.go" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/api/yandex/models_converter.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pkg/app/app.go" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/app/app.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/pkg/bot/handlers/handlers_default.go" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/bot/handlers/handlers_default.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pkg/bot/handlers/handlers_wb.go" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/bot/handlers/handlers_wb.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pkg/db/db.go" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/db/db.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pkg/db/models.go" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/db/models.go" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -142,12 +138,6 @@
   </component>
   <component name="VcsManagerConfiguration">
     <option name="CHECK_CODE_SMELLS_BEFORE_PROJECT_COMMIT" value="false" />
-    <MESSAGE value="add ozon stocks analyze" />
-    <MESSAGE value="fix stock.PromisedAmount" />
-    <MESSAGE value="edit files path" />
-    <MESSAGE value="replace api/models files" />
-    <MESSAGE value="fix ozon returns" />
-    <MESSAGE value="add logs GetReadyFile" />
     <MESSAGE value="add time.sleep" />
     <MESSAGE value="add Tula in map" />
     <MESSAGE value="fix spreadsheetIds" />
@@ -155,7 +145,6 @@
     <MESSAGE value="fix wb clusters, fix api" />
     <MESSAGE value="fix/add yandex barcodes" />
     <MESSAGE value="edit app services" />
-    <MESSAGE value="fix logs" />
     <MESSAGE value="run schedulers" />
     <MESSAGE value="edit AnalyzeStocks(): add stocks FBO/FBS" />
     <MESSAGE value="edit AnalyzeStocks(): fix FBO stocks" />
@@ -167,7 +156,14 @@
     <MESSAGE value="refactoring 14.04.25" />
     <MESSAGE value="delete comments" />
     <MESSAGE value="fix initEnv" />
-    <option name="LAST_COMMIT_MESSAGE" value="fix initEnv" />
+    <MESSAGE value="edit db: create .pdd" />
+    <MESSAGE value="add unversioned files" />
+    <MESSAGE value="fix Model(User{}).Where()" />
+    <MESSAGE value="rename files" />
+    <MESSAGE value="fix import" />
+    <MESSAGE value="fix logs" />
+    <MESSAGE value="edit logic: wb orders fbo/fbs" />
+    <option name="LAST_COMMIT_MESSAGE" value="edit logic: wb orders fbo/fbs" />
   </component>
   <component name="VgoProject">
     <settings-migrated>true</settings-migrated>

@@ -5,9 +5,9 @@ import (
 	"log"
 )
 
-func GetOrdersFbo(apiKey string, daysAgo int) (OrdersFbo, error) {
+func GetOrdersFbo(campaignId, apiKey string, daysAgo int) (OrdersFbo, error) {
 	var orders OrdersFbo
-	jsonString, err := getOrdersFbo(apiKey, daysAgo)
+	jsonString, err := getOrders(campaignId, apiKey, daysAgo)
 	if err != nil {
 		return orders, err
 	}

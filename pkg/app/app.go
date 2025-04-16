@@ -56,11 +56,19 @@ func (a Application) Start() {
 	}
 	wbService := WB.NewService(wbToken)
 
+	yandexCampaignIdFBO, err := initEnv(a.envPath, "yandexCampaignIdFBO")
+	if err != nil {
+		fmt.Printf("%v", err)
+	}
+	yandexCampaignIdFBS, err := initEnv(a.envPath, "yandexCampaignIdFBS")
+	if err != nil {
+		fmt.Printf("%v", err)
+	}
 	yandexToken, err := initEnv(a.envPath, "yandexToken")
 	if err != nil {
 		fmt.Printf("%v", err)
 	}
-	yandexService := YANDEX.NewService(yandexToken)
+	yandexService := YANDEX.NewService(yandexCampaignIdFBO, yandexCampaignIdFBS, yandexToken)
 
 	botToken, err := initEnv(a.envPath, "token")
 	if err != nil {

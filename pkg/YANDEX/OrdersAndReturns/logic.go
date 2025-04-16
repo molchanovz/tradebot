@@ -8,17 +8,19 @@ import (
 )
 
 type Manager struct {
-	token, spreadsheetId string
-	daysAgo              int
-	googleSheets         google.SheetsService
+	yandexCampaignIdFBO, yandexCampaignIdFBS, token, spreadsheetId string
+	daysAgo                                                        int
+	googleSheets                                                   google.SheetsService
 }
 
-func NewManager(token, spreadsheetId string, daysAgo int) *Manager {
+func NewManager(yandexCampaignIdFBO, yandexCampaignIdFBS, token, spreadsheetId string, daysAgo int) *Manager {
 	return &Manager{
-		spreadsheetId: spreadsheetId,
-		daysAgo:       daysAgo,
-		token:         token,
-		googleSheets:  google.NewSheetsService("token.json", "credentials.json"),
+		yandexCampaignIdFBO: yandexCampaignIdFBO,
+		yandexCampaignIdFBS: yandexCampaignIdFBS,
+		spreadsheetId:       spreadsheetId,
+		daysAgo:             daysAgo,
+		token:               token,
+		googleSheets:        google.NewSheetsService("token.json", "credentials.json"),
 	}
 }
 
@@ -37,7 +39,10 @@ func (m Manager) WriteToGoogleSheets() error {
 	}
 
 	//Запись FBO заказов
-	postingsWithCountFBO, _ := m.ordersMapFBO()
+	postingsWithCountFBO, err := m.ordersMap(m.yandexCampaignIdFBO)
+	if err != nil {
+		return err
+	}
 	writeRange = sheetsName + "!A2:B100"
 	colName := "Заказы FBO"
 	values = [][]interface{}{}
@@ -50,14 +55,22 @@ func (m Manager) WriteToGoogleSheets() error {
 		return err
 	}
 
-	////Запись FBS заказов
-	//postingsWithCountFBS := ordersMapFBS(ApiKey)
-	//writeRange = sheetsName + "!D2:E100"
-	//colName = "Заказы FBS"
-	//err = writeData(writeRange, colName, postingsWithCountFBS)
-	//if err != nil {
-	//	return err
-	//}
+	//Запись FBS заказов
+	postingsWithCountFBS, err := m.ordersMap(m.yandexCampaignIdFBS)
+	if err != nil {
+		return err
+	}
+	writeRange = sheetsName + "!D2:E100"
+	colName = "Заказы FBS"
+	values = [][]interface{}{}
+	values = append(values, []interface{}{colName})
+	for article, count := range postingsWithCountFBS {
+		values = append(values, []interface{}{article, count})
+	}
+	err = m.googleSheets.Write(m.spreadsheetId, writeRange, values)
+	if err != nil {
+		return err
+	}
 
 	////Запись возвратов
 	//returnsWithCount := returnsMap(ApiKey)
@@ -98,9 +111,9 @@ func (m Manager) WriteToGoogleSheets() error {
 //	return postingsWithCountFBS
 //}
 
-func (m Manager) ordersMapFBO() (map[string]int, error) {
+func (m Manager) ordersMap(yandexCampaignId string) (map[string]int, error) {
 	postingsWithCountALL := make(map[string]int)
-	ordersFbo, err := yandex.GetOrdersFbo(m.token, m.daysAgo)
+	ordersFbo, err := yandex.GetOrdersFbo(yandexCampaignId, m.token, m.daysAgo)
 	if err != nil {
 		return postingsWithCountALL, err
 	}
