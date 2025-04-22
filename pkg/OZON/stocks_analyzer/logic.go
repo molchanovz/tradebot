@@ -3,6 +3,7 @@ package stocks_analyzer
 import (
 	"WildberriesGo_bot/pkg/api/ozon"
 	"WildberriesGo_bot/pkg/google"
+	"fmt"
 	"time"
 )
 
@@ -51,40 +52,92 @@ func (m OzonManager) GetPostings() map[string]map[string]int {
 
 	return postingsMap
 }
-func (m OzonManager) GetStocks() map[string]map[string]int {
-	stocksList := ozon.Stocks(m.clientId, m.token)
 
-	clusters := ozon.Clusters(m.clientId, m.token)
+type CustomStocks struct {
+	AvailableStockCount int
+	TransitStockCount   int
+	RequestedStockCount int
+}
 
-	clustersMap := make(map[string]string)
+func (m OzonManager) GetStocks() map[string]map[string]CustomStocks {
 
-	//Разбивка складов по кластерам в map
-	for _, cluster := range clusters.Clusters {
-		for _, logisticClusters := range cluster.LogisticClusters {
-			for _, warehouse := range logisticClusters.Warehouses {
-				if _, exists := clustersMap[warehouse.Name]; !exists {
-					clustersMap[warehouse.Name] = cluster.Name
-				}
+	products := ozon.ProductsWithAttributes(m.clientId, m.token)
+
+	skus := make([]string, 0, len(products.Result))
+
+	for _, item := range products.Result {
+		skus = append(skus, fmt.Sprintf("%v", item.Sku))
+	}
+
+	maxSkus := 100
+	stocksMap := make(map[string]map[string]CustomStocks)
+
+	for i := 0; i < len(skus); i += maxSkus {
+		end := i + maxSkus
+		if end > len(skus) {
+			end = len(skus)
+		}
+		chunk := skus[i:end]
+
+		stocksList := ozon.StocksAnalytics(m.clientId, m.token, chunk)
+
+		for _, item := range stocksList.Items {
+			if _, exists := stocksMap[item.ClusterName]; !exists {
+				stocksMap[item.ClusterName] = make(map[string]CustomStocks)
+			}
+			if stock, exists := stocksMap[item.ClusterName][item.OfferId]; exists {
+				//TODO Добавить все остатки
+				stock.AvailableStockCount += item.AvailableStockCount
+				stock.RequestedStockCount += item.RequestedStockCount
+				stock.TransitStockCount += item.TransitStockCount
+				stocksMap[item.ClusterName][item.OfferId] = stock
+			} else {
+				stock.AvailableStockCount = item.AvailableStockCount
+				stock.RequestedStockCount = item.RequestedStockCount
+				stock.TransitStockCount = item.TransitStockCount
+				stocksMap[item.ClusterName][item.OfferId] = stock
 			}
 		}
 	}
 
-	stocksMap := make(map[string]map[string]int)
-
-	for _, stock := range stocksList.Result.Rows {
-		cluster := clustersMap[stock.WarehouseName]
-		if _, exists := stocksMap[cluster]; !exists {
-			stocksMap[cluster] = make(map[string]int)
-		}
-		if _, exists := stocksMap[cluster][stock.ItemCode]; exists {
-			stocksMap[cluster][stock.ItemCode] += stock.FreeToSellAmount + stock.PromisedAmount
-		} else {
-			stocksMap[cluster][stock.ItemCode] = stock.FreeToSellAmount + stock.PromisedAmount
-		}
-
-	}
 	return stocksMap
 }
+
+//func (m OzonManager) GetStocks() map[string]map[string]int {
+//	stocksList := ozon.Stocks(m.clientId, m.token)
+//
+//	clusters := ozon.Clusters(m.clientId, m.token)
+//
+//	clustersMap := make(map[string]string)
+//
+//	//Разбивка складов по кластерам в map
+//	for _, cluster := range clusters.Clusters {
+//		for _, logisticClusters := range cluster.LogisticClusters {
+//			for _, warehouse := range logisticClusters.Warehouses {
+//				if _, exists := clustersMap[warehouse.Name]; !exists {
+//					clustersMap[warehouse.Name] = cluster.Name
+//				}
+//			}
+//		}
+//	}
+//
+//	stocksMap := make(map[string]map[string]int)
+//
+//	for _, stock := range stocksList.Result.Rows {
+//		cluster := clustersMap[stock.WarehouseName]
+//		if _, exists := stocksMap[cluster]; !exists {
+//			stocksMap[cluster] = make(map[string]int)
+//		}
+//		if _, exists := stocksMap[cluster][stock.ItemCode]; exists {
+//			stocksMap[cluster][stock.ItemCode] += stock.FreeToSellAmount + stock.PromisedAmount
+//		} else {
+//			stocksMap[cluster][stock.ItemCode] = stock.FreeToSellAmount + stock.PromisedAmount
+//		}
+//
+//	}
+//	return stocksMap
+//}
+
 func (m OzonManager) GetClusters() ozon.ClustersList {
 	return ozon.Clusters(m.clientId, m.token)
 }
