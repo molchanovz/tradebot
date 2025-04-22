@@ -65,7 +65,7 @@ func (m *Manager) ozonStocksHandler(ctx context.Context, bot *botlib.Bot, update
 
 	stocks := m.ozonService.GetStocksManager().GetStocks()
 
-	filePath, err := generateExcel(postings, stocks, K, "ozon")
+	filePath, err := generateExcelOzon(postings, stocks, K, "ozon")
 	if err != nil {
 		log.Println("Ошибка при создании Excel:", err)
 		return

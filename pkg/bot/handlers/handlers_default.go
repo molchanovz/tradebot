@@ -2,6 +2,7 @@ package bot
 
 import (
 	"WildberriesGo_bot/pkg/OZON"
+	"WildberriesGo_bot/pkg/OZON/stocks_analyzer"
 	"WildberriesGo_bot/pkg/WB"
 	"WildberriesGo_bot/pkg/YANDEX"
 	"WildberriesGo_bot/pkg/YANDEX/yandex_stickers_fbs"
@@ -340,7 +341,8 @@ func initEnv(path, name string) (string, error) {
 	}
 	return env, err
 }
-func generateExcel(postings map[string]map[string]int, stocks map[string]map[string]int, K float64, mp string) (string, error) {
+
+func generateExcelWB(postings map[string]map[string]int, stocks map[string]map[string]int, K float64, mp string) (string, error) {
 	file := excelize.NewFile()
 	sheetName := "StocksFBO Analysis"
 	file.SetSheetName("Sheet1", sheetName)
@@ -380,6 +382,62 @@ func generateExcel(postings map[string]map[string]int, stocks map[string]map[str
 			file.SetCellValue(sheetName, "B"+strconv.Itoa(row), article)
 			file.SetCellValue(sheetName, "C"+strconv.Itoa(row), postingCount)
 			file.SetCellValue(sheetName, "D"+strconv.Itoa(row), stock)
+			row++
+
+		}
+	}
+
+	// Сохраняем файл
+	filePath := mp + "_stock_analysis.xlsx"
+	if err := file.SaveAs(filePath); err != nil {
+		return "", err
+	}
+	return filePath, nil
+}
+
+func generateExcelOzon(postings map[string]map[string]int, stocks map[string]map[string]stocks_analyzer.CustomStocks, K float64, mp string) (string, error) {
+	file := excelize.NewFile()
+	sheetName := "StocksFBO Analysis"
+	file.SetSheetName("Sheet1", sheetName)
+
+	// Заголовки
+	headers := []string{"Кластер", "Артикул", "Заказано", "Доступно, шт", "В пути, шт"}
+	for i, h := range headers {
+		cell := string(rune('A'+i)) + "1"
+		file.SetCellValue(sheetName, cell, h)
+	}
+
+	articles := make(map[string]struct{})
+
+	// Собираем все уникальные артикулы
+	for _, postingsMap := range postings {
+		for article := range postingsMap {
+			articles[article] = struct{}{}
+		}
+	}
+	for _, stocksMap := range stocks {
+		for article := range stocksMap {
+			articles[article] = struct{}{}
+		}
+	}
+
+	row := 2
+	for cluster, postingsMap := range postings {
+
+		for article := range articles {
+			postingCount := postingsMap[article]
+			availableStockCount := 0
+			inWayStockCount := 0
+			if clusterStocks, stocksExists := stocks[cluster]; stocksExists {
+				availableStockCount = clusterStocks[article].AvailableStockCount
+				inWayStockCount = clusterStocks[article].TransitStockCount + clusterStocks[article].RequestedStockCount
+			}
+
+			file.SetCellValue(sheetName, "A"+strconv.Itoa(row), cluster)
+			file.SetCellValue(sheetName, "B"+strconv.Itoa(row), article)
+			file.SetCellValue(sheetName, "C"+strconv.Itoa(row), postingCount)
+			file.SetCellValue(sheetName, "D"+strconv.Itoa(row), availableStockCount)
+			file.SetCellValue(sheetName, "E"+strconv.Itoa(row), inWayStockCount)
 			row++
 
 		}

@@ -148,7 +148,7 @@ func wbStocksHandler(ctx context.Context, bot *botlib.Bot, update *models.Update
 		return
 	}
 
-	filePath, err := generateExcel(orders, stocks, K, "wb")
+	filePath, err := generateExcelWB(orders, stocks, K, "wb")
 	if err != nil {
 		_, err = sendTextMessage(ctx, bot, chatId, fmt.Sprintf("Ошибка при генерации экселя: %v", err))
 		if err != nil {
