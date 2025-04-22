@@ -88,12 +88,12 @@ func (m *Manager) DefaultHandler(ctx context.Context, bot *botlib.Bot, update *m
 
 	var user db.User
 	// Смотрим есть ли артикул в бд
-	result := m.db.Where("tg_id = ?", chatId).Find(&user)
+	result := m.db.Where(`"tgId" = ?`, chatId).Find(&user)
 	if result.Error != nil {
 		log.Println("Error finding user:", result.Error)
 	}
 
-	switch user.Status {
+	switch user.StatusId {
 	case db.EnabledStatus:
 		{
 			sendTextMessage(ctx, bot, chatId, "Не понял тебя. Нажми /start еще раз")
@@ -110,9 +110,9 @@ func (m *Manager) DefaultHandler(ctx context.Context, bot *botlib.Bot, update *m
 		panic("unhandled default case")
 	}
 
-	err := m.db.Model(&db.User{}).Where("tg_id = ?", chatId).Updates(db.User{
-		TgId:   chatId,
-		Status: db.EnabledStatus,
+	err := m.db.Model(&db.User{}).Where(`"tgId" = ?`, chatId).Updates(db.User{
+		TgId:     chatId,
+		StatusId: db.EnabledStatus,
 	}).Error
 	if err != nil {
 		log.Println("Ошибка обновления EnabledStatus пользователя: ", err)
@@ -121,7 +121,7 @@ func (m *Manager) DefaultHandler(ctx context.Context, bot *botlib.Bot, update *m
 
 }
 
-func createStartMarkup() (string, models.InlineKeyboardMarkup) {
+func createStartAdminMarkup() (string, models.InlineKeyboardMarkup) {
 	startMessage := "Выбери маркетплейс для работы"
 	var buttonsRow []models.InlineKeyboardButton
 	buttonsRow = append(buttonsRow, models.InlineKeyboardButton{Text: "ВБ", CallbackData: CallbackWbHandler})
@@ -132,17 +132,64 @@ func createStartMarkup() (string, models.InlineKeyboardMarkup) {
 	return startMessage, markup
 }
 
+func createStartUserMarkup() (string, models.InlineKeyboardMarkup) {
+	startMessage := "Можешь перейти в наши магазины"
+	var buttonsRow []models.InlineKeyboardButton
+	buttonsRow = append(buttonsRow, models.InlineKeyboardButton{Text: "ВБ", URL: "https://www.wildberries.ru/seller/27566"})
+	buttonsRow = append(buttonsRow, models.InlineKeyboardButton{Text: "ЯНДЕКС", URL: "https://market.yandex.ru/business--metr-v-kube/3697903"})
+	buttonsRow = append(buttonsRow, models.InlineKeyboardButton{Text: "ОЗОН", URL: "https://www.ozon.ru/seller/metr-v-kube-259267"})
+	allButtons := [][]models.InlineKeyboardButton{buttonsRow}
+	markup := models.InlineKeyboardMarkup{InlineKeyboard: allButtons}
+	return startMessage, markup
+}
+
 func (m *Manager) startHandler(ctx context.Context, bot *botlib.Bot, update *models.Update) {
 	var chatId int64
 	var text string
 
-	startMessage, markup := createStartMarkup()
-
 	if update.Message != nil {
 		chatId = update.Message.From.ID
+	} else {
+		chatId = update.CallbackQuery.From.ID
+	}
+
+	var user db.User
+	// Смотрим есть ли юзер в бд
+	result := m.db.Where(`"tgId" = ?`, chatId).Find(&user)
+	if result.Error != nil {
+		log.Println("Error finding chatId: ", result.Error)
+	}
+
+	// если юзера нет - заполняем бд
+	if user.TgId == 0 {
+		user = db.User{TgId: chatId, StatusId: db.EnabledStatus}
+		err := m.db.Create(&user).Error
+		if err != nil {
+			log.Println("Ошибка создания пользователя: ", err)
+		}
+		log.Printf("Пользователь %v создан", chatId)
+	} else {
+		err := m.db.Model(&db.User{}).Where(`"tgId" = ?`, chatId).Updates(db.User{
+			StatusId: db.EnabledStatus,
+		}).Error
+		if err != nil {
+			log.Println("Ошибка обновления EnabledStatus пользователя: ", err)
+		}
+		log.Printf("У пользователя %v обновлен EnabledStatus", chatId)
+	}
+
+	var startMessage string
+	var markup models.InlineKeyboardMarkup
+
+	if user.IsAdmin {
+		startMessage, markup = createStartAdminMarkup()
+	} else {
+		startMessage, markup = createStartUserMarkup()
+	}
+
+	if update.Message != nil {
 		name := update.Message.From.FirstName
 		text = fmt.Sprintf("Привет, %v. %v", name, startMessage)
-
 		_, err := bot.SendMessage(ctx, &botlib.SendMessageParams{ChatID: chatId, Text: text, ReplyMarkup: markup})
 		if err != nil {
 			log.Printf("%v", err)
@@ -150,41 +197,13 @@ func (m *Manager) startHandler(ctx context.Context, bot *botlib.Bot, update *mod
 		}
 
 	} else {
-		chatId = update.CallbackQuery.From.ID
 		messageId := update.CallbackQuery.Message.Message.ID
 		text = startMessage
-
 		_, err := bot.EditMessageText(ctx, &botlib.EditMessageTextParams{MessageID: messageId, ChatID: chatId, Text: text, ReplyMarkup: markup})
 		if err != nil {
 			log.Printf("%v", err)
 			return
 		}
-	}
-
-	var user db.User
-	// Смотрим есть ли юзер в бд
-	result := m.db.Where("tg_id = ?", chatId).Find(&user)
-	if result.Error != nil {
-		log.Println("Error finding chatId: ", result.Error)
-	}
-
-	// если юзера нет - заполняем бд
-	if user.TgId == 0 {
-		user := db.User{TgId: chatId, Status: db.EnabledStatus}
-		err := m.db.Create(&user).Error
-		if err != nil {
-			log.Println("Ошибка создания пользователя: ", err)
-		}
-		log.Printf("Пользователь %v создан", chatId)
-	} else {
-		err := m.db.Model(&db.User{}).Where("tg_id = ?", chatId).Updates(db.User{
-			TgId:   chatId,
-			Status: db.EnabledStatus,
-		}).Error
-		if err != nil {
-			log.Println("Ошибка обновления EnabledStatus пользователя: ", err)
-		}
-		log.Printf("У пользователя %v обновлен EnabledStatus", chatId)
 	}
 }
 
@@ -214,9 +233,9 @@ func yandexHandler(ctx context.Context, bot *botlib.Bot, update *models.Update) 
 func (m *Manager) yandexFbsHandler(ctx context.Context, bot *botlib.Bot, update *models.Update) {
 	chatId := update.CallbackQuery.From.ID
 
-	err := m.db.Model(&db.User{}).Where("tg_id = ?", chatId).Updates(db.User{
-		TgId:   chatId,
-		Status: db.WaitingYaState,
+	err := m.db.Model(&db.User{}).Where(`"tgId" = ?`, chatId).Updates(db.User{
+		TgId:     chatId,
+		StatusId: db.WaitingYaState,
 	}).Error
 	if err != nil {
 		log.Println("Ошибка обновления WaitingYaState пользователя: ", err)
@@ -287,7 +306,7 @@ func getYandexFbs(ctx context.Context, bot *botlib.Bot, chatId int64, supplyId s
 		yandex_stickers_fbs.CleanFiles(supplyId)
 	}
 
-	text, markup := createStartMarkup()
+	text, markup := createStartAdminMarkup()
 	_, err = bot.SendMessage(ctx, &botlib.SendMessageParams{ChatID: chatId, Text: text, ReplyMarkup: markup})
 	if err != nil {
 		log.Printf("%v", err)

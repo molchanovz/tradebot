@@ -43,9 +43,9 @@ func wbHandler(ctx context.Context, bot *botlib.Bot, update *models.Update) {
 func (m *Manager) wbFbsHandler(ctx context.Context, bot *botlib.Bot, update *models.Update) {
 	chatId := update.CallbackQuery.From.ID
 
-	err := m.db.Model(&db.User{}).Where("tg_id = ?", chatId).Updates(db.User{
-		TgId:   chatId,
-		Status: db.WaitingWbState,
+	err := m.db.Model(&db.User{}).Where(`"tgId" = ?`, chatId).Updates(db.User{
+		TgId:     chatId,
+		StatusId: db.WaitingWbState,
 	}).Error
 	if err != nil {
 		log.Println("Ошибка обновления WaitingWbState пользователя: ", err)
@@ -94,7 +94,7 @@ func (m *Manager) getWbFbs(ctx context.Context, bot *botlib.Bot, chatId int64, s
 	}
 	stickersFbs.CleanFiles(supplyId)
 
-	text, markup := createStartMarkup()
+	text, markup := createStartAdminMarkup()
 	_, err = bot.SendMessage(ctx, &botlib.SendMessageParams{ChatID: chatId, Text: text, ReplyMarkup: markup})
 	if err != nil {
 		log.Printf("%v", err)

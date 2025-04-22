@@ -105,7 +105,7 @@ func (m *Manager) ozonStickersHandler(ctx context.Context, bot *botlib.Bot, upda
 	}
 	m.ozonService.GetStickersFBSManager().CleanFiles("ozon")
 
-	text, markup := createStartMarkup()
+	text, markup := createStartAdminMarkup()
 	_, err = bot.SendMessage(ctx, &botlib.SendMessageParams{ChatID: chatId, Text: text, ReplyMarkup: markup})
 	if err != nil {
 		log.Printf("%v", err)
