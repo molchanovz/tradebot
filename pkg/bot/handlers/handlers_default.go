@@ -133,7 +133,7 @@ func createStartAdminMarkup() (string, models.InlineKeyboardMarkup) {
 }
 
 func createStartUserMarkup() (string, models.InlineKeyboardMarkup) {
-	startMessage := "Можешь перейти в наши магазины"
+	startMessage := "Для доступа к функционалу бота пиши @molchanovz. А пока можешь перейти в наши магазины"
 	var buttonsRow []models.InlineKeyboardButton
 	buttonsRow = append(buttonsRow, models.InlineKeyboardButton{Text: "ВБ", URL: "https://www.wildberries.ru/seller/27566"})
 	buttonsRow = append(buttonsRow, models.InlineKeyboardButton{Text: "ЯНДЕКС", URL: "https://market.yandex.ru/business--metr-v-kube/3697903"})
