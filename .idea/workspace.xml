@@ -4,14 +4,18 @@
     <option name="autoReloadType" value="ALL" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="640077d7-ce81-4039-9739-8ad3e3a8d41a" name="Changes" comment="edit logic: wb orders fbo/fbs">
+    <list default="true" id="640077d7-ce81-4039-9739-8ad3e3a8d41a" name="Changes" comment="add yandex fbs postings">
+      <change beforePath="$PROJECT_DIR$/.idea/dataSources/fa69afd6-fbee-41a8-b090-a8ea4c4e2a18.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources/fa69afd6-fbee-41a8-b090-a8ea4c4e2a18.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/dataSources/fa69afd6-fbee-41a8-b090-a8ea4c4e2a18/storage_v2/_src_/database/db_bot.hko2sA/schema/public.abK9xQ.meta" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources/fa69afd6-fbee-41a8-b090-a8ea4c4e2a18/storage_v2/_src_/database/db_bot.hko2sA/schema/public.abK9xQ.meta" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pkg/YANDEX/OrdersAndReturns/logic.go" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/YANDEX/OrdersAndReturns/logic.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pkg/YANDEX/service.go" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/YANDEX/service.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pkg/api/yandex/api.go" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/api/yandex/api.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pkg/api/yandex/models_converter.go" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/api/yandex/models_converter.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pkg/app/app.go" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/app/app.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pkg/OZON/stocks_analyzer/logic.go" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/OZON/stocks_analyzer/logic.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pkg/api/ozon/api.go" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/api/ozon/api.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pkg/api/ozon/models.go" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/api/ozon/models.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pkg/api/ozon/models_converter.go" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/api/ozon/models_converter.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/pkg/bot/handlers/handlers_default.go" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/bot/handlers/handlers_default.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pkg/bot/handlers/handlers_ozon.go" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/bot/handlers/handlers_ozon.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pkg/bot/handlers/handlers_wb.go" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/bot/handlers/handlers_wb.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pkg/db/tradebot.pdd" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/db/tradebot.pdd" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -138,7 +142,6 @@
   </component>
   <component name="VcsManagerConfiguration">
     <option name="CHECK_CODE_SMELLS_BEFORE_PROJECT_COMMIT" value="false" />
-    <MESSAGE value="add time.sleep" />
     <MESSAGE value="add Tula in map" />
     <MESSAGE value="fix spreadsheetIds" />
     <MESSAGE value="fix daysAgo" />
@@ -163,7 +166,8 @@
     <MESSAGE value="fix import" />
     <MESSAGE value="fix logs" />
     <MESSAGE value="edit logic: wb orders fbo/fbs" />
-    <option name="LAST_COMMIT_MESSAGE" value="edit logic: wb orders fbo/fbs" />
+    <MESSAGE value="add yandex fbs postings" />
+    <option name="LAST_COMMIT_MESSAGE" value="add yandex fbs postings" />
   </component>
   <component name="VgoProject">
     <settings-migrated>true</settings-migrated>
