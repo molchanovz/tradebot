@@ -2,6 +2,8 @@ package ozon
 
 import (
 	"bytes"
+	"encoding/json"
+	"errors"
 	"fmt"
 	"io"
 	"log"
@@ -12,7 +14,7 @@ import (
 /*
 Метод получения ФБО заказа исходя из posting_number (нужен для извлечения товаров в возврате)
 */
-func V2PostingFboGet(ClientId, ApiKey, PostingNumber string) string {
+func V2PostingFboGet(ClientId, ApiKey, PostingNumber string) (string, error) {
 
 	url := "https://api-seller.ozon.ru/v2/posting/fbo/get"
 	body := []byte(`{
@@ -37,17 +39,17 @@ func V2PostingFboGet(ClientId, ApiKey, PostingNumber string) string {
 	client := &http.Client{}
 	resp, err := client.Do(req)
 	if err != nil {
-		log.Fatalf("Ошибка выполнения запроса: %v", err)
+		return "", errors.New(fmt.Sprintf("Ошибка выполнения запроса: %v", err))
 	}
 	defer resp.Body.Close()
 
 	if resp.StatusCode != http.StatusOK {
-		log.Fatalf("Ошибка V2PostingFboGet: получен статус %s", resp.Status)
+		return "", errors.New(fmt.Sprintf("Ошибка V2PostingFboGet: получен статус %s", resp.Status))
 	}
 
 	jsonString, _ := io.ReadAll(resp.Body)
 
-	return string(jsonString)
+	return string(jsonString), nil
 }
 
 // V3ReturnsCompanyFbo метод получения ФБО возвратов со статусом ReturnedToOzon. Получаем возвраты только тогда, когда возврат приедет на склад озон
@@ -423,6 +425,132 @@ func v1Clusters(ClientId, ApiKey string) string {
 
 	// Читаем тело ответа
 	jsonString, _ := io.ReadAll(resp.Body)
+
+	// Выводим ответ
+	return string(jsonString)
+}
+
+func v1AnalyticsStocks(ClientId, ApiKey string, skus []string) string {
+
+	skusJSON, _ := json.Marshal(skus)
+
+	url := "https://api-seller.ozon.ru/v1/analytics/stocks"
+	body := []byte(fmt.Sprintf(`{
+  "skus": %v
+}`, string(skusJSON)))
+
+	println(string(body))
+
+	req, err := http.NewRequest("POST", url, bytes.NewBuffer(body))
+
+	if err != nil {
+		log.Fatalf("Ошибка создания запроса: %v", err)
+	}
+
+	// Устанавливаем необходимые заголовки (если нужны)
+	req.Header.Set("Content-Type", "application/json")
+	req.Header.Set("Client-Id", ClientId)
+	req.Header.Set("Api-Key", ApiKey)
+
+	// Выполняем запрос
+	client := &http.Client{}
+	resp, err := client.Do(req)
+	if err != nil {
+		log.Fatalf("Ошибка выполнения запроса: %v", err)
+	}
+	defer resp.Body.Close()
+
+	// Читаем тело ответа
+	jsonString, _ := io.ReadAll(resp.Body)
+
+	// Проверяем статус ответа
+	if resp.StatusCode != http.StatusOK {
+		log.Fatalf("Ошибка v1AnalyticsStocks: получен статус %s: %v", resp.Status, string(jsonString))
+	}
+
+	// Выводим ответ
+	return string(jsonString)
+}
+
+func v3ProductList(ClientId, ApiKey string) string {
+
+	url := "https://api-seller.ozon.ru/v3/product/list"
+	body := []byte(`{
+  "filter": {
+    "visibility": "TO_SUPPLY"
+  },
+  "last_id": "",
+  "limit": 1000
+}`)
+
+	req, err := http.NewRequest("POST", url, bytes.NewBuffer(body))
+
+	if err != nil {
+		log.Fatalf("Ошибка создания запроса: %v", err)
+	}
+
+	// Устанавливаем необходимые заголовки (если нужны)
+	req.Header.Set("Content-Type", "application/json")
+	req.Header.Set("Client-Id", ClientId)
+	req.Header.Set("Api-Key", ApiKey)
+
+	// Выполняем запрос
+	client := &http.Client{}
+	resp, err := client.Do(req)
+	if err != nil {
+		log.Fatalf("Ошибка выполнения запроса: %v", err)
+	}
+	defer resp.Body.Close()
+
+	// Читаем тело ответа
+	jsonString, _ := io.ReadAll(resp.Body)
+
+	// Проверяем статус ответа
+	if resp.StatusCode != http.StatusOK {
+		log.Fatalf("Ошибка v3ProductList: получен статус %s: %v", resp.Status, string(jsonString))
+	}
+
+	// Выводим ответ
+	return string(jsonString)
+}
+
+func v4ProductInfoAttributes(ClientId, ApiKey string) string {
+
+	url := "https://api-seller.ozon.ru/v4/product/info/attributes"
+	body := []byte(`{
+  "filter": {
+    "visibility": "VISIBLE"
+  },
+  "limit": 1000,
+  "sort_dir": "ASC"
+}`)
+
+	req, err := http.NewRequest("POST", url, bytes.NewBuffer(body))
+
+	if err != nil {
+		log.Fatalf("Ошибка создания запроса: %v", err)
+	}
+
+	// Устанавливаем необходимые заголовки (если нужны)
+	req.Header.Set("Content-Type", "application/json")
+	req.Header.Set("Client-Id", ClientId)
+	req.Header.Set("Api-Key", ApiKey)
+
+	// Выполняем запрос
+	client := &http.Client{}
+	resp, err := client.Do(req)
+	if err != nil {
+		log.Fatalf("Ошибка выполнения запроса: %v", err)
+	}
+	defer resp.Body.Close()
+
+	// Читаем тело ответа
+	jsonString, _ := io.ReadAll(resp.Body)
+
+	// Проверяем статус ответа
+	if resp.StatusCode != http.StatusOK {
+		log.Fatalf("Ошибка v4ProductInfoAttributes: получен статус %s: %v", resp.Status, string(jsonString))
+	}
 
 	// Выводим ответ
 	return string(jsonString)

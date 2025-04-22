@@ -8,7 +8,7 @@ import (
 
 func PostingFbo(ClientId, ApiKey, PostingNumber string) PostingFBO {
 	var posting PostingFBO
-	jsonString := V2PostingFboGet(ClientId, ApiKey, PostingNumber) // assuming this function returns the JSON string
+	jsonString, _ := V2PostingFboGet(ClientId, ApiKey, PostingNumber)
 	err := json.Unmarshal([]byte(jsonString), &posting)
 	if err != nil {
 		log.Fatalf("Error decoding JSON: %v", err)
@@ -63,6 +63,36 @@ func Stocks(ClientId, ApiKey string) StocksList {
 		log.Fatalf("Error decoding JSON: %v", err)
 	}
 	return stocks
+}
+
+func StocksAnalytics(ClientId, ApiKey string, skus []string) StocksNew {
+	var stocks StocksNew
+	jsonString := v1AnalyticsStocks(ClientId, ApiKey, skus)
+	err := json.Unmarshal([]byte(jsonString), &stocks)
+	if err != nil {
+		log.Fatalf("Error decoding JSON: %v", err)
+	}
+	return stocks
+}
+
+func Products(ClientId, ApiKey string) ProductList {
+	var products ProductList
+	jsonString := v3ProductList(ClientId, ApiKey)
+	err := json.Unmarshal([]byte(jsonString), &products)
+	if err != nil {
+		log.Fatalf("Error decoding JSON: %v", err)
+	}
+	return products
+}
+
+func ProductsWithAttributes(ClientId, ApiKey string) ProductListWithAttributes {
+	var products ProductListWithAttributes
+	jsonString := v4ProductInfoAttributes(ClientId, ApiKey)
+	err := json.Unmarshal([]byte(jsonString), &products)
+	if err != nil {
+		log.Fatalf("Error decoding JSON: %v", err)
+	}
+	return products
 }
 
 func Clusters(ClientId, ApiKey string) ClustersList {

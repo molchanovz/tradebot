@@ -445,3 +445,93 @@ type PackageLabel struct {
 	FileName    string `json:"file_name"`
 	FileContent string `json:"file_content"`
 }
+
+type StocksNew struct {
+	Items []struct {
+		Sku                          int      `json:"sku"`
+		Name                         string   `json:"name"`
+		OfferId                      string   `json:"offer_id"`
+		WarehouseId                  int64    `json:"warehouse_id"`
+		WarehouseName                string   `json:"warehouse_name"`
+		ClusterId                    int      `json:"cluster_id"`
+		ClusterName                  string   `json:"cluster_name"`
+		ItemTags                     []string `json:"item_tags"`
+		Ads                          float64  `json:"ads"`
+		DaysWithoutSales             int      `json:"days_without_sales"`
+		TurnoverGrade                string   `json:"turnover_grade"`
+		Idc                          int      `json:"idc"`
+		AvailableStockCount          int      `json:"available_stock_count"`
+		ValidStockCount              int      `json:"valid_stock_count"`
+		WaitingDocsStockCount        int      `json:"waiting_docs_stock_count"`
+		ExpiringStockCount           int      `json:"expiring_stock_count"`
+		TransitDefectStockCount      int      `json:"transit_defect_stock_count"`
+		StockDefectStockCount        int      `json:"stock_defect_stock_count"`
+		ExcessStockCount             int      `json:"excess_stock_count"`
+		OtherStockCount              int      `json:"other_stock_count"`
+		RequestedStockCount          int      `json:"requested_stock_count"`
+		TransitStockCount            int      `json:"transit_stock_count"`
+		ReturnFromCustomerStockCount int      `json:"return_from_customer_stock_count"`
+		ReturnToSellerStockCount     int      `json:"return_to_seller_stock_count"`
+	} `json:"items"`
+}
+
+type ProductList struct {
+	Result struct {
+		Items []struct {
+			ProductId    int           `json:"product_id"`
+			OfferId      string        `json:"offer_id"`
+			HasFboStocks bool          `json:"has_fbo_stocks"`
+			HasFbsStocks bool          `json:"has_fbs_stocks"`
+			Archived     bool          `json:"archived"`
+			IsDiscounted bool          `json:"is_discounted"`
+			Quants       []interface{} `json:"quants"`
+		} `json:"items"`
+		Total  int    `json:"total"`
+		LastId string `json:"last_id"`
+	} `json:"result"`
+}
+
+type ProductListWithAttributes struct {
+	Result []struct {
+		Id                    int    `json:"id"`
+		Barcode               string `json:"barcode"`
+		Name                  string `json:"name"`
+		OfferId               string `json:"offer_id"`
+		Height                int    `json:"height"`
+		Depth                 int    `json:"depth"`
+		Width                 int    `json:"width"`
+		DimensionUnit         string `json:"dimension_unit"`
+		Weight                int    `json:"weight"`
+		WeightUnit            string `json:"weight_unit"`
+		DescriptionCategoryId int    `json:"description_category_id"`
+		TypeId                int    `json:"type_id"`
+		PrimaryImage          string `json:"primary_image"`
+		ModelInfo             struct {
+			ModelId int `json:"model_id"`
+			Count   int `json:"count"`
+		} `json:"model_info"`
+		Images     []string      `json:"images"`
+		PdfList    []interface{} `json:"pdf_list"`
+		Attributes []struct {
+			Id        int `json:"id"`
+			ComplexId int `json:"complex_id"`
+			Values    []struct {
+				DictionaryValueId int    `json:"dictionary_value_id"`
+				Value             string `json:"value"`
+			} `json:"values"`
+		} `json:"attributes"`
+		ComplexAttributes []struct {
+			Id        int `json:"id"`
+			ComplexId int `json:"complex_id"`
+			Values    []struct {
+				DictionaryValueId int    `json:"dictionary_value_id"`
+				Value             string `json:"value"`
+			} `json:"values"`
+		} `json:"complex_attributes"`
+		ColorImage string   `json:"color_image"`
+		Sku        int      `json:"sku"`
+		Barcodes   []string `json:"barcodes"`
+	} `json:"result"`
+	Total  int    `json:"total"`
+	LastId string `json:"last_id"`
+}
