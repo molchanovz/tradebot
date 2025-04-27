@@ -16,16 +16,17 @@ FROM alpine:latest
 WORKDIR /app
 
 RUN apk add --no-cache \
+    wget \
+    tar \
+    xz\
     mupdf-dev \
     mupdf-tools \
     libx11 \
     glib \
     fontconfig \
     freetype \
-    ca-certificates \
-    wget \
-    tar \
-    xz
+    ca-certificates
+
 
 RUN wget https://github.com/pdfcpu/pdfcpu/releases/download/v0.10.2/pdfcpu_0.10.2_Linux_x86_64.tar.xz && \
     mkdir -p /tmp/pdfcpu && \
