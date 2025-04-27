@@ -9,7 +9,7 @@ COPY . .
 
 ENV CGO_ENABLED=0
 
-RUN go build ./cmd/main.go
+RUN go build -o main ./cmd/main.go
 
 FROM alpine:latest
 
@@ -27,11 +27,11 @@ RUN apk add --no-cache \
     tar \
     xz
 
-RUN wget https://github.com/pdfcpu/pdfcpu/releases/download/v0.10.2/pdfcpu_0.10.2_Linux_arm64.tar.xz && \
+RUN wget https://github.com/pdfcpu/pdfcpu/releases/download/v0.10.2/pdfcpu_0.10.2_Linux_x86_64.tar.xz && \
     mkdir -p /tmp/pdfcpu && \
-    tar -xJf pdfcpu_0.10.2_Linux_arm64.tar.xz -C /tmp/pdfcpu --strip-components=1 && \
+    tar -xJf pdfcpu_0.10.2_Linux_x86_64.tar.xz -C /tmp/pdfcpu --strip-components=1 && \
     mv /tmp/pdfcpu/pdfcpu /usr/local/bin/ && \
-    rm -rf /tmp/pdfcpu pdfcpu_0.10.2_Linux_arm64.tar.xz && \
+    rm -rf /tmp/pdfcpu pdfcpu_0.10.2_Linux_x86_64.tar.xz && \
     chmod +x /usr/local/bin/pdfcpu
 
 
@@ -40,7 +40,5 @@ COPY credentials.json .
 COPY token.json .
 COPY font.ttf .
 COPY pkg/barcodes pkg/barcodes
-
-ENV PATH="${PATH}:/root"
 
 CMD ["./main"]
