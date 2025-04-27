@@ -1,4 +1,4 @@
-module WildberriesGo_bot
+module tradebot
 
 go 1.23.0
 
