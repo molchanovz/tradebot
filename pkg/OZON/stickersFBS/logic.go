@@ -9,11 +9,11 @@ import (
 )
 
 const (
-	OzonDirectoryPath = "pkg/OZON/stickersFBS/"
+	OzonDirectoryPath = "app/pkg/OZON/stickersFBS/"
 	codesPath         = OzonDirectoryPath + "codes/"
 	readyPath         = OzonDirectoryPath + "ready/"
 	generatedPath     = OzonDirectoryPath + "generated/"
-	barcodesPath      = "pkg/barcodes/"
+	barcodesPath      = "app/pkg/barcodes/"
 )
 
 type OzonManager struct {

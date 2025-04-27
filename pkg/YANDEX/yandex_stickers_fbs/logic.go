@@ -22,15 +22,16 @@ import (
 //}
 
 const (
-	DirectoryPath = "pkg/YANDEX/yandex_stickers_fbs/"
+	YaDirectoryPath = "/app/pkg/YANDEX/yandex_stickers_fbs/"
 
-	codesPath     = DirectoryPath + "codes/"
-	readyPath     = DirectoryPath + "ready/"
-	generatedPath = DirectoryPath + "generated/"
-	barcodesPath  = "pkg/barcodes/"
+	codesPath     = YaDirectoryPath + "codes/"
+	readyPath     = YaDirectoryPath + "ready/"
+	generatedPath = YaDirectoryPath + "generated/"
+	barcodesPath  = "/app/pkg/barcodes/"
 )
 
 func GetOrdersInfo(token, supplyId string) error {
+	CreateDirectories()
 	orderIds, err := yandex.GetOrdersIds(token, supplyId)
 	if err != nil {
 		return fmt.Errorf("ошибка в GetOrdersIds: %v", err)
@@ -79,11 +80,11 @@ func GetOrdersInfo(token, supplyId string) error {
 		ordersSlice = append(ordersSlice, fmt.Sprintf("%v.pdf", readyPath+strconv.Itoa(int(order.Order.Id))))
 	}
 
-	err = mergePDFsInDirectory(ordersSlice, DirectoryPath+supplyId+".pdf")
+	err = mergePDFsInDirectory(ordersSlice, YaDirectoryPath+supplyId+".pdf")
 	if err != nil {
 		return err
 	}
-	if !fileExists(DirectoryPath + supplyId + ".pdf") {
+	if !fileExists(YaDirectoryPath + supplyId + ".pdf") {
 		return fmt.Errorf("такого файла не существует")
 	}
 
@@ -203,6 +204,21 @@ func fileExists(filename string) bool {
 	return !info.IsDir() // Проверяем, что это файл, а не директория
 }
 
+func CreateDirectories() {
+	err := os.MkdirAll(generatedPath, 0755) // 0755 - это права доступа к директории (чтение, запись, выполнение)
+	if err != nil {
+		fmt.Println(err)
+	}
+	err = os.MkdirAll(readyPath, 0755) // 0755 - это права доступа к директории (чтение, запись, выполнение)
+	if err != nil {
+		fmt.Println(err)
+	}
+	err = os.MkdirAll(codesPath, 0755) // 0755 - это права доступа к директории (чтение, запись, выполнение)
+	if err != nil {
+		fmt.Println(err)
+	}
+}
+
 func CleanFiles(supplyId string) {
 	err := os.RemoveAll(codesPath)
 	if err != nil {
@@ -228,7 +244,7 @@ func CleanFiles(supplyId string) {
 	if err != nil {
 		fmt.Println(err)
 	}
-	err = os.Remove(DirectoryPath + supplyId + ".pdf")
+	err = os.Remove(YaDirectoryPath + supplyId + ".pdf")
 	if err != nil {
 		fmt.Println(err)
 	}

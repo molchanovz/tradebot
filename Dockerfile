@@ -41,6 +41,7 @@ COPY --from=builder /app/main .
 COPY credentials.json .
 COPY token.json .
 COPY font.ttf .
+COPY pkg/barcodes pkg/barcodes
 
 ENV PATH="${PATH}:/root"
 

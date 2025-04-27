@@ -288,7 +288,7 @@ func getYandexFbs(ctx context.Context, bot *botlib.Bot, chatId int64, supplyId s
 		return
 	}
 
-	yandexToken, err := initEnv("variables.env", "yandexToken")
+	yandexToken, err := initEnv(".env", "yandexToken")
 	if err != nil {
 		log.Panic(err)
 	}
@@ -301,7 +301,7 @@ func getYandexFbs(ctx context.Context, bot *botlib.Bot, chatId int64, supplyId s
 			return
 		}
 	} else {
-		filePath := fmt.Sprintf("%v.pdf", yandex_stickers_fbs.DirectoryPath+supplyId)
+		filePath := fmt.Sprintf("%v.pdf", yandex_stickers_fbs.YaDirectoryPath+supplyId)
 		sendMediaMessage(ctx, bot, chatId, filePath)
 		yandex_stickers_fbs.CleanFiles(supplyId)
 	}

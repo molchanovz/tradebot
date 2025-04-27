@@ -25,6 +25,7 @@ services:
       - ./token.json:/app/token.json
       - ./font.ttf:/app/font.ttf
       - ./.env:/app/.env
+      - ./pkg/barcodes:/app/pkg/barcodes
 
 volumes:
   pgdata:

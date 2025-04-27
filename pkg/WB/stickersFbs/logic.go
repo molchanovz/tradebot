@@ -15,12 +15,12 @@ import (
 )
 
 const (
-	WbDirectoryPath = "./pkg/WB/stickersFbs/"
+	WbDirectoryPath = "/app/pkg/WB/stickersFbs/"
 
-	codesPath     = WbDirectoryPath + "codes"
-	barcodesPath  = "pkg/barcodes"
-	generatedPath = WbDirectoryPath + "generated"
-	readyPath     = WbDirectoryPath + "ready"
+	codesPath     = WbDirectoryPath + "codes/"
+	barcodesPath  = "/app/pkg/barcodes/"
+	generatedPath = WbDirectoryPath + "generated/"
+	readyPath     = WbDirectoryPath + "ready/"
 )
 
 type WbManager struct {
@@ -37,6 +37,7 @@ func NewWbManager(token string) WbManager {
 
 func (m WbManager) GetReadyFile(supplyId string) error {
 	CreateDirectories()
+
 	orders, err := wb.GetOrdersFbs(m.token, supplyId)
 	if err != nil {
 		return err

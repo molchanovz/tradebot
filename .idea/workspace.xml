@@ -4,23 +4,15 @@
     <option name="autoReloadType" value="ALL" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="640077d7-ce81-4039-9739-8ad3e3a8d41a" name="Changes" comment="add manager link">
-      <change afterPath="$PROJECT_DIR$/Dockerfile" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/docker-compose.yml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/dataSources.local.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources.local.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/dataSources.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/dataSources/9b72206f-fbb5-43b6-9126-d9522b27e82f.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources/9b72206f-fbb5-43b6-9126-d9522b27e82f.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/dataSources/9b72206f-fbb5-43b6-9126-d9522b27e82f/storage_v2/_src_/database/tradebot.42HFSw/schema/public.abK9xQ.meta" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources/9b72206f-fbb5-43b6-9126-d9522b27e82f/storage_v2/_src_/database/tradebot.42HFSw/schema/public.abK9xQ.meta" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/dataSources/fa69afd6-fbee-41a8-b090-a8ea4c4e2a18.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources/fa69afd6-fbee-41a8-b090-a8ea4c4e2a18.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/dataSources/fa69afd6-fbee-41a8-b090-a8ea4c4e2a18/storage_v2/_src_/database/db_bot.hko2sA/schema/public.abK9xQ.meta" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources/fa69afd6-fbee-41a8-b090-a8ea4c4e2a18/storage_v2/_src_/database/db_bot.hko2sA/schema/public.abK9xQ.meta" afterDir="false" />
+    <list default="true" id="640077d7-ce81-4039-9739-8ad3e3a8d41a" name="Changes" comment="add docker file">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmd/main.go" beforeDir="false" afterPath="$PROJECT_DIR$/cmd/main.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Dockerfile" beforeDir="false" afterPath="$PROJECT_DIR$/Dockerfile" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/docker-compose.yml" beforeDir="false" afterPath="$PROJECT_DIR$/docker-compose.yml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pkg/OZON/stickersFBS/logic.go" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/OZON/stickersFBS/logic.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/pkg/WB/stickersFbs/logic.go" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/WB/stickersFbs/logic.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pkg/api/ozon/api.go" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/api/ozon/api.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pkg/app/app.go" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/app/app.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pkg/YANDEX/yandex_stickers_fbs/logic.go" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/YANDEX/yandex_stickers_fbs/logic.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pkg/bot/handlers/handlers_default.go" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/bot/handlers/handlers_default.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/pkg/bot/handlers/handlers_wb.go" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/bot/handlers/handlers_wb.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pkg/db/init.sql" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -148,7 +140,6 @@
   </component>
   <component name="VcsManagerConfiguration">
     <option name="CHECK_CODE_SMELLS_BEFORE_PROJECT_COMMIT" value="false" />
-    <MESSAGE value="edit AnalyzeStocks(): fix FBO stocks" />
     <MESSAGE value="edit app: add ozon service" />
     <MESSAGE value="code refactoring" />
     <MESSAGE value="delete println" />
@@ -173,7 +164,8 @@
     <MESSAGE value="add barcodes" />
     <MESSAGE value="add admin/user main menu" />
     <MESSAGE value="add manager link" />
-    <option name="LAST_COMMIT_MESSAGE" value="add manager link" />
+    <MESSAGE value="add docker file" />
+    <option name="LAST_COMMIT_MESSAGE" value="add docker file" />
   </component>
   <component name="VgoProject">
     <settings-migrated>true</settings-migrated>

@@ -131,7 +131,7 @@ func wbStocksHandler(ctx context.Context, bot *botlib.Bot, update *models.Update
 
 	chatId := update.CallbackQuery.From.ID
 
-	WbKey, err := initEnv("variables.env", "API_KEY_WB")
+	WbKey, err := initEnv(".env", "API_KEY_WB")
 	if err != nil {
 		log.Println(err)
 		return
