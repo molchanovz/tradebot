@@ -4,9 +4,7 @@
     <option name="autoReloadType" value="ALL" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="640077d7-ce81-4039-9739-8ad3e3a8d41a" name="Changes" comment="fix go mod">
-      <change beforePath="$PROJECT_DIR$/.idea/dataSources/fa69afd6-fbee-41a8-b090-a8ea4c4e2a18.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources/fa69afd6-fbee-41a8-b090-a8ea4c4e2a18.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/dataSources/fa69afd6-fbee-41a8-b090-a8ea4c4e2a18/storage_v2/_src_/database/db_bot.hko2sA/schema/public.abK9xQ.meta" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources/fa69afd6-fbee-41a8-b090-a8ea4c4e2a18/storage_v2/_src_/database/db_bot.hko2sA/schema/public.abK9xQ.meta" afterDir="false" />
+    <list default="true" id="640077d7-ce81-4039-9739-8ad3e3a8d41a" name="Changes" comment="fix docker file">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -148,16 +146,6 @@
   </component>
   <component name="VcsManagerConfiguration">
     <option name="CHECK_CODE_SMELLS_BEFORE_PROJECT_COMMIT" value="false" />
-    <MESSAGE value="delete println" />
-    <MESSAGE value="fix db: unique index wb stocks article" />
-    <MESSAGE value="fix models" />
-    <MESSAGE value="refactoring 14.04.25" />
-    <MESSAGE value="delete comments" />
-    <MESSAGE value="fix initEnv" />
-    <MESSAGE value="edit db: create .pdd" />
-    <MESSAGE value="add unversioned files" />
-    <MESSAGE value="fix Model(User{}).Where()" />
-    <MESSAGE value="rename files" />
     <MESSAGE value="fix import" />
     <MESSAGE value="fix logs" />
     <MESSAGE value="edit logic: wb orders fbo/fbs" />
@@ -171,9 +159,19 @@
     <MESSAGE value="add admin/user main menu" />
     <MESSAGE value="add manager link" />
     <MESSAGE value="add docker file" />
-    <MESSAGE value="fix docker file" />
     <MESSAGE value="fix go mod" />
-    <option name="LAST_COMMIT_MESSAGE" value="fix go mod" />
+    <MESSAGE value="delete go mod" />
+    <MESSAGE value="delete vendor" />
+    <MESSAGE value="add go.mod" />
+    <MESSAGE value="fix: docker file" />
+    <MESSAGE value="fix docker file: edit arm to amd" />
+    <MESSAGE value="fix docker file: edit apk add" />
+    <MESSAGE value="fix docker compose: network_mode: &quot;host&quot;" />
+    <MESSAGE value="fix docker compose: add dns" />
+    <MESSAGE value="fix docker compose: edit host" />
+    <MESSAGE value="fix docker file: ipv6 disable" />
+    <MESSAGE value="fix docker file" />
+    <option name="LAST_COMMIT_MESSAGE" value="fix docker file" />
   </component>
   <component name="VgoProject">
     <settings-migrated>true</settings-migrated>

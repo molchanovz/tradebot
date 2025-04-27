@@ -20,8 +20,6 @@ services:
     restart: always
     depends_on:
       - db
-    network_mode: host
-    dns: 8.8.8.8
     volumes:
       - ./credentials.json:/app/credentials.json
       - ./token.json:/app/token.json
