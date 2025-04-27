@@ -15,6 +15,9 @@ FROM alpine:latest
 
 WORKDIR /app
 
+RUN echo "network.ipv6.conf.all.disable_ipv6=1" >> /etc/sysctl.conf && \
+    apk add --no-cache mupdf-dev mupdf-tools libx11 glib fontconfig
+
 RUN apk add --no-cache \
     wget \
     tar \
