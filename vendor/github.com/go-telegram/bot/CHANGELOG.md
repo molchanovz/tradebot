@@ -1,5 +1,48 @@
 # Changelog
 
+## v1.14.2 (2025-02-12)
+
+- add `MatchTypeCommand` and `MatchTypeCommandStartOnly`
+- updated UploadStickerFile method to match Telegram Bot API (#165)
+
+## v1.14.1 (2025-02-12)
+
+- remove ci args for use default config
+- make MaskPosition optional 
+- Add check for nil in addFormFieldInputFileUpload (#161) 
+- Change type of Stickers field in CreateNewStickerSetParams struct (#160)
+
+## v1.14.0 (2025-02-12)
+ 
+- support API 8.3 
+
+## v1.13.3 (2025-01-11)
+
+- add option `WithInitialOffset(offset int64)` - allows to set initial offset for getUpdates method
+
+## v1.13.2 (2025-01-11)
+
+- change field type `WebAppUser.ID` from `int` to `int64`
+
+## v1.13.1 (2025-01-10)
+
+- add method `bot.ID() int64`
+- add method `bot.Token() string`
+
+## v1.13.0 (2025-01-10)
+
+- support API 8.2 (#144)
+- fix unmarshal ChatBackground 
+- ValidateWebappRequest - now returns model WebAppUser (#143)
+
+## v1.12.1 (2024-12-19)
+
+- add handler type for photo captions (#138)
+
+## v1.12.0 (2024-12-19)
+
+- support API v8.1
+
 ## v1.11.1 (2024-11-21)
 
 - fix CreateNewStickerSetParams (#132) 

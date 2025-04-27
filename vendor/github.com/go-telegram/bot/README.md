@@ -6,7 +6,7 @@
 
 > [Telegram Group](https://t.me/gotelegrambotui)
 
-> Supports Bot API version: [8.0](https://core.telegram.org/bots/api#november-17-2024) from November 17, 2024
+> Supports Bot API version: [8.3](https://core.telegram.org/bots/api#february-12-2025) from February 12, 2025
 
 It's a Go zero-dependencies telegram bot framework
 
@@ -173,6 +173,7 @@ b, err := bot.New("YOUR_BOT_TOKEN_FROM_BOTFATHER", opts...)
 - `WithMiddlewares(middlewares ...Middleware)` - add middlewares
 - `WithMessageTextHandler(pattern string, matchType MatchType, handler HandlerFunc)` - add handler for Message.Text field
 - `WithCallbackQueryDataHandler(pattern string, matchType MatchType, handler HandlerFunc)` - add handler for CallbackQuery.Data field
+- `WithPhotoCaptionHandler` - add handler for Message.Caption field
 - `WithDefaultHandler(handler HandlerFunc)` - add default handler
 - `WithDebug()` - enable debug mode
 - `WithErrorsHandler(handler ErrorsHandler)` - add errors handler
@@ -186,10 +187,11 @@ b, err := bot.New("YOUR_BOT_TOKEN_FROM_BOTFATHER", opts...)
 - `WithWorkers` - set the number of workers that are processing the Updates channel, by default 1
 - `UseTestEnvironment()` - use test environment
 - `WithNotAsyncHandlers()` - allows to run handlers in the main goroutine
+- `WithInitialOffset(offset int64)` - allows to set initial offset for getUpdates method
 
 ## Message.Text and CallbackQuery.Data handlers
 
-For your convenience, you can use `Message.Text` and `CallbackQuery.Data` handlers.
+For your convenience, you can use `Message.Text`, `CallbackQuery.Data` and `Message.Caption` handlers.
 
 An example:
 
@@ -209,6 +211,8 @@ In this example, the handler will be called when the user sends `/start` message
 Handler Types:
 - `HandlerTypeMessageText` - for Update.Message.Text field
 - `HandlerTypeCallbackQueryData` - for Update.CallbackQuery.Data field
+- `HandlerTypeCallbackQueryGameShortName` - for Update.CallbackQuery.GameShortName field
+- `HandlerTypePhotoCaption` - for Update.Message.Caption field
 
 RegisterHandler returns a handler ID string. You can use it to remove the handler later.
 
@@ -220,6 +224,10 @@ Match Types:
 - `MatchTypeExact`
 - `MatchTypePrefix`
 - `MatchTypeContains`
+- `MatchTypeCommand`
+- `MatchTypeCommandStartOnly`
+
+> For `MatchTypeCommand` and `MatchTypeCommandStartOnly` usage see an [example](examples/command_handler/main.go)
 
 You can use `RegisterHandlerRegexp` to match by regular expression.
 
@@ -342,7 +350,7 @@ p := &bot.SendPollParams{
 b.SendPoll(ctx, p)
 ```
 
-### `ValidateWebappRequest(values url.Values, token string) (user *models.User, ok bool)`
+### `ValidateWebappRequest(values url.Values, token string) (user *WebAppUser, ok bool)`
 
 Validate request from Telegram Webapp
 
@@ -405,6 +413,18 @@ if errors.Is(err, mybot.ErrorConflict) {
     // Handle the ErrorConflict (409) case here
 }
 ```
+
+## Other
+
+- `bot.ID() int64` - returns bot ID. Bot ID is a unique identifier for the bot, obtained from the token as first part before `:`. Example: `110201543:AAHdqTcvCH1vGWJxfSeofSAs0K5PALDsaw` - bot ID is `110201543`. If the bot token is invalid, the bot ID will be 0.
+- `bot.Token() string` - returns bot token
+- `bot.SetToken()` - set new bot token
+
+## MiniApp misc
+
+Check the repo [go-telegram/miniapp](https://github.com/go-telegram/miniapp) for Telegram MiniApp example.
+
+Repo [go-telegram/miniapp-types](https://github.com/go-telegram/miniapp-types) contains TypeScript types definitions for Telegram MiniApp object.
 
 ## UI Components
 

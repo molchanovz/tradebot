@@ -40,6 +40,7 @@ type ForwardMessageParams struct {
 	ChatID              any  `json:"chat_id"`
 	MessageThreadID     int  `json:"message_thread_id,omitempty"`
 	FromChatID          any  `json:"from_chat_id"`
+	VideoStartTimestamp int  `json:"video_start_timestamp,omitempty"`
 	DisableNotification bool `json:"disable_notification,omitempty"`
 	ProtectContent      bool `json:"protect_content,omitempty"`
 	MessageID           int  `json:"message_id"`
@@ -61,6 +62,7 @@ type CopyMessageParams struct {
 	MessageThreadID       int                     `json:"message_thread_id,omitempty"`
 	FromChatID            any                     `json:"from_chat_id"`
 	MessageID             int                     `json:"message_id"`
+	VideoStartTimestamp   int                     `json:"video_start_timestamp,omitempty"`
 	Caption               string                  `json:"caption,omitempty"`
 	ParseMode             models.ParseMode        `json:"parse_mode,omitempty"`
 	CaptionEntities       []models.MessageEntity  `json:"caption_entities,omitempty"`
@@ -152,6 +154,8 @@ type SendVideoParams struct {
 	Width                 int                     `json:"width,omitempty"`
 	Height                int                     `json:"height,omitempty"`
 	Thumbnail             models.InputFile        `json:"thumbnail,omitempty"`
+	Cover                 models.InputFile        `json:"cover,omitempty"`
+	StartTimestamp        int                     `json:"start_timestamp,omitempty"`
 	Caption               string                  `json:"caption,omitempty"`
 	ParseMode             models.ParseMode        `json:"parse_mode,omitempty"`
 	CaptionEntities       []models.MessageEntity  `json:"caption_entities,omitempty"`
@@ -809,17 +813,18 @@ type GetCustomEmojiStickersParams struct {
 }
 
 type UploadStickerFileParams struct {
-	UserID     int64            `json:"user_id"`
-	PngSticker models.InputFile `json:"png_sticker"`
+	UserID        int64            `json:"user_id"`
+	Sticker       models.InputFile `json:"sticker"`
+	StickerFormat string           `json:"sticker_format"`
 }
 
 type CreateNewStickerSetParams struct {
-	UserID          int64            `json:"user_id"`
-	Name            string           `json:"name"`
-	Title           string           `json:"title"`
-	Stickers        []models.Sticker `json:"stickers"`
-	StickerType     string           `json:"sticker_type,omitempty"`
-	NeedsRepainting bool             `json:"needs_repainting,omitempty"`
+	UserID          int64                 `json:"user_id"`
+	Name            string                `json:"name"`
+	Title           string                `json:"title"`
+	Stickers        []models.InputSticker `json:"stickers"`
+	StickerType     string                `json:"sticker_type,omitempty"`
+	NeedsRepainting bool                  `json:"needs_repainting,omitempty"`
 }
 
 type AddStickerToSetParams struct {
@@ -1031,8 +1036,32 @@ type GetGameHighScoresParams struct {
 // SendGiftParams https://core.telegram.org/bots/api#sendgift
 type SendGiftParams struct {
 	UserID        int64                  `json:"user_id"`
+	ChatID        any                    `json:"chat_id,omitempty"`
 	GiftID        string                 `json:"gift_id"`
+	PayForUpgrade bool                   `json:"pay_for_upgrade,omitempty"`
 	Text          string                 `json:"text,omitempty"`
 	TextParseMode models.ParseMode       `json:"text_parse_mode,omitempty"`
 	TextEntities  []models.MessageEntity `json:"text_entities,omitempty"`
+}
+
+// VerifyUserParams https://core.telegram.org/bots/api#verifyuser
+type VerifyUserParams struct {
+	UserID            int64  `json:"user_id"`
+	CustomDescription string `json:"custom_description,omitempty"`
+}
+
+// VerifyChatParams https://core.telegram.org/bots/api#verifychat
+type VerifyChatParams struct {
+	ChatID            any    `json:"chat_id"`
+	CustomDescription string `json:"custom_description,omitempty"`
+}
+
+// RemoveUserVerificationParams https://core.telegram.org/bots/api#removeuserverification
+type RemoveUserVerificationParams struct {
+	UserID int64 `json:"user_id"`
+}
+
+// RemoveChatVerificationParams https://core.telegram.org/bots/api#removechatverification
+type RemoveChatVerificationParams struct {
+	ChatID any `json:"chat_id"`
 }

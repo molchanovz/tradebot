@@ -4,7 +4,255 @@
     <option name="autoReloadType" value="ALL" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="640077d7-ce81-4039-9739-8ad3e3a8d41a" name="Changes" comment="fix docker file" />
+    <list default="true" id="640077d7-ce81-4039-9739-8ad3e3a8d41a" name="Changes" comment="fix docker file">
+      <change beforePath="$PROJECT_DIR$/.idea/modules.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/go.mod" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/go.sum" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendor/cloud.google.com/go/auth/CHANGES.md" beforeDir="false" afterPath="$PROJECT_DIR$/vendor/cloud.google.com/go/auth/CHANGES.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendor/cloud.google.com/go/auth/credentials/compute.go" beforeDir="false" afterPath="$PROJECT_DIR$/vendor/cloud.google.com/go/auth/credentials/compute.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendor/cloud.google.com/go/auth/credentials/detect.go" beforeDir="false" afterPath="$PROJECT_DIR$/vendor/cloud.google.com/go/auth/credentials/detect.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendor/cloud.google.com/go/auth/credentials/internal/externalaccount/externalaccount.go" beforeDir="false" afterPath="$PROJECT_DIR$/vendor/cloud.google.com/go/auth/credentials/internal/externalaccount/externalaccount.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendor/cloud.google.com/go/auth/credentials/internal/externalaccount/x509_provider.go" beforeDir="false" afterPath="$PROJECT_DIR$/vendor/cloud.google.com/go/auth/credentials/internal/externalaccount/x509_provider.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendor/cloud.google.com/go/auth/internal/credsfile/filetype.go" beforeDir="false" afterPath="$PROJECT_DIR$/vendor/cloud.google.com/go/auth/internal/credsfile/filetype.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendor/cloud.google.com/go/auth/internal/transport/cba.go" beforeDir="false" afterPath="$PROJECT_DIR$/vendor/cloud.google.com/go/auth/internal/transport/cba.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendor/cloud.google.com/go/auth/internal/transport/cert/workload_cert.go" beforeDir="false" afterPath="$PROJECT_DIR$/vendor/cloud.google.com/go/auth/internal/transport/cert/workload_cert.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendor/cloud.google.com/go/auth/internal/transport/transport.go" beforeDir="false" afterPath="$PROJECT_DIR$/vendor/cloud.google.com/go/auth/internal/transport/transport.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendor/cloud.google.com/go/auth/oauth2adapt/CHANGES.md" beforeDir="false" afterPath="$PROJECT_DIR$/vendor/cloud.google.com/go/auth/oauth2adapt/CHANGES.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendor/github.com/go-telegram/bot/.golangci.yml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendor/github.com/go-telegram/bot/CHANGELOG.md" beforeDir="false" afterPath="$PROJECT_DIR$/vendor/github.com/go-telegram/bot/CHANGELOG.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendor/github.com/go-telegram/bot/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/vendor/github.com/go-telegram/bot/README.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendor/github.com/go-telegram/bot/bot.go" beforeDir="false" afterPath="$PROJECT_DIR$/vendor/github.com/go-telegram/bot/bot.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendor/github.com/go-telegram/bot/build_request_form.go" beforeDir="false" afterPath="$PROJECT_DIR$/vendor/github.com/go-telegram/bot/build_request_form.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendor/github.com/go-telegram/bot/common.go" beforeDir="false" afterPath="$PROJECT_DIR$/vendor/github.com/go-telegram/bot/common.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendor/github.com/go-telegram/bot/handlers.go" beforeDir="false" afterPath="$PROJECT_DIR$/vendor/github.com/go-telegram/bot/handlers.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendor/github.com/go-telegram/bot/methods.go" beforeDir="false" afterPath="$PROJECT_DIR$/vendor/github.com/go-telegram/bot/methods.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendor/github.com/go-telegram/bot/methods_params.go" beforeDir="false" afterPath="$PROJECT_DIR$/vendor/github.com/go-telegram/bot/methods_params.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendor/github.com/go-telegram/bot/models/chat.go" beforeDir="false" afterPath="$PROJECT_DIR$/vendor/github.com/go-telegram/bot/models/chat.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendor/github.com/go-telegram/bot/models/chat_background.go" beforeDir="false" afterPath="$PROJECT_DIR$/vendor/github.com/go-telegram/bot/models/chat_background.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendor/github.com/go-telegram/bot/models/gift.go" beforeDir="false" afterPath="$PROJECT_DIR$/vendor/github.com/go-telegram/bot/models/gift.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendor/github.com/go-telegram/bot/models/inline_query.go" beforeDir="false" afterPath="$PROJECT_DIR$/vendor/github.com/go-telegram/bot/models/inline_query.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendor/github.com/go-telegram/bot/models/input_media.go" beforeDir="false" afterPath="$PROJECT_DIR$/vendor/github.com/go-telegram/bot/models/input_media.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendor/github.com/go-telegram/bot/models/paid.go" beforeDir="false" afterPath="$PROJECT_DIR$/vendor/github.com/go-telegram/bot/models/paid.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendor/github.com/go-telegram/bot/models/star.go" beforeDir="false" afterPath="$PROJECT_DIR$/vendor/github.com/go-telegram/bot/models/star.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendor/github.com/go-telegram/bot/models/sticker.go" beforeDir="false" afterPath="$PROJECT_DIR$/vendor/github.com/go-telegram/bot/models/sticker.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendor/github.com/go-telegram/bot/models/update.go" beforeDir="false" afterPath="$PROJECT_DIR$/vendor/github.com/go-telegram/bot/models/update.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendor/github.com/go-telegram/bot/models/video.go" beforeDir="false" afterPath="$PROJECT_DIR$/vendor/github.com/go-telegram/bot/models/video.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendor/github.com/go-telegram/bot/options.go" beforeDir="false" afterPath="$PROJECT_DIR$/vendor/github.com/go-telegram/bot/options.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendor/github.com/richardlehane/mscfb/.travis.yml" beforeDir="false" afterPath="$PROJECT_DIR$/vendor/github.com/richardlehane/mscfb/.travis.yml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendor/github.com/richardlehane/mscfb/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/vendor/github.com/richardlehane/mscfb/README.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendor/github.com/richardlehane/mscfb/fuzz.go" beforeDir="false" afterPath="$PROJECT_DIR$/vendor/github.com/richardlehane/mscfb/fuzz.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendor/github.com/richardlehane/mscfb/mscfb.go" beforeDir="false" afterPath="$PROJECT_DIR$/vendor/github.com/richardlehane/mscfb/mscfb.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendor/github.com/richardlehane/msoleps/types/currency.go" beforeDir="false" afterPath="$PROJECT_DIR$/vendor/github.com/richardlehane/msoleps/types/currency.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendor/github.com/richardlehane/msoleps/types/date.go" beforeDir="false" afterPath="$PROJECT_DIR$/vendor/github.com/richardlehane/msoleps/types/date.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendor/github.com/richardlehane/msoleps/types/decimal.go" beforeDir="false" afterPath="$PROJECT_DIR$/vendor/github.com/richardlehane/msoleps/types/decimal.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendor/github.com/richardlehane/msoleps/types/filetime.go" beforeDir="false" afterPath="$PROJECT_DIR$/vendor/github.com/richardlehane/msoleps/types/filetime.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendor/github.com/richardlehane/msoleps/types/guid.go" beforeDir="false" afterPath="$PROJECT_DIR$/vendor/github.com/richardlehane/msoleps/types/guid.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendor/github.com/richardlehane/msoleps/types/strings.go" beforeDir="false" afterPath="$PROJECT_DIR$/vendor/github.com/richardlehane/msoleps/types/strings.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendor/github.com/richardlehane/msoleps/types/types.go" beforeDir="false" afterPath="$PROJECT_DIR$/vendor/github.com/richardlehane/msoleps/types/types.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendor/github.com/richardlehane/msoleps/types/vectorArray.go" beforeDir="false" afterPath="$PROJECT_DIR$/vendor/github.com/richardlehane/msoleps/types/vectorArray.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendor/go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp/client.go" beforeDir="false" afterPath="$PROJECT_DIR$/vendor/go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp/client.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendor/go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp/common.go" beforeDir="false" afterPath="$PROJECT_DIR$/vendor/go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp/common.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendor/go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp/handler.go" beforeDir="false" afterPath="$PROJECT_DIR$/vendor/go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp/handler.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendor/go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp/internal/request/body_wrapper.go" beforeDir="false" afterPath="$PROJECT_DIR$/vendor/go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp/internal/request/body_wrapper.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendor/go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp/internal/request/resp_writer_wrapper.go" beforeDir="false" afterPath="$PROJECT_DIR$/vendor/go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp/internal/request/resp_writer_wrapper.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendor/go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp/internal/semconv/env.go" beforeDir="false" afterPath="$PROJECT_DIR$/vendor/go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp/internal/semconv/env.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendor/go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp/internal/semconv/httpconv.go" beforeDir="false" afterPath="$PROJECT_DIR$/vendor/go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp/internal/semconv/httpconv.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendor/go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp/internal/semconv/util.go" beforeDir="false" afterPath="$PROJECT_DIR$/vendor/go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp/internal/semconv/util.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendor/go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp/internal/semconv/v1.20.0.go" beforeDir="false" afterPath="$PROJECT_DIR$/vendor/go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp/internal/semconv/v1.20.0.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendor/go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp/internal/semconvutil/netconv.go" beforeDir="false" afterPath="$PROJECT_DIR$/vendor/go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp/internal/semconvutil/netconv.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendor/go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp/transport.go" beforeDir="false" afterPath="$PROJECT_DIR$/vendor/go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp/transport.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendor/go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp/version.go" beforeDir="false" afterPath="$PROJECT_DIR$/vendor/go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp/version.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendor/go.opentelemetry.io/otel/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/vendor/go.opentelemetry.io/otel/.gitignore" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendor/go.opentelemetry.io/otel/.golangci.yml" beforeDir="false" afterPath="$PROJECT_DIR$/vendor/go.opentelemetry.io/otel/.golangci.yml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendor/go.opentelemetry.io/otel/CHANGELOG.md" beforeDir="false" afterPath="$PROJECT_DIR$/vendor/go.opentelemetry.io/otel/CHANGELOG.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendor/go.opentelemetry.io/otel/CONTRIBUTING.md" beforeDir="false" afterPath="$PROJECT_DIR$/vendor/go.opentelemetry.io/otel/CONTRIBUTING.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendor/go.opentelemetry.io/otel/Makefile" beforeDir="false" afterPath="$PROJECT_DIR$/vendor/go.opentelemetry.io/otel/Makefile" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendor/go.opentelemetry.io/otel/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/vendor/go.opentelemetry.io/otel/README.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendor/go.opentelemetry.io/otel/RELEASING.md" beforeDir="false" afterPath="$PROJECT_DIR$/vendor/go.opentelemetry.io/otel/RELEASING.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendor/go.opentelemetry.io/otel/VERSIONING.md" beforeDir="false" afterPath="$PROJECT_DIR$/vendor/go.opentelemetry.io/otel/VERSIONING.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendor/go.opentelemetry.io/otel/baggage/baggage.go" beforeDir="false" afterPath="$PROJECT_DIR$/vendor/go.opentelemetry.io/otel/baggage/baggage.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendor/go.opentelemetry.io/otel/codes/codes.go" beforeDir="false" afterPath="$PROJECT_DIR$/vendor/go.opentelemetry.io/otel/codes/codes.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendor/go.opentelemetry.io/otel/internal/attribute/attribute.go" beforeDir="false" afterPath="$PROJECT_DIR$/vendor/go.opentelemetry.io/otel/internal/attribute/attribute.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendor/go.opentelemetry.io/otel/internal/global/instruments.go" beforeDir="false" afterPath="$PROJECT_DIR$/vendor/go.opentelemetry.io/otel/internal/global/instruments.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendor/go.opentelemetry.io/otel/internal/global/meter.go" beforeDir="false" afterPath="$PROJECT_DIR$/vendor/go.opentelemetry.io/otel/internal/global/meter.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendor/go.opentelemetry.io/otel/internal/global/trace.go" beforeDir="false" afterPath="$PROJECT_DIR$/vendor/go.opentelemetry.io/otel/internal/global/trace.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendor/go.opentelemetry.io/otel/renovate.json" beforeDir="false" afterPath="$PROJECT_DIR$/vendor/go.opentelemetry.io/otel/renovate.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendor/go.opentelemetry.io/otel/requirements.txt" beforeDir="false" afterPath="$PROJECT_DIR$/vendor/go.opentelemetry.io/otel/requirements.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendor/go.opentelemetry.io/otel/trace/config.go" beforeDir="false" afterPath="$PROJECT_DIR$/vendor/go.opentelemetry.io/otel/trace/config.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendor/go.opentelemetry.io/otel/trace/noop.go" beforeDir="false" afterPath="$PROJECT_DIR$/vendor/go.opentelemetry.io/otel/trace/noop.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendor/go.opentelemetry.io/otel/version.go" beforeDir="false" afterPath="$PROJECT_DIR$/vendor/go.opentelemetry.io/otel/version.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendor/go.opentelemetry.io/otel/versions.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/vendor/go.opentelemetry.io/otel/versions.yaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendor/golang.org/x/crypto/cryptobyte/asn1.go" beforeDir="false" afterPath="$PROJECT_DIR$/vendor/golang.org/x/crypto/cryptobyte/asn1.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendor/golang.org/x/crypto/internal/poly1305/mac_noasm.go" beforeDir="false" afterPath="$PROJECT_DIR$/vendor/golang.org/x/crypto/internal/poly1305/mac_noasm.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendor/golang.org/x/crypto/internal/poly1305/sum_amd64.go" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendor/golang.org/x/crypto/internal/poly1305/sum_ppc64x.go" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendor/golang.org/x/net/html/atom/table.go" beforeDir="false" afterPath="$PROJECT_DIR$/vendor/golang.org/x/net/html/atom/table.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendor/golang.org/x/net/html/parse.go" beforeDir="false" afterPath="$PROJECT_DIR$/vendor/golang.org/x/net/html/parse.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendor/golang.org/x/net/html/token.go" beforeDir="false" afterPath="$PROJECT_DIR$/vendor/golang.org/x/net/html/token.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendor/golang.org/x/net/http2/frame.go" beforeDir="false" afterPath="$PROJECT_DIR$/vendor/golang.org/x/net/http2/frame.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendor/golang.org/x/net/http2/headermap.go" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendor/golang.org/x/net/http2/http2.go" beforeDir="false" afterPath="$PROJECT_DIR$/vendor/golang.org/x/net/http2/http2.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendor/golang.org/x/net/http2/server.go" beforeDir="false" afterPath="$PROJECT_DIR$/vendor/golang.org/x/net/http2/server.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendor/golang.org/x/net/http2/transport.go" beforeDir="false" afterPath="$PROJECT_DIR$/vendor/golang.org/x/net/http2/transport.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendor/golang.org/x/net/http2/write.go" beforeDir="false" afterPath="$PROJECT_DIR$/vendor/golang.org/x/net/http2/write.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendor/golang.org/x/oauth2/google/default.go" beforeDir="false" afterPath="$PROJECT_DIR$/vendor/golang.org/x/oauth2/google/default.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendor/golang.org/x/oauth2/google/externalaccount/basecredentials.go" beforeDir="false" afterPath="$PROJECT_DIR$/vendor/golang.org/x/oauth2/google/externalaccount/basecredentials.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendor/golang.org/x/oauth2/jws/jws.go" beforeDir="false" afterPath="$PROJECT_DIR$/vendor/golang.org/x/oauth2/jws/jws.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendor/golang.org/x/oauth2/oauth2.go" beforeDir="false" afterPath="$PROJECT_DIR$/vendor/golang.org/x/oauth2/oauth2.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendor/golang.org/x/oauth2/pkce.go" beforeDir="false" afterPath="$PROJECT_DIR$/vendor/golang.org/x/oauth2/pkce.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendor/golang.org/x/oauth2/token.go" beforeDir="false" afterPath="$PROJECT_DIR$/vendor/golang.org/x/oauth2/token.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendor/golang.org/x/sys/cpu/cpu.go" beforeDir="false" afterPath="$PROJECT_DIR$/vendor/golang.org/x/sys/cpu/cpu.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendor/golang.org/x/sys/cpu/cpu_linux_noinit.go" beforeDir="false" afterPath="$PROJECT_DIR$/vendor/golang.org/x/sys/cpu/cpu_linux_noinit.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendor/golang.org/x/sys/cpu/cpu_loong64.go" beforeDir="false" afterPath="$PROJECT_DIR$/vendor/golang.org/x/sys/cpu/cpu_loong64.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendor/golang.org/x/sys/cpu/cpu_x86.go" beforeDir="false" afterPath="$PROJECT_DIR$/vendor/golang.org/x/sys/cpu/cpu_x86.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendor/golang.org/x/sys/cpu/parse.go" beforeDir="false" afterPath="$PROJECT_DIR$/vendor/golang.org/x/sys/cpu/parse.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendor/golang.org/x/sys/unix/syscall_darwin.go" beforeDir="false" afterPath="$PROJECT_DIR$/vendor/golang.org/x/sys/unix/syscall_darwin.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendor/golang.org/x/sys/unix/syscall_linux.go" beforeDir="false" afterPath="$PROJECT_DIR$/vendor/golang.org/x/sys/unix/syscall_linux.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendor/golang.org/x/sys/unix/syscall_solaris.go" beforeDir="false" afterPath="$PROJECT_DIR$/vendor/golang.org/x/sys/unix/syscall_solaris.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendor/golang.org/x/sys/unix/zerrors_linux.go" beforeDir="false" afterPath="$PROJECT_DIR$/vendor/golang.org/x/sys/unix/zerrors_linux.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendor/golang.org/x/sys/unix/zerrors_linux_386.go" beforeDir="false" afterPath="$PROJECT_DIR$/vendor/golang.org/x/sys/unix/zerrors_linux_386.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendor/golang.org/x/sys/unix/zerrors_linux_amd64.go" beforeDir="false" afterPath="$PROJECT_DIR$/vendor/golang.org/x/sys/unix/zerrors_linux_amd64.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendor/golang.org/x/sys/unix/zerrors_linux_arm.go" beforeDir="false" afterPath="$PROJECT_DIR$/vendor/golang.org/x/sys/unix/zerrors_linux_arm.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendor/golang.org/x/sys/unix/zerrors_linux_arm64.go" beforeDir="false" afterPath="$PROJECT_DIR$/vendor/golang.org/x/sys/unix/zerrors_linux_arm64.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendor/golang.org/x/sys/unix/zerrors_linux_loong64.go" beforeDir="false" afterPath="$PROJECT_DIR$/vendor/golang.org/x/sys/unix/zerrors_linux_loong64.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendor/golang.org/x/sys/unix/zerrors_linux_mips.go" beforeDir="false" afterPath="$PROJECT_DIR$/vendor/golang.org/x/sys/unix/zerrors_linux_mips.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendor/golang.org/x/sys/unix/zerrors_linux_mips64.go" beforeDir="false" afterPath="$PROJECT_DIR$/vendor/golang.org/x/sys/unix/zerrors_linux_mips64.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendor/golang.org/x/sys/unix/zerrors_linux_mips64le.go" beforeDir="false" afterPath="$PROJECT_DIR$/vendor/golang.org/x/sys/unix/zerrors_linux_mips64le.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendor/golang.org/x/sys/unix/zerrors_linux_mipsle.go" beforeDir="false" afterPath="$PROJECT_DIR$/vendor/golang.org/x/sys/unix/zerrors_linux_mipsle.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendor/golang.org/x/sys/unix/zerrors_linux_ppc.go" beforeDir="false" afterPath="$PROJECT_DIR$/vendor/golang.org/x/sys/unix/zerrors_linux_ppc.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendor/golang.org/x/sys/unix/zerrors_linux_ppc64.go" beforeDir="false" afterPath="$PROJECT_DIR$/vendor/golang.org/x/sys/unix/zerrors_linux_ppc64.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendor/golang.org/x/sys/unix/zerrors_linux_ppc64le.go" beforeDir="false" afterPath="$PROJECT_DIR$/vendor/golang.org/x/sys/unix/zerrors_linux_ppc64le.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendor/golang.org/x/sys/unix/zerrors_linux_riscv64.go" beforeDir="false" afterPath="$PROJECT_DIR$/vendor/golang.org/x/sys/unix/zerrors_linux_riscv64.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendor/golang.org/x/sys/unix/zerrors_linux_s390x.go" beforeDir="false" afterPath="$PROJECT_DIR$/vendor/golang.org/x/sys/unix/zerrors_linux_s390x.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendor/golang.org/x/sys/unix/zerrors_linux_sparc64.go" beforeDir="false" afterPath="$PROJECT_DIR$/vendor/golang.org/x/sys/unix/zerrors_linux_sparc64.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendor/golang.org/x/sys/unix/zsyscall_darwin_amd64.go" beforeDir="false" afterPath="$PROJECT_DIR$/vendor/golang.org/x/sys/unix/zsyscall_darwin_amd64.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendor/golang.org/x/sys/unix/zsyscall_darwin_amd64.s" beforeDir="false" afterPath="$PROJECT_DIR$/vendor/golang.org/x/sys/unix/zsyscall_darwin_amd64.s" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendor/golang.org/x/sys/unix/zsyscall_darwin_arm64.go" beforeDir="false" afterPath="$PROJECT_DIR$/vendor/golang.org/x/sys/unix/zsyscall_darwin_arm64.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendor/golang.org/x/sys/unix/zsyscall_darwin_arm64.s" beforeDir="false" afterPath="$PROJECT_DIR$/vendor/golang.org/x/sys/unix/zsyscall_darwin_arm64.s" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendor/golang.org/x/sys/unix/zsyscall_solaris_amd64.go" beforeDir="false" afterPath="$PROJECT_DIR$/vendor/golang.org/x/sys/unix/zsyscall_solaris_amd64.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendor/golang.org/x/sys/unix/zsysnum_linux_386.go" beforeDir="false" afterPath="$PROJECT_DIR$/vendor/golang.org/x/sys/unix/zsysnum_linux_386.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendor/golang.org/x/sys/unix/zsysnum_linux_amd64.go" beforeDir="false" afterPath="$PROJECT_DIR$/vendor/golang.org/x/sys/unix/zsysnum_linux_amd64.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendor/golang.org/x/sys/unix/zsysnum_linux_arm.go" beforeDir="false" afterPath="$PROJECT_DIR$/vendor/golang.org/x/sys/unix/zsysnum_linux_arm.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendor/golang.org/x/sys/unix/zsysnum_linux_arm64.go" beforeDir="false" afterPath="$PROJECT_DIR$/vendor/golang.org/x/sys/unix/zsysnum_linux_arm64.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendor/golang.org/x/sys/unix/zsysnum_linux_loong64.go" beforeDir="false" afterPath="$PROJECT_DIR$/vendor/golang.org/x/sys/unix/zsysnum_linux_loong64.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendor/golang.org/x/sys/unix/zsysnum_linux_mips.go" beforeDir="false" afterPath="$PROJECT_DIR$/vendor/golang.org/x/sys/unix/zsysnum_linux_mips.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendor/golang.org/x/sys/unix/zsysnum_linux_mips64.go" beforeDir="false" afterPath="$PROJECT_DIR$/vendor/golang.org/x/sys/unix/zsysnum_linux_mips64.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendor/golang.org/x/sys/unix/zsysnum_linux_mips64le.go" beforeDir="false" afterPath="$PROJECT_DIR$/vendor/golang.org/x/sys/unix/zsysnum_linux_mips64le.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendor/golang.org/x/sys/unix/zsysnum_linux_mipsle.go" beforeDir="false" afterPath="$PROJECT_DIR$/vendor/golang.org/x/sys/unix/zsysnum_linux_mipsle.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendor/golang.org/x/sys/unix/zsysnum_linux_ppc.go" beforeDir="false" afterPath="$PROJECT_DIR$/vendor/golang.org/x/sys/unix/zsysnum_linux_ppc.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendor/golang.org/x/sys/unix/zsysnum_linux_ppc64.go" beforeDir="false" afterPath="$PROJECT_DIR$/vendor/golang.org/x/sys/unix/zsysnum_linux_ppc64.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendor/golang.org/x/sys/unix/zsysnum_linux_ppc64le.go" beforeDir="false" afterPath="$PROJECT_DIR$/vendor/golang.org/x/sys/unix/zsysnum_linux_ppc64le.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendor/golang.org/x/sys/unix/zsysnum_linux_riscv64.go" beforeDir="false" afterPath="$PROJECT_DIR$/vendor/golang.org/x/sys/unix/zsysnum_linux_riscv64.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendor/golang.org/x/sys/unix/zsysnum_linux_s390x.go" beforeDir="false" afterPath="$PROJECT_DIR$/vendor/golang.org/x/sys/unix/zsysnum_linux_s390x.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendor/golang.org/x/sys/unix/zsysnum_linux_sparc64.go" beforeDir="false" afterPath="$PROJECT_DIR$/vendor/golang.org/x/sys/unix/zsysnum_linux_sparc64.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendor/golang.org/x/sys/unix/ztypes_linux.go" beforeDir="false" afterPath="$PROJECT_DIR$/vendor/golang.org/x/sys/unix/ztypes_linux.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendor/golang.org/x/sys/windows/registry/key.go" beforeDir="false" afterPath="$PROJECT_DIR$/vendor/golang.org/x/sys/windows/registry/key.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendor/golang.org/x/sys/windows/registry/value.go" beforeDir="false" afterPath="$PROJECT_DIR$/vendor/golang.org/x/sys/windows/registry/value.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendor/golang.org/x/sys/windows/types_windows.go" beforeDir="false" afterPath="$PROJECT_DIR$/vendor/golang.org/x/sys/windows/types_windows.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendor/golang.org/x/text/internal/number/format.go" beforeDir="false" afterPath="$PROJECT_DIR$/vendor/golang.org/x/text/internal/number/format.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendor/golang.org/x/text/language/parse.go" beforeDir="false" afterPath="$PROJECT_DIR$/vendor/golang.org/x/text/language/parse.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendor/google.golang.org/api/googleapi/googleapi.go" beforeDir="false" afterPath="$PROJECT_DIR$/vendor/google.golang.org/api/googleapi/googleapi.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendor/google.golang.org/api/internal/gensupport/resumable.go" beforeDir="false" afterPath="$PROJECT_DIR$/vendor/google.golang.org/api/internal/gensupport/resumable.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendor/google.golang.org/api/internal/settings.go" beforeDir="false" afterPath="$PROJECT_DIR$/vendor/google.golang.org/api/internal/settings.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendor/google.golang.org/api/internal/version.go" beforeDir="false" afterPath="$PROJECT_DIR$/vendor/google.golang.org/api/internal/version.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendor/google.golang.org/api/option/internaloption/internaloption.go" beforeDir="false" afterPath="$PROJECT_DIR$/vendor/google.golang.org/api/option/internaloption/internaloption.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendor/google.golang.org/api/option/option.go" beforeDir="false" afterPath="$PROJECT_DIR$/vendor/google.golang.org/api/option/option.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendor/google.golang.org/api/sheets/v4/sheets-api.json" beforeDir="false" afterPath="$PROJECT_DIR$/vendor/google.golang.org/api/sheets/v4/sheets-api.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendor/google.golang.org/api/sheets/v4/sheets-gen.go" beforeDir="false" afterPath="$PROJECT_DIR$/vendor/google.golang.org/api/sheets/v4/sheets-gen.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendor/google.golang.org/api/transport/http/dial.go" beforeDir="false" afterPath="$PROJECT_DIR$/vendor/google.golang.org/api/transport/http/dial.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendor/google.golang.org/genproto/googleapis/rpc/code/code.pb.go" beforeDir="false" afterPath="$PROJECT_DIR$/vendor/google.golang.org/genproto/googleapis/rpc/code/code.pb.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendor/google.golang.org/genproto/googleapis/rpc/errdetails/error_details.pb.go" beforeDir="false" afterPath="$PROJECT_DIR$/vendor/google.golang.org/genproto/googleapis/rpc/errdetails/error_details.pb.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendor/google.golang.org/genproto/googleapis/rpc/status/status.pb.go" beforeDir="false" afterPath="$PROJECT_DIR$/vendor/google.golang.org/genproto/googleapis/rpc/status/status.pb.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendor/google.golang.org/grpc/balancer/balancer.go" beforeDir="false" afterPath="$PROJECT_DIR$/vendor/google.golang.org/grpc/balancer/balancer.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendor/google.golang.org/grpc/balancer/base/balancer.go" beforeDir="false" afterPath="$PROJECT_DIR$/vendor/google.golang.org/grpc/balancer/base/balancer.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendor/google.golang.org/grpc/balancer/pickfirst/pickfirstleaf/pickfirstleaf.go" beforeDir="false" afterPath="$PROJECT_DIR$/vendor/google.golang.org/grpc/balancer/pickfirst/pickfirstleaf/pickfirstleaf.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendor/google.golang.org/grpc/balancer/roundrobin/roundrobin.go" beforeDir="false" afterPath="$PROJECT_DIR$/vendor/google.golang.org/grpc/balancer/roundrobin/roundrobin.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendor/google.golang.org/grpc/balancer/subconn.go" beforeDir="false" afterPath="$PROJECT_DIR$/vendor/google.golang.org/grpc/balancer/subconn.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendor/google.golang.org/grpc/balancer_wrapper.go" beforeDir="false" afterPath="$PROJECT_DIR$/vendor/google.golang.org/grpc/balancer_wrapper.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendor/google.golang.org/grpc/binarylog/grpc_binarylog_v1/binarylog.pb.go" beforeDir="false" afterPath="$PROJECT_DIR$/vendor/google.golang.org/grpc/binarylog/grpc_binarylog_v1/binarylog.pb.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendor/google.golang.org/grpc/clientconn.go" beforeDir="false" afterPath="$PROJECT_DIR$/vendor/google.golang.org/grpc/clientconn.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendor/google.golang.org/grpc/credentials/tls.go" beforeDir="false" afterPath="$PROJECT_DIR$/vendor/google.golang.org/grpc/credentials/tls.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendor/google.golang.org/grpc/dialoptions.go" beforeDir="false" afterPath="$PROJECT_DIR$/vendor/google.golang.org/grpc/dialoptions.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendor/google.golang.org/grpc/internal/balancer/gracefulswitch/gracefulswitch.go" beforeDir="false" afterPath="$PROJECT_DIR$/vendor/google.golang.org/grpc/internal/balancer/gracefulswitch/gracefulswitch.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendor/google.golang.org/grpc/internal/envconfig/envconfig.go" beforeDir="false" afterPath="$PROJECT_DIR$/vendor/google.golang.org/grpc/internal/envconfig/envconfig.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendor/google.golang.org/grpc/internal/envconfig/xds.go" beforeDir="false" afterPath="$PROJECT_DIR$/vendor/google.golang.org/grpc/internal/envconfig/xds.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendor/google.golang.org/grpc/internal/grpcsync/oncefunc.go" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendor/google.golang.org/grpc/internal/internal.go" beforeDir="false" afterPath="$PROJECT_DIR$/vendor/google.golang.org/grpc/internal/internal.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendor/google.golang.org/grpc/internal/metadata/metadata.go" beforeDir="false" afterPath="$PROJECT_DIR$/vendor/google.golang.org/grpc/internal/metadata/metadata.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendor/google.golang.org/grpc/internal/transport/client_stream.go" beforeDir="false" afterPath="$PROJECT_DIR$/vendor/google.golang.org/grpc/internal/transport/client_stream.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendor/google.golang.org/grpc/internal/transport/handler_server.go" beforeDir="false" afterPath="$PROJECT_DIR$/vendor/google.golang.org/grpc/internal/transport/handler_server.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendor/google.golang.org/grpc/internal/transport/http2_client.go" beforeDir="false" afterPath="$PROJECT_DIR$/vendor/google.golang.org/grpc/internal/transport/http2_client.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendor/google.golang.org/grpc/internal/transport/http2_server.go" beforeDir="false" afterPath="$PROJECT_DIR$/vendor/google.golang.org/grpc/internal/transport/http2_server.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendor/google.golang.org/grpc/internal/transport/proxy.go" beforeDir="false" afterPath="$PROJECT_DIR$/vendor/google.golang.org/grpc/internal/transport/proxy.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendor/google.golang.org/grpc/internal/transport/server_stream.go" beforeDir="false" afterPath="$PROJECT_DIR$/vendor/google.golang.org/grpc/internal/transport/server_stream.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendor/google.golang.org/grpc/internal/transport/transport.go" beforeDir="false" afterPath="$PROJECT_DIR$/vendor/google.golang.org/grpc/internal/transport/transport.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendor/google.golang.org/grpc/picker_wrapper.go" beforeDir="false" afterPath="$PROJECT_DIR$/vendor/google.golang.org/grpc/picker_wrapper.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendor/google.golang.org/grpc/resolver/map.go" beforeDir="false" afterPath="$PROJECT_DIR$/vendor/google.golang.org/grpc/resolver/map.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendor/google.golang.org/grpc/resolver/resolver.go" beforeDir="false" afterPath="$PROJECT_DIR$/vendor/google.golang.org/grpc/resolver/resolver.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendor/google.golang.org/grpc/resolver_wrapper.go" beforeDir="false" afterPath="$PROJECT_DIR$/vendor/google.golang.org/grpc/resolver_wrapper.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendor/google.golang.org/grpc/rpc_util.go" beforeDir="false" afterPath="$PROJECT_DIR$/vendor/google.golang.org/grpc/rpc_util.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendor/google.golang.org/grpc/server.go" beforeDir="false" afterPath="$PROJECT_DIR$/vendor/google.golang.org/grpc/server.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendor/google.golang.org/grpc/service_config.go" beforeDir="false" afterPath="$PROJECT_DIR$/vendor/google.golang.org/grpc/service_config.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendor/google.golang.org/grpc/stats/stats.go" beforeDir="false" afterPath="$PROJECT_DIR$/vendor/google.golang.org/grpc/stats/stats.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendor/google.golang.org/grpc/stream.go" beforeDir="false" afterPath="$PROJECT_DIR$/vendor/google.golang.org/grpc/stream.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendor/google.golang.org/grpc/version.go" beforeDir="false" afterPath="$PROJECT_DIR$/vendor/google.golang.org/grpc/version.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendor/google.golang.org/protobuf/encoding/protojson/decode.go" beforeDir="false" afterPath="$PROJECT_DIR$/vendor/google.golang.org/protobuf/encoding/protojson/decode.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendor/google.golang.org/protobuf/encoding/prototext/decode.go" beforeDir="false" afterPath="$PROJECT_DIR$/vendor/google.golang.org/protobuf/encoding/prototext/decode.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendor/google.golang.org/protobuf/internal/editiondefaults/editions_defaults.binpb" beforeDir="false" afterPath="$PROJECT_DIR$/vendor/google.golang.org/protobuf/internal/editiondefaults/editions_defaults.binpb" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendor/google.golang.org/protobuf/internal/encoding/tag/tag.go" beforeDir="false" afterPath="$PROJECT_DIR$/vendor/google.golang.org/protobuf/internal/encoding/tag/tag.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendor/google.golang.org/protobuf/internal/filedesc/desc.go" beforeDir="false" afterPath="$PROJECT_DIR$/vendor/google.golang.org/protobuf/internal/filedesc/desc.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendor/google.golang.org/protobuf/internal/filedesc/desc_lazy.go" beforeDir="false" afterPath="$PROJECT_DIR$/vendor/google.golang.org/protobuf/internal/filedesc/desc_lazy.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendor/google.golang.org/protobuf/internal/filedesc/editions.go" beforeDir="false" afterPath="$PROJECT_DIR$/vendor/google.golang.org/protobuf/internal/filedesc/editions.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendor/google.golang.org/protobuf/internal/filetype/build.go" beforeDir="false" afterPath="$PROJECT_DIR$/vendor/google.golang.org/protobuf/internal/filetype/build.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendor/google.golang.org/protobuf/internal/flags/flags.go" beforeDir="false" afterPath="$PROJECT_DIR$/vendor/google.golang.org/protobuf/internal/flags/flags.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendor/google.golang.org/protobuf/internal/genid/descriptor_gen.go" beforeDir="false" afterPath="$PROJECT_DIR$/vendor/google.golang.org/protobuf/internal/genid/descriptor_gen.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendor/google.golang.org/protobuf/internal/genid/goname.go" beforeDir="false" afterPath="$PROJECT_DIR$/vendor/google.golang.org/protobuf/internal/genid/goname.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendor/google.golang.org/protobuf/internal/impl/codec_field.go" beforeDir="false" afterPath="$PROJECT_DIR$/vendor/google.golang.org/protobuf/internal/impl/codec_field.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendor/google.golang.org/protobuf/internal/impl/codec_map.go" beforeDir="false" afterPath="$PROJECT_DIR$/vendor/google.golang.org/protobuf/internal/impl/codec_map.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendor/google.golang.org/protobuf/internal/impl/codec_map_go111.go" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendor/google.golang.org/protobuf/internal/impl/codec_map_go112.go" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendor/google.golang.org/protobuf/internal/impl/codec_message.go" beforeDir="false" afterPath="$PROJECT_DIR$/vendor/google.golang.org/protobuf/internal/impl/codec_message.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendor/google.golang.org/protobuf/internal/impl/codec_message_opaque.go" beforeDir="false" afterPath="$PROJECT_DIR$/vendor/google.golang.org/protobuf/internal/impl/codec_message_opaque.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendor/google.golang.org/protobuf/internal/impl/convert_map.go" beforeDir="false" afterPath="$PROJECT_DIR$/vendor/google.golang.org/protobuf/internal/impl/convert_map.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendor/google.golang.org/protobuf/internal/impl/lazy.go" beforeDir="false" afterPath="$PROJECT_DIR$/vendor/google.golang.org/protobuf/internal/impl/lazy.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendor/google.golang.org/protobuf/internal/impl/legacy_message.go" beforeDir="false" afterPath="$PROJECT_DIR$/vendor/google.golang.org/protobuf/internal/impl/legacy_message.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendor/google.golang.org/protobuf/internal/impl/message.go" beforeDir="false" afterPath="$PROJECT_DIR$/vendor/google.golang.org/protobuf/internal/impl/message.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendor/google.golang.org/protobuf/internal/impl/message_opaque.go" beforeDir="false" afterPath="$PROJECT_DIR$/vendor/google.golang.org/protobuf/internal/impl/message_opaque.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendor/google.golang.org/protobuf/internal/impl/message_reflect.go" beforeDir="false" afterPath="$PROJECT_DIR$/vendor/google.golang.org/protobuf/internal/impl/message_reflect.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendor/google.golang.org/protobuf/internal/impl/message_reflect_field.go" beforeDir="false" afterPath="$PROJECT_DIR$/vendor/google.golang.org/protobuf/internal/impl/message_reflect_field.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendor/google.golang.org/protobuf/internal/impl/pointer_unsafe.go" beforeDir="false" afterPath="$PROJECT_DIR$/vendor/google.golang.org/protobuf/internal/impl/pointer_unsafe.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendor/google.golang.org/protobuf/internal/impl/validate.go" beforeDir="false" afterPath="$PROJECT_DIR$/vendor/google.golang.org/protobuf/internal/impl/validate.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendor/google.golang.org/protobuf/internal/impl/weak.go" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendor/google.golang.org/protobuf/internal/strs/strings_unsafe_go120.go" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendor/google.golang.org/protobuf/internal/strs/strings_unsafe_go121.go" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendor/google.golang.org/protobuf/internal/version/version.go" beforeDir="false" afterPath="$PROJECT_DIR$/vendor/google.golang.org/protobuf/internal/version/version.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendor/google.golang.org/protobuf/proto/decode.go" beforeDir="false" afterPath="$PROJECT_DIR$/vendor/google.golang.org/protobuf/proto/decode.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendor/google.golang.org/protobuf/proto/merge.go" beforeDir="false" afterPath="$PROJECT_DIR$/vendor/google.golang.org/protobuf/proto/merge.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendor/google.golang.org/protobuf/reflect/protoreflect/source_gen.go" beforeDir="false" afterPath="$PROJECT_DIR$/vendor/google.golang.org/protobuf/reflect/protoreflect/source_gen.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendor/google.golang.org/protobuf/reflect/protoreflect/type.go" beforeDir="false" afterPath="$PROJECT_DIR$/vendor/google.golang.org/protobuf/reflect/protoreflect/type.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendor/google.golang.org/protobuf/reflect/protoreflect/value_unsafe_go120.go" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendor/google.golang.org/protobuf/reflect/protoreflect/value_unsafe_go121.go" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendor/google.golang.org/protobuf/types/known/anypb/any.pb.go" beforeDir="false" afterPath="$PROJECT_DIR$/vendor/google.golang.org/protobuf/types/known/anypb/any.pb.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendor/google.golang.org/protobuf/types/known/durationpb/duration.pb.go" beforeDir="false" afterPath="$PROJECT_DIR$/vendor/google.golang.org/protobuf/types/known/durationpb/duration.pb.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendor/google.golang.org/protobuf/types/known/timestamppb/timestamp.pb.go" beforeDir="false" afterPath="$PROJECT_DIR$/vendor/google.golang.org/protobuf/types/known/timestamppb/timestamp.pb.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendor/gorm.io/driver/postgres/migrator.go" beforeDir="false" afterPath="$PROJECT_DIR$/vendor/gorm.io/driver/postgres/migrator.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendor/gorm.io/gorm/.golangci.yml" beforeDir="false" afterPath="$PROJECT_DIR$/vendor/gorm.io/gorm/.golangci.yml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendor/gorm.io/gorm/LICENSE" beforeDir="false" afterPath="$PROJECT_DIR$/vendor/gorm.io/gorm/LICENSE" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendor/gorm.io/gorm/callbacks/associations.go" beforeDir="false" afterPath="$PROJECT_DIR$/vendor/gorm.io/gorm/callbacks/associations.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendor/gorm.io/gorm/clause/returning.go" beforeDir="false" afterPath="$PROJECT_DIR$/vendor/gorm.io/gorm/clause/returning.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendor/gorm.io/gorm/finisher_api.go" beforeDir="false" afterPath="$PROJECT_DIR$/vendor/gorm.io/gorm/finisher_api.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendor/gorm.io/gorm/gorm.go" beforeDir="false" afterPath="$PROJECT_DIR$/vendor/gorm.io/gorm/gorm.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendor/gorm.io/gorm/logger/logger.go" beforeDir="false" afterPath="$PROJECT_DIR$/vendor/gorm.io/gorm/logger/logger.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendor/gorm.io/gorm/migrator/migrator.go" beforeDir="false" afterPath="$PROJECT_DIR$/vendor/gorm.io/gorm/migrator/migrator.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendor/gorm.io/gorm/prepare_stmt.go" beforeDir="false" afterPath="$PROJECT_DIR$/vendor/gorm.io/gorm/prepare_stmt.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendor/gorm.io/gorm/scan.go" beforeDir="false" afterPath="$PROJECT_DIR$/vendor/gorm.io/gorm/scan.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendor/gorm.io/gorm/schema/field.go" beforeDir="false" afterPath="$PROJECT_DIR$/vendor/gorm.io/gorm/schema/field.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendor/gorm.io/gorm/schema/index.go" beforeDir="false" afterPath="$PROJECT_DIR$/vendor/gorm.io/gorm/schema/index.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendor/gorm.io/gorm/schema/relationship.go" beforeDir="false" afterPath="$PROJECT_DIR$/vendor/gorm.io/gorm/schema/relationship.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendor/gorm.io/gorm/schema/utils.go" beforeDir="false" afterPath="$PROJECT_DIR$/vendor/gorm.io/gorm/schema/utils.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendor/modules.txt" beforeDir="false" afterPath="$PROJECT_DIR$/vendor/modules.txt" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -35,7 +283,7 @@
 }</component>
   <component name="GithubPullRequestsUISettings">{
   &quot;selectedUrlAndAccountId&quot;: {
-    &quot;url&quot;: &quot;https://github.com/molchanovz/WildberriesGo_bot.git&quot;,
+    &quot;url&quot;: &quot;https://github.com/molchanovz/tradebot&quot;,
     &quot;accountId&quot;: &quot;61a9d8c1-3ce4-4719-aca3-2fc3d354d079&quot;
   }
 }</component>
@@ -60,18 +308,21 @@
     &quot;DefaultGoTemplateProperty&quot;: &quot;Go File&quot;,
     &quot;Go Build.go build WildberriesGo_bot.executor&quot;: &quot;Run&quot;,
     &quot;Go Build.go build WildberriesGo_bot/cmd.executor&quot;: &quot;Run&quot;,
+    &quot;Go Build.go build tradebot/cmd.executor&quot;: &quot;Run&quot;,
     &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
     &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
     &quot;RunOnceActivity.go.formatter.settings.were.checked&quot;: &quot;true&quot;,
     &quot;RunOnceActivity.go.migrated.go.modules.settings&quot;: &quot;true&quot;,
     &quot;RunOnceActivity.go.modules.go.list.on.any.changes.was.set&quot;: &quot;true&quot;,
+    &quot;configurable.GoLibrariesConfigurable.is.expanded&quot;: &quot;true&quot;,
     &quot;git-widget-placeholder&quot;: &quot;master&quot;,
     &quot;go.import.settings.migrated&quot;: &quot;true&quot;,
     &quot;go.sdk.automatically.set&quot;: &quot;true&quot;,
-    &quot;last_opened_file_path&quot;: &quot;/Users/sergey/GolandProjects/WildberriesGo_bot/pkg/barcodes&quot;,
+    &quot;last_opened_file_path&quot;: &quot;/Users/sergey&quot;,
     &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
     &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
-    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;com.goide.configuration.GoLibrariesConfigurableProvider&quot;
   },
   &quot;keyToStringList&quot;: {
     &quot;DatabaseDriversLRU&quot;: [
@@ -95,9 +346,9 @@
       <recent name="$PROJECT_DIR$/pkg/db/models" />
     </key>
   </component>
-  <component name="RunManager">
+  <component name="RunManager" selected="Go Build.go build tradebot/cmd">
     <configuration name="go build WildberriesGo_bot/cmd" type="GoApplicationRunConfiguration" factoryName="Go Application" temporary="true" nameIsGenerated="true">
-      <module name="WildberriesGo_bot" />
+      <module name="tradebot" />
       <working_directory value="$PROJECT_DIR$" />
       <kind value="PACKAGE" />
       <package value="WildberriesGo_bot/cmd" />
@@ -105,8 +356,18 @@
       <filePath value="$PROJECT_DIR$/cmd/main.go" />
       <method v="2" />
     </configuration>
+    <configuration name="go build tradebot/cmd" type="GoApplicationRunConfiguration" factoryName="Go Application" temporary="true" nameIsGenerated="true">
+      <module name="tradebot" />
+      <working_directory value="$PROJECT_DIR$" />
+      <kind value="PACKAGE" />
+      <package value="tradebot/cmd" />
+      <directory value="$PROJECT_DIR$" />
+      <filePath value="$PROJECT_DIR$/cmd/main.go" />
+      <method v="2" />
+    </configuration>
     <recent_temporary>
       <list>
+        <item itemvalue="Go Build.go build tradebot/cmd" />
         <item itemvalue="Go Build.go build WildberriesGo_bot/cmd" />
         <item itemvalue="Go Build.go build WildberriesGo_bot/cmd" />
         <item itemvalue="Go Build.go build WildberriesGo_bot/cmd" />

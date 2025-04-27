@@ -6,7 +6,7 @@
 
 // Package sheets provides access to the Google Sheets API.
 //
-// For product documentation, see: https://developers.google.com/sheets/
+// For product documentation, see: https://developers.google.com/workspace/sheets/
 //
 // # Library status
 //
@@ -141,9 +141,6 @@ func NewService(ctx context.Context, opts ...option.ClientOption) (*Service, err
 	}
 	s := &Service{client: client, BasePath: basePath, logger: internaloption.GetLogger(opts)}
 	s.Spreadsheets = NewSpreadsheetsService(s)
-	if err != nil {
-		return nil, err
-	}
 	if endpoint != "" {
 		s.BasePath = endpoint
 	}
@@ -159,7 +156,7 @@ func New(client *http.Client) (*Service, error) {
 	if client == nil {
 		return nil, errors.New("client is nil")
 	}
-	return NewService(context.Background(), option.WithHTTPClient(client))
+	return NewService(context.TODO(), option.WithHTTPClient(client))
 }
 
 type Service struct {
@@ -1319,9 +1316,10 @@ func (s BatchClearValuesByDataFilterRequest) MarshalJSON() ([]byte, error) {
 // values selected with DataFilters in a spreadsheet.
 type BatchClearValuesByDataFilterResponse struct {
 	// ClearedRanges: The ranges that were cleared, in A1 notation
-	// (/sheets/api/guides/concepts#cell). If the requests are for an unbounded
-	// range or a ranger larger than the bounds of the sheet, this is the actual
-	// ranges that were cleared, bounded to the sheet's limits.
+	// (https://developers.google.com/workspace/sheets/api/guides/concepts#cell).
+	// If the requests are for an unbounded range or a ranger larger than the
+	// bounds of the sheet, this is the actual ranges that were cleared, bounded to
+	// the sheet's limits.
 	ClearedRanges []string `json:"clearedRanges,omitempty"`
 	// SpreadsheetId: The spreadsheet the updates were applied to.
 	SpreadsheetId string `json:"spreadsheetId,omitempty"`
@@ -1350,7 +1348,7 @@ func (s BatchClearValuesByDataFilterResponse) MarshalJSON() ([]byte, error) {
 // values in a spreadsheet.
 type BatchClearValuesRequest struct {
 	// Ranges: The ranges to clear, in A1 notation or R1C1 notation
-	// (/sheets/api/guides/concepts#cell).
+	// (https://developers.google.com/workspace/sheets/api/guides/concepts#cell).
 	Ranges []string `json:"ranges,omitempty"`
 	// ForceSendFields is a list of field names (e.g. "Ranges") to unconditionally
 	// include in API requests. By default, fields with empty or default values are
@@ -1451,8 +1449,8 @@ type BatchGetValuesByDataFilterRequest struct {
 	// as decimal values. This lets you perform arithmetic on them in formulas. For
 	// more information on interpreting date and time values, see [About date &
 	// time
-	// values](https://developers.google.com/sheets/api/guides/formats#about_date_ti
-	// me_values).
+	// values](https://developers.google.com/workspace/sheets/api/guides/formats#abo
+	// ut_date_time_values).
 	ValueRenderOption string `json:"valueRenderOption,omitempty"`
 	// ForceSendFields is a list of field names (e.g. "DataFilters") to
 	// unconditionally include in API requests. By default, fields with empty or
@@ -1647,8 +1645,8 @@ type BatchUpdateValuesByDataFilterRequest struct {
 	// as decimal values. This lets you perform arithmetic on them in formulas. For
 	// more information on interpreting date and time values, see [About date &
 	// time
-	// values](https://developers.google.com/sheets/api/guides/formats#about_date_ti
-	// me_values).
+	// values](https://developers.google.com/workspace/sheets/api/guides/formats#abo
+	// ut_date_time_values).
 	ResponseValueRenderOption string `json:"responseValueRenderOption,omitempty"`
 	// ValueInputOption: How the input data should be interpreted.
 	//
@@ -1767,8 +1765,8 @@ type BatchUpdateValuesRequest struct {
 	// as decimal values. This lets you perform arithmetic on them in formulas. For
 	// more information on interpreting date and time values, see [About date &
 	// time
-	// values](https://developers.google.com/sheets/api/guides/formats#about_date_ti
-	// me_values).
+	// values](https://developers.google.com/workspace/sheets/api/guides/formats#abo
+	// ut_date_time_values).
 	ResponseValueRenderOption string `json:"responseValueRenderOption,omitempty"`
 	// ValueInputOption: How the input data should be interpreted.
 	//
@@ -3136,8 +3134,9 @@ func (s *Color) UnmarshalJSON(data []byte) error {
 // ColorStyle: A color value.
 type ColorStyle struct {
 	// RgbColor: RGB color. The `alpha`
-	// (/sheets/api/reference/rest/v4/spreadsheets/other#Color.FIELDS.alpha) value
-	// in the `Color` (/sheets/api/reference/rest/v4/spreadsheets/other#color)
+	// (https://developers.google.com/workspace/sheets/api/reference/rest/v4/spreadsheets/other#Color.FIELDS.alpha)
+	// value in the `Color`
+	// (https://developers.google.com/workspace/sheets/api/reference/rest/v4/spreadsheets/other#color)
 	// object isn't generally supported.
 	RgbColor *Color `json:"rgbColor,omitempty"`
 	// ThemeColor: Theme color.
@@ -5745,7 +5744,8 @@ func (s InsertDimensionRequest) MarshalJSON() ([]byte, error) {
 // InsertRangeRequest: Inserts cells into a range, shifting the existing cells
 // over or down.
 type InsertRangeRequest struct {
-	// Range: The range to insert new cells into.
+	// Range: The range to insert new cells into. The range is constrained to the
+	// current sheet boundaries.
 	Range *GridRange `json:"range,omitempty"`
 	// ShiftDimension: The dimension which will be shifted when inserting cells. If
 	// ROWS, existing cells will be shifted down. If COLUMNS, existing cells will
@@ -6215,7 +6215,8 @@ func (s NamedRange) MarshalJSON() ([]byte, error) {
 type NumberFormat struct {
 	// Pattern: Pattern string used for formatting. If not set, a default pattern
 	// based on the user's locale will be used if necessary for the given type. See
-	// the Date and Number Formats guide (/sheets/api/guides/formats) for more
+	// the Date and Number Formats guide
+	// (https://developers.google.com/workspace/sheets/api/guides/formats) for more
 	// information about the supported patterns.
 	Pattern string `json:"pattern,omitempty"`
 	// Type: The type of the number format. When writing, this field must be set.
@@ -9078,7 +9079,8 @@ type UpdateValuesByDataFilterResponse struct {
 	// after all updates were applied. This is only included if the request's
 	// `includeValuesInResponse` field was `true`.
 	UpdatedData *ValueRange `json:"updatedData,omitempty"`
-	// UpdatedRange: The range (in A1 notation (/sheets/api/guides/concepts#cell))
+	// UpdatedRange: The range (in A1 notation
+	// (https://developers.google.com/workspace/sheets/api/guides/concepts#cell))
 	// that updates were applied to.
 	UpdatedRange string `json:"updatedRange,omitempty"`
 	// UpdatedRows: The number of rows where at least one cell in the row was
@@ -9158,10 +9160,11 @@ type ValueRange struct {
 	//   "COLUMNS" - Operates on the columns of a sheet.
 	MajorDimension string `json:"majorDimension,omitempty"`
 	// Range: The range the values cover, in A1 notation
-	// (/sheets/api/guides/concepts#cell). For output, this range indicates the
-	// entire requested range, even though the values will exclude trailing rows
-	// and columns. When appending values, this field represents the range to
-	// search for a table, after which values will be appended.
+	// (https://developers.google.com/workspace/sheets/api/guides/concepts#cell).
+	// For output, this range indicates the entire requested range, even though the
+	// values will exclude trailing rows and columns. When appending values, this
+	// field represents the range to search for a table, after which values will be
+	// appended.
 	Range string `json:"range,omitempty"`
 	// Values: The data that was read or to be written. This is an array of arrays,
 	// the outer array representing all the data and each inner array representing
@@ -9584,13 +9587,14 @@ type SpreadsheetsGetCall struct {
 // Get: Returns the spreadsheet at the given ID. The caller must specify the
 // spreadsheet ID. By default, data within grids is not returned. You can
 // include grid data in one of 2 ways: * Specify a field mask
-// (https://developers.google.com/sheets/api/guides/field-masks) listing your
-// desired fields using the `fields` URL parameter in HTTP * Set the
-// includeGridData URL parameter to true. If a field mask is set, the
+// (https://developers.google.com/workspace/sheets/api/guides/field-masks)
+// listing your desired fields using the `fields` URL parameter in HTTP * Set
+// the includeGridData URL parameter to true. If a field mask is set, the
 // `includeGridData` parameter is ignored For large spreadsheets, as a best
 // practice, retrieve only the specific spreadsheet fields that you want. To
 // retrieve only subsets of spreadsheet data, use the ranges URL parameter.
-// Ranges are specified using A1 notation (/sheets/api/guides/concepts#cell).
+// Ranges are specified using A1 notation
+// (https://developers.google.com/workspace/sheets/api/guides/concepts#cell).
 // You can define a single cell (for example, `A1`) or multiple cells (for
 // example, `A1:D5`). You can also get cells from other sheets within the same
 // spreadsheet (for example, `Sheet2!A1:C4`) or retrieve multiple ranges at
@@ -9727,7 +9731,8 @@ type SpreadsheetsGetByDataFilterCall struct {
 // Specifying one or more data filters returns the portions of the spreadsheet
 // that intersect ranges matched by any of the filters. By default, data within
 // grids is not returned. You can include grid data one of 2 ways: * Specify a
-// field mask (https://developers.google.com/sheets/api/guides/field-masks)
+// field mask
+// (https://developers.google.com/workspace/sheets/api/guides/field-masks)
 // listing your desired fields using the `fields` URL parameter in HTTP * Set
 // the includeGridData parameter to true. If a field mask is set, the
 // `includeGridData` parameter is ignored For large spreadsheets, as a best
@@ -10170,16 +10175,20 @@ type SpreadsheetsValuesAppendCall struct {
 // Append: Appends values to a spreadsheet. The input range is used to search
 // for existing data and find a "table" within that range. Values will be
 // appended to the next row of the table, starting with the first column of the
-// table. See the guide (/sheets/api/guides/values#appending_values) and sample
-// code (/sheets/api/samples/writing#append_values) for specific details of how
-// tables are detected and data is appended. The caller must specify the
-// spreadsheet ID, range, and a valueInputOption. The `valueInputOption` only
-// controls how the input data will be added to the sheet (column-wise or
-// row-wise), it does not influence what cell the data starts being written to.
+// table. See the guide
+// (https://developers.google.com/workspace/sheets/api/guides/values#appending_values)
+// and sample code
+// (https://developers.google.com/workspace/sheets/api/samples/writing#append_values)
+// for specific details of how tables are detected and data is appended. The
+// caller must specify the spreadsheet ID, range, and a valueInputOption. The
+// `valueInputOption` only controls how the input data will be added to the
+// sheet (column-wise or row-wise), it does not influence what cell the data
+// starts being written to.
 //
-//   - range: The A1 notation (/sheets/api/guides/concepts#cell) of a range to
-//     search for a logical table of data. Values are appended after the last row
-//     of the table.
+//   - range: The A1 notation
+//     (https://developers.google.com/workspace/sheets/api/guides/concepts#cell)
+//     of a range to search for a logical table of data. Values are appended
+//     after the last row of the table.
 //   - spreadsheetId: The ID of the spreadsheet to update.
 func (r *SpreadsheetsValuesService) Append(spreadsheetId string, range_ string, valuerange *ValueRange) *SpreadsheetsValuesAppendCall {
 	c := &SpreadsheetsValuesAppendCall{s: r.s, urlParams_: make(gensupport.URLParams)}
@@ -10265,8 +10274,8 @@ func (c *SpreadsheetsValuesAppendCall) ResponseDateTimeRenderOption(responseDate
 // as decimal values. This lets you perform arithmetic on them in formulas. For
 // more information on interpreting date and time values, see [About date &
 // time
-// values](https://developers.google.com/sheets/api/guides/formats#about_date_ti
-// me_values).
+// values](https://developers.google.com/workspace/sheets/api/guides/formats#abo
+// ut_date_time_values).
 func (c *SpreadsheetsValuesAppendCall) ResponseValueRenderOption(responseValueRenderOption string) *SpreadsheetsValuesAppendCall {
 	c.urlParams_.Set("responseValueRenderOption", responseValueRenderOption)
 	return c
@@ -10659,8 +10668,9 @@ func (c *SpreadsheetsValuesBatchGetCall) MajorDimension(majorDimension string) *
 }
 
 // Ranges sets the optional parameter "ranges": The A1 notation or R1C1
-// notation (/sheets/api/guides/concepts#cell) of the range to retrieve values
-// from.
+// notation
+// (https://developers.google.com/workspace/sheets/api/guides/concepts#cell) of
+// the range to retrieve values from.
 func (c *SpreadsheetsValuesBatchGetCall) Ranges(ranges ...string) *SpreadsheetsValuesBatchGetCall {
 	c.urlParams_.SetMulti("ranges", append([]string{}, ranges...))
 	return c
@@ -10690,8 +10700,8 @@ func (c *SpreadsheetsValuesBatchGetCall) Ranges(ranges ...string) *SpreadsheetsV
 // as decimal values. This lets you perform arithmetic on them in formulas. For
 // more information on interpreting date and time values, see [About date &
 // time
-// values](https://developers.google.com/sheets/api/guides/formats#about_date_ti
-// me_values).
+// values](https://developers.google.com/workspace/sheets/api/guides/formats#abo
+// ut_date_time_values).
 func (c *SpreadsheetsValuesBatchGetCall) ValueRenderOption(valueRenderOption string) *SpreadsheetsValuesBatchGetCall {
 	c.urlParams_.Set("valueRenderOption", valueRenderOption)
 	return c
@@ -11122,7 +11132,8 @@ type SpreadsheetsValuesClearCall struct {
 // spreadsheet ID and range. Only values are cleared -- all other properties of
 // the cell (such as formatting, data validation, etc..) are kept.
 //
-//   - range: The A1 notation or R1C1 notation (/sheets/api/guides/concepts#cell)
+//   - range: The A1 notation or R1C1 notation
+//     (https://developers.google.com/workspace/sheets/api/guides/concepts#cell)
 //     of the values to clear.
 //   - spreadsheetId: The ID of the spreadsheet to update.
 func (r *SpreadsheetsValuesService) Clear(spreadsheetId string, range_ string, clearvaluesrequest *ClearValuesRequest) *SpreadsheetsValuesClearCall {
@@ -11232,7 +11243,8 @@ type SpreadsheetsValuesGetCall struct {
 // Get: Returns a range of values from a spreadsheet. The caller must specify
 // the spreadsheet ID and a range.
 //
-//   - range: The A1 notation or R1C1 notation (/sheets/api/guides/concepts#cell)
+//   - range: The A1 notation or R1C1 notation
+//     (https://developers.google.com/workspace/sheets/api/guides/concepts#cell)
 //     of the range to retrieve values from.
 //   - spreadsheetId: The ID of the spreadsheet to retrieve data from.
 func (r *SpreadsheetsValuesService) Get(spreadsheetId string, range_ string) *SpreadsheetsValuesGetCall {
@@ -11309,8 +11321,8 @@ func (c *SpreadsheetsValuesGetCall) MajorDimension(majorDimension string) *Sprea
 // as decimal values. This lets you perform arithmetic on them in formulas. For
 // more information on interpreting date and time values, see [About date &
 // time
-// values](https://developers.google.com/sheets/api/guides/formats#about_date_ti
-// me_values).
+// values](https://developers.google.com/workspace/sheets/api/guides/formats#abo
+// ut_date_time_values).
 func (c *SpreadsheetsValuesGetCall) ValueRenderOption(valueRenderOption string) *SpreadsheetsValuesGetCall {
 	c.urlParams_.Set("valueRenderOption", valueRenderOption)
 	return c
@@ -11421,8 +11433,9 @@ type SpreadsheetsValuesUpdateCall struct {
 // Update: Sets values in a range of a spreadsheet. The caller must specify the
 // spreadsheet ID, range, and a valueInputOption.
 //
-//   - range: The A1 notation (/sheets/api/guides/concepts#cell) of the values to
-//     update.
+//   - range: The A1 notation
+//     (https://developers.google.com/workspace/sheets/api/guides/concepts#cell)
+//     of the values to update.
 //   - spreadsheetId: The ID of the spreadsheet to update.
 func (r *SpreadsheetsValuesService) Update(spreadsheetId string, range_ string, valuerange *ValueRange) *SpreadsheetsValuesUpdateCall {
 	c := &SpreadsheetsValuesUpdateCall{s: r.s, urlParams_: make(gensupport.URLParams)}
@@ -11494,8 +11507,8 @@ func (c *SpreadsheetsValuesUpdateCall) ResponseDateTimeRenderOption(responseDate
 // as decimal values. This lets you perform arithmetic on them in formulas. For
 // more information on interpreting date and time values, see [About date &
 // time
-// values](https://developers.google.com/sheets/api/guides/formats#about_date_ti
-// me_values).
+// values](https://developers.google.com/workspace/sheets/api/guides/formats#abo
+// ut_date_time_values).
 func (c *SpreadsheetsValuesUpdateCall) ResponseValueRenderOption(responseValueRenderOption string) *SpreadsheetsValuesUpdateCall {
 	c.urlParams_.Set("responseValueRenderOption", responseValueRenderOption)
 	return c

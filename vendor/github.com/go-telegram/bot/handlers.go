@@ -13,6 +13,7 @@ const (
 	HandlerTypeMessageText HandlerType = iota
 	HandlerTypeCallbackQueryData
 	HandlerTypeCallbackQueryGameShortName
+	HandlerTypePhotoCaption
 )
 
 type MatchType int
@@ -21,6 +22,8 @@ const (
 	MatchTypeExact MatchType = iota
 	MatchTypePrefix
 	MatchTypeContains
+	MatchTypeCommand
+	MatchTypeCommandStartOnly
 
 	matchTypeRegexp
 	matchTypeFunc
@@ -43,6 +46,7 @@ func (h handler) match(update *models.Update) bool {
 	}
 
 	var data string
+	var entities []models.MessageEntity
 
 	switch h.handlerType {
 	case HandlerTypeMessageText:
@@ -50,13 +54,23 @@ func (h handler) match(update *models.Update) bool {
 			return false
 		}
 		data = update.Message.Text
+		entities = update.Message.Entities
 	case HandlerTypeCallbackQueryData:
 		if update.CallbackQuery == nil {
 			return false
 		}
 		data = update.CallbackQuery.Data
 	case HandlerTypeCallbackQueryGameShortName:
+		if update.CallbackQuery == nil {
+			return false
+		}
 		data = update.CallbackQuery.GameShortName
+	case HandlerTypePhotoCaption:
+		if update.Message == nil {
+			return false
+		}
+		data = update.Message.Caption
+		entities = update.Message.CaptionEntities
 	}
 
 	if h.matchType == MatchTypeExact {
@@ -67,6 +81,24 @@ func (h handler) match(update *models.Update) bool {
 	}
 	if h.matchType == MatchTypeContains {
 		return strings.Contains(data, h.pattern)
+	}
+	if h.matchType == MatchTypeCommand {
+		for _, e := range entities {
+			if e.Type == models.MessageEntityTypeBotCommand {
+				if data[e.Offset+1:e.Offset+e.Length] == h.pattern {
+					return true
+				}
+			}
+		}
+	}
+	if h.matchType == MatchTypeCommandStartOnly {
+		for _, e := range entities {
+			if e.Type == models.MessageEntityTypeBotCommand {
+				if e.Offset == 0 && data[e.Offset+1:e.Offset+e.Length] == h.pattern {
+					return true
+				}
+			}
+		}
 	}
 	if h.matchType == matchTypeRegexp {
 		return h.re.Match([]byte(data))
