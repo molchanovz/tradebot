@@ -11,8 +11,6 @@ ENV CGO_ENABLED=0
 
 RUN go build ./cmd/main.go
 
-RUN go install github.com/pdfcpu/pdfcpu/cmd/pdfcpu@latest
-
 FROM alpine:latest
 
 WORKDIR /app
