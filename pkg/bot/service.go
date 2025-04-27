@@ -1,14 +1,14 @@
 package bot
 
 import (
-	"WildberriesGo_bot/pkg/OZON"
-	"WildberriesGo_bot/pkg/WB"
-	"WildberriesGo_bot/pkg/YANDEX"
-	"WildberriesGo_bot/pkg/bot/handlers"
 	"context"
 	botlib "github.com/go-telegram/bot"
 	"gorm.io/gorm"
 	"log"
+	"tradebot/pkg/OZON"
+	"tradebot/pkg/WB"
+	"tradebot/pkg/YANDEX"
+	bot "tradebot/pkg/bot/handlers"
 )
 
 type Service struct {

@@ -1,10 +1,10 @@
 package OrdersAndReturns
 
 import (
-	"WildberriesGo_bot/pkg/api/yandex"
-	"WildberriesGo_bot/pkg/google"
 	"strconv"
 	"time"
+	"tradebot/pkg/api/yandex"
+	"tradebot/pkg/google"
 )
 
 type Manager struct {

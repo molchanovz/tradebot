@@ -1,8 +1,8 @@
 package YANDEX
 
 import (
-	"WildberriesGo_bot/pkg/OZON"
-	"WildberriesGo_bot/pkg/YANDEX/OrdersAndReturns"
+	"tradebot/pkg/OZON"
+	"tradebot/pkg/YANDEX/OrdersAndReturns"
 )
 
 const (

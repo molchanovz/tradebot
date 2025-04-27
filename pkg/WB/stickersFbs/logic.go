@@ -1,8 +1,6 @@
 package stickersFbs
 
 import (
-	"WildberriesGo_bot/pkg/api/wb"
-	"WildberriesGo_bot/pkg/google"
 	"encoding/base64"
 	"fmt"
 	"github.com/fogleman/gg"
@@ -12,6 +10,8 @@ import (
 	"os/exec"
 	"strconv"
 	"time"
+	"tradebot/pkg/api/wb"
+	"tradebot/pkg/google"
 )
 
 const (

@@ -1,12 +1,12 @@
 package scheduler
 
 import (
-	"WildberriesGo_bot/pkg/bot/handlers"
 	"context"
 	"fmt"
 	"github.com/go-co-op/gocron"
 	"log"
 	"time"
+	bot "tradebot/pkg/bot/handlers"
 )
 
 type Service struct {

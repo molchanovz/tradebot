@@ -1,6 +1,6 @@
 package main
 
-import "WildberriesGo_bot/pkg/app"
+import "tradebot/pkg/app"
 
 func main() {
 	application := app.NewApplication(".env")

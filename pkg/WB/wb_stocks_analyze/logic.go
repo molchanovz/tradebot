@@ -1,7 +1,7 @@
 package wb_stocks_analyze
 
 import (
-	"WildberriesGo_bot/pkg/api/wb"
+	"tradebot/pkg/api/wb"
 )
 
 var warehousesMap = map[string]string{

@@ -1,12 +1,6 @@
 package app
 
 import (
-	"WildberriesGo_bot/pkg/OZON"
-	"WildberriesGo_bot/pkg/WB"
-	"WildberriesGo_bot/pkg/YANDEX"
-	"WildberriesGo_bot/pkg/bot"
-	"WildberriesGo_bot/pkg/db"
-	"WildberriesGo_bot/pkg/scheduler"
 	"fmt"
 	"github.com/joho/godotenv"
 	"gorm.io/gorm"
@@ -14,6 +8,12 @@ import (
 	"os"
 	"os/signal"
 	"syscall"
+	"tradebot/pkg/OZON"
+	"tradebot/pkg/WB"
+	"tradebot/pkg/YANDEX"
+	"tradebot/pkg/bot"
+	"tradebot/pkg/db"
+	"tradebot/pkg/scheduler"
 )
 
 type Application struct {

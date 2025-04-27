@@ -1,11 +1,11 @@
 package stickersFBS
 
 import (
-	"WildberriesGo_bot/pkg/api/ozon"
 	"fmt"
 	"os"
 	"os/exec"
 	"time"
+	"tradebot/pkg/api/ozon"
 )
 
 const (

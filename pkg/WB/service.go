@@ -1,9 +1,9 @@
 package WB
 
 import (
-	"WildberriesGo_bot/pkg/OZON"
-	"WildberriesGo_bot/pkg/WB/OrdersAndReturns"
-	"WildberriesGo_bot/pkg/WB/stickersFbs"
+	"tradebot/pkg/OZON"
+	"tradebot/pkg/WB/OrdersAndReturns"
+	"tradebot/pkg/WB/stickersFbs"
 )
 
 const (

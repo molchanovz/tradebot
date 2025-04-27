@@ -1,12 +1,12 @@
 package OrdersAndReturns
 
 import (
-	"WildberriesGo_bot/pkg/api/wb"
-	"WildberriesGo_bot/pkg/google"
 	"fmt"
 	"strconv"
 	"strings"
 	"time"
+	"tradebot/pkg/api/wb"
+	"tradebot/pkg/google"
 )
 
 type WbManager struct {

@@ -1,13 +1,13 @@
 package bot
 
 import (
-	"WildberriesGo_bot/pkg/OZON/stickersFBS"
 	"context"
 	"fmt"
 	botlib "github.com/go-telegram/bot"
 	"github.com/go-telegram/bot/models"
 	"log"
 	"os"
+	"tradebot/pkg/OZON/stickersFBS"
 )
 
 func ozonHandler(ctx context.Context, bot *botlib.Bot, update *models.Update) {

@@ -1,9 +1,9 @@
 package OZON
 
 import (
-	"WildberriesGo_bot/pkg/OZON/orders_and_returns"
-	"WildberriesGo_bot/pkg/OZON/stickersFBS"
-	"WildberriesGo_bot/pkg/OZON/stocks_analyzer"
+	"tradebot/pkg/OZON/orders_and_returns"
+	"tradebot/pkg/OZON/stickersFBS"
+	"tradebot/pkg/OZON/stocks_analyzer"
 )
 
 const (

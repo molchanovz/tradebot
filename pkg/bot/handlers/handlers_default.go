@@ -1,12 +1,6 @@
 package bot
 
 import (
-	"WildberriesGo_bot/pkg/OZON"
-	"WildberriesGo_bot/pkg/OZON/stocks_analyzer"
-	"WildberriesGo_bot/pkg/WB"
-	"WildberriesGo_bot/pkg/YANDEX"
-	"WildberriesGo_bot/pkg/YANDEX/yandex_stickers_fbs"
-	"WildberriesGo_bot/pkg/db"
 	"context"
 	"fmt"
 	botlib "github.com/go-telegram/bot"
@@ -17,6 +11,12 @@ import (
 	"log"
 	"os"
 	"strconv"
+	"tradebot/pkg/OZON"
+	"tradebot/pkg/OZON/stocks_analyzer"
+	"tradebot/pkg/WB"
+	"tradebot/pkg/YANDEX"
+	"tradebot/pkg/YANDEX/yandex_stickers_fbs"
+	"tradebot/pkg/db"
 )
 
 const (

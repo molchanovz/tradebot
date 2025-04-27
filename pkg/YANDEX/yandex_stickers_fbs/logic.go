@@ -1,7 +1,6 @@
 package yandex_stickers_fbs
 
 import (
-	"WildberriesGo_bot/pkg/api/yandex"
 	"fmt"
 	"github.com/fogleman/gg"
 	"github.com/gen2brain/go-fitz"
@@ -12,6 +11,7 @@ import (
 	"os"
 	"os/exec"
 	"strconv"
+	"tradebot/pkg/api/yandex"
 )
 
 //func GetOrderInfo(token, orderId string) {

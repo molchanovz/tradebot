@@ -1,10 +1,6 @@
 package bot
 
 import (
-	"WildberriesGo_bot/pkg/WB/stickersFbs"
-	"WildberriesGo_bot/pkg/WB/wb_stocks_analyze"
-	"WildberriesGo_bot/pkg/api/wb"
-	"WildberriesGo_bot/pkg/db"
 	"context"
 	"errors"
 	"fmt"
@@ -14,6 +10,10 @@ import (
 	"os"
 	"strings"
 	"time"
+	"tradebot/pkg/WB/stickersFbs"
+	"tradebot/pkg/WB/wb_stocks_analyze"
+	"tradebot/pkg/api/wb"
+	"tradebot/pkg/db"
 )
 
 func wbHandler(ctx context.Context, bot *botlib.Bot, update *models.Update) {

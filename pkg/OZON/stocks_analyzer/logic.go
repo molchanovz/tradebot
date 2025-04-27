@@ -1,10 +1,10 @@
 package stocks_analyzer
 
 import (
-	"WildberriesGo_bot/pkg/api/ozon"
-	"WildberriesGo_bot/pkg/google"
 	"fmt"
 	"time"
+	"tradebot/pkg/api/ozon"
+	"tradebot/pkg/google"
 )
 
 type OzonManager struct {

@@ -1,10 +1,10 @@
 package orders_and_returns
 
 import (
-	"WildberriesGo_bot/pkg/api/ozon"
-	"WildberriesGo_bot/pkg/google"
 	"strconv"
 	"time"
+	"tradebot/pkg/api/ozon"
+	"tradebot/pkg/google"
 )
 
 type OzonManager struct {
