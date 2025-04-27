@@ -20,6 +20,7 @@ services:
     restart: always
     depends_on:
       - db
+    network_mode: "host"
     volumes:
       - ./credentials.json:/app/credentials.json
       - ./token.json:/app/token.json
