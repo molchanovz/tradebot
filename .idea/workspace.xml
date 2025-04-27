@@ -4,18 +4,23 @@
     <option name="autoReloadType" value="ALL" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="640077d7-ce81-4039-9739-8ad3e3a8d41a" name="Changes" comment="add yandex fbs postings">
+    <list default="true" id="640077d7-ce81-4039-9739-8ad3e3a8d41a" name="Changes" comment="add manager link">
+      <change afterPath="$PROJECT_DIR$/Dockerfile" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/docker-compose.yml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/dataSources.local.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources.local.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/dataSources.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/dataSources/9b72206f-fbb5-43b6-9126-d9522b27e82f.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources/9b72206f-fbb5-43b6-9126-d9522b27e82f.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/dataSources/9b72206f-fbb5-43b6-9126-d9522b27e82f/storage_v2/_src_/database/tradebot.42HFSw/schema/public.abK9xQ.meta" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources/9b72206f-fbb5-43b6-9126-d9522b27e82f/storage_v2/_src_/database/tradebot.42HFSw/schema/public.abK9xQ.meta" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/dataSources/fa69afd6-fbee-41a8-b090-a8ea4c4e2a18.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources/fa69afd6-fbee-41a8-b090-a8ea4c4e2a18.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/dataSources/fa69afd6-fbee-41a8-b090-a8ea4c4e2a18/storage_v2/_src_/database/db_bot.hko2sA/schema/public.abK9xQ.meta" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources/fa69afd6-fbee-41a8-b090-a8ea4c4e2a18/storage_v2/_src_/database/db_bot.hko2sA/schema/public.abK9xQ.meta" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pkg/OZON/stocks_analyzer/logic.go" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/OZON/stocks_analyzer/logic.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmd/main.go" beforeDir="false" afterPath="$PROJECT_DIR$/cmd/main.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pkg/WB/stickersFbs/logic.go" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/WB/stickersFbs/logic.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/pkg/api/ozon/api.go" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/api/ozon/api.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pkg/api/ozon/models.go" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/api/ozon/models.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pkg/api/ozon/models_converter.go" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/api/ozon/models_converter.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pkg/bot/handlers/handlers_default.go" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/bot/handlers/handlers_default.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pkg/bot/handlers/handlers_ozon.go" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/bot/handlers/handlers_ozon.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pkg/app/app.go" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/app/app.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/pkg/bot/handlers/handlers_wb.go" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/bot/handlers/handlers_wb.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pkg/db/tradebot.pdd" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/db/tradebot.pdd" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pkg/db/init.sql" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -26,6 +31,7 @@
     <option name="RECENT_TEMPLATES">
       <list>
         <option value="Go File" />
+        <option value="Dockerfile" />
       </list>
     </option>
   </component>
@@ -79,7 +85,7 @@
     &quot;git-widget-placeholder&quot;: &quot;master&quot;,
     &quot;go.import.settings.migrated&quot;: &quot;true&quot;,
     &quot;go.sdk.automatically.set&quot;: &quot;true&quot;,
-    &quot;last_opened_file_path&quot;: &quot;/Users/sergey/GolandProjects/WildberriesGo_bot/pkg/OZON&quot;,
+    &quot;last_opened_file_path&quot;: &quot;/Users/sergey/GolandProjects/WildberriesGo_bot/pkg/barcodes&quot;,
     &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
     &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
     &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;
@@ -92,11 +98,11 @@
 }</component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/pkg/barcodes" />
       <recent name="$PROJECT_DIR$/pkg/OZON" />
       <recent name="$PROJECT_DIR$/pkg/WB" />
       <recent name="$PROJECT_DIR$/pkg/YANDEX/yandex_stickers_fbs/barcodes" />
       <recent name="$PROJECT_DIR$" />
-      <recent name="$PROJECT_DIR$/OZON" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
       <recent name="$PROJECT_DIR$/pkg/bot/handlers" />
@@ -142,14 +148,6 @@
   </component>
   <component name="VcsManagerConfiguration">
     <option name="CHECK_CODE_SMELLS_BEFORE_PROJECT_COMMIT" value="false" />
-    <MESSAGE value="add Tula in map" />
-    <MESSAGE value="fix spreadsheetIds" />
-    <MESSAGE value="fix daysAgo" />
-    <MESSAGE value="fix wb clusters, fix api" />
-    <MESSAGE value="fix/add yandex barcodes" />
-    <MESSAGE value="edit app services" />
-    <MESSAGE value="run schedulers" />
-    <MESSAGE value="edit AnalyzeStocks(): add stocks FBO/FBS" />
     <MESSAGE value="edit AnalyzeStocks(): fix FBO stocks" />
     <MESSAGE value="edit app: add ozon service" />
     <MESSAGE value="code refactoring" />
@@ -167,7 +165,15 @@
     <MESSAGE value="fix logs" />
     <MESSAGE value="edit logic: wb orders fbo/fbs" />
     <MESSAGE value="add yandex fbs postings" />
-    <option name="LAST_COMMIT_MESSAGE" value="add yandex fbs postings" />
+    <MESSAGE value="add analytic stocks api" />
+    <MESSAGE value="generateExcel to wb/ozon" />
+    <MESSAGE value="edit stocks logic" />
+    <MESSAGE value="update .pdd db" />
+    <MESSAGE value="add extra files" />
+    <MESSAGE value="add barcodes" />
+    <MESSAGE value="add admin/user main menu" />
+    <MESSAGE value="add manager link" />
+    <option name="LAST_COMMIT_MESSAGE" value="add manager link" />
   </component>
   <component name="VgoProject">
     <settings-migrated>true</settings-migrated>

@@ -3,7 +3,7 @@
   <database-model serializer="dbm" dbms="POSTGRES" family-id="POSTGRES" format-version="4.53">
     <root id="1">
       <DateStyle>mdy</DateStyle>
-      <IntrospectionStateNumber>2829</IntrospectionStateNumber>
+      <IntrospectionStateNumber>3121</IntrospectionStateNumber>
       <ServerVersion>16.6</ServerVersion>
       <StartupTime>1738147424</StartupTime>
       <TimeZones>true ACDT
@@ -45,7 +45,7 @@ false Africa/Bissau
 false Africa/Blantyre
 false Africa/Brazzaville
 false Africa/Bujumbura
-false Africa/Cairo
+true Africa/Cairo
 false Africa/Casablanca
 true Africa/Ceuta
 false Africa/Conakry
@@ -703,7 +703,7 @@ true posixrules
 13258||10|C|G
 13258||-9223372036854775808|U|G
 13258||10|U|G</Grants>
-      <IntrospectionStateNumber>2829</IntrospectionStateNumber>
+      <IntrospectionStateNumber>3121</IntrospectionStateNumber>
       <ObjectId>16390</ObjectId>
       <OwnerName>sergey</OwnerName>
     </database>
@@ -4132,8 +4132,8 @@ true posixrules
     <schema id="265" parent="2" name="public">
       <Comment>standard public schema</Comment>
       <Current>1</Current>
-      <IntrospectionStateNumber>2829</IntrospectionStateNumber>
-      <LastIntrospectionLocalTimestamp>2025-04-22.14:27:55</LastIntrospectionLocalTimestamp>
+      <IntrospectionStateNumber>3121</IntrospectionStateNumber>
+      <LastIntrospectionLocalTimestamp>2025-04-25.17:18:32</LastIntrospectionLocalTimestamp>
       <ObjectId>2200</ObjectId>
       <StateNumber>523</StateNumber>
       <OwnerName>pg_database_owner</OwnerName>

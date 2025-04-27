@@ -439,8 +439,6 @@ func v1AnalyticsStocks(ClientId, ApiKey string, skus []string) string {
   "skus": %v
 }`, string(skusJSON)))
 
-	println(string(body))
-
 	req, err := http.NewRequest("POST", url, bytes.NewBuffer(body))
 
 	if err != nil {

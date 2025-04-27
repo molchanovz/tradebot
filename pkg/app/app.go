@@ -38,6 +38,11 @@ func (a Application) Start() {
 	sqlDB, err := dataBaseService.InitDB()
 	if err != nil {
 		fmt.Printf("%v", err)
+		return
+	}
+
+	if sqlDB == nil {
+		return
 	}
 
 	clientId, err := initEnv(a.envPath, "ClientId")

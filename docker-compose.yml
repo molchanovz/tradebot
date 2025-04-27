@@ -1,0 +1,30 @@
+version: "3.9"
+
+services:
+  db:
+    image: postgres:15
+    container_name: postgres-db
+    restart: always
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+  bot:
+    build: .
+    container_name: trade-bot
+    restart: always
+    depends_on:
+      - db
+    volumes:
+      - ./credentials.json:/app/credentials.json
+      - ./token.json:/app/token.json
+      - ./font.ttf:/app/font.ttf
+      - ./.env:/app/.env
+
+volumes:
+  pgdata:

@@ -3,6 +3,6 @@ package main
 import "WildberriesGo_bot/pkg/app"
 
 func main() {
-	application := app.NewApplication("variables.env")
+	application := app.NewApplication(".env")
 	application.Start()
 }

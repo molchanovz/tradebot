@@ -93,6 +93,7 @@ func (m *Manager) getWbFbs(ctx context.Context, bot *botlib.Bot, chatId int64, s
 		return
 	}
 	stickersFbs.CleanFiles(supplyId)
+	stickersFbs.CreateDirectories()
 
 	text, markup := createStartAdminMarkup()
 	_, err = bot.SendMessage(ctx, &botlib.SendMessageParams{ChatID: chatId, Text: text, ReplyMarkup: markup})

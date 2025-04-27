@@ -15,12 +15,12 @@ import (
 )
 
 const (
-	WbDirectoryPath = "pkg/WB/stickersFbs/"
+	WbDirectoryPath = "./pkg/WB/stickersFbs/"
 
-	codesPath     = WbDirectoryPath + "codes/"
-	barcodesPath  = "pkg/barcodes/"
-	generatedPath = WbDirectoryPath + "generated/"
-	readyPath     = WbDirectoryPath + "ready/"
+	codesPath     = WbDirectoryPath + "codes"
+	barcodesPath  = "pkg/barcodes"
+	generatedPath = WbDirectoryPath + "generated"
+	readyPath     = WbDirectoryPath + "ready"
 )
 
 type WbManager struct {
@@ -36,6 +36,7 @@ func NewWbManager(token string) WbManager {
 }
 
 func (m WbManager) GetReadyFile(supplyId string) error {
+	CreateDirectories()
 	orders, err := wb.GetOrdersFbs(m.token, supplyId)
 	if err != nil {
 		return err
@@ -162,19 +163,7 @@ func CleanFiles(supplyId string) {
 	if err != nil {
 		fmt.Println(err)
 	}
-	err = os.Mkdir(codesPath, 0755) // 0755 - это права доступа к директории (чтение, запись, выполнение)
-	if err != nil {
-		fmt.Println(err)
-	}
 	err = os.RemoveAll(generatedPath)
-	if err != nil {
-		fmt.Println(err)
-	}
-	err = os.Mkdir(generatedPath, 0755) // 0755 - это права доступа к директории (чтение, запись, выполнение)
-	if err != nil {
-		fmt.Println(err)
-	}
-	err = os.Mkdir(readyPath, 0755) // 0755 - это права доступа к директории (чтение, запись, выполнение)
 	if err != nil {
 		fmt.Println(err)
 	}
@@ -182,7 +171,21 @@ func CleanFiles(supplyId string) {
 	if err != nil {
 		fmt.Println(err)
 	}
+}
 
+func CreateDirectories() {
+	err := os.MkdirAll(generatedPath, 0755) // 0755 - это права доступа к директории (чтение, запись, выполнение)
+	if err != nil {
+		fmt.Println(err)
+	}
+	err = os.MkdirAll(readyPath, 0755) // 0755 - это права доступа к директории (чтение, запись, выполнение)
+	if err != nil {
+		fmt.Println(err)
+	}
+	err = os.MkdirAll(codesPath, 0755) // 0755 - это права доступа к директории (чтение, запись, выполнение)
+	if err != nil {
+		fmt.Println(err)
+	}
 }
 
 // Функция для создания изображения с текстом (артикул товара) и сохранения в PNG
