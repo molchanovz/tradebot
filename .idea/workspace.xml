@@ -4,10 +4,7 @@
     <option name="autoReloadType" value="ALL" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="640077d7-ce81-4039-9739-8ad3e3a8d41a" name="Changes" comment="fix docker compose: delete dns">
-      <change beforePath="$PROJECT_DIR$/.idea/dataSources.local.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources.local.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-    </list>
+    <list default="true" id="640077d7-ce81-4039-9739-8ad3e3a8d41a" name="Changes" comment="fix docker file: add curl" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -147,7 +144,6 @@
   </component>
   <component name="VcsManagerConfiguration">
     <option name="CHECK_CODE_SMELLS_BEFORE_PROJECT_COMMIT" value="false" />
-    <MESSAGE value="fix logs" />
     <MESSAGE value="edit logic: wb orders fbo/fbs" />
     <MESSAGE value="add yandex fbs postings" />
     <MESSAGE value="add analytic stocks api" />
@@ -172,7 +168,8 @@
     <MESSAGE value="fix docker file: ipv6 disable" />
     <MESSAGE value="fix docker file" />
     <MESSAGE value="fix docker compose: delete dns" />
-    <option name="LAST_COMMIT_MESSAGE" value="fix docker compose: delete dns" />
+    <MESSAGE value="fix docker file: add curl" />
+    <option name="LAST_COMMIT_MESSAGE" value="fix docker file: add curl" />
   </component>
   <component name="VgoProject">
     <settings-migrated>true</settings-migrated>
