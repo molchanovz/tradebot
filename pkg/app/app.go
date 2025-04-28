@@ -13,6 +13,7 @@ import (
 	"tradebot/pkg/YANDEX"
 	"tradebot/pkg/bot"
 	"tradebot/pkg/db"
+	"tradebot/pkg/scheduler"
 )
 
 type Application struct {
@@ -81,12 +82,12 @@ func (a Application) Start() {
 	botService := bot.NewBotService(*ozonService, *wbService, *yandexService, botToken, sqlDB, myChatId)
 	botService.Start()
 
-	//schedulerService := scheduler.NewService(botService.GetManager(), wbToken)
-	//err = schedulerService.Start()
-	//if err != nil {
-	//	log.Println(err)
-	//	return
-	//}
+	schedulerService := scheduler.NewService(botService.GetManager(), wbToken)
+	err = schedulerService.Start()
+	if err != nil {
+		log.Println(err)
+		return
+	}
 
 	defer func(sqlDB *gorm.DB) {
 
