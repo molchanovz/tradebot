@@ -38,7 +38,13 @@
       <case-sensitivity plain-identifiers="lower" quoted-identifiers="exact" />
       <secret-storage>master_key</secret-storage>
       <user-name>sergey</user-name>
-      <schema-mapping />
+      <schema-mapping>
+        <introspection-scope>
+          <node kind="database" qname="@">
+            <node kind="schema" qname="@" />
+          </node>
+        </introspection-scope>
+      </schema-mapping>
       <ssh-properties>
         <enabled>true</enabled>
         <ssh-config-id>7f0ffcf2-3c7d-4691-814f-aefe349abf9d</ssh-config-id>

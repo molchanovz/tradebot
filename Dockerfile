@@ -16,6 +16,7 @@ FROM alpine:latest
 WORKDIR /app
 
 RUN apk add --no-cache \
+    curl\
     mupdf-dev \
     mupdf-tools \
     libx11 \
