@@ -26,28 +26,53 @@ func (m OzonManager) GetPostings() map[string]map[string]int {
 	since := time.Now().AddDate(0, 0, m.daysAgo*(-1)-1).Format("2006-01-02") + "T21:00:00.000Z"
 	to := time.Now().AddDate(0, 0, 0).Format("2006-01-02") + "T21:00:00.000Z"
 
-	postingsListFbs := ozon.PostingsListFbs(m.clientId, m.token, since, to, 0, "")
-	postingsListFbo := ozon.PostingsListFbo(m.clientId, m.token, since, to, 0)
-
 	postingsMap := make(map[string]map[string]int)
 
-	for _, order := range postingsListFbs.Result.PostingsFBS {
-		if _, exists := postingsMap[order.FinancialData.ClusterTo]; !exists {
-			postingsMap[order.FinancialData.ClusterTo] = make(map[string]int)
+	// Обработка FBS заказов
+	offset := 0
+	limit := 1000
+	for {
+		postingsListFbs := ozon.PostingsListFbs(m.clientId, m.token, since, to, offset, "")
+
+		for _, order := range postingsListFbs.Result.PostingsFBS {
+
+			cluster := order.FinancialData.ClusterTo
+			if _, exists := postingsMap[cluster]; !exists {
+				postingsMap[cluster] = make(map[string]int)
+			}
+
+			for _, product := range order.Products {
+				postingsMap[cluster][product.OfferId] += product.Quantity
+			}
 		}
 
-		for _, product := range order.Products {
-			postingsMap[order.FinancialData.ClusterTo][product.OfferId] += product.Quantity
+		if !postingsListFbs.Result.HasNext || len(postingsListFbs.Result.PostingsFBS) < limit {
+			break
 		}
+		offset += limit
 	}
 
-	for _, order := range postingsListFbo.Result {
-		if _, exists := postingsMap[order.FinancialData.ClusterTo]; !exists {
-			postingsMap[order.FinancialData.ClusterTo] = make(map[string]int)
+	// Обработка FBO заказов
+	offset = 0
+	for {
+		postingsListFbo := ozon.PostingsListFbo(m.clientId, m.token, since, to, offset)
+
+		for _, order := range postingsListFbo.Result {
+
+			cluster := order.FinancialData.ClusterTo
+			if _, exists := postingsMap[cluster]; !exists {
+				postingsMap[cluster] = make(map[string]int)
+			}
+
+			for _, product := range order.Products {
+				postingsMap[cluster][product.OfferId] += product.Quantity
+			}
 		}
-		for _, product := range order.Products {
-			postingsMap[order.FinancialData.ClusterTo][product.OfferId] += product.Quantity
+
+		if len(postingsListFbo.Result) < limit {
+			break
 		}
+		offset += limit
 	}
 
 	return postingsMap
