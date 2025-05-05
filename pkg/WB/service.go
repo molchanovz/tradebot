@@ -9,7 +9,7 @@ import (
 const (
 	StocksDaysAgo = 14
 	OrdersDaysAgo = OZON.OrdersDaysAgo
-	spreadsheetId = "1jD4ah-kF-3rbskHPXv_nPofoX4Qd73LrzzJ1CQjKKHA"
+	spreadsheetId = "1MpJkuAMmHbUIFFs-J7lAHgsn6qXx6nisbN2yhbEza4c"
 )
 
 type Service struct {
