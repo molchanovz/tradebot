@@ -10,6 +10,7 @@ import (
 	"os"
 	"strings"
 	"time"
+	"tradebot/pkg/OZON"
 	"tradebot/pkg/WB/stickersFbs"
 	"tradebot/pkg/WB/wb_stocks_analyze"
 	"tradebot/pkg/api/wb"
@@ -118,7 +119,8 @@ func (m *Manager) wbOrdersHandler(ctx context.Context, bot *botlib.Bot, update *
 			return
 		}
 	} else {
-		_, err = sendTextMessage(ctx, bot, chatId, "Заказы вб за вчерашний день были внесены")
+		date := time.Now().AddDate(0, 0, -OZON.OrdersDaysAgo)
+		_, err = sendTextMessage(ctx, bot, chatId, fmt.Sprintf("Заказы вб за %v были внесены", date))
 		if err != nil {
 			log.Println(err)
 			return

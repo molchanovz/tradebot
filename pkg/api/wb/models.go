@@ -60,7 +60,6 @@ type OrdersListALL []struct {
 	PriceWithDisc   float64 `json:"priceWithDisc"`
 	IsCancel        bool    `json:"isCancel"`
 	CancelDate      string  `json:"cancelDate"`
-	OrderType       string  `json:"orderType"`
 	Sticker         string  `json:"sticker"`
 	GNumber         string  `json:"gNumber"`
 	Srid            string  `json:"srid"`

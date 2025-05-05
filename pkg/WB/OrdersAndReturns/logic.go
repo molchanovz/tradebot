@@ -83,10 +83,6 @@ func (m WbManager) WriteToGoogleSheets() error {
 		return err
 	}
 
-	if len(postingsWithCountFBS) > len(postingsWithCountFBO) {
-		return fmt.Errorf("ФБС заказов больше, чем ALL! All:%d, FBS:%d", len(postingsWithCountFBO), len(postingsWithCountFBS))
-	}
-
 	return nil
 }
 
@@ -122,7 +118,7 @@ func (m WbManager) getPostingsMap() (map[string]int, map[string]int, error) {
 	postingsList := wb.GetAllOrders(m.token, m.daysAgo, 1)
 
 	for _, posting := range postingsList {
-		if posting.OrderType == "Клиентский" && posting.IsCancel == false {
+		if posting.IsCancel == false {
 			if posting.WarehouseType == "Склад WB" {
 				postingsWithCountFBO[posting.SupplierArticle]++
 			} else if posting.WarehouseType == "Склад продавца" {
