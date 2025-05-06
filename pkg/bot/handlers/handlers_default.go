@@ -406,6 +406,18 @@ func generateExcelWB(postings map[string]map[string]int, stocks map[string]map[s
 		}
 	}
 
+	opt := []excelize.AutoFilterOptions{{
+		Column:     "",
+		Expression: "",
+	}}
+
+	rangeRef := fmt.Sprintf("A1:A%v", row)
+
+	err := file.AutoFilter(sheetName, rangeRef, opt)
+	if err != nil {
+		return "", err
+	}
+
 	// Сохраняем файл
 	filePath := mp + "_stock_analysis.xlsx"
 	if err := file.SaveAs(filePath); err != nil {
@@ -462,9 +474,21 @@ func generateExcelOzon(postings map[string]map[string]int, stocks map[string]map
 		}
 	}
 
+	opt := []excelize.AutoFilterOptions{{
+		Column:     "",
+		Expression: "",
+	}}
+
+	rangeRef := fmt.Sprintf("A1:A%v", row)
+
+	err := file.AutoFilter(sheetName, rangeRef, opt)
+	if err != nil {
+		return "", err
+	}
+
 	// Сохраняем файл
 	filePath := mp + "_stock_analysis.xlsx"
-	if err := file.SaveAs(filePath); err != nil {
+	if err = file.SaveAs(filePath); err != nil {
 		return "", err
 	}
 	return filePath, nil
