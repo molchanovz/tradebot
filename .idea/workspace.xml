@@ -4,11 +4,7 @@
     <option name="autoReloadType" value="ALL" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="640077d7-ce81-4039-9739-8ad3e3a8d41a" name="Changes" comment="update generateExcel: add filter by column">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pkg/OZON/stocks_analyzer/logic.go" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/OZON/stocks_analyzer/logic.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pkg/bot/handlers/handlers_default.go" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/bot/handlers/handlers_default.go" afterDir="false" />
-    </list>
+    <list default="true" id="640077d7-ce81-4039-9739-8ad3e3a8d41a" name="Changes" comment="get mod from old version" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -26,7 +22,7 @@
   <component name="Git.Settings">
     <option name="RECENT_BRANCH_BY_REPOSITORY">
       <map>
-        <entry key="$PROJECT_DIR$" value="test-client" />
+        <entry key="$PROJECT_DIR$" value="master" />
       </map>
     </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
@@ -64,14 +60,14 @@
     "DefaultGoTemplateProperty": "Go File",
     "Go Build.go build WildberriesGo_bot.executor": "Run",
     "Go Build.go build WildberriesGo_bot/cmd.executor": "Run",
-    "Go Build.go build tradebot/cmd.executor": "Debug",
+    "Go Build.go build tradebot/cmd.executor": "Run",
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "RunOnceActivity.git.unshallow": "true",
     "RunOnceActivity.go.formatter.settings.were.checked": "true",
     "RunOnceActivity.go.migrated.go.modules.settings": "true",
     "RunOnceActivity.go.modules.go.list.on.any.changes.was.set": "true",
     "configurable.GoLibrariesConfigurable.is.expanded": "true",
-    "git-widget-placeholder": "master",
+    "git-widget-placeholder": "ad4e04e2",
     "go.import.settings.migrated": "true",
     "go.sdk.automatically.set": "true",
     "last_opened_file_path": "/Users/sergey",
@@ -148,17 +144,6 @@
   </component>
   <component name="VcsManagerConfiguration">
     <option name="CHECK_CODE_SMELLS_BEFORE_PROJECT_COMMIT" value="false" />
-    <MESSAGE value="update .pdd db" />
-    <MESSAGE value="add extra files" />
-    <MESSAGE value="add barcodes" />
-    <MESSAGE value="add admin/user main menu" />
-    <MESSAGE value="add manager link" />
-    <MESSAGE value="add docker file" />
-    <MESSAGE value="fix go mod" />
-    <MESSAGE value="delete go mod" />
-    <MESSAGE value="delete vendor" />
-    <MESSAGE value="add go.mod" />
-    <MESSAGE value="fix: docker file" />
     <MESSAGE value="fix docker file: edit arm to amd" />
     <MESSAGE value="fix docker file: edit apk add" />
     <MESSAGE value="fix docker compose: network_mode: &quot;host&quot;" />
@@ -173,7 +158,18 @@
     <MESSAGE value="fix wb orders writer: delete orderType" />
     <MESSAGE value="update google sheets" />
     <MESSAGE value="update generateExcel: add filter by column" />
-    <option name="LAST_COMMIT_MESSAGE" value="update generateExcel: add filter by column" />
+    <MESSAGE value="edit generateExcel: add sheets by clusters" />
+    <MESSAGE value="edit logic: demand calculation" />
+    <MESSAGE value="add unversioned files" />
+    <MESSAGE value="upgrade dependencies" />
+    <MESSAGE value="update purego" />
+    <MESSAGE value="update mod" />
+    <MESSAGE value="get github.com/jupiterrider/ffi v0.2.0" />
+    <MESSAGE value="delete github.com/jupiterrider/ffi" />
+    <MESSAGE value="fix dockerfile" />
+    <MESSAGE value="update dockerfile" />
+    <MESSAGE value="get mod from old version" />
+    <option name="LAST_COMMIT_MESSAGE" value="get mod from old version" />
   </component>
   <component name="VgoProject">
     <settings-migrated>true</settings-migrated>
@@ -185,11 +181,6 @@
           <url>file://$PROJECT_DIR$/pkg/OZON/StickersFBS/logic.go</url>
           <line>42</line>
           <option name="timeStamp" value="2" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="DlvLineBreakpoint">
-          <url>file://$PROJECT_DIR$/pkg/bot/handlers/handlers_ozon.go</url>
-          <line>67</line>
-          <option name="timeStamp" value="8" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>

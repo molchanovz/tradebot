@@ -1,4 +1,4 @@
-FROM golang:1.24-alpine AS builder
+FROM golang:1.23-alpine AS builder
 
 WORKDIR /app
 
@@ -7,9 +7,6 @@ RUN go mod download
 
 COPY . .
 
-RUN go clean -modcache && go clean -cache
-
-ENV GOFLAGS="-mod=mod"
 RUN go build -o /bin/main ./cmd/main.go
 
 FROM alpine:latest
