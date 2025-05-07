@@ -7,7 +7,9 @@ RUN go mod download
 
 COPY . .
 
-ENV CGO_ENABLED=0
+ENV CGO_ENABLED=1
+
+RUN apt update && apt install -y gcc
 
 RUN go build -o /bin/main ./cmd/main.go
 
