@@ -9,8 +9,10 @@ import (
 	"github.com/xuri/excelize/v2"
 	"gorm.io/gorm"
 	"log"
+	"math"
 	"os"
 	"strconv"
+	"time"
 	"tradebot/pkg/OZON"
 	"tradebot/pkg/OZON/stocks_analyzer"
 	"tradebot/pkg/WB"
@@ -426,21 +428,50 @@ func generateExcelWB(postings map[string]map[string]int, stocks map[string]map[s
 	return filePath, nil
 }
 
-func generateExcelOzon(postings map[string]map[string]int, stocks map[string]map[string]stocks_analyzer.CustomStocks, K float64, mp string) (string, error) {
+func generateExcelOzon(postings map[string]map[string]map[string]int, stocks map[string]map[string]stocks_analyzer.CustomStocks, K float64, mp string) (string, error) {
 	file := excelize.NewFile()
-	sheetName := "StocksFBO Analysis"
+
+	err := createFullStatistic(postings, stocks, file)
+	if err != nil {
+		return "", err
+	}
+
+	for cluster, _ := range postings {
+		err = createStatisticByCluster(cluster, postings, stocks, file)
+		if err != nil {
+			return "", err
+		}
+	}
+
+	filePath := mp + "_stock_analysis.xlsx"
+	if err = file.SaveAs(filePath); err != nil {
+		return "", err
+	}
+	return filePath, nil
+}
+
+func createFullStatistic(postings map[string]map[string]map[string]int, stocks map[string]map[string]stocks_analyzer.CustomStocks, file *excelize.File) error {
+	sheetName := "Общая статистика"
 	file.SetSheetName("Sheet1", sheetName)
 
-	// Заголовки
-	headers := []string{"Кластер", "Артикул", "Заказано", "Доступно, шт", "В пути, шт"}
+	dates := make([]string, 0, 14)
+	for i := 14; i > 0; i-- {
+		date := time.Now().AddDate(0, 0, -i).Format("2006-01-02")
+		dates = append(dates, date)
+	}
+
+	headers := []string{"Кластер", "Артикул", "Заказано", "Доступно, шт", "В пути, шт", "Спрос (прогноз)"}
 	for i, h := range headers {
 		cell := string(rune('A'+i)) + "1"
 		file.SetCellValue(sheetName, cell, h)
+		err := file.SetColWidth(sheetName, string(rune('A'+i)), string(rune('A'+i)), float64(len(h)))
+		if err != nil {
+			return fmt.Errorf("ошибка настройки ширины колонки %s: %v", string(rune('A'+i)), err)
+		}
 	}
 
+	// все уникальные артикулы
 	articles := make(map[string]struct{})
-
-	// Собираем все уникальные артикулы
 	for _, postingsMap := range postings {
 		for article := range postingsMap {
 			articles[article] = struct{}{}
@@ -454,44 +485,208 @@ func generateExcelOzon(postings map[string]map[string]int, stocks map[string]map
 
 	row := 2
 	for cluster, postingsMap := range postings {
-
 		for article := range articles {
-			postingCount := postingsMap[article]
+			salesData := make([]float64, 0, 14)
+			totalOrdered := 0
+
+			for _, date := range dates {
+				if qty, exists := postingsMap[article][date]; exists {
+					salesData = append(salesData, float64(qty))
+					totalOrdered += qty
+				} else {
+					salesData = append(salesData, 0)
+				}
+			}
+
+			forecast := calculateSmartDemandForecast(salesData)
+
 			availableStockCount := 0
 			inWayStockCount := 0
 			if clusterStocks, stocksExists := stocks[cluster]; stocksExists {
-				availableStockCount = clusterStocks[article].AvailableStockCount
-				inWayStockCount = clusterStocks[article].TransitStockCount + clusterStocks[article].RequestedStockCount
+				if stock, articleExists := clusterStocks[article]; articleExists {
+					availableStockCount = stock.AvailableStockCount
+					inWayStockCount = stock.TransitStockCount + stock.RequestedStockCount
+				}
 			}
 
 			file.SetCellValue(sheetName, "A"+strconv.Itoa(row), cluster)
 			file.SetCellValue(sheetName, "B"+strconv.Itoa(row), article)
-			file.SetCellValue(sheetName, "C"+strconv.Itoa(row), postingCount)
+			file.SetCellValue(sheetName, "C"+strconv.Itoa(row), totalOrdered)
 			file.SetCellValue(sheetName, "D"+strconv.Itoa(row), availableStockCount)
 			file.SetCellValue(sheetName, "E"+strconv.Itoa(row), inWayStockCount)
-			row++
+			file.SetCellValue(sheetName, "F"+strconv.Itoa(row), forecast)
 
+			row++
 		}
 	}
 
-	opt := []excelize.AutoFilterOptions{{
-		Column:     "",
-		Expression: "",
-	}}
-
-	rangeRef := fmt.Sprintf("A1:A%v", row)
-
-	err := file.AutoFilter(sheetName, rangeRef, opt)
+	rangeRef := fmt.Sprintf("A1:F%d", row-1)
+	err := file.AutoFilter(sheetName, rangeRef, nil)
 	if err != nil {
-		return "", err
+		return err
+	}
+	return nil
+}
+func createStatisticByCluster(cluster string, postings map[string]map[string]map[string]int, stocks map[string]map[string]stocks_analyzer.CustomStocks, file *excelize.File) error {
+	sheetName := cluster
+	file.NewSheet(sheetName)
+
+	headers := []string{"артикул", "имя (необязательно)", "количество"}
+	for i, h := range headers {
+		cell := string(rune('A'+i)) + "1"
+		file.SetCellValue(sheetName, cell, h)
 	}
 
-	// Сохраняем файл
-	filePath := mp + "_stock_analysis.xlsx"
-	if err = file.SaveAs(filePath); err != nil {
-		return "", err
+	// все уникальные артикулы
+	articles := make(map[string]struct{})
+	for _, postingsMap := range postings {
+		for article := range postingsMap {
+			articles[article] = struct{}{}
+		}
 	}
-	return filePath, nil
+	for _, stocksMap := range stocks {
+		for article := range stocksMap {
+			articles[article] = struct{}{}
+		}
+	}
+
+	dates := make([]string, 0, 14)
+	for i := 14; i > 0; i-- {
+		date := time.Now().AddDate(0, 0, -i).Format("2006-01-02")
+		dates = append(dates, date)
+	}
+
+	row := 2
+	postingsMap := postings[cluster]
+	for article := range articles {
+		salesData := make([]float64, 0, 14)
+		totalOrdered := 0
+
+		for _, date := range dates {
+			if qty, exists := postingsMap[article][date]; exists {
+				salesData = append(salesData, float64(qty))
+				totalOrdered += qty
+			} else {
+				salesData = append(salesData, 0)
+			}
+		}
+
+		availableStockCount := 0
+		inWayStockCount := 0
+		if clusterStocks, stocksExists := stocks[cluster]; stocksExists {
+			if stock, articleExists := clusterStocks[article]; articleExists {
+				availableStockCount = stock.AvailableStockCount
+				inWayStockCount = stock.TransitStockCount + stock.RequestedStockCount
+			}
+		}
+
+		forecast := calculateSmartDemandForecast(salesData)
+
+		if forecast > float64(availableStockCount+inWayStockCount) && forecast != 0 {
+			file.SetCellValue(sheetName, "A"+strconv.Itoa(row), article)
+			file.SetCellValue(sheetName, "B"+strconv.Itoa(row), "")
+			file.SetCellValue(sheetName, "C"+strconv.Itoa(row), forecast-float64(availableStockCount+inWayStockCount))
+
+			row++
+		}
+
+	}
+
+	if err := autoFitColumns(file, sheetName, []string{"A", "B", "C"}); err != nil {
+		return fmt.Errorf("ошибка автоподбора ширины: %v", err)
+	}
+	return nil
+}
+
+// Функция для автоподбора ширины колонок
+func autoFitColumns(f *excelize.File, sheet string, columns []string) error {
+	for _, col := range columns {
+		maxWidth := 8.0 // Минимальная ширина по умолчанию
+		rows, err := f.GetRows(sheet)
+		if err != nil {
+			return err
+		}
+
+		// Находим максимальную длину содержимого в колонке
+		for _, row := range rows {
+			colIdx := int(col[0] - 'A')
+			if colIdx < len(row) {
+				cellValue := row[colIdx]
+				// Учитываем длину текста + 2 символа для отступов
+				width := float64(len(cellValue))*1.1 + 2
+				if width > maxWidth {
+					maxWidth = width
+				}
+			}
+		}
+
+		// Устанавливаем ширину
+		if err := f.SetColWidth(sheet, col, col, maxWidth); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func calculateSmartDemandForecast(salesData []float64) float64 {
+	if len(salesData) == 0 {
+		return 0
+	}
+
+	// Настройки
+	const (
+		shortWindow = 4  // Анализ последних 4 дней для "горячего" тренда
+		longWindow  = 14 // Анализ за 14 дней для базового уровня
+	)
+
+	// 1. Вычисляем "горячий" тренд (последние 4 дня)
+	hotTrend := 0.0
+	if len(salesData) >= shortWindow {
+		recent := salesData[len(salesData)-shortWindow:]
+		first, last := recent[0], recent[len(recent)-1]
+		if first > 0 {
+			hotTrend = last / first // Рост в последние дни
+		}
+	}
+
+	// 2. Среднее за весь период (14 дней)
+	fullPeriodAverage := mean(salesData)
+
+	// 3. Среднее за последние 4 дня
+	recentAverage := 0.0
+	if len(salesData) >= shortWindow {
+		recentAverage = mean(salesData[len(salesData)-shortWindow:])
+	} else {
+		recentAverage = mean(salesData)
+	}
+
+	// 4. Динамический вес для тренда
+	trendWeight := 0.5  // Базовый вес тренда
+	if hotTrend > 2.0 { // Если рост более 2x
+		trendWeight = 0.8 // Сильнее учитываем тренд
+	}
+
+	// 5. Комбинированный прогноз
+	forecast := (recentAverage*trendWeight + fullPeriodAverage*(1-trendWeight)) * float64(longWindow)
+
+	// Гарантируем, что прогноз не ниже последних продаж
+	if len(salesData) > 0 {
+		lastDaySales := salesData[len(salesData)-1]
+		minForecast := lastDaySales * float64(longWindow) * 0.7 // Не менее 70% от последнего дня
+		if forecast < minForecast {
+			forecast = minForecast
+		}
+	}
+
+	return math.Round(forecast)
+}
+
+func mean(values []float64) float64 {
+	sum := 0.0
+	for _, v := range values {
+		sum += v
+	}
+	return sum / float64(len(values))
 }
 
 //func generateExcel(postings map[string]map[string]int, stocks map[string]map[string]int, K float64, mp string) (string, error) {
