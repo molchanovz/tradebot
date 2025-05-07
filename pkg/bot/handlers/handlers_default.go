@@ -17,7 +17,6 @@ import (
 	"tradebot/pkg/OZON/stocks_analyzer"
 	"tradebot/pkg/WB"
 	"tradebot/pkg/YANDEX"
-	"tradebot/pkg/YANDEX/yandex_stickers_fbs"
 	"tradebot/pkg/db"
 )
 
@@ -290,23 +289,23 @@ func getYandexFbs(ctx context.Context, bot *botlib.Bot, chatId int64, supplyId s
 		return
 	}
 
-	yandexToken, err := initEnv(".env", "yandexToken")
-	if err != nil {
-		log.Panic(err)
-	}
-
-	err = yandex_stickers_fbs.GetOrdersInfo(yandexToken, supplyId)
-	if err != nil {
-		_, err := sendTextMessage(ctx, bot, chatId, err.Error())
-		if err != nil {
-			log.Println(err)
-			return
-		}
-	} else {
-		filePath := fmt.Sprintf("%v.pdf", yandex_stickers_fbs.YaDirectoryPath+supplyId)
-		sendMediaMessage(ctx, bot, chatId, filePath)
-		yandex_stickers_fbs.CleanFiles(supplyId)
-	}
+	//yandexToken, err := initEnv(".env", "yandexToken")
+	//if err != nil {
+	//	log.Panic(err)
+	//}
+	//
+	//err = yandex_stickers_fbs.GetOrdersInfo(yandexToken, supplyId)
+	//if err != nil {
+	//	_, err := sendTextMessage(ctx, bot, chatId, err.Error())
+	//	if err != nil {
+	//		log.Println(err)
+	//		return
+	//	}
+	//} else {
+	//	filePath := fmt.Sprintf("%v.pdf", yandex_stickers_fbs.YaDirectoryPath+supplyId)
+	//	sendMediaMessage(ctx, bot, chatId, filePath)
+	//	yandex_stickers_fbs.CleanFiles(supplyId)
+	//}
 
 	text, markup := createStartAdminMarkup()
 	_, err = bot.SendMessage(ctx, &botlib.SendMessageParams{ChatID: chatId, Text: text, ReplyMarkup: markup})

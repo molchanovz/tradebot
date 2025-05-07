@@ -7,9 +7,7 @@ RUN go mod download
 
 COPY . .
 
-ENV CGO_ENABLED=1
-
-RUN apk add --no-cache gcc musl-dev
+ENV CGO_ENABLED=0
 
 RUN go build -o /bin/main ./cmd/main.go
 
