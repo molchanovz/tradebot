@@ -9,7 +9,7 @@ COPY . .
 
 ENV CGO_ENABLED=1
 
-RUN apt update && apt install -y gcc
+RUN apk add --no-cache gcc musl-dev
 
 RUN go build -o /bin/main ./cmd/main.go
 
