@@ -7,6 +7,11 @@ import (
 	"tradebot/pkg/google"
 )
 
+type Period struct {
+	since string
+	to    string
+}
+
 type OzonManager struct {
 	daysAgo         int
 	clientId, token string
@@ -22,57 +27,81 @@ func NewManager(clientId, token string, daysAgo int) OzonManager {
 	}
 }
 
-func (m OzonManager) GetPostings() map[string]map[string]int {
-	since := time.Now().AddDate(0, 0, m.daysAgo*(-1)-1).Format("2006-01-02") + "T21:00:00.000Z"
-	to := time.Now().AddDate(0, 0, 0).Format("2006-01-02") + "T21:00:00.000Z"
+func (m OzonManager) GetPostings() map[string]map[string]map[string]int {
 
-	postingsMap := make(map[string]map[string]int)
+	postingsMap := make(map[string]map[string]map[string]int)
+	dates := make(map[string]Period)
 
-	// Обработка FBS заказов
-	offset := 0
-	limit := 1000
-	for {
-		postingsListFbs := ozon.PostingsListFbs(m.clientId, m.token, since, to, offset, "")
+	for i := 0; i < m.daysAgo; i++ {
 
-		for _, order := range postingsListFbs.Result.PostingsFBS {
+		date := time.Now().AddDate(0, 0, -i-1).Format("2006-01-02")
 
-			cluster := order.FinancialData.ClusterTo
-			if _, exists := postingsMap[cluster]; !exists {
-				postingsMap[cluster] = make(map[string]int)
-			}
-
-			for _, product := range order.Products {
-				postingsMap[cluster][product.OfferId] += product.Quantity
-			}
+		newPeriod := Period{
+			since: time.Now().AddDate(0, 0, -i-2).Format("2006-01-02") + "T21:00:00.000Z",
+			to:    time.Now().AddDate(0, 0, -i-1).Format("2006-01-02") + "T21:00:00.000Z",
 		}
 
-		if !postingsListFbs.Result.HasNext || len(postingsListFbs.Result.PostingsFBS) < limit {
-			break
-		}
-		offset += limit
+		dates[date] = newPeriod
 	}
 
-	// Обработка FBO заказов
-	offset = 0
-	for {
-		postingsListFbo := ozon.PostingsListFbo(m.clientId, m.token, since, to, offset)
+	for date, period := range dates {
 
-		for _, order := range postingsListFbo.Result {
+		// Обработка FBS заказов
+		offset := 0
+		limit := 1000
+		for {
+			postingsListFbs := ozon.PostingsListFbs(m.clientId, m.token, period.since, period.to, offset, "")
 
-			cluster := order.FinancialData.ClusterTo
-			if _, exists := postingsMap[cluster]; !exists {
-				postingsMap[cluster] = make(map[string]int)
+			for _, order := range postingsListFbs.Result.PostingsFBS {
+
+				cluster := order.FinancialData.ClusterTo
+				if _, exists := postingsMap[cluster]; !exists {
+					postingsMap[cluster] = make(map[string]map[string]int)
+				}
+
+				for _, product := range order.Products {
+
+					if _, exists := postingsMap[cluster][product.OfferId]; !exists {
+						postingsMap[cluster][product.OfferId] = make(map[string]int)
+					}
+
+					postingsMap[cluster][product.OfferId][date] += product.Quantity
+				}
 			}
 
-			for _, product := range order.Products {
-				postingsMap[cluster][product.OfferId] += product.Quantity
+			if !postingsListFbs.Result.HasNext || len(postingsListFbs.Result.PostingsFBS) < limit {
+				break
 			}
+			offset += limit
 		}
 
-		if len(postingsListFbo.Result) < limit {
-			break
+		// Обработка FBO заказов
+		offset = 0
+		for {
+			postingsListFbo := ozon.PostingsListFbo(m.clientId, m.token, period.since, period.to, offset)
+
+			for _, order := range postingsListFbo.Result {
+
+				cluster := order.FinancialData.ClusterTo
+				if _, exists := postingsMap[cluster]; !exists {
+					postingsMap[cluster] = make(map[string]map[string]int)
+				}
+
+				for _, product := range order.Products {
+
+					if _, exists := postingsMap[cluster][product.OfferId]; !exists {
+						postingsMap[cluster][product.OfferId] = make(map[string]int)
+					}
+
+					postingsMap[cluster][product.OfferId][date] += product.Quantity
+				}
+			}
+
+			if len(postingsListFbo.Result) < limit {
+				break
+			}
+			offset += limit
 		}
-		offset += limit
 	}
 
 	return postingsMap
