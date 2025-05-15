@@ -4,7 +4,14 @@
     <option name="autoReloadType" value="ALL" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="640077d7-ce81-4039-9739-8ad3e3a8d41a" name="Changes" comment="get mod from old version" />
+    <list default="true" id="640077d7-ce81-4039-9739-8ad3e3a8d41a" name="Changes" comment="stop yandex service">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Dockerfile" beforeDir="false" afterPath="$PROJECT_DIR$/Dockerfile" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pkg/WB/wb_stocks_analyze/logic.go" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/WB/wb_stocks_analyze/logic.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pkg/YANDEX/service.go" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/YANDEX/service.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pkg/YANDEX/yandex_stickers_fbs/logic.go" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/YANDEX/yandex_stickers_fbs/logic.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pkg/bot/handlers/handlers_default.go" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/bot/handlers/handlers_default.go" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -22,7 +29,7 @@
   <component name="Git.Settings">
     <option name="RECENT_BRANCH_BY_REPOSITORY">
       <map>
-        <entry key="$PROJECT_DIR$" value="master" />
+        <entry key="$PROJECT_DIR$" value="test-client" />
       </map>
     </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
@@ -55,33 +62,33 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "DefaultGoTemplateProperty": "Go File",
-    "Go Build.go build WildberriesGo_bot.executor": "Run",
-    "Go Build.go build WildberriesGo_bot/cmd.executor": "Run",
-    "Go Build.go build tradebot/cmd.executor": "Run",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "RunOnceActivity.git.unshallow": "true",
-    "RunOnceActivity.go.formatter.settings.were.checked": "true",
-    "RunOnceActivity.go.migrated.go.modules.settings": "true",
-    "RunOnceActivity.go.modules.go.list.on.any.changes.was.set": "true",
-    "configurable.GoLibrariesConfigurable.is.expanded": "true",
-    "git-widget-placeholder": "ad4e04e2",
-    "go.import.settings.migrated": "true",
-    "go.sdk.automatically.set": "true",
-    "last_opened_file_path": "/Users/sergey",
-    "node.js.detected.package.eslint": "true",
-    "node.js.selected.package.eslint": "(autodetect)",
-    "nodejs_package_manager_path": "npm",
-    "settings.editor.selected.configurable": "com.goide.configuration.GoLibrariesConfigurableProvider"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;DefaultGoTemplateProperty&quot;: &quot;Go File&quot;,
+    &quot;Go Build.go build WildberriesGo_bot.executor&quot;: &quot;Run&quot;,
+    &quot;Go Build.go build WildberriesGo_bot/cmd.executor&quot;: &quot;Run&quot;,
+    &quot;Go Build.go build tradebot/cmd.executor&quot;: &quot;Run&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.go.formatter.settings.were.checked&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.go.migrated.go.modules.settings&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.go.modules.go.list.on.any.changes.was.set&quot;: &quot;true&quot;,
+    &quot;configurable.GoLibrariesConfigurable.is.expanded&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;master&quot;,
+    &quot;go.import.settings.migrated&quot;: &quot;true&quot;,
+    &quot;go.sdk.automatically.set&quot;: &quot;true&quot;,
+    &quot;last_opened_file_path&quot;: &quot;/Users/sergey&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;com.goide.configuration.GoLibrariesConfigurableProvider&quot;
   },
-  "keyToStringList": {
-    "DatabaseDriversLRU": [
-      "postgresql"
+  &quot;keyToStringList&quot;: {
+    &quot;DatabaseDriversLRU&quot;: [
+      &quot;postgresql&quot;
     ]
   }
-}]]></component>
+}</component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
       <recent name="$PROJECT_DIR$/pkg/barcodes" />
@@ -144,6 +151,16 @@
   </component>
   <component name="VcsManagerConfiguration">
     <option name="CHECK_CODE_SMELLS_BEFORE_PROJECT_COMMIT" value="false" />
+    <MESSAGE value="add extra files" />
+    <MESSAGE value="add barcodes" />
+    <MESSAGE value="add admin/user main menu" />
+    <MESSAGE value="add manager link" />
+    <MESSAGE value="add docker file" />
+    <MESSAGE value="fix go mod" />
+    <MESSAGE value="delete go mod" />
+    <MESSAGE value="delete vendor" />
+    <MESSAGE value="add go.mod" />
+    <MESSAGE value="fix: docker file" />
     <MESSAGE value="fix docker file: edit arm to amd" />
     <MESSAGE value="fix docker file: edit apk add" />
     <MESSAGE value="fix docker compose: network_mode: &quot;host&quot;" />
@@ -155,21 +172,11 @@
     <MESSAGE value="fix docker file: add curl" />
     <MESSAGE value="fix compose: add mtu" />
     <MESSAGE value="fix app: start scheduler" />
-    <MESSAGE value="fix wb orders writer: delete orderType" />
-    <MESSAGE value="update google sheets" />
-    <MESSAGE value="update generateExcel: add filter by column" />
-    <MESSAGE value="edit generateExcel: add sheets by clusters" />
-    <MESSAGE value="edit logic: demand calculation" />
-    <MESSAGE value="add unversioned files" />
-    <MESSAGE value="upgrade dependencies" />
-    <MESSAGE value="update purego" />
-    <MESSAGE value="update mod" />
-    <MESSAGE value="get github.com/jupiterrider/ffi v0.2.0" />
-    <MESSAGE value="delete github.com/jupiterrider/ffi" />
-    <MESSAGE value="fix dockerfile" />
-    <MESSAGE value="update dockerfile" />
-    <MESSAGE value="get mod from old version" />
-    <option name="LAST_COMMIT_MESSAGE" value="get mod from old version" />
+    <MESSAGE value="fix dockerfile: add ENV CGO_ENABLED=0" />
+    <MESSAGE value="fix dockerfile: add gcc" />
+    <MESSAGE value="fix dockerfile: fix addition gcc" />
+    <MESSAGE value="stop yandex service" />
+    <option name="LAST_COMMIT_MESSAGE" value="stop yandex service" />
   </component>
   <component name="VgoProject">
     <settings-migrated>true</settings-migrated>
