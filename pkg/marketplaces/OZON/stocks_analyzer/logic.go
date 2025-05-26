@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"time"
 	"tradebot/pkg/api/ozon"
-	"tradebot/pkg/google"
 )
 
 type Period struct {
@@ -15,15 +14,15 @@ type Period struct {
 type OzonManager struct {
 	daysAgo         int
 	clientId, token string
-	googleService   google.SheetsService
+	//googleService   google.SheetsService
 }
 
 func NewManager(clientId, token string, daysAgo int) OzonManager {
 	return OzonManager{
-		clientId:      clientId,
-		token:         token,
-		daysAgo:       daysAgo,
-		googleService: google.NewSheetsService("token.json", "credentials.json"),
+		clientId: clientId,
+		token:    token,
+		daysAgo:  daysAgo,
+		//googleService: google.NewSheetsService("token.json", "credentials.json"),
 	}
 }
 

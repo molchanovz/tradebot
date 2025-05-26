@@ -15,7 +15,7 @@ services:
       - pgdata:/var/lib/postgresql/data
 
   bot:
-    build: .
+    build: ..
     container_name: trade-bot
     restart: always
     depends_on:
