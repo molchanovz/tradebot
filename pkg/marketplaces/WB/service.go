@@ -1,9 +1,9 @@
 package WB
 
 import (
-	"tradebot/pkg/OZON"
-	"tradebot/pkg/WB/OrdersAndReturns"
-	"tradebot/pkg/WB/stickersFbs"
+	"tradebot/pkg/marketplaces/OZON"
+	"tradebot/pkg/marketplaces/WB/OrdersAndReturns"
+	"tradebot/pkg/marketplaces/WB/stickersFbs"
 )
 
 const (

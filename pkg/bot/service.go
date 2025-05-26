@@ -5,10 +5,10 @@ import (
 	botlib "github.com/go-telegram/bot"
 	"gorm.io/gorm"
 	"log"
-	"tradebot/pkg/OZON"
-	"tradebot/pkg/WB"
-	"tradebot/pkg/YANDEX"
 	bot "tradebot/pkg/bot/handlers"
+	"tradebot/pkg/marketplaces/OZON"
+	"tradebot/pkg/marketplaces/WB"
+	"tradebot/pkg/marketplaces/YANDEX"
 )
 
 type Service struct {

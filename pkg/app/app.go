@@ -8,11 +8,11 @@ import (
 	"os"
 	"os/signal"
 	"syscall"
-	"tradebot/pkg/OZON"
-	"tradebot/pkg/WB"
-	"tradebot/pkg/YANDEX"
 	"tradebot/pkg/bot"
 	"tradebot/pkg/db"
+	"tradebot/pkg/marketplaces/OZON"
+	"tradebot/pkg/marketplaces/WB"
+	"tradebot/pkg/marketplaces/YANDEX"
 	"tradebot/pkg/scheduler"
 )
 

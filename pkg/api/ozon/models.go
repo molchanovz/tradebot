@@ -250,7 +250,7 @@ type PostingslistFbs struct {
 	} `json:"result"`
 }
 
-type PostingsList_FBO struct {
+type PostingslistFbo struct {
 	Result []struct {
 		OrderId        int       `json:"order_id"`
 		OrderNumber    string    `json:"order_number"`

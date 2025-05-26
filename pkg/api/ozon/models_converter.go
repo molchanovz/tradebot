@@ -45,8 +45,8 @@ func PostingsListFbs(ClientId, ApiKey, since, to string, offset int, status stri
 	}
 	return postingList
 }
-func PostingsListFbo(ClientId, ApiKey, since, to string, offset int) PostingsList_FBO {
-	var postingList PostingsList_FBO
+func PostingsListFbo(ClientId, ApiKey, since, to string, offset int) PostingslistFbo {
+	var postingList PostingslistFbo
 	jsonString := V2PostingFboList(ClientId, ApiKey, since, to, offset)
 	err := json.Unmarshal([]byte(jsonString), &postingList)
 	if err != nil {

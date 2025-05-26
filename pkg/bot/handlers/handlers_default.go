@@ -13,12 +13,12 @@ import (
 	"os"
 	"strconv"
 	"time"
-	"tradebot/pkg/OZON"
-	"tradebot/pkg/OZON/stocks_analyzer"
-	"tradebot/pkg/WB"
-	"tradebot/pkg/YANDEX"
-	"tradebot/pkg/YANDEX/yandex_stickers_fbs"
 	"tradebot/pkg/db"
+	"tradebot/pkg/marketplaces/OZON"
+	"tradebot/pkg/marketplaces/OZON/stocks_analyzer"
+	"tradebot/pkg/marketplaces/WB"
+	"tradebot/pkg/marketplaces/YANDEX"
+	"tradebot/pkg/marketplaces/YANDEX/yandex_stickers_fbs"
 )
 
 const (

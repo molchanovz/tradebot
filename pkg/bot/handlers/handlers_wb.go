@@ -10,11 +10,11 @@ import (
 	"os"
 	"strings"
 	"time"
-	"tradebot/pkg/OZON"
-	"tradebot/pkg/WB/stickersFbs"
-	"tradebot/pkg/WB/wb_stocks_analyze"
 	"tradebot/pkg/api/wb"
 	"tradebot/pkg/db"
+	"tradebot/pkg/marketplaces/OZON"
+	"tradebot/pkg/marketplaces/WB/stickersFbs"
+	"tradebot/pkg/marketplaces/WB/wb_stocks_analyze"
 )
 
 func wbHandler(ctx context.Context, bot *botlib.Bot, update *models.Update) {

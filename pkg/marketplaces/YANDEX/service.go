@@ -1,9 +1,9 @@
 package YANDEX
 
 import (
-	"tradebot/pkg/OZON"
-	"tradebot/pkg/YANDEX/OrdersAndReturns"
-	"tradebot/pkg/YANDEX/yandex_stickers_fbs"
+	"tradebot/pkg/marketplaces/OZON"
+	"tradebot/pkg/marketplaces/YANDEX/OrdersAndReturns"
+	"tradebot/pkg/marketplaces/YANDEX/yandex_stickers_fbs"
 )
 
 const (

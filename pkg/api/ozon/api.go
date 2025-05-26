@@ -340,17 +340,13 @@ func V2PostingFboList(ClientId, ApiKey, since, to string, offset int) string {
 	}
 	defer resp.Body.Close()
 
-	// Проверяем статус ответа
-
 	if resp.StatusCode != http.StatusOK {
 		errString, _ := io.ReadAll(resp.Body)
 		log.Fatalf("Ошибка V2PostingFboList: получен статус %s. %s", resp.Status, errString)
 	}
 
-	// Читаем тело ответа
 	jsonString, _ := io.ReadAll(resp.Body)
 
-	// Выводим ответ
 	return string(jsonString)
 }
 func v2StockOnWarehouses(ClientId, ApiKey string) string {

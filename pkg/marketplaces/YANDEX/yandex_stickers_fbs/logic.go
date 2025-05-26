@@ -4,7 +4,9 @@ import (
 	"fmt"
 	"github.com/fogleman/gg"
 	"github.com/gen2brain/go-fitz"
+
 	"github.com/jung-kurt/gofpdf"
+
 	"image"
 	"image/jpeg"
 	"log"

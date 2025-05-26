@@ -1,6 +1,6 @@
 #google service
-token.json
-credentials.json
+pkg/google/utils/token.json
+pkg/google/utils/credentials.json
 #invaroments
-.env
+config/.env
 vendor

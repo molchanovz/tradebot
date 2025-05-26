@@ -37,9 +37,9 @@ RUN wget https://github.com/pdfcpu/pdfcpu/releases/download/v0.10.2/pdfcpu_0.10.
 
 
 COPY --from=builder /app/main .
-COPY credentials.json .
-COPY token.json .
-COPY font.ttf .
-COPY pkg/barcodes pkg/barcodes
+COPY pkg/google/utils/credentials.json .
+COPY pkg/google/utils/token.json .
+COPY assets/font.ttf .
+COPY assets/barcodes pkg/barcodes
 
 CMD ["./main"]

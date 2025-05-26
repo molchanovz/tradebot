@@ -1,9 +1,9 @@
 package OZON
 
 import (
-	"tradebot/pkg/OZON/orders_and_returns"
-	"tradebot/pkg/OZON/stickersFBS"
-	"tradebot/pkg/OZON/stocks_analyzer"
+	"tradebot/pkg/marketplaces/OZON/orders_and_returns"
+	"tradebot/pkg/marketplaces/OZON/stickersFBS"
+	"tradebot/pkg/marketplaces/OZON/stocks_analyzer"
 )
 
 const (

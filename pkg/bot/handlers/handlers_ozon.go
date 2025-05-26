@@ -7,7 +7,7 @@ import (
 	"github.com/go-telegram/bot/models"
 	"log"
 	"os"
-	"tradebot/pkg/OZON/stickersFBS"
+	"tradebot/pkg/marketplaces/OZON/stickersFBS"
 )
 
 func ozonHandler(ctx context.Context, bot *botlib.Bot, update *models.Update) {
