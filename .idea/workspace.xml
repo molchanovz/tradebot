@@ -4,11 +4,17 @@
     <option name="autoReloadType" value="ALL" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="640077d7-ce81-4039-9739-8ad3e3a8d41a" name="Changes" comment="fix yandex service: start stickersFbs">
+    <list default="true" id="640077d7-ce81-4039-9739-8ad3e3a8d41a" name="Changes" comment="refactoring: moving deployment">
+      <change afterPath="$PROJECT_DIR$/pkg/ordersWriter/writer.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/go.mod" beforeDir="false" afterPath="$PROJECT_DIR$/go.mod" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/go.sum" beforeDir="false" afterPath="$PROJECT_DIR$/go.sum" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pkg/YANDEX/yandex_stickers_fbs/logic.go" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/YANDEX/yandex_stickers_fbs/logic.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmd/main.go" beforeDir="false" afterPath="$PROJECT_DIR$/cmd/main.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pkg/bot/handlers/handlers_wb.go" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/bot/handlers/handlers_wb.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pkg/marketplaces/OZON/orders_and_returns/logic.go" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/marketplaces/OZON/orders_and_returns/logic.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pkg/marketplaces/OZON/service.go" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/marketplaces/OZON/service.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pkg/marketplaces/WB/OrdersAndReturns/logic.go" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/marketplaces/WB/OrdersAndReturns/logic.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pkg/marketplaces/WB/service.go" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/marketplaces/WB/service.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pkg/marketplaces/YANDEX/OrdersAndReturns/logic.go" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/marketplaces/YANDEX/OrdersAndReturns/logic.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pkg/marketplaces/YANDEX/service.go" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/marketplaces/YANDEX/service.go" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -18,8 +24,8 @@
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
       <list>
-        <option value="Go File" />
         <option value="Dockerfile" />
+        <option value="Go File" />
       </list>
     </option>
   </component>
@@ -27,7 +33,7 @@
   <component name="Git.Settings">
     <option name="RECENT_BRANCH_BY_REPOSITORY">
       <map>
-        <entry key="$PROJECT_DIR$" value="test-client" />
+        <entry key="$PROJECT_DIR$" value="master" />
       </map>
     </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
@@ -72,7 +78,7 @@
     &quot;RunOnceActivity.go.migrated.go.modules.settings&quot;: &quot;true&quot;,
     &quot;RunOnceActivity.go.modules.go.list.on.any.changes.was.set&quot;: &quot;true&quot;,
     &quot;configurable.GoLibrariesConfigurable.is.expanded&quot;: &quot;true&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;master&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;refactoring&quot;,
     &quot;go.import.settings.migrated&quot;: &quot;true&quot;,
     &quot;go.sdk.automatically.set&quot;: &quot;true&quot;,
     &quot;last_opened_file_path&quot;: &quot;/Users/sergey&quot;,
@@ -96,11 +102,11 @@
       <recent name="$PROJECT_DIR$" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
-      <recent name="$PROJECT_DIR$/pkg/bot/handlers" />
-      <recent name="$PROJECT_DIR$/pkg/OZON" />
-      <recent name="$PROJECT_DIR$/pkg/db" />
-      <recent name="$PROJECT_DIR$/pkg/db/database" />
-      <recent name="$PROJECT_DIR$/pkg/db/models" />
+      <recent name="$PROJECT_DIR$/deployments" />
+      <recent name="$PROJECT_DIR$/pkg/google/utils" />
+      <recent name="$PROJECT_DIR$/config" />
+      <recent name="$PROJECT_DIR$/assets" />
+      <recent name="$PROJECT_DIR$/pkg/google" />
     </key>
   </component>
   <component name="RunManager" selected="Go Build.go build tradebot/cmd">
@@ -149,8 +155,6 @@
   </component>
   <component name="VcsManagerConfiguration">
     <option name="CHECK_CODE_SMELLS_BEFORE_PROJECT_COMMIT" value="false" />
-    <MESSAGE value="add barcodes" />
-    <MESSAGE value="add admin/user main menu" />
     <MESSAGE value="add manager link" />
     <MESSAGE value="add docker file" />
     <MESSAGE value="fix go mod" />
@@ -174,20 +178,11 @@
     <MESSAGE value="fix dockerfile: fix addition gcc" />
     <MESSAGE value="stop yandex service" />
     <MESSAGE value="fix yandex service: start stickersFbs" />
-    <option name="LAST_COMMIT_MESSAGE" value="fix yandex service: start stickersFbs" />
+    <MESSAGE value="refactoring: moving full project" />
+    <MESSAGE value="refactoring: moving deployment" />
+    <option name="LAST_COMMIT_MESSAGE" value="refactoring: moving deployment" />
   </component>
   <component name="VgoProject">
     <settings-migrated>true</settings-migrated>
-  </component>
-  <component name="XDebuggerManager">
-    <breakpoint-manager>
-      <breakpoints>
-        <line-breakpoint enabled="true" type="DlvLineBreakpoint">
-          <url>file://$PROJECT_DIR$/pkg/OZON/StickersFBS/logic.go</url>
-          <line>42</line>
-          <option name="timeStamp" value="2" />
-        </line-breakpoint>
-      </breakpoints>
-    </breakpoint-manager>
   </component>
 </project>

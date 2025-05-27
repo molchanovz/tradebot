@@ -111,7 +111,7 @@ func (m *Manager) getWbFbs(ctx context.Context, bot *botlib.Bot, chatId int64, s
 func (m *Manager) wbOrdersHandler(ctx context.Context, bot *botlib.Bot, update *models.Update) {
 	chatId := update.CallbackQuery.From.ID
 
-	err := m.wbService.GetOrdersAndReturnsManager().WriteToGoogleSheets()
+	err := m.wbService.GetOrdersManager().WriteToGoogleSheets()
 	if err != nil {
 		_, err = sendTextMessage(ctx, bot, chatId, err.Error())
 		if err != nil {

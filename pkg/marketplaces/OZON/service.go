@@ -13,24 +13,25 @@ const (
 )
 
 type Service struct {
-	clientId, token         string
-	ordersAndReturnsManager orders_and_returns.OzonManager
-	stocksManager           stocks_analyzer.OzonManager
-	stickersFbsManager      stickersFBS.OzonManager
+	ordersWriter       orders_and_returns.OzonOrdersManager
+	stocksManager      stocks_analyzer.OzonManager
+	stickersFbsManager stickersFBS.OzonManager
 }
 
 func NewService(clientId, token string) *Service {
 	return &Service{
-		clientId:                clientId,
-		token:                   token,
-		ordersAndReturnsManager: orders_and_returns.NewOzonManager(clientId, token, spreadsheetId, OrdersDaysAgo),
-		stocksManager:           stocks_analyzer.NewManager(clientId, token, StocksDaysAgo),
-		stickersFbsManager:      stickersFBS.NewOzonManager(clientId, token),
+		ordersWriter:       orders_and_returns.NewOzonOrdersManager(clientId, token, spreadsheetId, OrdersDaysAgo),
+		stocksManager:      stocks_analyzer.NewManager(clientId, token, StocksDaysAgo),
+		stickersFbsManager: stickersFBS.NewOzonManager(clientId, token),
 	}
 }
 
-func (s Service) GetOrdersAndReturnsManager() orders_and_returns.OzonManager {
-	return s.ordersAndReturnsManager
+type Authorization struct {
+	ClientId, Token string
+}
+
+func (s Service) GetOrdersAndReturnsManager() orders_and_returns.OzonOrdersManager {
+	return s.ordersWriter
 
 }
 func (s Service) GetStocksManager() stocks_analyzer.OzonManager {

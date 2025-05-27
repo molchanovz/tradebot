@@ -13,21 +13,24 @@ const (
 )
 
 type Service struct {
-	clientId, token           string
-	ordersAndReturnsWbManager OrdersAndReturns.WbManager
-	stickersWbManager         stickersFbs.WbManager
+	clientId, token   string
+	ordersWriter      OrdersAndReturns.WbOrdersManager
+	stickersWbManager stickersFbs.WbManager
 }
 
 func NewService(token string) *Service {
 	return &Service{
-		token:                     token,
-		ordersAndReturnsWbManager: OrdersAndReturns.NewWbManager(token, spreadsheetId, OrdersDaysAgo),
-		stickersWbManager:         stickersFbs.NewWbManager(token),
+		ordersWriter:      OrdersAndReturns.NewWbOrdersManager(token, spreadsheetId, OrdersDaysAgo),
+		stickersWbManager: stickersFbs.NewWbManager(token),
 	}
 }
 
-func (s Service) GetOrdersAndReturnsManager() OrdersAndReturns.WbManager {
-	return s.ordersAndReturnsWbManager
+type Authorization struct {
+	Token string
+}
+
+func (s Service) GetOrdersManager() OrdersAndReturns.WbOrdersManager {
+	return s.ordersWriter
 }
 
 func (s Service) GetStickersFbsManager() stickersFbs.WbManager {
