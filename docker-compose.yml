@@ -15,17 +15,19 @@ services:
       - pgdata:/var/lib/postgresql/data
 
   bot:
-    build: ..
+    build:
+      context: .
+      dockerfile: Dockerfile
     container_name: trade-bot
     restart: always
     depends_on:
       - db
     volumes:
-      - ./credentials.json:/app/credentials.json
-      - ./token.json:/app/token.json
-      - ./font.ttf:/app/font.ttf
+      - ./pkg/google/utils/credentials.json:/app/pkg/google/utils/credentials.json
+      - ./pkg/google/utils/token.json:/app/pkg/google/utils/token.json
+      - ./assets/font.ttf:/app/assets/font.ttf
       - ./.env:/app/.env
-      - ./pkg/barcodes:/app/pkg/barcodes
+      - ./assets/barcodes:/app/assets/barcodes
 
 networks:
   default:

@@ -2,7 +2,7 @@ FROM golang:1.23-alpine AS builder
 
 WORKDIR /app
 
-COPY ../go.mod go.sum ./
+COPY go.mod go.sum ./
 RUN go mod download
 
 COPY .. .
@@ -37,9 +37,9 @@ RUN wget https://github.com/pdfcpu/pdfcpu/releases/download/v0.10.2/pdfcpu_0.10.
 
 
 COPY --from=builder /app/main .
-COPY ../pkg/google/utils/credentials.json .
-COPY ../pkg/google/utils/token.json .
-COPY ../assets/font.ttf .
-COPY ../assets/barcodes pkg/barcodes
+COPY pkg/google/utils/credentials.json .
+COPY pkg/google/utils/token.json .
+COPY assets/font.ttf .
+COPY assets/barcodes pkg/barcodes
 
 CMD ["./main"]

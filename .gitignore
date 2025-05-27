@@ -2,5 +2,5 @@
 pkg/google/utils/token.json
 pkg/google/utils/credentials.json
 #invaroments
-config/.env
+.env
 vendor

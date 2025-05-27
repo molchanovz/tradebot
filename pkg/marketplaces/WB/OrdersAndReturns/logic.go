@@ -6,26 +6,21 @@ import (
 	"strings"
 	"time"
 	"tradebot/pkg/api/wb"
-	"tradebot/pkg/google"
+	"tradebot/pkg/ordersWriter"
 )
 
-type WbManager struct {
-	daysAgo              int
-	spreadsheetId, token string
-	googleSheets         google.SheetsService
+type WbOrdersManager struct {
+	ordersWriter.OrdersManager
+	token string
 }
 
-func NewWbManager(token, spreadsheetId string, daysAgo int) WbManager {
-	return WbManager{
-		token:         token,
-		daysAgo:       daysAgo,
-		spreadsheetId: spreadsheetId,
-		googleSheets:  google.NewSheetsService("token.json", "credentials.json"),
-	}
+func NewWbOrdersManager(token, spreadsheetId string, daysAgo int) WbOrdersManager {
+	manager := WbOrdersManager{ordersWriter.NewOrdersManager(spreadsheetId, daysAgo), token}
+	return manager
 }
 
-func (m WbManager) WriteToGoogleSheets() error {
-	date := time.Now().AddDate(0, 0, -m.daysAgo)
+func (m WbOrdersManager) WriteToGoogleSheets() error {
+	date := time.Now().AddDate(0, 0, -m.DaysAgo)
 	sheetsName := "Заказы WB-" + strconv.Itoa(date.Day())
 
 	var values [][]interface{}
@@ -34,7 +29,7 @@ func (m WbManager) WriteToGoogleSheets() error {
 
 	writeRange := sheetsName + "!A1"
 
-	err := m.googleSheets.Write(m.spreadsheetId, writeRange, values)
+	err := m.GoogleService.Write(m.SpreadsheetId, writeRange, values)
 	if err != nil {
 		return err
 	}
@@ -51,7 +46,7 @@ func (m WbManager) WriteToGoogleSheets() error {
 	for article, count := range postingsWithCountFBO {
 		values = append(values, []interface{}{article, count})
 	}
-	err = m.googleSheets.Write(m.spreadsheetId, writeRange, values)
+	err = m.GoogleService.Write(m.SpreadsheetId, writeRange, values)
 	if err != nil {
 		return err
 	}
@@ -64,7 +59,7 @@ func (m WbManager) WriteToGoogleSheets() error {
 	for article, count := range postingsWithCountFBS {
 		values = append(values, []interface{}{article, count})
 	}
-	err = m.googleSheets.Write(m.spreadsheetId, writeRange, values)
+	err = m.GoogleService.Write(m.SpreadsheetId, writeRange, values)
 	if err != nil {
 		return err
 	}
@@ -78,7 +73,7 @@ func (m WbManager) WriteToGoogleSheets() error {
 	for article, count := range returnsWithCount {
 		values = append(values, []interface{}{article, count})
 	}
-	err = m.googleSheets.Write(m.spreadsheetId, writeRange, values)
+	err = m.GoogleService.Write(m.SpreadsheetId, writeRange, values)
 	if err != nil {
 		return err
 	}
@@ -86,9 +81,10 @@ func (m WbManager) WriteToGoogleSheets() error {
 	return nil
 }
 
-func (m WbManager) ordersMapFBS() map[string]int {
+func (m WbOrdersManager) ordersMapFBS() map[string]int {
 	postingsWithCountFBS := make(map[string]int)
-	postingsList := wb.GetOrdersFBS(m.token, m.daysAgo)
+
+	postingsList := wb.GetOrdersFBS(m.token, m.DaysAgo)
 
 	isOrderCanceled := func(status string) bool {
 
@@ -110,12 +106,15 @@ func (m WbManager) ordersMapFBS() map[string]int {
 			postingsWithCountFBS[posting.Article] += 1
 		}
 	}
+
 	return postingsWithCountFBS
 }
-func (m WbManager) getPostingsMap() (map[string]int, map[string]int, error) {
+
+func (m WbOrdersManager) getPostingsMap() (map[string]int, map[string]int, error) {
 	postingsWithCountFBO := make(map[string]int)
 	postingsWithCountFBS := make(map[string]int)
-	postingsList := wb.GetAllOrders(m.token, m.daysAgo, 1)
+
+	postingsList := wb.GetAllOrders(m.token, m.DaysAgo, 1)
 
 	for _, posting := range postingsList {
 		if posting.IsCancel == false {
@@ -131,15 +130,19 @@ func (m WbManager) getPostingsMap() (map[string]int, map[string]int, error) {
 			fmt.Println("Пропавший заказ ", posting.SupplierArticle, " ", posting.IsCancel)
 		}
 	}
+
 	return postingsWithCountFBO, postingsWithCountFBS, nil
 }
-func (m WbManager) getReturnsMap() map[string]int {
+
+func (m WbOrdersManager) getReturnsMap() map[string]int {
 	returnsWithCount := make(map[string]int)
-	returnsList := wb.GetSalesAndReturns(m.token, m.daysAgo)
+
+	returnsList := wb.GetSalesAndReturns(m.token, m.DaysAgo)
 	for _, someReturn := range returnsList {
 		if strings.HasPrefix(someReturn.SaleID, "R") {
 			returnsWithCount[someReturn.SupplierArticle]++
 		}
 	}
+
 	return returnsWithCount
 }

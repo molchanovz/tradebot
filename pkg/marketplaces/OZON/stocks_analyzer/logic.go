@@ -156,41 +156,6 @@ func (m OzonManager) GetStocks() map[string]map[string]CustomStocks {
 	return stocksMap
 }
 
-//func (m OzonManager) GetStocks() map[string]map[string]int {
-//	stocksList := ozon.Stocks(m.clientId, m.token)
-//
-//	clusters := ozon.Clusters(m.clientId, m.token)
-//
-//	clustersMap := make(map[string]string)
-//
-//	//Разбивка складов по кластерам в map
-//	for _, cluster := range clusters.Clusters {
-//		for _, logisticClusters := range cluster.LogisticClusters {
-//			for _, warehouse := range logisticClusters.Warehouses {
-//				if _, exists := clustersMap[warehouse.Name]; !exists {
-//					clustersMap[warehouse.Name] = cluster.Name
-//				}
-//			}
-//		}
-//	}
-//
-//	stocksMap := make(map[string]map[string]int)
-//
-//	for _, stock := range stocksList.Result.Rows {
-//		cluster := clustersMap[stock.WarehouseName]
-//		if _, exists := stocksMap[cluster]; !exists {
-//			stocksMap[cluster] = make(map[string]int)
-//		}
-//		if _, exists := stocksMap[cluster][stock.ItemCode]; exists {
-//			stocksMap[cluster][stock.ItemCode] += stock.FreeToSellAmount + stock.PromisedAmount
-//		} else {
-//			stocksMap[cluster][stock.ItemCode] = stock.FreeToSellAmount + stock.PromisedAmount
-//		}
-//
-//	}
-//	return stocksMap
-//}
-
 func (m OzonManager) GetClusters() ozon.ClustersList {
 	return ozon.Clusters(m.clientId, m.token)
 }
