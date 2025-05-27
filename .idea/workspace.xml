@@ -4,17 +4,10 @@
     <option name="autoReloadType" value="ALL" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="640077d7-ce81-4039-9739-8ad3e3a8d41a" name="Changes" comment="refactoring: moving deployment">
-      <change afterPath="$PROJECT_DIR$/pkg/ordersWriter/writer.go" afterDir="false" />
+    <list default="true" id="640077d7-ce81-4039-9739-8ad3e3a8d41a" name="Changes" comment="refactoring: add orderWriter">
+      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmd/main.go" beforeDir="false" afterPath="$PROJECT_DIR$/cmd/main.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pkg/bot/handlers/handlers_wb.go" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/bot/handlers/handlers_wb.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pkg/marketplaces/OZON/orders_and_returns/logic.go" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/marketplaces/OZON/orders_and_returns/logic.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pkg/marketplaces/OZON/service.go" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/marketplaces/OZON/service.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pkg/marketplaces/WB/OrdersAndReturns/logic.go" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/marketplaces/WB/OrdersAndReturns/logic.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pkg/marketplaces/WB/service.go" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/marketplaces/WB/service.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pkg/marketplaces/YANDEX/OrdersAndReturns/logic.go" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/marketplaces/YANDEX/OrdersAndReturns/logic.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pkg/marketplaces/YANDEX/service.go" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/marketplaces/YANDEX/service.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/deployments/docker-compose.yml" beforeDir="false" afterPath="$PROJECT_DIR$/deployments/docker-compose.yml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -102,11 +95,11 @@
       <recent name="$PROJECT_DIR$" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$" />
       <recent name="$PROJECT_DIR$/deployments" />
       <recent name="$PROJECT_DIR$/pkg/google/utils" />
       <recent name="$PROJECT_DIR$/config" />
       <recent name="$PROJECT_DIR$/assets" />
-      <recent name="$PROJECT_DIR$/pkg/google" />
     </key>
   </component>
   <component name="RunManager" selected="Go Build.go build tradebot/cmd">
@@ -155,7 +148,6 @@
   </component>
   <component name="VcsManagerConfiguration">
     <option name="CHECK_CODE_SMELLS_BEFORE_PROJECT_COMMIT" value="false" />
-    <MESSAGE value="add manager link" />
     <MESSAGE value="add docker file" />
     <MESSAGE value="fix go mod" />
     <MESSAGE value="delete go mod" />
@@ -180,7 +172,8 @@
     <MESSAGE value="fix yandex service: start stickersFbs" />
     <MESSAGE value="refactoring: moving full project" />
     <MESSAGE value="refactoring: moving deployment" />
-    <option name="LAST_COMMIT_MESSAGE" value="refactoring: moving deployment" />
+    <MESSAGE value="refactoring: add orderWriter" />
+    <option name="LAST_COMMIT_MESSAGE" value="refactoring: add orderWriter" />
   </component>
   <component name="VgoProject">
     <settings-migrated>true</settings-migrated>

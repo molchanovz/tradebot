@@ -21,11 +21,11 @@ services:
     depends_on:
       - db
     volumes:
-      - ./credentials.json:/app/credentials.json
-      - ./token.json:/app/token.json
-      - ./font.ttf:/app/font.ttf
+      - ./pkg/google/utils/credentials.json:/app/credentials.json
+      - ./pkg/google/utils/token.json:/app/token.json
+      - ./assets/font.ttf:/app/font.ttf
       - ./.env:/app/.env
-      - ./pkg/barcodes:/app/pkg/barcodes
+      - ./assets/barcodes:/app/pkg/barcodes
 
 networks:
   default:
