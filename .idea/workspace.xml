@@ -5,11 +5,8 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="640077d7-ce81-4039-9739-8ad3e3a8d41a" name="Changes" comment="moving dockerfiles">
-      <change beforePath="$PROJECT_DIR$/.idea/dataSources.local.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources.local.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/dataSources/9744d68c-87f6-4112-a253-3c5858dd2ba6.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources/9744d68c-87f6-4112-a253-3c5858dd2ba6.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/dataSources/9744d68c-87f6-4112-a253-3c5858dd2ba6/storage_v2/_src_/database/tradebot.42HFSw/schema/public.abK9xQ.meta" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources/9744d68c-87f6-4112-a253-3c5858dd2ba6/storage_v2/_src_/database/tradebot.42HFSw/schema/public.abK9xQ.meta" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docker-compose.yml" beforeDir="false" afterPath="$PROJECT_DIR$/docker-compose.yml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pkg/bot/handlers/handlers_wb.go" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/bot/handlers/handlers_wb.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/pkg/marketplaces/WB/stickersFbs/logic.go" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/marketplaces/WB/stickersFbs/logic.go" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />

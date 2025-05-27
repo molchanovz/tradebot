@@ -71,43 +71,106 @@ func (m *Manager) wbFbsHandler(ctx context.Context, bot *botlib.Bot, update *mod
 }
 
 func (m *Manager) getWbFbs(ctx context.Context, bot *botlib.Bot, chatId int64, supplyId string) {
-	text := fmt.Sprintf("Подготовка файла ВБ")
-	message, err := sendTextMessage(ctx, bot, chatId, text)
-	if err != nil {
-		return
-	}
+	done := make(chan string)
+	progressChan := make(chan stickersFbs.Progress)
 
-	err = m.wbService.GetStickersFbsManager().GetReadyFile(supplyId)
-	if err != nil {
-		_, err = sendTextMessage(ctx, bot, chatId, err.Error())
+	var progressMsgId int
+
+	go func() {
+		filePath, err := m.wbService.GetStickersFbsManager().GetReadyFile(supplyId, progressChan)
 		if err != nil {
-			log.Println(err)
+			log.Println("Ошибка при получении файла:", err)
+			done <- ""
 			return
 		}
-		return
-	}
+		done <- filePath
+	}()
 
-	filePath := fmt.Sprintf("%v%v.pdf", stickersFbs.WbDirectoryPath, supplyId)
-	err = sendMediaMessage(ctx, bot, chatId, filePath)
-	if err != nil {
-		log.Println(err)
-		return
-	}
-	stickersFbs.CleanFiles(supplyId)
-	stickersFbs.CreateDirectories()
+	var lastReportedCurrent int
+	var lastTotal int
 
-	text, markup := createStartAdminMarkup()
-	_, err = bot.SendMessage(ctx, &botlib.SendMessageParams{ChatID: chatId, Text: text, ReplyMarkup: markup})
-	if err != nil {
-		log.Printf("%v", err)
-		return
-	}
+	for {
+		select {
+		case progress := <-progressChan:
+			if progress.Current != lastReportedCurrent || progress.Total != lastTotal {
+				lastReportedCurrent = progress.Current
+				lastTotal = progress.Total
 
-	_, err = bot.DeleteMessage(ctx, &botlib.DeleteMessageParams{ChatID: chatId, MessageID: message.ID})
-	if err != nil {
-		return
+				text := fmt.Sprintf("Обработано заказов: %d из %d", progress.Current, progress.Total)
+
+				if progressMsgId == 0 {
+					msg, err := bot.SendMessage(ctx, &botlib.SendMessageParams{
+						ChatID: chatId,
+						Text:   text,
+					})
+					if err != nil {
+						log.Println(err)
+					} else {
+						progressMsgId = msg.ID
+					}
+				} else {
+					_, err := bot.EditMessageText(ctx, &botlib.EditMessageTextParams{
+						ChatID:    chatId,
+						MessageID: progressMsgId,
+						Text:      text,
+					})
+					if err != nil {
+						log.Println(err)
+					}
+				}
+			}
+
+		case filePath := <-done:
+
+			_, err := bot.SendChatAction(ctx, &botlib.SendChatActionParams{
+				ChatID: chatId,
+				Action: models.ChatActionUploadDocument,
+			})
+			if err != nil {
+				return
+			}
+
+			if filePath == "" {
+				_, err = sendTextMessage(ctx, bot, chatId, "Ошибка при получении файла")
+				if err != nil {
+					log.Println(err)
+				}
+				return
+			}
+
+			filePath = fmt.Sprintf("%v%v.pdf", stickersFbs.WbDirectoryPath, supplyId)
+			err = sendMediaMessage(ctx, bot, chatId, filePath)
+			if err != nil {
+				log.Println(err)
+			}
+
+			if progressMsgId != 0 {
+				_, err = bot.DeleteMessage(ctx, &botlib.DeleteMessageParams{
+					ChatID:    chatId,
+					MessageID: progressMsgId,
+				})
+				if err != nil {
+					return
+				}
+			}
+
+			stickersFbs.CleanFiles(supplyId)
+			stickersFbs.CreateDirectories()
+
+			text, markup := createStartAdminMarkup()
+			_, err = bot.SendMessage(ctx, &botlib.SendMessageParams{
+				ChatID:      chatId,
+				Text:        text,
+				ReplyMarkup: markup,
+			})
+			if err != nil {
+				log.Printf("%v", err)
+			}
+			return
+		}
 	}
 }
+
 func (m *Manager) wbOrdersHandler(ctx context.Context, bot *botlib.Bot, update *models.Update) {
 	chatId := update.CallbackQuery.From.ID
 
