@@ -18,7 +18,7 @@ const (
 	WbDirectoryPath = "/app/pkg/WB/stickersFbs/"
 
 	codesPath     = WbDirectoryPath + "codes/"
-	barcodesPath  = "/app/pkg/barcodes/"
+	barcodesPath  = "/assets/barcodes/"
 	generatedPath = WbDirectoryPath + "generated/"
 	readyPath     = WbDirectoryPath + "ready/"
 )
@@ -202,7 +202,7 @@ func createBarcodeWithSKU(sku string, outputPath string, fontSize float64) error
 	dc.Clear()
 
 	// Загрузка шрифта и установка его размера
-	fontPath := "font.ttf" // Укажите путь к вашему TTF-шрифту
+	fontPath := "/assets/font.ttf" // Укажите путь к вашему TTF-шрифту
 	if err := dc.LoadFontFace(fontPath, fontSize); err != nil {
 		return err
 	}

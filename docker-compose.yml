@@ -25,9 +25,9 @@ services:
     volumes:
       - ./pkg/google/utils/credentials.json:/app/pkg/google/utils/credentials.json
       - ./pkg/google/utils/token.json:/app/pkg/google/utils/token.json
-      - ./assets/font.ttf:/app/assets/font.ttf
+      - ./assets/font.ttf:/assets/font.ttf
       - ./.env:/app/.env
-      - ./assets/barcodes:/app/assets/barcodes
+      - ./assets/barcodes:/assets/barcodes
 
 networks:
   default:
