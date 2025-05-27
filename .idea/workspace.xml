@@ -6,8 +6,8 @@
   <component name="ChangeListManager">
     <list default="true" id="640077d7-ce81-4039-9739-8ad3e3a8d41a" name="Changes" comment="moving dockerfiles">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmd/main.go" beforeDir="false" afterPath="$PROJECT_DIR$/cmd/main.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docker-compose.yml" beforeDir="false" afterPath="$PROJECT_DIR$/docker-compose.yml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pkg/bot/handlers/handlers_wb.go" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/bot/handlers/handlers_wb.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pkg/marketplaces/WB/stickersFbs/logic.go" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/marketplaces/WB/stickersFbs/logic.go" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -71,7 +71,7 @@
     &quot;RunOnceActivity.go.migrated.go.modules.settings&quot;: &quot;true&quot;,
     &quot;RunOnceActivity.go.modules.go.list.on.any.changes.was.set&quot;: &quot;true&quot;,
     &quot;configurable.GoLibrariesConfigurable.is.expanded&quot;: &quot;true&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;refactoring&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;api-refactoring&quot;,
     &quot;go.import.settings.migrated&quot;: &quot;true&quot;,
     &quot;go.sdk.automatically.set&quot;: &quot;true&quot;,
     &quot;last_opened_file_path&quot;: &quot;/Users/sergey&quot;,
@@ -125,9 +125,9 @@
       <list>
         <item itemvalue="Go Build.go build tradebot/cmd" />
         <item itemvalue="Go Build.go build WildberriesGo_bot/cmd" />
+        <item itemvalue="Go Build.go build WildberriesGo_bot/cmd" />
         <item itemvalue="Go Build.go build tradebot/cmd" />
-        <item itemvalue="Go Build.go build WildberriesGo_bot/cmd" />
-        <item itemvalue="Go Build.go build WildberriesGo_bot/cmd" />
+        <item itemvalue="Go Build.go build tradebot/cmd" />
       </list>
     </recent_temporary>
   </component>
@@ -148,8 +148,6 @@
   </component>
   <component name="VcsManagerConfiguration">
     <option name="CHECK_CODE_SMELLS_BEFORE_PROJECT_COMMIT" value="false" />
-    <MESSAGE value="fix go mod" />
-    <MESSAGE value="delete go mod" />
     <MESSAGE value="delete vendor" />
     <MESSAGE value="add go.mod" />
     <MESSAGE value="fix: docker file" />
@@ -173,7 +171,9 @@
     <MESSAGE value="refactoring: moving deployment" />
     <MESSAGE value="refactoring: add orderWriter" />
     <MESSAGE value="moving dockerfiles" />
-    <option name="LAST_COMMIT_MESSAGE" value="moving dockerfiles" />
+    <MESSAGE value="refactoring: wb api" />
+    <MESSAGE value="add Самара (Новосемейкино)" />
+    <option name="LAST_COMMIT_MESSAGE" value="add Самара (Новосемейкино)" />
   </component>
   <component name="VgoProject">
     <settings-migrated>true</settings-migrated>

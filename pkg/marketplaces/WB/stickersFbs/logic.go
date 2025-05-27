@@ -18,7 +18,7 @@ const (
 	WbDirectoryPath = "/app/pkg/WB/stickersFbs/"
 
 	codesPath     = WbDirectoryPath + "codes/"
-	barcodesPath  = "/app/pkg/barcodes/"
+	barcodesPath  = "/assets/barcodes/"
 	generatedPath = WbDirectoryPath + "generated/"
 	readyPath     = WbDirectoryPath + "ready/"
 )
@@ -35,30 +35,45 @@ func NewWbManager(token string) WbManager {
 	}
 }
 
-func (m WbManager) GetReadyFile(supplyId string) error {
+type Progress struct {
+	Current int
+	Total   int
+}
+
+func (m WbManager) GetReadyFile(supplyId string, progressChan chan Progress) (string, error) {
 	CreateDirectories()
+
+	readyFilePath := WbDirectoryPath + supplyId + ".pdf"
 
 	orders, err := wb.GetOrdersFbs(m.token, supplyId)
 	if err != nil {
-		return err
+		return "", err
 	}
+
+	totalOrders := len(orders)
 	var ordersSlice []string
 	for i, order := range orders {
 		stickers := wb.GetStickersFbs(m.token, order.ID)
 		decodeToPDF(stickers.Stickers[0].File, stickers.Stickers[0].OrderId, order)
 		ordersSlice = append(ordersSlice, readyPath+strconv.Itoa(order.ID)+".pdf")
+
+		// Передаём прогресс
+		progressChan <- Progress{Current: i + 1, Total: totalOrders}
+
 		if i%10 == 0 {
 			time.Sleep(2 * time.Second)
 		}
 	}
-	err = mergePDFsInDirectory(ordersSlice, WbDirectoryPath+supplyId+".pdf")
+
+	err = mergePDFsInDirectory(ordersSlice, readyFilePath)
 	if err != nil {
-		return err
+		return "", err
 	}
-	if !fileExists(WbDirectoryPath + supplyId + ".pdf") {
-		err = fmt.Errorf("такого файла не существует")
+	if !fileExists(readyFilePath) {
+		return "", fmt.Errorf("такого файла не существует")
 	}
-	return err
+
+	return readyFilePath, err
 }
 
 func decodeToPNG(base64String string, orderId int) string {
@@ -202,7 +217,7 @@ func createBarcodeWithSKU(sku string, outputPath string, fontSize float64) error
 	dc.Clear()
 
 	// Загрузка шрифта и установка его размера
-	fontPath := "font.ttf" // Укажите путь к вашему TTF-шрифту
+	fontPath := "/assets/font.ttf" // Укажите путь к вашему TTF-шрифту
 	if err := dc.LoadFontFace(fontPath, fontSize); err != nil {
 		return err
 	}

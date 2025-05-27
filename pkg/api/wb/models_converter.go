@@ -22,7 +22,7 @@ func GetOrdersFbs(wildberriesKey, supplyId string) ([]OrderWB, error) {
 }
 
 func GetStickersFbs(wildberriesKey string, orderId int) StickerWB {
-	jsonString := getCodesByOrderId(wildberriesKey, orderId)
+	jsonString, _ := getCodesByOrderId(wildberriesKey, orderId)
 	var stickers StickerWB
 	err := json.Unmarshal([]byte(jsonString), &stickers)
 	if err != nil {
@@ -39,7 +39,7 @@ func sortOrdersByArticle(orders []OrderWB) {
 
 func GetAllOrders(apiKey string, daysAgo, flag int) OrdersListALL {
 	var posting OrdersListALL
-	jsonString := apiOrdersALL(apiKey, daysAgo, flag)
+	jsonString, _ := apiOrdersALL(apiKey, daysAgo, flag)
 	err := json.Unmarshal([]byte(jsonString), &posting)
 	if err != nil {
 		log.Fatalf("Error decoding JSON: %v", err)
@@ -49,7 +49,7 @@ func GetAllOrders(apiKey string, daysAgo, flag int) OrdersListALL {
 
 func GetOrdersFBS(ApiKey string, daysAgo int) OrdersListFBS {
 	var posting OrdersListFBS
-	jsonString := ordersFBS(ApiKey, daysAgo)
+	jsonString, _ := ordersFBS(ApiKey, daysAgo)
 	err := json.Unmarshal([]byte(jsonString), &posting)
 	if err != nil {
 		log.Fatalf("Error decoding JSON: %v", err)
@@ -59,7 +59,7 @@ func GetOrdersFBS(ApiKey string, daysAgo int) OrdersListFBS {
 
 func GetSalesAndReturns(ApiKey string, daysAgo int) SalesReturns {
 	var sales SalesReturns
-	jsonString := apiSalesAndReturns(ApiKey, daysAgo)
+	jsonString, _ := apiSalesAndReturns(ApiKey, daysAgo)
 	err := json.Unmarshal([]byte(jsonString), &sales)
 	if err != nil {
 		log.Fatalf("Error decoding JSON: %v", err)
@@ -69,7 +69,7 @@ func GetSalesAndReturns(ApiKey string, daysAgo int) SalesReturns {
 
 func GetPostingStatus(ApiKey string, postingId int) string {
 	var postingStatuses OrdersWithStatuses
-	jsonString := ordersFBSStatus(ApiKey, postingId)
+	jsonString, _ := ordersFBSStatus(ApiKey, postingId)
 	err := json.Unmarshal([]byte(jsonString), &postingStatuses)
 	if err != nil {
 		log.Fatalf("Error decoding JSON: %v", err)
