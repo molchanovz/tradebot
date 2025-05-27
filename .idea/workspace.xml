@@ -6,8 +6,8 @@
   <component name="ChangeListManager">
     <list default="true" id="640077d7-ce81-4039-9739-8ad3e3a8d41a" name="Changes" comment="moving dockerfiles">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmd/main.go" beforeDir="false" afterPath="$PROJECT_DIR$/cmd/main.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docker-compose.yml" beforeDir="false" afterPath="$PROJECT_DIR$/docker-compose.yml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pkg/api/wb/api.go" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/api/wb/api.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pkg/api/wb/models_converter.go" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/api/wb/models_converter.go" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -59,33 +59,33 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;DefaultGoTemplateProperty&quot;: &quot;Go File&quot;,
-    &quot;Go Build.go build WildberriesGo_bot.executor&quot;: &quot;Run&quot;,
-    &quot;Go Build.go build WildberriesGo_bot/cmd.executor&quot;: &quot;Run&quot;,
-    &quot;Go Build.go build tradebot/cmd.executor&quot;: &quot;Run&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.go.formatter.settings.were.checked&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.go.migrated.go.modules.settings&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.go.modules.go.list.on.any.changes.was.set&quot;: &quot;true&quot;,
-    &quot;configurable.GoLibrariesConfigurable.is.expanded&quot;: &quot;true&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;refactoring&quot;,
-    &quot;go.import.settings.migrated&quot;: &quot;true&quot;,
-    &quot;go.sdk.automatically.set&quot;: &quot;true&quot;,
-    &quot;last_opened_file_path&quot;: &quot;/Users/sergey&quot;,
-    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
-    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
-    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;com.goide.configuration.GoLibrariesConfigurableProvider&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "DefaultGoTemplateProperty": "Go File",
+    "Go Build.go build WildberriesGo_bot.executor": "Run",
+    "Go Build.go build WildberriesGo_bot/cmd.executor": "Run",
+    "Go Build.go build tradebot/cmd.executor": "Run",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "RunOnceActivity.go.formatter.settings.were.checked": "true",
+    "RunOnceActivity.go.migrated.go.modules.settings": "true",
+    "RunOnceActivity.go.modules.go.list.on.any.changes.was.set": "true",
+    "configurable.GoLibrariesConfigurable.is.expanded": "true",
+    "git-widget-placeholder": "api-refactoring",
+    "go.import.settings.migrated": "true",
+    "go.sdk.automatically.set": "true",
+    "last_opened_file_path": "/Users/sergey",
+    "node.js.detected.package.eslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm",
+    "settings.editor.selected.configurable": "com.goide.configuration.GoLibrariesConfigurableProvider"
   },
-  &quot;keyToStringList&quot;: {
-    &quot;DatabaseDriversLRU&quot;: [
-      &quot;postgresql&quot;
+  "keyToStringList": {
+    "DatabaseDriversLRU": [
+      "postgresql"
     ]
   }
-}</component>
+}]]></component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
       <recent name="$PROJECT_DIR$/pkg/barcodes" />
@@ -125,9 +125,9 @@
       <list>
         <item itemvalue="Go Build.go build tradebot/cmd" />
         <item itemvalue="Go Build.go build WildberriesGo_bot/cmd" />
+        <item itemvalue="Go Build.go build WildberriesGo_bot/cmd" />
         <item itemvalue="Go Build.go build tradebot/cmd" />
-        <item itemvalue="Go Build.go build WildberriesGo_bot/cmd" />
-        <item itemvalue="Go Build.go build WildberriesGo_bot/cmd" />
+        <item itemvalue="Go Build.go build tradebot/cmd" />
       </list>
     </recent_temporary>
   </component>
