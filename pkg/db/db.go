@@ -40,3 +40,7 @@ func (Stock) TableName() string {
 func (User) TableName() string {
 	return "public.users"
 }
+
+func (Cabinet) TableName() string {
+	return "public.cabinets"
+}

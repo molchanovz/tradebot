@@ -36,14 +36,17 @@ func PostingFbs(ClientId, ApiKey, PostingNumber string) PostingFBS {
 	return posting
 }
 
-func PostingsListFbs(ClientId, ApiKey, since, to string, offset int, status string) PostingslistFbs {
+func PostingsListFbs(ClientId, ApiKey, since, to string, offset int, status string) (PostingslistFbs, error) {
 	var postingList PostingslistFbs
-	jsonString := V3PostingFbsList(ClientId, ApiKey, since, to, offset, status)
+	jsonString, _ := V3PostingFbsList(ClientId, ApiKey, since, to, offset, status)
+	if jsonString == "" {
+		return postingList, fmt.Errorf("json пустой")
+	}
 	err := json.Unmarshal([]byte(jsonString), &postingList)
 	if err != nil {
-		log.Fatalf("Error decoding JSON: %v", err)
+		return postingList, fmt.Errorf("error decoding JSON: %v", err)
 	}
-	return postingList
+	return postingList, nil
 }
 func PostingsListFbo(ClientId, ApiKey, since, to string, offset int) PostingslistFbo {
 	var postingList PostingslistFbo

@@ -22,18 +22,22 @@ import (
 )
 
 const (
-	CallbackWbHandler           = "WB"
-	CallbackYandexHandler       = "YANDEX"
-	CallbackOzonHandler         = "OZON"
-	CallbackWbFbsHandler        = "WB_FBS"
-	CallbackYandexFbsHandler    = "YANDEX_FBS"
-	CallbackWbOrdersHandler     = "WB_ORDERS"
-	CallbackYandexOrdersHandler = "YANDEX_ORDERS"
-	CallbackOzonOrdersHandler   = "OZON_ORDERS"
-	CallbackOzonStocksHandler   = "OZON_STOCKS"
-	CallbackWbStocksHandler     = "WB_STOCKS"
-	CallbackOzonStickersHandler = "OZON_STICKERS"
-	CallbackClustersHandler     = "OZON_CLUSTERS"
+	CallbackStartHandler = "START"
+
+	CallbackWbHandler            = "WB"
+	CallbackYandexHandler        = "YANDEX"
+	CallbackOzonHandler          = "OZON"
+	CallbackWbFbsHandler         = "WB-FBS"
+	CallbackYandexFbsHandler     = "YANDEX-FBS"
+	CallbackWbOrdersHandler      = "WB-ORDERS"
+	CallbackYandexOrdersHandler  = "YANDEX-ORDERS"
+	CallbackOzonOrdersHandler    = "OZON-ORDERS_"
+	CallbackOzonStocksHandler    = "OZON-STOCKS_"
+	CallbackWbStocksHandler      = "WB-STOCKS"
+	CallbackOzonStickersHandler  = "OZON-STICKERS_"
+	CallbackClustersHandler      = "OZON-CLUSTERS"
+	CallbackOzonCabinetsHandler  = "OZON-CABINETS"
+	CallbackSelectCabinetHandler = "CABINET_"
 )
 
 type Manager struct {
@@ -45,9 +49,8 @@ type Manager struct {
 	myChatId      string
 }
 
-func NewBotManager(ozonService OZON.Service, wbService WB.Service, yandexService YANDEX.Service, db *gorm.DB, myChatId string) *Manager {
+func NewBotManager(wbService WB.Service, yandexService YANDEX.Service, db *gorm.DB, myChatId string) *Manager {
 	return &Manager{
-		ozonService:   ozonService,
 		wbService:     wbService,
 		yandexService: yandexService,
 		db:            db,
@@ -64,11 +67,11 @@ func (m *Manager) GetBot() *botlib.Bot {
 
 func (m *Manager) RegisterBotHandlers() {
 	m.b.RegisterHandler(botlib.HandlerTypeMessageText, "/start", botlib.MatchTypePrefix, m.startHandler)
-	m.b.RegisterHandler(botlib.HandlerTypeCallbackQueryData, "START", botlib.MatchTypePrefix, m.startHandler)
+	m.b.RegisterHandler(botlib.HandlerTypeCallbackQueryData, CallbackStartHandler, botlib.MatchTypePrefix, m.startHandler)
 
 	m.b.RegisterHandler(botlib.HandlerTypeCallbackQueryData, CallbackWbHandler, botlib.MatchTypeExact, wbHandler)
 	m.b.RegisterHandler(botlib.HandlerTypeCallbackQueryData, CallbackYandexHandler, botlib.MatchTypeExact, yandexHandler)
-	m.b.RegisterHandler(botlib.HandlerTypeCallbackQueryData, CallbackOzonHandler, botlib.MatchTypeExact, ozonHandler)
+	m.b.RegisterHandler(botlib.HandlerTypeCallbackQueryData, CallbackOzonHandler, botlib.MatchTypeExact, m.ozonHandler)
 
 	m.b.RegisterHandler(botlib.HandlerTypeCallbackQueryData, CallbackWbFbsHandler, botlib.MatchTypeExact, m.wbFbsHandler)
 	m.b.RegisterHandler(botlib.HandlerTypeCallbackQueryData, CallbackYandexFbsHandler, botlib.MatchTypeExact, m.yandexFbsHandler)
@@ -79,6 +82,8 @@ func (m *Manager) RegisterBotHandlers() {
 	m.b.RegisterHandler(botlib.HandlerTypeCallbackQueryData, CallbackWbStocksHandler, botlib.MatchTypePrefix, wbStocksHandler)
 	m.b.RegisterHandler(botlib.HandlerTypeCallbackQueryData, CallbackOzonStickersHandler, botlib.MatchTypePrefix, m.ozonStickersHandler)
 	m.b.RegisterHandler(botlib.HandlerTypeCallbackQueryData, CallbackClustersHandler, botlib.MatchTypePrefix, m.ozonClustersHandler)
+
+	m.b.RegisterHandler(botlib.HandlerTypeCallbackQueryData, CallbackSelectCabinetHandler, botlib.MatchTypePrefix, m.ozonCabinetHandler)
 
 	//b.RegisterHandler(botlib.HandlerTypeCallbackQueryData, "YANDEX_FBS", botlib.MatchTypePrefix, wbOrdersHandler)
 

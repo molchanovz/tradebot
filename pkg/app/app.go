@@ -10,7 +10,6 @@ import (
 	"syscall"
 	"tradebot/pkg/bot"
 	"tradebot/pkg/db"
-	"tradebot/pkg/marketplaces/OZON"
 	"tradebot/pkg/marketplaces/WB"
 	"tradebot/pkg/marketplaces/YANDEX"
 	"tradebot/pkg/scheduler"
@@ -45,16 +44,6 @@ func (a Application) Start() {
 		return
 	}
 
-	clientId, err := initEnv(a.envPath, "ClientId")
-	if err != nil {
-		fmt.Printf("%v", err)
-	}
-	ozonToken, err := initEnv(a.envPath, "OzonKey")
-	if err != nil {
-		fmt.Printf("%v", err)
-	}
-	ozonService := OZON.NewService(clientId, ozonToken)
-
 	wbToken, err := initEnv(a.envPath, "API_KEY_WB")
 	if err != nil {
 		fmt.Printf("%v", err)
@@ -79,7 +68,7 @@ func (a Application) Start() {
 	if err != nil {
 		fmt.Printf("%v", err)
 	}
-	botService := bot.NewBotService(*ozonService, *wbService, *yandexService, botToken, sqlDB, myChatId)
+	botService := bot.NewBotService(*wbService, *yandexService, botToken, sqlDB, myChatId)
 	botService.Start()
 
 	schedulerService := scheduler.NewService(botService.GetManager(), wbToken)

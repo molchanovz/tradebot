@@ -213,7 +213,7 @@ func V3PostingFbsGet(ClientId, ApiKey, PostingNumber string) string {
 }
 
 // V3PostingFbsList метод получения ФБС заказов
-func V3PostingFbsList(ClientId, ApiKey, since, to string, offset int, status string) string {
+func V3PostingFbsList(ClientId, ApiKey, since, to string, offset int, status string) (string, error) {
 
 	url := "https://api-seller.ozon.ru/v3/posting/fbs/list"
 	body := []byte(fmt.Sprintf(`{
@@ -248,20 +248,20 @@ func V3PostingFbsList(ClientId, ApiKey, since, to string, offset int, status str
 	client := &http.Client{}
 	resp, err := client.Do(req)
 	if err != nil {
-		log.Fatalf("Ошибка выполнения запроса: %v", err)
+		return "", fmt.Errorf("ошибка выполнения запроса: %v", err)
 	}
 	defer resp.Body.Close()
 
 	// Проверяем статус ответа
 	if resp.StatusCode != http.StatusOK {
-		log.Fatalf("Ошибка V3PostingFbsList: получен статус %s", resp.Status)
+		return "", fmt.Errorf("Ошибка V3PostingFbsList: получен статус %v", resp.Status)
 	}
 
 	// Читаем тело ответа
 	jsonString, _ := io.ReadAll(resp.Body)
 
 	// Выводим ответ
-	return string(jsonString)
+	return string(jsonString), nil
 }
 func V2PostingFbsPackageLabel(ClientId, ApiKey, PostingNumber string) string {
 	url := "https://api-seller.ozon.ru/v2/posting/fbs/package-label"
@@ -290,13 +290,13 @@ func V2PostingFbsPackageLabel(ClientId, ApiKey, PostingNumber string) string {
 	}
 	defer resp.Body.Close()
 
-	// Проверяем статус ответа
-	if resp.StatusCode != http.StatusOK {
-		log.Fatalf("Ошибка V2PostingFbsPackageLabel: получен статус %s", resp.Status)
-	}
-
 	// Читаем тело ответа
 	jsonString, _ := io.ReadAll(resp.Body)
+
+	// Проверяем статус ответа
+	if resp.StatusCode != http.StatusOK {
+		log.Fatalf("Ошибка V2PostingFbsPackageLabel: получен статус %s. %v", resp.Status, string(jsonString))
+	}
 
 	// Выводим ответ
 	return string(jsonString)

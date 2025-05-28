@@ -17,3 +17,13 @@ type User struct {
 	StatusId int   `gorm:"column:statusId"`
 	IsAdmin  bool  `gorm:"column:isAdmin"`
 }
+
+type Cabinet struct {
+	ID          int    `gorm:"column:cabinetsId;unique"`
+	Name        string `gorm:"column:name"`
+	ClientId    string `gorm:"column:clientId;unique"`
+	Key         string `gorm:"column:key;unique"`
+	Marketplace string `gorm:"column:marketplace"`
+	Type        string `gorm:"column:type"`
+	UserId      int    `gorm:"column:userId"`
+}
