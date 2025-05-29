@@ -4,26 +4,11 @@
     <option name="autoReloadType" value="ALL" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="640077d7-ce81-4039-9739-8ad3e3a8d41a" name="Changes" comment="edit: wb fbs stickers processing">
-      <change beforePath="$PROJECT_DIR$/.idea/dataSources.local.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources.local.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/dataSources/9744d68c-87f6-4112-a253-3c5858dd2ba6.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources/9744d68c-87f6-4112-a253-3c5858dd2ba6.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/dataSources/9744d68c-87f6-4112-a253-3c5858dd2ba6/storage_v2/_src_/database/tradebot.42HFSw/schema/public.abK9xQ.meta" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources/9744d68c-87f6-4112-a253-3c5858dd2ba6/storage_v2/_src_/database/tradebot.42HFSw/schema/public.abK9xQ.meta" afterDir="false" />
+    <list default="true" id="640077d7-ce81-4039-9739-8ad3e3a8d41a" name="Changes" comment="edit: ozon stickers">
+      <change beforePath="$PROJECT_DIR$/.idea/dataSources/e915e4db-fea0-4ca4-b31c-9c265a2d58ef.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources/e915e4db-fea0-4ca4-b31c-9c265a2d58ef.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/dataSources/e915e4db-fea0-4ca4-b31c-9c265a2d58ef/storage_v2/_src_/database/tradebot.42HFSw/schema/public.abK9xQ.meta" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources/e915e4db-fea0-4ca4-b31c-9c265a2d58ef/storage_v2/_src_/database/tradebot.42HFSw/schema/public.abK9xQ.meta" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/go.mod" beforeDir="false" afterPath="$PROJECT_DIR$/go.mod" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/go.sum" beforeDir="false" afterPath="$PROJECT_DIR$/go.sum" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pkg/api/ozon/api.go" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/api/ozon/api.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pkg/api/ozon/models_converter.go" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/api/ozon/models_converter.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pkg/app/app.go" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/app/app.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pkg/bot/handlers/handlers_default.go" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/bot/handlers/handlers_default.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/pkg/bot/handlers/handlers_ozon.go" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/bot/handlers/handlers_ozon.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pkg/bot/service.go" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/bot/service.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pkg/db/db.go" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/db/db.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pkg/db/models.go" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/db/models.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pkg/marketplaces/OZON/orders_and_returns/logic.go" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/marketplaces/OZON/orders_and_returns/logic.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pkg/marketplaces/OZON/service.go" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/marketplaces/OZON/service.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pkg/marketplaces/OZON/stickersFBS/logic.go" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/marketplaces/OZON/stickersFBS/logic.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pkg/marketplaces/OZON/stocks_analyzer/logic.go" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/marketplaces/OZON/stocks_analyzer/logic.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pkg/ordersWriter/writer.go" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/ordersWriter/writer.go" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -164,7 +149,6 @@
   </component>
   <component name="VcsManagerConfiguration">
     <option name="CHECK_CODE_SMELLS_BEFORE_PROJECT_COMMIT" value="false" />
-    <MESSAGE value="add go.mod" />
     <MESSAGE value="fix: docker file" />
     <MESSAGE value="fix docker file: edit arm to amd" />
     <MESSAGE value="fix docker file: edit apk add" />
@@ -189,7 +173,8 @@
     <MESSAGE value="refactoring: wb api" />
     <MESSAGE value="add Самара (Новосемейкино)" />
     <MESSAGE value="edit: wb fbs stickers processing" />
-    <option name="LAST_COMMIT_MESSAGE" value="edit: wb fbs stickers processing" />
+    <MESSAGE value="edit: ozon stickers" />
+    <option name="LAST_COMMIT_MESSAGE" value="edit: ozon stickers" />
   </component>
   <component name="VgoProject">
     <settings-migrated>true</settings-migrated>

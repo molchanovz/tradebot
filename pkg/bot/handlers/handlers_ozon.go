@@ -165,9 +165,19 @@ func (m *Manager) ozonStocksHandler(ctx context.Context, bot *botlib.Bot, update
 
 	chatId := update.CallbackQuery.From.ID
 
-	postings := m.ozonService.GetStocksManager().GetPostings()
+	parts := strings.Split(update.CallbackQuery.Data, "_")
+	cabinetId := parts[1]
 
-	stocks := m.ozonService.GetStocksManager().GetStocks()
+	var cabinet db.Cabinet
+
+	result := m.db.Where(`"cabinetsId" = ?`, cabinetId).Find(&cabinet)
+	if result.Error != nil {
+		log.Println("Error finding user:", result.Error)
+	}
+
+	postings := OZON.NewService(cabinet).GetStocksManager().GetPostings()
+
+	stocks := OZON.NewService(cabinet).GetStocksManager().GetStocks()
 
 	filePath, err := generateExcelOzon(postings, stocks, K, "ozon")
 	if err != nil {
@@ -183,6 +193,7 @@ func (m *Manager) ozonStocksHandler(ctx context.Context, bot *botlib.Bot, update
 	os.Remove(filePath)
 
 }
+
 func (m *Manager) ozonStickersHandler(ctx context.Context, bot *botlib.Bot, update *models.Update) {
 	text := fmt.Sprintf("Подготовка файла Озон")
 	chatId := update.CallbackQuery.From.ID
