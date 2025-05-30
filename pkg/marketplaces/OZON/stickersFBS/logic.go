@@ -22,7 +22,7 @@ const (
 	codesPath         = OzonDirectoryPath + "codes/"
 	readyPath         = OzonDirectoryPath + "ready/"
 	generatedPath     = OzonDirectoryPath + "generated/"
-	barcodesPath      = "assets/barcodes/"
+	barcodesPath      = "/assets/barcodes/"
 )
 
 //const (
