@@ -1,13 +1,8 @@
 ﻿-- =============================================================================
 -- Diagram Name: tradebot
--- Created on: 22.04.2025 15:55:11
+-- Created on: 30.05.2025 15:35:01
 -- Diagram Version: 
 -- =============================================================================
-
-
-
-
-
 
 CREATE TYPE marketplaces AS ENUM('wildberries', 
 	'ozon', 
@@ -42,7 +37,7 @@ CREATE UNIQUE INDEX "IX_tgId_unique" ON "users" (
 
 
 CREATE TABLE "cabinets" (
-	"cabinetsId" int4 NOT NULL,
+	"cabinetsId" SERIAL NOT NULL,
 	"name" varchar(64) NOT NULL,
 	"clientId" varchar(64),
 	"key" varchar(256) NOT NULL,
@@ -50,6 +45,13 @@ CREATE TABLE "cabinets" (
 	"type" types NOT NULL,
 	"userId" int4 NOT NULL,
 	PRIMARY KEY("cabinetsId")
+);
+
+CREATE TABLE "orders" (
+	"orderId" SERIAL NOT NULL,
+	"postingNumber" varchar(32) NOT NULL,
+	"marketplace" marketplaces,
+	PRIMARY KEY("orderId")
 );
 
 

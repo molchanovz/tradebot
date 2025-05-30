@@ -24,20 +24,21 @@ import (
 const (
 	CallbackStartHandler = "START"
 
-	CallbackWbHandler            = "WB"
-	CallbackYandexHandler        = "YANDEX"
-	CallbackOzonHandler          = "OZON"
-	CallbackWbFbsHandler         = "WB-FBS"
-	CallbackYandexFbsHandler     = "YANDEX-FBS"
-	CallbackWbOrdersHandler      = "WB-ORDERS"
-	CallbackYandexOrdersHandler  = "YANDEX-ORDERS"
-	CallbackOzonOrdersHandler    = "OZON-ORDERS_"
-	CallbackOzonStocksHandler    = "OZON-STOCKS_"
-	CallbackWbStocksHandler      = "WB-STOCKS"
-	CallbackOzonStickersHandler  = "OZON-STICKERS_"
-	CallbackClustersHandler      = "OZON-CLUSTERS"
-	CallbackOzonCabinetsHandler  = "OZON-CABINETS"
-	CallbackSelectCabinetHandler = "CABINET_"
+	CallbackWbHandler                = "WB"
+	CallbackYandexHandler            = "YANDEX"
+	CallbackOzonHandler              = "OZON"
+	CallbackWbFbsHandler             = "WB-FBS"
+	CallbackYandexFbsHandler         = "YANDEX-FBS"
+	CallbackWbOrdersHandler          = "WB-ORDERS"
+	CallbackYandexOrdersHandler      = "YANDEX-ORDERS"
+	CallbackOzonOrdersHandler        = "OZON-ORDERS_"
+	CallbackOzonStocksHandler        = "OZON-STOCKS_"
+	CallbackWbStocksHandler          = "WB-STOCKS"
+	CallbackOzonStickersHandler      = "OZON-STICKERS_"
+	CallbackOzonPrintStickersHandler = "OZON-PRINT-STICKERS_"
+	CallbackClustersHandler          = "OZON-CLUSTERS"
+	CallbackOzonCabinetsHandler      = "OZON-CABINETS"
+	CallbackSelectCabinetHandler     = "CABINET_"
 )
 
 type Manager struct {
@@ -81,6 +82,7 @@ func (m *Manager) RegisterBotHandlers() {
 	m.b.RegisterHandler(botlib.HandlerTypeCallbackQueryData, CallbackOzonStocksHandler, botlib.MatchTypePrefix, m.ozonStocksHandler)
 	m.b.RegisterHandler(botlib.HandlerTypeCallbackQueryData, CallbackWbStocksHandler, botlib.MatchTypePrefix, wbStocksHandler)
 	m.b.RegisterHandler(botlib.HandlerTypeCallbackQueryData, CallbackOzonStickersHandler, botlib.MatchTypePrefix, m.ozonStickersHandler)
+	m.b.RegisterHandler(botlib.HandlerTypeCallbackQueryData, CallbackOzonPrintStickersHandler, botlib.MatchTypePrefix, m.ozonPrintStickers)
 	m.b.RegisterHandler(botlib.HandlerTypeCallbackQueryData, CallbackClustersHandler, botlib.MatchTypePrefix, m.ozonClustersHandler)
 
 	m.b.RegisterHandler(botlib.HandlerTypeCallbackQueryData, CallbackSelectCabinetHandler, botlib.MatchTypePrefix, m.ozonCabinetHandler)

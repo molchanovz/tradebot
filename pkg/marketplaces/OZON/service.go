@@ -43,7 +43,7 @@ func (s Service) GetStocksManager() stocks_analyzer.OzonManager {
 
 }
 
-func (s Service) GetStickersFBSManager() stickersFBS.OzonManager {
-	return stickersFBS.NewOzonManager(s.ClientId, s.Token)
+func (s Service) GetStickersFBSManager(printedOrders map[string]struct{}) stickersFBS.OzonManager {
+	return stickersFBS.NewOzonManager(s.ClientId, s.Token, printedOrders)
 
 }

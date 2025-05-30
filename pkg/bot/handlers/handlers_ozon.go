@@ -2,12 +2,14 @@ package bot
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	botlib "github.com/go-telegram/bot"
 	"github.com/go-telegram/bot/models"
 	"log"
 	"os"
 	"strings"
+	"tradebot/pkg/api/ozon"
 	"tradebot/pkg/db"
 	"tradebot/pkg/marketplaces/OZON"
 	"tradebot/pkg/marketplaces/OZON/stickersFBS"
@@ -194,13 +196,11 @@ func (m *Manager) ozonStocksHandler(ctx context.Context, bot *botlib.Bot, update
 
 }
 
+// Хендрер для "FBS"
 func (m *Manager) ozonStickersHandler(ctx context.Context, bot *botlib.Bot, update *models.Update) {
-	text := fmt.Sprintf("Подготовка файла Озон")
 	chatId := update.CallbackQuery.From.ID
-	message, err := sendTextMessage(ctx, bot, chatId, text)
-	if err != nil {
-		return
-	}
+
+	messageId := update.CallbackQuery.Message.Message.ID
 
 	parts := strings.Split(update.CallbackQuery.Data, "_")
 	cabinetId := parts[1]
@@ -212,7 +212,98 @@ func (m *Manager) ozonStickersHandler(ctx context.Context, bot *botlib.Bot, upda
 		log.Println("Error finding user:", result.Error)
 	}
 
-	err = OZON.NewService(cabinet).GetStickersFBSManager().GetLabels()
+	text := "Печать FBS стикеров. Выберите, какие стикеры распечатать"
+
+	var buttonsRow, buttonBack []models.InlineKeyboardButton
+	buttonsRow = append(buttonsRow, models.InlineKeyboardButton{Text: "Новые", CallbackData: fmt.Sprintf("%v%v_%v", CallbackOzonPrintStickersHandler, cabinetId, stickersFBS.NewLabels)})
+	buttonsRow = append(buttonsRow, models.InlineKeyboardButton{Text: "Все из сборки", CallbackData: fmt.Sprintf("%v%v_%v", CallbackOzonPrintStickersHandler, cabinetId, stickersFBS.AllLabels)})
+	buttonBack = append(buttonBack, models.InlineKeyboardButton{Text: "Назад", CallbackData: fmt.Sprintf("%v%v", CallbackSelectCabinetHandler, cabinetId)})
+
+	allButtons := [][]models.InlineKeyboardButton{buttonsRow, buttonBack}
+	markup := models.InlineKeyboardMarkup{InlineKeyboard: allButtons}
+
+	_, err := bot.EditMessageText(ctx, &botlib.EditMessageTextParams{ChatID: chatId, MessageID: messageId, Text: text, ReplyMarkup: markup})
+	if err != nil {
+		log.Printf("%v", err)
+		return
+	}
+}
+
+// Хендрер для печати стикеров "FBS"
+func (m *Manager) ozonPrintStickers(ctx context.Context, bot *botlib.Bot, update *models.Update) {
+	text := fmt.Sprintf("Подготовка файла Озон")
+	chatId := update.CallbackQuery.From.ID
+	message, err := sendTextMessage(ctx, bot, chatId, text)
+	if err != nil {
+		return
+	}
+
+	defer func() {
+		_, err = bot.DeleteMessage(ctx, &botlib.DeleteMessageParams{ChatID: chatId, MessageID: message.ID})
+		if err != nil {
+			return
+		}
+	}()
+
+	parts := strings.Split(update.CallbackQuery.Data, "_")
+	cabinetId := parts[1]
+	flag := parts[2]
+
+	var cabinet db.Cabinet
+
+	result := m.db.Where(`"cabinetsId" = ?`, cabinetId).Find(&cabinet)
+	if result.Error != nil {
+		log.Println("Error finding user:", result.Error)
+	}
+
+	var filePath string
+	newOrders := ozon.PostingslistFbs{}
+
+	printedOrdersMap := make(map[string]struct{})
+	var printedOrders []db.Order
+
+	result = m.db.Where(`"marketplace" = ?`, "ozon").Find(&printedOrders)
+	if result.Error != nil {
+		log.Println("Error finding user:", result.Error)
+	}
+
+	for _, order := range printedOrders {
+		printedOrdersMap[order.PostingNumber] = struct{}{}
+	}
+
+	manager := OZON.NewService(cabinet).GetStickersFBSManager(printedOrdersMap)
+
+	switch flag {
+	case stickersFBS.AllLabels:
+		{
+			filePath, err = manager.GetAllLabels()
+		}
+
+	case stickersFBS.NewLabels:
+		{
+			filePath, newOrders, err = manager.GetNewLabels()
+		}
+
+	default:
+		err = errors.New("неопознанный флаг для печати")
+	}
+
+	if len(newOrders.Result.PostingsFBS) > 0 {
+		orders := make([]db.Order, 0, len(newOrders.Result.PostingsFBS))
+
+		for _, order := range newOrders.Result.PostingsFBS {
+			orders = append(orders, db.Order{
+				PostingNumber: order.PostingNumber,
+				Marketplace:   "ozon",
+			})
+		}
+
+		result = m.db.Create(orders)
+		if result.Error != nil {
+			log.Println("Error creating orders:", result.Error)
+		}
+	}
+
 	if err != nil {
 		_, err = sendTextMessage(ctx, bot, chatId, err.Error())
 		if err != nil {
@@ -222,23 +313,21 @@ func (m *Manager) ozonStickersHandler(ctx context.Context, bot *botlib.Bot, upda
 		return
 	}
 
-	filePath := fmt.Sprintf("%v.pdf", stickersFBS.OzonDirectoryPath+"ozon")
+	if filePath == "" {
+		log.Println("файла не существует")
+		return
+	}
 	err = sendMediaMessage(ctx, bot, chatId, filePath)
 	if err != nil {
 		log.Println(err)
 		return
 	}
-	m.ozonService.GetStickersFBSManager().CleanFiles("ozon")
+	m.ozonService.GetStickersFBSManager(printedOrdersMap).CleanFiles("ozon")
 
 	text, markup := createStartAdminMarkup()
 	_, err = bot.SendMessage(ctx, &botlib.SendMessageParams{ChatID: chatId, Text: text, ReplyMarkup: markup})
 	if err != nil {
 		log.Printf("%v", err)
-		return
-	}
-
-	_, err = bot.DeleteMessage(ctx, &botlib.DeleteMessageParams{ChatID: chatId, MessageID: message.ID})
-	if err != nil {
 		return
 	}
 }
