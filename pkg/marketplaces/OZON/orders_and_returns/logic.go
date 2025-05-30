@@ -1,6 +1,7 @@
 package orders_and_returns
 
 import (
+	"math"
 	"strconv"
 	"time"
 	"tradebot/pkg/api/ozon"
@@ -18,18 +19,24 @@ func NewOzonOrdersManager(clientId, token, spreadsheetId string, daysAgo int) Oz
 }
 
 // WriteToGoogleSheets Заполнение гугл таблицы с id = spreadsheetId
-func (m OzonOrdersManager) WriteToGoogleSheets() error {
+func (m OzonOrdersManager) WriteToGoogleSheets(titleRange, fbsRange, fboRange, returnsRange string) (int, error) {
 	date := time.Now().AddDate(0, 0, -m.DaysAgo)
 	sheetsName := "Заказы OZON-" + strconv.Itoa(date.Day())
+
+	maxValuesCount := math.MinInt
 
 	var values [][]interface{}
 	values = append(values, []interface{}{"Отчет за " + date.Format("02.01.2006")})
 
-	writeRange := sheetsName + "!A1"
+	if maxValuesCount < len(values) {
+		maxValuesCount = len(values)
+	}
+
+	writeRange := sheetsName + titleRange
 
 	err := m.GoogleService.Write(m.SpreadsheetId, writeRange, values)
 	if err != nil {
-		return err
+		return 0, err
 	}
 
 	//Заполнение заказов FBS в writeRange
@@ -39,10 +46,15 @@ func (m OzonOrdersManager) WriteToGoogleSheets() error {
 	for article, count := range postingsWithCountFBS {
 		values = append(values, []interface{}{article, count})
 	}
-	writeRange = sheetsName + "!A2:B100"
+
+	if maxValuesCount < len(values) {
+		maxValuesCount = len(values)
+	}
+
+	writeRange = sheetsName + fbsRange
 	err = m.GoogleService.Write(m.SpreadsheetId, writeRange, values)
 	if err != nil {
-		return err
+		return 0, err
 	}
 
 	postingsWithCountFBO := m.getPostingsMapFBO(m.clientId, m.token)
@@ -51,10 +63,15 @@ func (m OzonOrdersManager) WriteToGoogleSheets() error {
 	for article, count := range postingsWithCountFBO {
 		values = append(values, []interface{}{article, count})
 	}
-	writeRange = sheetsName + "!D2:E100"
+
+	if maxValuesCount < len(values) {
+		maxValuesCount = len(values)
+	}
+
+	writeRange = sheetsName + fboRange
 	err = m.GoogleService.Write(m.SpreadsheetId, writeRange, values)
 	if err != nil {
-		return err
+		return 0, err
 	}
 
 	since := time.Now().AddDate(0, 0, m.DaysAgo*(-1)-1).Format("2006-01-02") + "T21:00:00.000Z"
@@ -62,7 +79,7 @@ func (m OzonOrdersManager) WriteToGoogleSheets() error {
 	//Заполнение возвратов
 	returnsWithCount, err := m.getReturnsMap(m.clientId, m.token, since, to)
 	if err != nil {
-		return err
+		return 0, err
 	}
 
 	values = [][]interface{}{}
@@ -70,20 +87,25 @@ func (m OzonOrdersManager) WriteToGoogleSheets() error {
 	for article, count := range returnsWithCount {
 		values = append(values, []interface{}{article, count})
 	}
-	writeRange = sheetsName + "!G2:H100"
-	err = m.GoogleService.Write(m.SpreadsheetId, writeRange, values)
-	if err != nil {
-		return err
+
+	if maxValuesCount < len(values) {
+		maxValuesCount = len(values)
 	}
 
-	return nil
+	writeRange = sheetsName + returnsRange
+	err = m.GoogleService.Write(m.SpreadsheetId, writeRange, values)
+	if err != nil {
+		return 0, err
+	}
+
+	return maxValuesCount, nil
 }
 
 func (m OzonOrdersManager) getPostingsMapFBS(clientId, token string) map[string]int {
 	postingsWithCountFBS := make(map[string]int)
 	since := time.Now().AddDate(0, 0, m.DaysAgo*(-1)-1).Format("2006-01-02") + "T21:00:00.000Z"
 	to := time.Now().AddDate(0, 0, m.DaysAgo*(-1)).Format("2006-01-02") + "T21:00:00.000Z"
-	potingsListFbs := ozon.PostingsListFbs(clientId, token, since, to, 0, "")
+	potingsListFbs, _ := ozon.PostingsListFbs(clientId, token, since, to, 0, "")
 	for _, posting := range potingsListFbs.Result.PostingsFBS {
 		if posting.Status != "cancelled" {
 			for _, product := range posting.Products {

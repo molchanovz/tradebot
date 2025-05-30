@@ -17,7 +17,7 @@
       </schema-mapping>
     </data-source>
     <data-source name="postgres local" uuid="2505417a-6f31-43d3-aa3d-4d931b8e2157">
-      <database-info product="PostgreSQL" version="15.12 (Debian 15.12-1.pgdg120+1)" jdbc-version="4.2" driver-name="PostgreSQL JDBC Driver" driver-version="42.7.3" dbms="POSTGRES" exact-version="15.12" exact-driver-version="42.7">
+      <database-info product="PostgreSQL" version="15.10 (Homebrew)" jdbc-version="4.2" driver-name="PostgreSQL JDBC Driver" driver-version="42.7.3" dbms="POSTGRES" exact-version="15.10" exact-driver-version="42.7">
         <identifier-quote-string>&quot;</identifier-quote-string>
       </database-info>
       <case-sensitivity plain-identifiers="lower" quoted-identifiers="exact" />

@@ -1,6 +1,8 @@
 package ordersWriter
 
-import "tradebot/pkg/google"
+import (
+	"tradebot/pkg/google"
+)
 
 type Manager interface {
 	WriteToGoogleSheets() error // Теперь метод возвращает ошибку

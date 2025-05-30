@@ -49,7 +49,7 @@ func (m OzonManager) GetPostings() map[string]map[string]map[string]int {
 		offset := 0
 		limit := 1000
 		for {
-			postingsListFbs := ozon.PostingsListFbs(m.clientId, m.token, period.since, period.to, offset, "")
+			postingsListFbs, _ := ozon.PostingsListFbs(m.clientId, m.token, period.since, period.to, offset, "")
 
 			for _, order := range postingsListFbs.Result.PostingsFBS {
 
