@@ -10,7 +10,7 @@ import (
 const (
 	StocksDaysAgo = 14
 	OrdersDaysAgo = 1
-	spreadsheetId = "1BQt6vsGKqFKZ06V4PaV2hmnbTS8c2sbSf3-hR7Hr320"
+	spreadsheetId = "1m2cWVMNb3BG7pewoMSGbiEg_UplToI6JUcuv1GUsoio"
 )
 
 type Authorization struct {
