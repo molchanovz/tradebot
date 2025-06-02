@@ -17,21 +17,22 @@ import (
 	"tradebot/pkg/api/ozon"
 )
 
+//const (
+//	OzonDirectoryPath = "app/pkg/OZON/stickersFBS/"
+//	codesPath         = OzonDirectoryPath + "codes/"
+//	readyPath         = OzonDirectoryPath + "ready/"
+//	generatedPath     = OzonDirectoryPath + "generated/"
+//	barcodesPath      = "/assets/barcodes/"
+//)
+
 const (
-	OzonDirectoryPath = "app/pkg/OZON/stickersFBS/"
+	OzonDirectoryPath = "/app/pkg/marketplaces/OZON/stickersFBS/"
 	codesPath         = OzonDirectoryPath + "codes/"
 	readyPath         = OzonDirectoryPath + "ready/"
 	generatedPath     = OzonDirectoryPath + "generated/"
 	barcodesPath      = "/assets/barcodes/"
+	fontPath          = "/assets/font.ttf"
 )
-
-//const (
-//	OzonDirectoryPath = "pkg/marketplaces/OZON/stickersFBS/"
-//	codesPath         = OzonDirectoryPath + "codes/"
-//	readyPath         = OzonDirectoryPath + "ready/"
-//	generatedPath     = OzonDirectoryPath + "generated/"
-//	barcodesPath      = "assets/barcodes/"
-//)
 
 type OzonManager struct {
 	clientId, token string
@@ -143,6 +144,9 @@ func (m OzonManager) getSortedFbsOrders() ozon.PostingslistFbs {
 
 func combineLabelWithBarcode(ozonPdfPath, outputPath, article string) error {
 	tmpImg := ozonPdfPath + ".jpg"
+
+	fmt.Println(tmpImg)
+
 	defer os.Remove(tmpImg)
 
 	doc, err := fitz.New(ozonPdfPath)
@@ -194,7 +198,8 @@ func combineLabelWithBarcode(ozonPdfPath, outputPath, article string) error {
 	barcodePath := barcodesPath + article + ".png"
 	if !fileExists(barcodePath) {
 		barcodePath = generatedPath + article + "_generated.png"
-		if err := createBarcodeWithSKU(article, barcodePath, 40); err != nil {
+		if err = createBarcodeWithSKU(article, barcodePath, 40); err != nil {
+			fmt.Println(err)
 			barcodePath = barcodesPath + "0.png"
 		}
 	}
@@ -211,6 +216,7 @@ func combineLabelWithBarcode(ozonPdfPath, outputPath, article string) error {
 	return pdf.OutputFileAndClose(outputPath)
 }
 
+// Функция для создания изображения с текстом (артикул товара) и сохранения в PNG
 func createBarcodeWithSKU(sku string, outputPath string, fontSize float64) error {
 	const imgWidth = 580  // Ширина изображения в пикселях
 	const imgHeight = 400 // Высота изображения в пикселях
@@ -223,7 +229,6 @@ func createBarcodeWithSKU(sku string, outputPath string, fontSize float64) error
 	dc.Clear()
 
 	// Загрузка шрифта и установка его размера
-	fontPath := "/assets/font.ttf" // Укажите путь к вашему TTF-шрифту
 	if err := dc.LoadFontFace(fontPath, fontSize); err != nil {
 		return err
 	}
