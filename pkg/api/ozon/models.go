@@ -378,16 +378,16 @@ type Returns struct {
 		} `json:"target_place"`
 		Storage struct {
 			Sum struct {
-				CurrencyCode string `json:"currency_code"`
-				Price        int    `json:"price"`
+				CurrencyCode string  `json:"currency_code"`
+				Price        float64 `json:"price"`
 			} `json:"sum"`
 			TarifficationFirstDate time.Time `json:"tariffication_first_date"`
 			TarifficationStartDate time.Time `json:"tariffication_start_date"`
 			ArrivedMoment          time.Time `json:"arrived_moment"`
 			Days                   int       `json:"days"`
 			UtilizationSum         struct {
-				CurrencyCode string `json:"currency_code"`
-				Price        int    `json:"price"`
+				CurrencyCode string  `json:"currency_code"`
+				Price        float64 `json:"price"`
 			} `json:"utilization_sum"`
 			UtilizationForecastDate time.Time `json:"utilization_forecast_date"`
 		} `json:"storage"`
@@ -396,8 +396,8 @@ type Returns struct {
 			OfferId string `json:"offer_id"`
 			Name    string `json:"name"`
 			Price   struct {
-				CurrencyCode string `json:"currency_code"`
-				Price        int    `json:"price"`
+				CurrencyCode string  `json:"currency_code"`
+				Price        float64 `json:"price"`
 			} `json:"price"`
 			PriceWithoutCommission struct {
 				CurrencyCode string  `json:"currency_code"`

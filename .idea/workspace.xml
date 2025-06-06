@@ -4,9 +4,16 @@
     <option name="autoReloadType" value="ALL" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="640077d7-ce81-4039-9739-8ad3e3a8d41a" name="Changes" comment="fix mupdf">
+    <list default="true" id="640077d7-ce81-4039-9739-8ad3e3a8d41a" name="Changes" comment="fix alpine ver">
+      <change beforePath="$PROJECT_DIR$/.idea/dataSources.local.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources.local.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/dataSources/e915e4db-fea0-4ca4-b31c-9c265a2d58ef.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources/e915e4db-fea0-4ca4-b31c-9c265a2d58ef.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/dataSources/e915e4db-fea0-4ca4-b31c-9c265a2d58ef/storage_v2/_src_/database/tradebot.42HFSw/schema/public.abK9xQ.meta" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources/e915e4db-fea0-4ca4-b31c-9c265a2d58ef/storage_v2/_src_/database/tradebot.42HFSw/schema/public.abK9xQ.meta" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Dockerfile" beforeDir="false" afterPath="$PROJECT_DIR$/Dockerfile" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pkg/api/ozon/api.go" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/api/ozon/api.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pkg/bot/handlers/handlers_default.go" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/bot/handlers/handlers_default.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pkg/bot/handlers/handlers_ozon.go" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/bot/handlers/handlers_ozon.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pkg/bot/handlers/handlers_wb.go" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/bot/handlers/handlers_wb.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pkg/bot/handlers/handlers_yandex.go" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/bot/handlers/handlers_yandex.go" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -147,7 +154,6 @@
   </component>
   <component name="VcsManagerConfiguration">
     <option name="CHECK_CODE_SMELLS_BEFORE_PROJECT_COMMIT" value="false" />
-    <MESSAGE value="fix docker file: edit apk add" />
     <MESSAGE value="fix docker compose: network_mode: &quot;host&quot;" />
     <MESSAGE value="fix docker compose: add dns" />
     <MESSAGE value="fix docker compose: edit host" />
@@ -172,7 +178,8 @@
     <MESSAGE value="fix barcodes path" />
     <MESSAGE value="update spreadsheetId" />
     <MESSAGE value="fix mupdf" />
-    <option name="LAST_COMMIT_MESSAGE" value="fix mupdf" />
+    <MESSAGE value="fix alpine ver" />
+    <option name="LAST_COMMIT_MESSAGE" value="fix alpine ver" />
   </component>
   <component name="VgoProject">
     <settings-migrated>true</settings-migrated>

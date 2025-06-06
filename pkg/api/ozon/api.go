@@ -11,9 +11,7 @@ import (
 	"strconv"
 )
 
-/*
-Метод получения ФБО заказа исходя из posting_number (нужен для извлечения товаров в возврате)
-*/
+// V2PostingFboGet для получения ФБО заказа исходя из posting_number (нужен для извлечения товаров в возврате)
 func V2PostingFboGet(ClientId, ApiKey, PostingNumber string) (string, error) {
 
 	url := "https://api-seller.ozon.ru/v2/posting/fbo/get"

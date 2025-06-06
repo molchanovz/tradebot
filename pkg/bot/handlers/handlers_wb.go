@@ -6,8 +6,10 @@ import (
 	"fmt"
 	botlib "github.com/go-telegram/bot"
 	"github.com/go-telegram/bot/models"
+	"github.com/xuri/excelize/v2"
 	"log"
 	"os"
+	"strconv"
 	"strings"
 	"time"
 	"tradebot/pkg/api/wb"
@@ -262,8 +264,6 @@ func (m *Manager) AnalyzeStocks(apiKey string, ctx context.Context, b *botlib.Bo
 
 	stocksMap := make(map[string]customStock)
 
-	//TODO чето не работает.
-
 	// Заполнение мапы артикулов
 	for i := range stocksFBO {
 		if stock, hasArticle := stocksMap[stocksFBO[i].SupplierArticle]; hasArticle {
@@ -329,4 +329,69 @@ func (m *Manager) AnalyzeStocks(apiKey string, ctx context.Context, b *botlib.Bo
 	}
 
 	return nil
+}
+
+func generateExcelWB(postings map[string]map[string]int, stocks map[string]map[string]int, K float64, mp string) (string, error) {
+	file := excelize.NewFile()
+	sheetName := "StocksFBO Analysis"
+	file.SetSheetName("Sheet1", sheetName)
+
+	// Заголовки
+	headers := []string{"Кластер", "Артикул", "Заказано", "Остатки"}
+	for i, h := range headers {
+		cell := string(rune('A'+i)) + "1"
+		file.SetCellValue(sheetName, cell, h)
+	}
+
+	articles := make(map[string]struct{})
+
+	// Собираем все уникальные артикулы
+	for _, postingsMap := range postings {
+		for article := range postingsMap {
+			articles[article] = struct{}{}
+		}
+	}
+	for _, stocksMap := range stocks {
+		for article := range stocksMap {
+			articles[article] = struct{}{}
+		}
+	}
+
+	row := 2
+	for cluster, postingsMap := range postings {
+
+		for article := range articles {
+			postingCount := postingsMap[article]
+			stock := 0
+			if clusterStocks, stocksExists := stocks[cluster]; stocksExists {
+				stock = clusterStocks[article]
+			}
+
+			file.SetCellValue(sheetName, "A"+strconv.Itoa(row), cluster)
+			file.SetCellValue(sheetName, "B"+strconv.Itoa(row), article)
+			file.SetCellValue(sheetName, "C"+strconv.Itoa(row), postingCount)
+			file.SetCellValue(sheetName, "D"+strconv.Itoa(row), stock)
+			row++
+
+		}
+	}
+
+	opt := []excelize.AutoFilterOptions{{
+		Column:     "",
+		Expression: "",
+	}}
+
+	rangeRef := fmt.Sprintf("A1:A%v", row)
+
+	err := file.AutoFilter(sheetName, rangeRef, opt)
+	if err != nil {
+		return "", err
+	}
+
+	// Сохраняем файл
+	filePath := mp + "_stock_analysis.xlsx"
+	if err := file.SaveAs(filePath); err != nil {
+		return "", err
+	}
+	return filePath, nil
 }
