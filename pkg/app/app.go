@@ -19,7 +19,7 @@ type Application struct {
 	envPath string
 }
 
-func NewApplication(envPath string) Application {
+func New(envPath string) Application {
 	return Application{envPath: envPath}
 }
 
@@ -33,7 +33,7 @@ func (a Application) Start() {
 	if err != nil {
 		fmt.Printf("%v", err)
 	}
-	dataBaseService := db.NewDataBaseService(dsn)
+	dataBaseService := db.NewService(dsn)
 	sqlDB, err := dataBaseService.InitDB()
 	if err != nil {
 		fmt.Printf("%v", err)
@@ -71,7 +71,7 @@ func (a Application) Start() {
 	botService := bot.NewBotService(*wbService, *yandexService, botToken, sqlDB, myChatId)
 	botService.Start()
 
-	schedulerService := scheduler.NewService(botService.GetManager(), wbToken)
+	schedulerService := scheduler.NewService(botService.Manager(), wbToken)
 	err = schedulerService.Start()
 	if err != nil {
 		log.Println(err)

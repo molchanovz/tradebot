@@ -7,6 +7,7 @@ import (
 	"github.com/go-telegram/bot/models"
 	"log"
 	"tradebot/pkg/db"
+	"tradebot/pkg/marketplaces/WB/stickersFbs"
 	"tradebot/pkg/marketplaces/YANDEX/yandex_stickers_fbs"
 )
 
@@ -78,14 +79,14 @@ func (m *Manager) yandexOrdersHandler(ctx context.Context, bot *botlib.Bot, upda
 
 }
 
-func (m *Manager) getYandexFbs(ctx context.Context, bot *botlib.Bot, chatId int64, supplyId string) {
+func (m *Manager) getYandexFbsDEPRECATED(ctx context.Context, bot *botlib.Bot, chatId int64, supplyId string) {
 	text := fmt.Sprintf("Подготовка файла Яндекс")
 	message, err := sendTextMessage(ctx, bot, chatId, text)
 	if err != nil {
 		return
 	}
 
-	err = m.yandexService.GetStickersFbsManager().GetOrdersInfo(supplyId)
+	_, err = m.yandexService.GetStickersFbsManager().GetOrdersInfo(supplyId, nil)
 	if err != nil {
 		_, err := sendTextMessage(ctx, bot, chatId, err.Error())
 		if err != nil {
@@ -109,5 +110,23 @@ func (m *Manager) getYandexFbs(ctx context.Context, bot *botlib.Bot, chatId int6
 	if err != nil {
 		return
 	}
+
+}
+func (m *Manager) getYandexFbs(ctx context.Context, bot *botlib.Bot, chatId int64, supplyId string) {
+
+	done := make(chan string)
+	progressChan := make(chan stickersFbs.Progress)
+
+	go func() {
+		filePath, err := m.yandexService.GetStickersFbsManager().GetOrdersInfo(supplyId, progressChan)
+		if err != nil {
+			log.Println("Ошибка при получении файла:", err)
+			done <- ""
+			return
+		}
+		done <- filePath
+	}()
+
+	m.WaitReadyFile(ctx, bot, chatId, progressChan, done)
 
 }

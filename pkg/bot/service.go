@@ -29,7 +29,7 @@ func NewBotService(wbService WB.Service, yandexService YANDEX.Service, token str
 	}
 }
 
-func (s *Service) GetManager() *bot.Manager {
+func (s *Service) Manager() *bot.Manager {
 	return s.manager
 }
 

@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/fogleman/gg"
 	"github.com/gen2brain/go-fitz"
+	"tradebot/pkg/marketplaces/WB/stickersFbs"
 
 	"github.com/jung-kurt/gofpdf"
 
@@ -45,65 +46,71 @@ func NewManager(yandexCampaignIdFBO, yandexCampaignIdFBS, token string) *Manager
 	}
 }
 
-func (m Manager) GetOrdersInfo(supplyId string) error {
+func (m Manager) GetOrdersInfo(supplyId string, progressChan chan stickersFbs.Progress) (string, error) {
 	CreateDirectories()
 	orderIds, err := yandex.GetOrdersIds(m.token, supplyId)
 	if err != nil {
-		return fmt.Errorf("ошибка в GetOrdersIds: %v", err)
+		return "", fmt.Errorf("ошибка в GetOrdersIds: %v", err)
 	}
 
+	totalOrders := len(orderIds)
+
 	var ordersSlice []string
-	for _, orderId := range orderIds {
+	for i, orderId := range orderIds {
 		//Получаем товары в заказе
 		order, err := yandex.GetOrder(m.token, orderId)
 		if err != nil {
-			return fmt.Errorf("ошибка в GetOrder: %v", err)
+			return "", fmt.Errorf("ошибка в GetOrder: %v", err)
 		}
 		//Получаем стикеры к товарам
 
 		stickers, err := yandex.GetStickers(m.token, orderId)
 		if err != nil {
-			return fmt.Errorf("ошибка в GetStickers, %v", err)
+			return "", fmt.Errorf("ошибка в GetStickers, %v", err)
 		}
 
 		// Создаем файл для записи данных
 		file, err := os.Create(fmt.Sprintf("%v.pdf", codesPath+strconv.Itoa(int(order.Order.Id))))
 		if err != nil {
-			return err
+			return "", err
 		}
 
 		// Записываем строку в файл
 		_, err = file.Write([]byte(stickers))
 		if err != nil {
-			return fmt.Errorf("ошибка в записи в файл: %v", err)
+			return "", fmt.Errorf("ошибка в записи в файл: %v", err)
 		}
 
 		file.Close()
 
 		pdf, err := CreateLabel(fmt.Sprintf("%v.pdf", codesPath+strconv.Itoa(int(order.Order.Id))), order.Order.Items)
 		if err != nil {
-			return fmt.Errorf("ошибка в CreateLabel: %v", err)
+			return "", fmt.Errorf("ошибка в CreateLabel: %v", err)
 		}
 
 		// Сохраняем итоговый PDF
 		err = pdf.OutputFileAndClose(fmt.Sprintf("%v.pdf", readyPath+strconv.Itoa(int(order.Order.Id))))
 		if err != nil {
-			return fmt.Errorf("Ошибка при сохранении PDF:", err)
+			return "", fmt.Errorf("ошибка при сохранении PDF: %v", err)
 		} else {
 			fmt.Println("PDF успешно создан:", fmt.Sprintf("%v.pdf", readyPath+strconv.Itoa(int(order.Order.Id))))
 		}
 		ordersSlice = append(ordersSlice, fmt.Sprintf("%v.pdf", readyPath+strconv.Itoa(int(order.Order.Id))))
+
+		progressChan <- stickersFbs.Progress{Current: i + 1, Total: totalOrders}
 	}
 
-	err = mergePDFsInDirectory(ordersSlice, YaDirectoryPath+supplyId+".pdf")
+	readyFilePath := YaDirectoryPath + supplyId + ".pdf"
+
+	err = mergePDFsInDirectory(ordersSlice, readyFilePath)
 	if err != nil {
-		return err
+		return "", err
 	}
-	if !fileExists(YaDirectoryPath + supplyId + ".pdf") {
-		return fmt.Errorf("такого файла не существует")
+	if !fileExists(readyFilePath) {
+		return "", fmt.Errorf("такого файла не существует")
 	}
 
-	return nil
+	return readyFilePath, nil
 }
 
 func CreateLabel(codePath string, items yandex.Items) (*gofpdf.Fpdf, error) {

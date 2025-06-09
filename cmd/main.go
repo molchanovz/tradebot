@@ -3,6 +3,6 @@ package main
 import "tradebot/pkg/app"
 
 func main() {
-	application := app.NewApplication(".env")
+	application := app.New(".env")
 	application.Start()
 }

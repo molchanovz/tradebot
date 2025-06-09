@@ -76,8 +76,6 @@ func (m *Manager) getWbFbs(ctx context.Context, bot *botlib.Bot, chatId int64, s
 	done := make(chan string)
 	progressChan := make(chan stickersFbs.Progress)
 
-	var progressMsgId int
-
 	go func() {
 		filePath, err := m.wbService.GetStickersFbsManager().GetReadyFile(supplyId, progressChan)
 		if err != nil {
@@ -88,6 +86,15 @@ func (m *Manager) getWbFbs(ctx context.Context, bot *botlib.Bot, chatId int64, s
 		done <- filePath
 	}()
 
+	m.WaitReadyFile(ctx, bot, chatId, progressChan, done)
+
+	stickersFbs.CleanFiles(supplyId)
+	stickersFbs.CreateDirectories()
+
+}
+
+func (m *Manager) WaitReadyFile(ctx context.Context, bot *botlib.Bot, chatId int64, progressChan chan stickersFbs.Progress, done chan string) {
+	var progressMsgId int
 	var lastReportedCurrent int
 	var lastTotal int
 
@@ -140,7 +147,6 @@ func (m *Manager) getWbFbs(ctx context.Context, bot *botlib.Bot, chatId int64, s
 				return
 			}
 
-			filePath = fmt.Sprintf("%v%v.pdf", stickersFbs.WbDirectoryPath, supplyId)
 			err = sendMediaMessage(ctx, bot, chatId, filePath)
 			if err != nil {
 				log.Println(err)
@@ -155,9 +161,6 @@ func (m *Manager) getWbFbs(ctx context.Context, bot *botlib.Bot, chatId int64, s
 					return
 				}
 			}
-
-			stickersFbs.CleanFiles(supplyId)
-			stickersFbs.CreateDirectories()
 
 			text, markup := createStartAdminMarkup()
 			_, err = bot.SendMessage(ctx, &botlib.SendMessageParams{

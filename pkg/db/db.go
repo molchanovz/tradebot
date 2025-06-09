@@ -16,15 +16,15 @@ const (
 	WaitingYaState
 )
 
-type DataBaseService struct {
+type Service struct {
 	dsn string
 }
 
-func NewDataBaseService(dsn string) DataBaseService {
-	return DataBaseService{dsn: dsn}
+func NewService(dsn string) Service {
+	return Service{dsn: dsn}
 }
 
-func (dbs DataBaseService) InitDB() (*gorm.DB, error) {
+func (dbs Service) InitDB() (*gorm.DB, error) {
 	log.Println("Инициализация базы данных")
 	Database, err := gorm.Open(postgres.Open(dbs.dsn), &gorm.Config{})
 	if err != nil {
