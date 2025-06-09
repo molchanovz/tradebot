@@ -11,6 +11,12 @@ type Stock struct {
 	StocksFBS   *int      `gorm:"column:stocksFbs"`
 }
 
+type Order struct {
+	ID            int    `gorm:"column:orderId;unique"`
+	PostingNumber string `gorm:"column:postingNumber"`
+	Marketplace   string `gorm:"column:marketplace"`
+}
+
 type User struct {
 	ID       int   `gorm:"column:userId;unique"`
 	TgId     int64 `gorm:"column:tgId;unique"`

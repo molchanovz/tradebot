@@ -30,6 +30,7 @@ const (
 	readyPath     = YaDirectoryPath + "ready/"
 	generatedPath = YaDirectoryPath + "generated/"
 	barcodesPath  = "/app/pkg/barcodes/"
+	fontPath      = "/app/assets/font.ttf"
 )
 
 type Manager struct {
@@ -296,7 +297,6 @@ func createBarcodeWithSKU(sku string, outputPath string, fontSize float64) error
 	dc.Clear()
 
 	// Загрузка шрифта и установка его размера
-	fontPath := "font.ttf" // Укажите путь к вашему TTF-шрифту
 	if err := dc.LoadFontFace(fontPath, fontSize); err != nil {
 		return err
 	}

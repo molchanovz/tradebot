@@ -10,7 +10,7 @@ import (
 const (
 	StocksDaysAgo = 14
 	OrdersDaysAgo = 1
-	spreadsheetId = "1BQt6vsGKqFKZ06V4PaV2hmnbTS8c2sbSf3-hR7Hr320"
+	spreadsheetId = "1m2cWVMNb3BG7pewoMSGbiEg_UplToI6JUcuv1GUsoio"
 )
 
 type Authorization struct {
@@ -43,7 +43,7 @@ func (s Service) GetStocksManager() stocks_analyzer.OzonManager {
 
 }
 
-func (s Service) GetStickersFBSManager() stickersFBS.OzonManager {
-	return stickersFBS.NewOzonManager(s.ClientId, s.Token)
+func (s Service) GetStickersFBSManager(printedOrders map[string]struct{}) stickersFBS.OzonManager {
+	return stickersFBS.NewOzonManager(s.ClientId, s.Token, printedOrders)
 
 }

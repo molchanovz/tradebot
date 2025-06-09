@@ -44,3 +44,7 @@ func (User) TableName() string {
 func (Cabinet) TableName() string {
 	return "public.cabinets"
 }
+
+func (Order) TableName() string {
+	return "public.orders"
+}

@@ -1,6 +1,7 @@
 package stickersFBS
 
 import (
+	"errors"
 	"fmt"
 	"github.com/fogleman/gg"
 	"github.com/gen2brain/go-fitz"
@@ -16,43 +17,76 @@ import (
 	"tradebot/pkg/api/ozon"
 )
 
+//const (
+//	OzonDirectoryPath = "app/pkg/OZON/stickersFBS/"
+//	codesPath         = OzonDirectoryPath + "codes/"
+//	readyPath         = OzonDirectoryPath + "ready/"
+//	generatedPath     = OzonDirectoryPath + "generated/"
+//	barcodesPath      = "/assets/barcodes/"
+//)
+
 const (
-	OzonDirectoryPath = "app/pkg/OZON/stickersFBS/"
+	OzonDirectoryPath = "/app/pkg/marketplaces/OZON/stickersFBS/"
 	codesPath         = OzonDirectoryPath + "codes/"
 	readyPath         = OzonDirectoryPath + "ready/"
 	generatedPath     = OzonDirectoryPath + "generated/"
 	barcodesPath      = "/assets/barcodes/"
+	fontPath          = "/assets/font.ttf"
 )
-
-//const (
-//	OzonDirectoryPath = "pkg/marketplaces/OZON/stickersFBS/"
-//	codesPath         = OzonDirectoryPath + "codes/"
-//	readyPath         = OzonDirectoryPath + "ready/"
-//	generatedPath     = OzonDirectoryPath + "generated/"
-//	barcodesPath      = "assets/barcodes/"
-//)
 
 type OzonManager struct {
 	clientId, token string
+	printedOrders   map[string]struct{}
 }
 
-func NewOzonManager(clientId, token string) OzonManager {
+func NewOzonManager(clientId, token string, printedOrders map[string]struct{}) OzonManager {
 	return OzonManager{
-		clientId: clientId,
-		token:    token,
+		clientId:      clientId,
+		token:         token,
+		printedOrders: printedOrders,
 	}
 }
 
-func (m OzonManager) GetLabels() error {
-	since := time.Now().AddDate(0, 0, -7).Format("2006-01-02T15:04:05.000Z")
-	to := time.Now().Format("2006-01-02T15:04:05.000Z")
+const (
+	AllLabels = "all"
+	NewLabels = "new"
+)
 
-	orderIds, _ := ozon.PostingsListFbs(m.clientId, m.token, since, to, 0, "awaiting_deliver")
+func (m OzonManager) GetAllLabels() (string, error) {
+	orderIds := m.getSortedFbsOrders()
 
-	sort.Slice(orderIds.Result.PostingsFBS, func(i, j int) bool {
-		return orderIds.Result.PostingsFBS[i].Products[0].OfferId < orderIds.Result.PostingsFBS[j].Products[0].OfferId
-	})
+	readyPdfPath, err := m.getReadyPdf(orderIds)
+	if err != nil {
+		return "", err
+	}
 
+	return readyPdfPath, nil
+}
+
+func (m OzonManager) GetNewLabels() (string, ozon.PostingslistFbs, error) {
+	orders := m.getSortedFbsOrders()
+
+	//Проверка, есть ли новые заказы
+	newOrders := ozon.PostingslistFbs{}
+	for _, posting := range orders.Result.PostingsFBS {
+		if _, ok := m.printedOrders[posting.PostingNumber]; !ok {
+			newOrders.Result.PostingsFBS = append(newOrders.Result.PostingsFBS, posting)
+		}
+	}
+
+	if len(newOrders.Result.PostingsFBS) == 0 {
+		return "", newOrders, errors.New("Новых заказов нет")
+	}
+
+	readyPdfPath, err := m.getReadyPdf(newOrders)
+	if err != nil {
+		return "", newOrders, err
+	}
+
+	return readyPdfPath, newOrders, nil
+}
+
+func (m OzonManager) getReadyPdf(orderIds ozon.PostingslistFbs) (string, error) {
 	CreateDirectories()
 
 	var combinedPDFs []string
@@ -63,18 +97,18 @@ func (m OzonManager) GetLabels() error {
 		// 2. Сохраняем во временный файл
 		orderPDF := fmt.Sprintf("%v.pdf", codesPath+order.PostingNumber)
 		if err := os.WriteFile(orderPDF, []byte(labelPDF), 0644); err != nil {
-			return fmt.Errorf("ошибка записи PDF: %v", err)
+			return "", fmt.Errorf("ошибка записи PDF: %v", err)
 		}
 
 		// 3. Извлекаем первую страницу
 		if err := extractFirstPage(orderPDF); err != nil {
-			return fmt.Errorf("ошибка извлечения страницы: %v", err)
+			return "", fmt.Errorf("ошибка извлечения страницы: %v", err)
 		}
 
 		// 4. Объединяем с баркодом
 		finalPDF := fmt.Sprintf("%v.pdf", readyPath+order.PostingNumber)
 		if err := combineLabelWithBarcode(orderPDF, finalPDF, order.Products[0].OfferId); err != nil {
-			return fmt.Errorf("ошибка объединения PDF с баркодом: %v", err)
+			return "", fmt.Errorf("ошибка объединения PDF с баркодом: %v", err)
 		}
 
 		// 5. Удаляем временные файлы
@@ -84,20 +118,35 @@ func (m OzonManager) GetLabels() error {
 	}
 
 	// 6. Объединяем все PDF в один
-	if err := mergePDFsInDirectory(combinedPDFs, OzonDirectoryPath+"ozon.pdf"); err != nil {
-		return fmt.Errorf("ошибка объединения PDF: %v", err)
+	readyPdfPath := OzonDirectoryPath + "ozon.pdf"
+	if err := mergePDFsInDirectory(combinedPDFs, readyPdfPath); err != nil {
+		return "", fmt.Errorf("ошибка объединения PDF: %v", err)
 	}
 
 	// 7. Проверяем результат
-	if !fileExists(OzonDirectoryPath + "ozon.pdf") {
-		return fmt.Errorf("итоговый PDF не создан")
+	if !fileExists(readyPdfPath) {
+		return "", fmt.Errorf("итоговый PDF не создан")
 	}
+	return readyPdfPath, nil
+}
 
-	return nil
+func (m OzonManager) getSortedFbsOrders() ozon.PostingslistFbs {
+	since := time.Now().AddDate(0, 0, -7).Format("2006-01-02T15:04:05.000Z")
+	to := time.Now().Format("2006-01-02T15:04:05.000Z")
+
+	orderIds, _ := ozon.PostingsListFbs(m.clientId, m.token, since, to, 0, "awaiting_deliver")
+
+	sort.Slice(orderIds.Result.PostingsFBS, func(i, j int) bool {
+		return orderIds.Result.PostingsFBS[i].Products[0].OfferId < orderIds.Result.PostingsFBS[j].Products[0].OfferId
+	})
+	return orderIds
 }
 
 func combineLabelWithBarcode(ozonPdfPath, outputPath, article string) error {
 	tmpImg := ozonPdfPath + ".jpg"
+
+	fmt.Println(tmpImg)
+
 	defer os.Remove(tmpImg)
 
 	doc, err := fitz.New(ozonPdfPath)
@@ -149,7 +198,8 @@ func combineLabelWithBarcode(ozonPdfPath, outputPath, article string) error {
 	barcodePath := barcodesPath + article + ".png"
 	if !fileExists(barcodePath) {
 		barcodePath = generatedPath + article + "_generated.png"
-		if err := createBarcodeWithSKU(article, barcodePath, 40); err != nil {
+		if err = createBarcodeWithSKU(article, barcodePath, 40); err != nil {
+			fmt.Println(err)
 			barcodePath = barcodesPath + "0.png"
 		}
 	}
@@ -166,6 +216,7 @@ func combineLabelWithBarcode(ozonPdfPath, outputPath, article string) error {
 	return pdf.OutputFileAndClose(outputPath)
 }
 
+// Функция для создания изображения с текстом (артикул товара) и сохранения в PNG
 func createBarcodeWithSKU(sku string, outputPath string, fontSize float64) error {
 	const imgWidth = 580  // Ширина изображения в пикселях
 	const imgHeight = 400 // Высота изображения в пикселях
@@ -178,7 +229,6 @@ func createBarcodeWithSKU(sku string, outputPath string, fontSize float64) error
 	dc.Clear()
 
 	// Загрузка шрифта и установка его размера
-	fontPath := "/assets/font.ttf" // Укажите путь к вашему TTF-шрифту
 	if err := dc.LoadFontFace(fontPath, fontSize); err != nil {
 		return err
 	}

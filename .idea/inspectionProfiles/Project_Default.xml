@@ -8,6 +8,7 @@
       </functions>
       <methods>
         <method importPath="github.com/go-co-op/gocron/v2" receiver="Scheduler" name="NewJob" />
+        <method importPath="tradebot/pkg/marketplaces/OZON/stickersFBS" receiver="OzonManager" name="GetNewLabels" />
       </methods>
     </inspection_tool>
   </profile>

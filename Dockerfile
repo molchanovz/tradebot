@@ -1,4 +1,4 @@
-FROM golang:1.23-alpine AS builder
+FROM golang:1.24-alpine AS builder
 
 WORKDIR /app
 
@@ -11,14 +11,14 @@ ENV CGO_ENABLED=0
 
 RUN go build ./cmd/main.go
 
-FROM alpine:latest
+FROM alpine:3.21
 
 WORKDIR /app
 
 RUN apk add --no-cache \
     curl\
-    mupdf-dev \
-    mupdf-tools \
+    mupdf-dev\
+    mupdf-tools\
     libx11 \
     glib \
     fontconfig \
@@ -28,11 +28,11 @@ RUN apk add --no-cache \
     tar \
     xz
 
-RUN wget https://github.com/pdfcpu/pdfcpu/releases/download/v0.10.2/pdfcpu_0.10.2_Linux_x86_64.tar.xz && \
+RUN wget https://github.com/pdfcpu/pdfcpu/releases/download/v0.11.0/pdfcpu_0.11.0_Linux_x86_64.tar.xz && \
     mkdir -p /tmp/pdfcpu && \
-    tar -xJf pdfcpu_0.10.2_Linux_x86_64.tar.xz -C /tmp/pdfcpu --strip-components=1 && \
+    tar -xJf pdfcpu_0.11.0_Linux_x86_64.tar.xz -C /tmp/pdfcpu --strip-components=1 && \
     mv /tmp/pdfcpu/pdfcpu /usr/local/bin/ && \
-    rm -rf /tmp/pdfcpu pdfcpu_0.10.2_Linux_x86_64.tar.xz && \
+    rm -rf /tmp/pdfcpu pdfcpu_0.11.0_Linux_x86_64.tar.xz && \
     chmod +x /usr/local/bin/pdfcpu
 
 

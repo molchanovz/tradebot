@@ -4,10 +4,16 @@
     <option name="autoReloadType" value="ALL" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="640077d7-ce81-4039-9739-8ad3e3a8d41a" name="Changes" comment="moving dockerfiles">
+    <list default="true" id="640077d7-ce81-4039-9739-8ad3e3a8d41a" name="Changes" comment="fix alpine ver">
+      <change beforePath="$PROJECT_DIR$/.idea/dataSources.local.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources.local.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/dataSources/e915e4db-fea0-4ca4-b31c-9c265a2d58ef.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources/e915e4db-fea0-4ca4-b31c-9c265a2d58ef.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/dataSources/e915e4db-fea0-4ca4-b31c-9c265a2d58ef/storage_v2/_src_/database/tradebot.42HFSw/schema/public.abK9xQ.meta" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources/e915e4db-fea0-4ca4-b31c-9c265a2d58ef/storage_v2/_src_/database/tradebot.42HFSw/schema/public.abK9xQ.meta" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmd/main.go" beforeDir="false" afterPath="$PROJECT_DIR$/cmd/main.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docker-compose.yml" beforeDir="false" afterPath="$PROJECT_DIR$/docker-compose.yml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pkg/api/ozon/api.go" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/api/ozon/api.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pkg/bot/handlers/handlers_default.go" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/bot/handlers/handlers_default.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pkg/bot/handlers/handlers_ozon.go" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/bot/handlers/handlers_ozon.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pkg/bot/handlers/handlers_wb.go" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/bot/handlers/handlers_wb.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pkg/bot/handlers/handlers_yandex.go" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/bot/handlers/handlers_yandex.go" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -71,10 +77,10 @@
     &quot;RunOnceActivity.go.migrated.go.modules.settings&quot;: &quot;true&quot;,
     &quot;RunOnceActivity.go.modules.go.list.on.any.changes.was.set&quot;: &quot;true&quot;,
     &quot;configurable.GoLibrariesConfigurable.is.expanded&quot;: &quot;true&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;refactoring&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;ozon-fbs&quot;,
     &quot;go.import.settings.migrated&quot;: &quot;true&quot;,
     &quot;go.sdk.automatically.set&quot;: &quot;true&quot;,
-    &quot;last_opened_file_path&quot;: &quot;/Users/sergey&quot;,
+    &quot;last_opened_file_path&quot;: &quot;/Users/sergey/GolandProjects/tradebot/assets/barcodes&quot;,
     &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
     &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
     &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
@@ -88,18 +94,18 @@
 }</component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/assets/barcodes" />
       <recent name="$PROJECT_DIR$/pkg/barcodes" />
       <recent name="$PROJECT_DIR$/pkg/OZON" />
       <recent name="$PROJECT_DIR$/pkg/WB" />
       <recent name="$PROJECT_DIR$/pkg/YANDEX/yandex_stickers_fbs/barcodes" />
-      <recent name="$PROJECT_DIR$" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/assets/barcodes" />
       <recent name="$PROJECT_DIR$" />
       <recent name="$PROJECT_DIR$/deployments" />
       <recent name="$PROJECT_DIR$/pkg/google/utils" />
       <recent name="$PROJECT_DIR$/config" />
-      <recent name="$PROJECT_DIR$/assets" />
     </key>
   </component>
   <component name="RunManager" selected="Go Build.go build tradebot/cmd">
@@ -148,13 +154,6 @@
   </component>
   <component name="VcsManagerConfiguration">
     <option name="CHECK_CODE_SMELLS_BEFORE_PROJECT_COMMIT" value="false" />
-    <MESSAGE value="fix go mod" />
-    <MESSAGE value="delete go mod" />
-    <MESSAGE value="delete vendor" />
-    <MESSAGE value="add go.mod" />
-    <MESSAGE value="fix: docker file" />
-    <MESSAGE value="fix docker file: edit arm to amd" />
-    <MESSAGE value="fix docker file: edit apk add" />
     <MESSAGE value="fix docker compose: network_mode: &quot;host&quot;" />
     <MESSAGE value="fix docker compose: add dns" />
     <MESSAGE value="fix docker compose: edit host" />
@@ -173,7 +172,14 @@
     <MESSAGE value="refactoring: moving deployment" />
     <MESSAGE value="refactoring: add orderWriter" />
     <MESSAGE value="moving dockerfiles" />
-    <option name="LAST_COMMIT_MESSAGE" value="moving dockerfiles" />
+    <MESSAGE value="add new barcodes" />
+    <MESSAGE value="edit logic: all/new ozon fbs orders" />
+    <MESSAGE value="fix paths" />
+    <MESSAGE value="fix barcodes path" />
+    <MESSAGE value="update spreadsheetId" />
+    <MESSAGE value="fix mupdf" />
+    <MESSAGE value="fix alpine ver" />
+    <option name="LAST_COMMIT_MESSAGE" value="fix alpine ver" />
   </component>
   <component name="VgoProject">
     <settings-migrated>true</settings-migrated>
