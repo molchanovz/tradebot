@@ -4,9 +4,10 @@
     <option name="autoReloadType" value="ALL" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="640077d7-ce81-4039-9739-8ad3e3a8d41a" name="Changes" comment="add ozon CreateDirectories">
-      <change beforePath="$PROJECT_DIR$/.idea/dataSources/e915e4db-fea0-4ca4-b31c-9c265a2d58ef.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources/e915e4db-fea0-4ca4-b31c-9c265a2d58ef.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/dataSources/e915e4db-fea0-4ca4-b31c-9c265a2d58ef/storage_v2/_src_/database/tradebot.42HFSw/schema/public.abK9xQ.meta" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources/e915e4db-fea0-4ca4-b31c-9c265a2d58ef/storage_v2/_src_/database/tradebot.42HFSw/schema/public.abK9xQ.meta" afterDir="false" />
+    <list default="true" id="640077d7-ce81-4039-9739-8ad3e3a8d41a" name="Changes" comment="fix comment">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pkg/bot/handlers/handlers_default.go" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/bot/handlers/handlers_default.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pkg/bot/handlers/handlers_ozon.go" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/bot/handlers/handlers_ozon.go" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -147,7 +148,6 @@
   </component>
   <component name="VcsManagerConfiguration">
     <option name="CHECK_CODE_SMELLS_BEFORE_PROJECT_COMMIT" value="false" />
-    <MESSAGE value="fix docker file" />
     <MESSAGE value="fix docker compose: delete dns" />
     <MESSAGE value="fix docker file: add curl" />
     <MESSAGE value="fix compose: add mtu" />
@@ -172,7 +172,8 @@
     <MESSAGE value="fix yandex fbs: update stickers service" />
     <MESSAGE value="fix ozon/wb fbs: add batches" />
     <MESSAGE value="add ozon CreateDirectories" />
-    <option name="LAST_COMMIT_MESSAGE" value="add ozon CreateDirectories" />
+    <MESSAGE value="fix comment" />
+    <option name="LAST_COMMIT_MESSAGE" value="fix comment" />
   </component>
   <component name="VgoProject">
     <settings-migrated>true</settings-migrated>

@@ -273,7 +273,7 @@ func (m *Manager) ozonPrintStickers(ctx context.Context, bot *botlib.Bot, update
 	case stickersFBS.AllLabels:
 		{
 			go func() {
-				filePaths, err := manager.GetAllLabels(progressChan)
+				filePaths, err = manager.GetAllLabels(progressChan)
 				if err != nil {
 					log.Println("Ошибка при получении файла:", err)
 					done <- []string{}
@@ -301,9 +301,23 @@ func (m *Manager) ozonPrintStickers(ctx context.Context, bot *botlib.Bot, update
 
 	default:
 		err = errors.New("неопознанный флаг для печати")
+		if err != nil {
+			_, err = SendTextMessage(ctx, bot, chatId, err.Error())
+			if err != nil {
+				return
+			}
+			return
+		}
 	}
 
-	WaitReadyFile(ctx, bot, chatId, progressChan, done)
+	err = WaitReadyFile(ctx, bot, chatId, progressChan, done)
+	if err != nil {
+		_, err = SendTextMessage(ctx, bot, chatId, err.Error())
+		if err != nil {
+			return
+		}
+		return
+	}
 
 	if flag == stickersFBS.NewLabels && len(newOrders.Result.PostingsFBS) > 0 {
 		orders := make([]db.Order, 0, len(newOrders.Result.PostingsFBS))
