@@ -260,7 +260,7 @@ func WaitReadyFile(ctx context.Context, bot *botlib.Bot, chatId int64, progressC
 			}
 
 			if len(filePath) == 0 {
-				_, err = SendTextMessage(ctx, bot, chatId, "Ошибка при получении файла")
+				_, err = SendTextMessage(ctx, bot, chatId, "Новых заказов нет")
 				if err != nil {
 					log.Println(err)
 				}
