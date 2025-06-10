@@ -4,9 +4,8 @@ import (
 	"fmt"
 	"github.com/fogleman/gg"
 	"github.com/gen2brain/go-fitz"
-	"tradebot/pkg/marketplaces/WB/stickersFbs"
-
 	"github.com/jung-kurt/gofpdf"
+	"tradebot/pkg/fbsPrinter"
 
 	"image"
 	"image/jpeg"
@@ -46,7 +45,7 @@ func NewManager(yandexCampaignIdFBO, yandexCampaignIdFBS, token string) *Manager
 	}
 }
 
-func (m Manager) GetOrdersInfo(supplyId string, progressChan chan stickersFbs.Progress) (string, error) {
+func (m Manager) GetOrdersInfo(supplyId string, progressChan chan fbsPrinter.Progress) (string, error) {
 	CreateDirectories()
 	orderIds, err := yandex.GetOrdersIds(m.token, supplyId)
 	if err != nil {
@@ -97,7 +96,7 @@ func (m Manager) GetOrdersInfo(supplyId string, progressChan chan stickersFbs.Pr
 		}
 		ordersSlice = append(ordersSlice, fmt.Sprintf("%v.pdf", readyPath+strconv.Itoa(int(order.Order.Id))))
 
-		progressChan <- stickersFbs.Progress{Current: i + 1, Total: totalOrders}
+		progressChan <- fbsPrinter.Progress{Current: i + 1, Total: totalOrders}
 	}
 
 	readyFilePath := YaDirectoryPath + supplyId + ".pdf"

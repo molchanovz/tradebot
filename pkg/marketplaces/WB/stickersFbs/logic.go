@@ -11,17 +11,8 @@ import (
 	"strconv"
 	"time"
 	"tradebot/pkg/api/wb"
+	"tradebot/pkg/fbsPrinter"
 	"tradebot/pkg/google"
-)
-
-const (
-	WbDirectoryPath = "/app/pkg/WB/stickersFbs/"
-
-	codesPath     = WbDirectoryPath + "codes/"
-	barcodesPath  = "/assets/barcodes/"
-	fontPath      = "/assets/font.ttf"
-	generatedPath = WbDirectoryPath + "generated/"
-	readyPath     = WbDirectoryPath + "ready/"
 )
 
 type WbManager struct {
@@ -36,45 +27,63 @@ func NewWbManager(token string) WbManager {
 	}
 }
 
-type Progress struct {
-	Current int
-	Total   int
-}
-
-func (m WbManager) GetReadyFile(supplyId string, progressChan chan Progress) (string, error) {
-	CreateDirectories()
-
-	readyFilePath := WbDirectoryPath + supplyId + ".pdf"
+func (m WbManager) GetReadyFile(supplyId string, progressChan chan fbsPrinter.Progress) ([]string, error) {
+	fbsPrinter.CreateDirectories()
 
 	orders, err := wb.GetOrdersFbs(m.token, supplyId)
 	if err != nil {
-		return "", err
+		return nil, err
 	}
 
 	totalOrders := len(orders)
+	var resultFiles []string
 	var ordersSlice []string
+	batchCount := 0
+
 	for i, order := range orders {
 		stickers := wb.GetStickersFbs(m.token, order.ID)
-		decodeToPDF(stickers.Stickers[0].File, stickers.Stickers[0].OrderId, order)
-		ordersSlice = append(ordersSlice, readyPath+strconv.Itoa(order.ID)+".pdf")
+		if len(stickers.Stickers) == 0 {
+			continue
+		}
 
-		// Передаём прогресс
-		progressChan <- Progress{Current: i + 1, Total: totalOrders}
+		decodeToPDF(stickers.Stickers[0].File, stickers.Stickers[0].OrderId, order)
+		ordersSlice = append(ordersSlice, fbsPrinter.ReadyPath+strconv.Itoa(order.ID)+".pdf")
 
 		if i%10 == 0 {
 			time.Sleep(2 * time.Second)
 		}
+
+		// Батчи по 300 заказов
+		if (i+1)%300 == 0 || i == totalOrders-1 {
+			batchCount++
+
+			if len(ordersSlice) == 0 {
+				continue // Пропускаем пустые батчи
+			}
+
+			// Создаем PDF для текущего батча
+			batchFilePath := fmt.Sprintf("%s%s_%d.pdf", fbsPrinter.DirectoryPath, supplyId, batchCount)
+			err = mergePDFsInDirectory(ordersSlice, batchFilePath)
+			if err != nil {
+				return nil, fmt.Errorf("ошибка объединения PDF для батча %d: %v", batchCount, err)
+			}
+
+			if !fileExists(batchFilePath) {
+				return nil, fmt.Errorf("итоговый PDF для батча %d не создан", batchCount)
+			}
+
+			resultFiles = append(resultFiles, batchFilePath)
+			ordersSlice = []string{} // Сбрасываем для следующего батча
+		}
+
+		progressChan <- fbsPrinter.Progress{Current: i + 1, Total: totalOrders}
 	}
 
-	err = mergePDFsInDirectory(ordersSlice, readyFilePath)
-	if err != nil {
-		return "", err
-	}
-	if !fileExists(readyFilePath) {
-		return "", fmt.Errorf("такого файла не существует")
+	if len(resultFiles) == 0 {
+		return nil, fmt.Errorf("не было создано ни одного PDF файла")
 	}
 
-	return readyFilePath, err
+	return resultFiles, nil
 }
 
 func decodeToPNG(base64String string, orderId int) string {
@@ -88,7 +97,7 @@ func decodeToPNG(base64String string, orderId int) string {
 	}
 
 	// Определите путь и имя файла для сохранения
-	filePath := codesPath + strconv.Itoa(orderId) + ".png" // Замените на желаемое имя файла и расширение
+	filePath := fbsPrinter.CodesPath + strconv.Itoa(orderId) + ".png" // Замените на желаемое имя файла и расширение
 
 	// Открытие файла для записи
 	file, err := os.Create(filePath)
@@ -120,7 +129,7 @@ func decodeToPDF(base64String string, orderId int, order wb.OrderWB) {
 
 	var skuImageUrl string
 
-	skuImageUrl = barcodesPath + order.Article + ".png"
+	skuImageUrl = fbsPrinter.BarcodesPath + order.Article + ".png"
 
 	if !fileExists(skuImageUrl) {
 		skuImageUrl = ""
@@ -128,17 +137,17 @@ func decodeToPDF(base64String string, orderId int, order wb.OrderWB) {
 
 	if skuImageUrl == "" {
 		// Путь к пустому баркоду с артикулом
-		skuImageUrl = generatedPath + order.Article + "_generated.png"
+		skuImageUrl = fbsPrinter.GeneratedPath + order.Article + "_generated.png"
 		err := createBarcodeWithSKU(order.Article, skuImageUrl, 40)
 		if err != nil {
 			log.Printf("Ошибка при создании изображения с артикулом: %v", err)
-			skuImageUrl = barcodesPath + "0.png" // Резервный пустой баркод
+			skuImageUrl = fbsPrinter.BarcodesPath + "0.png" // Резервный пустой баркод
 		}
 	}
 
 	pdf.ImageOptions(skuImageUrl, (75-58)/2, 67, 58, 40, false, gofpdf.ImageOptions{ImageType: "PNG"}, 0, "")
 	// Сохранение PDF-документа
-	err := pdf.OutputFileAndClose(readyPath + strconv.Itoa(orderId) + ".pdf")
+	err := pdf.OutputFileAndClose(fbsPrinter.ReadyPath + strconv.Itoa(orderId) + ".pdf")
 	if err != nil {
 		log.Fatalf("Error saving PDF: %s", err)
 	}
@@ -171,44 +180,10 @@ func mergePDFsInDirectory(orderSlice []string, outputFile string) error {
 	return nil
 }
 
-func CleanFiles(supplyId string) {
-	err := os.RemoveAll(codesPath)
-	if err != nil {
-		fmt.Println(err)
-	}
-	err = os.RemoveAll(readyPath)
-	if err != nil {
-		fmt.Println(err)
-	}
-	err = os.RemoveAll(generatedPath)
-	if err != nil {
-		fmt.Println(err)
-	}
-	err = os.Remove(WbDirectoryPath + supplyId + ".pdf")
-	if err != nil {
-		fmt.Println(err)
-	}
-}
-
-func CreateDirectories() {
-	err := os.MkdirAll(generatedPath, 0755) // 0755 - это права доступа к директории (чтение, запись, выполнение)
-	if err != nil {
-		fmt.Println(err)
-	}
-	err = os.MkdirAll(readyPath, 0755) // 0755 - это права доступа к директории (чтение, запись, выполнение)
-	if err != nil {
-		fmt.Println(err)
-	}
-	err = os.MkdirAll(codesPath, 0755) // 0755 - это права доступа к директории (чтение, запись, выполнение)
-	if err != nil {
-		fmt.Println(err)
-	}
-}
-
 // Функция для создания изображения с текстом (артикул товара) и сохранения в PNG
 func createBarcodeWithSKU(sku string, outputPath string, fontSize float64) error {
-	const imgWidth = 580  // Ширина изображения в пикселях
-	const imgHeight = 400 // Высота изображения в пикселях
+	const imgWidth = 580
+	const imgHeight = 400
 
 	// Создание нового изображения
 	dc := gg.NewContext(imgWidth, imgHeight)
@@ -218,7 +193,7 @@ func createBarcodeWithSKU(sku string, outputPath string, fontSize float64) error
 	dc.Clear()
 
 	// Загрузка шрифта и установка его размера
-	if err := dc.LoadFontFace(fontPath, fontSize); err != nil {
+	if err := dc.LoadFontFace(fbsPrinter.FontPath, fontSize); err != nil {
 		return err
 	}
 

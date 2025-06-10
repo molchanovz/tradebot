@@ -8,6 +8,7 @@ import (
 	"github.com/jung-kurt/gofpdf"
 	"github.com/pdfcpu/pdfcpu/pkg/api"
 	"image/jpeg"
+	"log"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -15,23 +16,7 @@ import (
 	"strings"
 	"time"
 	"tradebot/pkg/api/ozon"
-)
-
-//const (
-//	OzonDirectoryPath = "app/pkg/OZON/stickersFBS/"
-//	codesPath         = OzonDirectoryPath + "codes/"
-//	readyPath         = OzonDirectoryPath + "ready/"
-//	generatedPath     = OzonDirectoryPath + "generated/"
-//	barcodesPath      = "/assets/barcodes/"
-//)
-
-const (
-	OzonDirectoryPath = "/app/pkg/marketplaces/OZON/stickersFBS/"
-	codesPath         = OzonDirectoryPath + "codes/"
-	readyPath         = OzonDirectoryPath + "ready/"
-	generatedPath     = OzonDirectoryPath + "generated/"
-	barcodesPath      = "/assets/barcodes/"
-	fontPath          = "/assets/font.ttf"
+	"tradebot/pkg/fbsPrinter"
 )
 
 type OzonManager struct {
@@ -52,19 +37,22 @@ const (
 	NewLabels = "new"
 )
 
-func (m OzonManager) GetAllLabels() (string, error) {
-	orderIds := m.getSortedFbsOrders()
-
-	readyPdfPath, err := m.getReadyPdf(orderIds)
+func (m OzonManager) GetAllLabels(progressChan chan fbsPrinter.Progress) ([]string, error) {
+	orderIds, err := m.getSortedFbsOrders()
 	if err != nil {
-		return "", err
+		return []string{}, err
+	}
+
+	readyPdfPath, err := m.getReadyPdf(orderIds, progressChan)
+	if err != nil {
+		log.Println("Ошибка при получении файла:", err)
 	}
 
 	return readyPdfPath, nil
 }
 
-func (m OzonManager) GetNewLabels() (string, ozon.PostingslistFbs, error) {
-	orders := m.getSortedFbsOrders()
+func (m OzonManager) GetNewLabels(progressChan chan fbsPrinter.Progress) ([]string, ozon.PostingslistFbs, error) {
+	orders, _ := m.getSortedFbsOrders()
 
 	//Проверка, есть ли новые заказы
 	newOrders := ozon.PostingslistFbs{}
@@ -75,71 +63,105 @@ func (m OzonManager) GetNewLabels() (string, ozon.PostingslistFbs, error) {
 	}
 
 	if len(newOrders.Result.PostingsFBS) == 0 {
-		return "", newOrders, errors.New("Новых заказов нет")
+		return []string{}, newOrders, errors.New("новых заказов нет")
 	}
 
-	readyPdfPath, err := m.getReadyPdf(newOrders)
+	readyPdfPath, err := m.getReadyPdf(newOrders, progressChan)
 	if err != nil {
-		return "", newOrders, err
+		return []string{}, newOrders, err
 	}
 
 	return readyPdfPath, newOrders, nil
 }
 
-func (m OzonManager) getReadyPdf(orderIds ozon.PostingslistFbs) (string, error) {
-	CreateDirectories()
+func (m OzonManager) getReadyPdf(orderIds ozon.PostingslistFbs, progressChan chan fbsPrinter.Progress) ([]string, error) {
+	fbsPrinter.CreateDirectories()
 
+	totalOrders := len(orderIds.Result.PostingsFBS)
+	var resultFiles []string
 	var combinedPDFs []string
-	for _, order := range orderIds.Result.PostingsFBS {
+	batchCount := 0
+
+	for i, order := range orderIds.Result.PostingsFBS {
 		// 1. Скачиваем этикетку Ozon
 		labelPDF := ozon.V2PostingFbsPackageLabel(m.clientId, m.token, order.PostingNumber)
 
+		if labelPDF == "" {
+			return nil, fmt.Errorf("пустой labelPDF для заказа %s", order.PostingNumber)
+		}
+
 		// 2. Сохраняем во временный файл
-		orderPDF := fmt.Sprintf("%v.pdf", codesPath+order.PostingNumber)
+		orderPDF := fmt.Sprintf("%v.pdf", fbsPrinter.CodesPath+order.PostingNumber)
 		if err := os.WriteFile(orderPDF, []byte(labelPDF), 0644); err != nil {
-			return "", fmt.Errorf("ошибка записи PDF: %v", err)
+			return nil, fmt.Errorf("ошибка записи PDF: %v", err)
 		}
 
 		// 3. Извлекаем первую страницу
 		if err := extractFirstPage(orderPDF); err != nil {
-			return "", fmt.Errorf("ошибка извлечения страницы: %v", err)
+			return nil, fmt.Errorf("ошибка извлечения страницы: %v", err)
 		}
 
 		// 4. Объединяем с баркодом
-		finalPDF := fmt.Sprintf("%v.pdf", readyPath+order.PostingNumber)
+		finalPDF := fmt.Sprintf("%v.pdf", fbsPrinter.ReadyPath+order.PostingNumber)
 		if err := combineLabelWithBarcode(orderPDF, finalPDF, order.Products[0].OfferId); err != nil {
-			return "", fmt.Errorf("ошибка объединения PDF с баркодом: %v", err)
+			return nil, fmt.Errorf("ошибка объединения PDF с баркодом: %v", err)
 		}
 
 		// 5. Удаляем временные файлы
 		os.Remove(orderPDF)
 
 		combinedPDFs = append(combinedPDFs, finalPDF)
+
+		// Батчи по 200 заказов
+		if (i+1)%200 == 0 || i == len(orderIds.Result.PostingsFBS)-1 {
+			batchCount++
+
+			if len(combinedPDFs) == 0 {
+				return nil, fmt.Errorf("нет объединенных файлов для батча %d", batchCount)
+			}
+
+			// 6. Объединяем PDF текущего батча
+			readyPdfPath := fmt.Sprintf("%s/ozon_%d.pdf", fbsPrinter.DirectoryPath, batchCount)
+			if err := mergePDFsInDirectory(combinedPDFs, readyPdfPath); err != nil {
+				return nil, fmt.Errorf("ошибка объединения PDF для батча %d: %v", batchCount, err)
+			}
+
+			// 7. Проверяем результат
+			if !fileExists(readyPdfPath) {
+				return nil, fmt.Errorf("итоговый PDF для батча %d не создан", batchCount)
+			}
+
+			resultFiles = append(resultFiles, readyPdfPath)
+			combinedPDFs = []string{}
+		}
+
+		progressChan <- fbsPrinter.Progress{Current: i + 1, Total: totalOrders}
 	}
 
-	// 6. Объединяем все PDF в один
-	readyPdfPath := OzonDirectoryPath + "ozon.pdf"
-	if err := mergePDFsInDirectory(combinedPDFs, readyPdfPath); err != nil {
-		return "", fmt.Errorf("ошибка объединения PDF: %v", err)
+	if len(resultFiles) == 0 {
+		return nil, fmt.Errorf("не было создано ни одного PDF файла")
 	}
 
-	// 7. Проверяем результат
-	if !fileExists(readyPdfPath) {
-		return "", fmt.Errorf("итоговый PDF не создан")
-	}
-	return readyPdfPath, nil
+	return resultFiles, nil
 }
 
-func (m OzonManager) getSortedFbsOrders() ozon.PostingslistFbs {
+func (m OzonManager) getSortedFbsOrders() (ozon.PostingslistFbs, error) {
 	since := time.Now().AddDate(0, 0, -7).Format("2006-01-02T15:04:05.000Z")
 	to := time.Now().Format("2006-01-02T15:04:05.000Z")
 
-	orderIds, _ := ozon.PostingsListFbs(m.clientId, m.token, since, to, 0, "awaiting_deliver")
+	orderIds, err := ozon.PostingsListFbs(m.clientId, m.token, since, to, 0, "awaiting_deliver")
+	if err != nil {
+		return orderIds, err
+	}
+
+	if len(orderIds.Result.PostingsFBS) == 0 {
+		return orderIds, errors.New("заказов в сборке нет")
+	}
 
 	sort.Slice(orderIds.Result.PostingsFBS, func(i, j int) bool {
 		return orderIds.Result.PostingsFBS[i].Products[0].OfferId < orderIds.Result.PostingsFBS[j].Products[0].OfferId
 	})
-	return orderIds
+	return orderIds, nil
 }
 
 func combineLabelWithBarcode(ozonPdfPath, outputPath, article string) error {
@@ -195,12 +217,12 @@ func combineLabelWithBarcode(ozonPdfPath, outputPath, article string) error {
 	pdf.TransformEnd()
 
 	// Вставка баркода
-	barcodePath := barcodesPath + article + ".png"
+	barcodePath := fbsPrinter.BarcodesPath + article + ".png"
 	if !fileExists(barcodePath) {
-		barcodePath = generatedPath + article + "_generated.png"
+		barcodePath = fbsPrinter.GeneratedPath + article + "_generated.png"
 		if err = createBarcodeWithSKU(article, barcodePath, 40); err != nil {
 			fmt.Println(err)
-			barcodePath = barcodesPath + "0.png"
+			barcodePath = fbsPrinter.BarcodesPath + "0.png"
 		}
 	}
 
@@ -229,7 +251,7 @@ func createBarcodeWithSKU(sku string, outputPath string, fontSize float64) error
 	dc.Clear()
 
 	// Загрузка шрифта и установка его размера
-	if err := dc.LoadFontFace(fontPath, fontSize); err != nil {
+	if err := dc.LoadFontFace(fbsPrinter.FontPath, fontSize); err != nil {
 		return err
 	}
 
@@ -287,53 +309,6 @@ func fileExists(filename string) bool {
 		return false
 	}
 	return !info.IsDir()
-}
-
-func (m OzonManager) CleanFiles(supplyId string) {
-	err := os.RemoveAll(codesPath)
-	if err != nil {
-		fmt.Println(err)
-	}
-	err = os.RemoveAll(readyPath)
-	if err != nil {
-		fmt.Println(err)
-	}
-	err = os.Mkdir(codesPath, 0755)
-	if err != nil {
-		fmt.Println(err)
-	}
-	err = os.RemoveAll(generatedPath)
-	if err != nil {
-		fmt.Println(err)
-	}
-	err = os.Mkdir(generatedPath, 0755)
-	if err != nil {
-		fmt.Println(err)
-	}
-	err = os.Mkdir(readyPath, 0755)
-	if err != nil {
-		fmt.Println(err)
-	}
-	err = os.Remove(OzonDirectoryPath + supplyId + ".pdf")
-	if err != nil {
-		fmt.Println(err)
-	}
-
-}
-
-func CreateDirectories() {
-	err := os.MkdirAll(generatedPath, 0755) // 0755 - это права доступа к директории (чтение, запись, выполнение)
-	if err != nil {
-		fmt.Println(err)
-	}
-	err = os.MkdirAll(readyPath, 0755) // 0755 - это права доступа к директории (чтение, запись, выполнение)
-	if err != nil {
-		fmt.Println(err)
-	}
-	err = os.MkdirAll(codesPath, 0755) // 0755 - это права доступа к директории (чтение, запись, выполнение)
-	if err != nil {
-		fmt.Println(err)
-	}
 }
 
 func mergePDFsInDirectory(orderSlice []string, outputFile string) error {

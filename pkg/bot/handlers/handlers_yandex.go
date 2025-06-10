@@ -7,7 +7,7 @@ import (
 	"github.com/go-telegram/bot/models"
 	"log"
 	"tradebot/pkg/db"
-	"tradebot/pkg/marketplaces/WB/stickersFbs"
+	"tradebot/pkg/fbsPrinter"
 	"tradebot/pkg/marketplaces/YANDEX/yandex_stickers_fbs"
 )
 
@@ -71,7 +71,7 @@ func (m *Manager) yandexOrdersHandler(ctx context.Context, bot *botlib.Bot, upda
 		return
 	}
 
-	_, err = sendTextMessage(ctx, bot, chatId, "Заказы яндекс за вчерашний день были внесены")
+	_, err = SendTextMessage(ctx, bot, chatId, "Заказы яндекс за вчерашний день были внесены")
 	if err != nil {
 		log.Printf("%v", err)
 		return
@@ -81,21 +81,21 @@ func (m *Manager) yandexOrdersHandler(ctx context.Context, bot *botlib.Bot, upda
 
 func (m *Manager) getYandexFbsDEPRECATED(ctx context.Context, bot *botlib.Bot, chatId int64, supplyId string) {
 	text := fmt.Sprintf("Подготовка файла Яндекс")
-	message, err := sendTextMessage(ctx, bot, chatId, text)
+	message, err := SendTextMessage(ctx, bot, chatId, text)
 	if err != nil {
 		return
 	}
 
 	_, err = m.yandexService.GetStickersFbsManager().GetOrdersInfo(supplyId, nil)
 	if err != nil {
-		_, err := sendTextMessage(ctx, bot, chatId, err.Error())
+		_, err := SendTextMessage(ctx, bot, chatId, err.Error())
 		if err != nil {
 			log.Println(err)
 			return
 		}
 	} else {
 		filePath := fmt.Sprintf("%v.pdf", yandex_stickers_fbs.YaDirectoryPath+supplyId)
-		sendMediaMessage(ctx, bot, chatId, filePath)
+		SendMediaMessage(ctx, bot, chatId, filePath)
 		yandex_stickers_fbs.CleanFiles(supplyId)
 	}
 
@@ -114,19 +114,22 @@ func (m *Manager) getYandexFbsDEPRECATED(ctx context.Context, bot *botlib.Bot, c
 }
 func (m *Manager) getYandexFbs(ctx context.Context, bot *botlib.Bot, chatId int64, supplyId string) {
 
-	done := make(chan string)
-	progressChan := make(chan stickersFbs.Progress)
+	done := make(chan []string)
+	progressChan := make(chan fbsPrinter.Progress)
+	var filePaths []string
 
 	go func() {
 		filePath, err := m.yandexService.GetStickersFbsManager().GetOrdersInfo(supplyId, progressChan)
 		if err != nil {
 			log.Println("Ошибка при получении файла:", err)
-			done <- ""
+			done <- []string{}
 			return
 		}
-		done <- filePath
+
+		filePaths = append(filePaths, filePath)
+
+		done <- filePaths
 	}()
 
-	m.WaitReadyFile(ctx, bot, chatId, progressChan, done)
-
+	WaitReadyFile(ctx, bot, chatId, progressChan, done)
 }

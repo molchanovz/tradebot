@@ -14,8 +14,8 @@ import (
 	"time"
 	"tradebot/pkg/api/wb"
 	"tradebot/pkg/db"
+	"tradebot/pkg/fbsPrinter"
 	"tradebot/pkg/marketplaces/OZON"
-	"tradebot/pkg/marketplaces/WB/stickersFbs"
 	"tradebot/pkg/marketplaces/WB/wb_stocks_analyze"
 )
 
@@ -73,107 +73,23 @@ func (m *Manager) wbFbsHandler(ctx context.Context, bot *botlib.Bot, update *mod
 }
 
 func (m *Manager) getWbFbs(ctx context.Context, bot *botlib.Bot, chatId int64, supplyId string) {
-	done := make(chan string)
-	progressChan := make(chan stickersFbs.Progress)
+	done := make(chan []string)
+	progressChan := make(chan fbsPrinter.Progress)
 
 	go func() {
 		filePath, err := m.wbService.GetStickersFbsManager().GetReadyFile(supplyId, progressChan)
 		if err != nil {
 			log.Println("Ошибка при получении файла:", err)
-			done <- ""
+			done <- []string{}
 			return
 		}
 		done <- filePath
 	}()
 
-	m.WaitReadyFile(ctx, bot, chatId, progressChan, done)
+	WaitReadyFile(ctx, bot, chatId, progressChan, done)
 
-	stickersFbs.CleanFiles(supplyId)
-	stickersFbs.CreateDirectories()
+	fbsPrinter.CleanFiles()
 
-}
-
-func (m *Manager) WaitReadyFile(ctx context.Context, bot *botlib.Bot, chatId int64, progressChan chan stickersFbs.Progress, done chan string) {
-	var progressMsgId int
-	var lastReportedCurrent int
-	var lastTotal int
-
-	for {
-		select {
-		case progress := <-progressChan:
-			if progress.Current != lastReportedCurrent || progress.Total != lastTotal {
-				lastReportedCurrent = progress.Current
-				lastTotal = progress.Total
-
-				text := fmt.Sprintf("Обработано заказов: %d из %d", progress.Current, progress.Total)
-
-				if progressMsgId == 0 {
-					msg, err := bot.SendMessage(ctx, &botlib.SendMessageParams{
-						ChatID: chatId,
-						Text:   text,
-					})
-					if err != nil {
-						log.Println(err)
-					} else {
-						progressMsgId = msg.ID
-					}
-				} else {
-					_, err := bot.EditMessageText(ctx, &botlib.EditMessageTextParams{
-						ChatID:    chatId,
-						MessageID: progressMsgId,
-						Text:      text,
-					})
-					if err != nil {
-						log.Println(err)
-					}
-				}
-			}
-
-		case filePath := <-done:
-
-			_, err := bot.SendChatAction(ctx, &botlib.SendChatActionParams{
-				ChatID: chatId,
-				Action: models.ChatActionUploadDocument,
-			})
-			if err != nil {
-				return
-			}
-
-			if filePath == "" {
-				_, err = sendTextMessage(ctx, bot, chatId, "Ошибка при получении файла")
-				if err != nil {
-					log.Println(err)
-				}
-				return
-			}
-
-			err = sendMediaMessage(ctx, bot, chatId, filePath)
-			if err != nil {
-				log.Println(err)
-			}
-
-			if progressMsgId != 0 {
-				_, err = bot.DeleteMessage(ctx, &botlib.DeleteMessageParams{
-					ChatID:    chatId,
-					MessageID: progressMsgId,
-				})
-				if err != nil {
-					return
-				}
-			}
-
-			text, markup := createStartAdminMarkup()
-			_, err = bot.SendMessage(ctx, &botlib.SendMessageParams{
-				ChatID:      chatId,
-				Text:        text,
-				ReplyMarkup: markup,
-			})
-			if err != nil {
-				log.Printf("%v", err)
-			}
-			return
-		}
-	}
 }
 
 func (m *Manager) wbOrdersHandler(ctx context.Context, bot *botlib.Bot, update *models.Update) {
@@ -181,14 +97,14 @@ func (m *Manager) wbOrdersHandler(ctx context.Context, bot *botlib.Bot, update *
 
 	err := m.wbService.GetOrdersManager().WriteToGoogleSheets()
 	if err != nil {
-		_, err = sendTextMessage(ctx, bot, chatId, err.Error())
+		_, err = SendTextMessage(ctx, bot, chatId, err.Error())
 		if err != nil {
 			log.Println(err)
 			return
 		}
 	} else {
 		date := time.Now().AddDate(0, 0, -OZON.OrdersDaysAgo)
-		_, err = sendTextMessage(ctx, bot, chatId, fmt.Sprintf("Заказы вб за %v были внесены", date))
+		_, err = SendTextMessage(ctx, bot, chatId, fmt.Sprintf("Заказы вб за %v были внесены", date))
 		if err != nil {
 			log.Println(err)
 			return
@@ -211,7 +127,7 @@ func wbStocksHandler(ctx context.Context, bot *botlib.Bot, update *models.Update
 
 	stocks, lostWarehouses, err := wb_stocks_analyze.GetStocks(WbKey)
 	if err != nil {
-		_, err = sendTextMessage(ctx, bot, chatId, fmt.Sprintf("Ошибка при анализе остатков: %v", err))
+		_, err = SendTextMessage(ctx, bot, chatId, fmt.Sprintf("Ошибка при анализе остатков: %v", err))
 		if err != nil {
 			log.Println("Ошибка отправки сообщения:", err)
 			return
@@ -221,7 +137,7 @@ func wbStocksHandler(ctx context.Context, bot *botlib.Bot, update *models.Update
 
 	filePath, err := generateExcelWB(orders, stocks, K, "wb")
 	if err != nil {
-		_, err = sendTextMessage(ctx, bot, chatId, fmt.Sprintf("Ошибка при генерации экселя: %v", err))
+		_, err = SendTextMessage(ctx, bot, chatId, fmt.Sprintf("Ошибка при генерации экселя: %v", err))
 		if err != nil {
 			log.Println("Ошибка отправки сообщения:", err)
 			return
@@ -229,7 +145,7 @@ func wbStocksHandler(ctx context.Context, bot *botlib.Bot, update *models.Update
 		return
 	}
 
-	err = sendMediaMessage(ctx, bot, chatId, filePath)
+	err = SendMediaMessage(ctx, bot, chatId, filePath)
 	if err != nil {
 		log.Println("Ошибка отправки сообщения:", err)
 		return
@@ -242,7 +158,7 @@ func wbStocksHandler(ctx context.Context, bot *botlib.Bot, update *models.Update
 		for warehouse := range lostWarehouses {
 			warehousesStr.WriteString(warehouse + "\n")
 		}
-		_, err := sendTextMessage(ctx, bot, chatId, fmt.Sprintf("Нужно добавить:\n"+warehousesStr.String()))
+		_, err := SendTextMessage(ctx, bot, chatId, fmt.Sprintf("Нужно добавить:\n"+warehousesStr.String()))
 		if err != nil {
 			return
 		}

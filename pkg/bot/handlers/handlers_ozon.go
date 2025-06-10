@@ -14,6 +14,7 @@ import (
 	"time"
 	"tradebot/pkg/api/ozon"
 	"tradebot/pkg/db"
+	"tradebot/pkg/fbsPrinter"
 	"tradebot/pkg/marketplaces/OZON"
 	"tradebot/pkg/marketplaces/OZON/stickersFBS"
 	"tradebot/pkg/marketplaces/OZON/stocks_analyzer"
@@ -132,7 +133,7 @@ func (m *Manager) ozonOrdersHandler(ctx context.Context, bot *botlib.Bot, update
 
 	maxValuesCount, err := OZON.NewService(cabinets[0]).GetOrdersAndReturnsManager().WriteToGoogleSheets(titleRange, fbsRange, fboRange, returnsRange)
 	if err != nil {
-		_, err = sendTextMessage(ctx, bot, chatId, err.Error())
+		_, err = SendTextMessage(ctx, bot, chatId, err.Error())
 		if err != nil {
 			log.Printf("%v", err)
 			return
@@ -150,7 +151,7 @@ func (m *Manager) ozonOrdersHandler(ctx context.Context, bot *botlib.Bot, update
 
 	_, err = OZON.NewService(cabinets[1]).GetOrdersAndReturnsManager().WriteToGoogleSheets(titleRange, fbsRange, fboRange, returnsRange)
 	if err != nil {
-		_, err = sendTextMessage(ctx, bot, chatId, err.Error())
+		_, err = SendTextMessage(ctx, bot, chatId, err.Error())
 		if err != nil {
 			log.Printf("%v", err)
 			return
@@ -158,7 +159,7 @@ func (m *Manager) ozonOrdersHandler(ctx context.Context, bot *botlib.Bot, update
 		return
 	}
 
-	_, err = sendTextMessage(ctx, bot, chatId, "Заказы озон за вчерашний день были внесены")
+	_, err = SendTextMessage(ctx, bot, chatId, "Заказы озон за вчерашний день были внесены")
 	if err != nil {
 		log.Printf("%v", err)
 		return
@@ -191,7 +192,7 @@ func (m *Manager) ozonStocksHandler(ctx context.Context, bot *botlib.Bot, update
 		return
 	}
 
-	err = sendMediaMessage(ctx, bot, chatId, filePath)
+	err = SendMediaMessage(ctx, bot, chatId, filePath)
 	if err != nil {
 		return
 	}
@@ -233,26 +234,14 @@ func (m *Manager) ozonStickersHandler(ctx context.Context, bot *botlib.Bot, upda
 	}
 }
 
-// Хендрер для печати стикеров "FBS"
+// Хендлер для печати стикеров "FBS"
 func (m *Manager) ozonPrintStickers(ctx context.Context, bot *botlib.Bot, update *models.Update) {
-	text := fmt.Sprintf("Подготовка файла Озон")
 	chatId := update.CallbackQuery.From.ID
-	message, err := sendTextMessage(ctx, bot, chatId, text)
-	if err != nil {
-		return
-	}
-
-	defer func() {
-		_, err = bot.DeleteMessage(ctx, &botlib.DeleteMessageParams{ChatID: chatId, MessageID: message.ID})
-		if err != nil {
-			return
-		}
-	}()
 
 	parts := strings.Split(update.CallbackQuery.Data, "_")
 	cabinetId := parts[1]
 	flag := parts[2]
-
+	var err error
 	var cabinet db.Cabinet
 
 	result := m.db.Where(`"cabinetsId" = ?`, cabinetId).Find(&cabinet)
@@ -260,7 +249,6 @@ func (m *Manager) ozonPrintStickers(ctx context.Context, bot *botlib.Bot, update
 		log.Println("Error finding user:", result.Error)
 	}
 
-	var filePath string
 	newOrders := ozon.PostingslistFbs{}
 
 	printedOrdersMap := make(map[string]struct{})
@@ -277,22 +265,47 @@ func (m *Manager) ozonPrintStickers(ctx context.Context, bot *botlib.Bot, update
 
 	manager := OZON.NewService(cabinet).GetStickersFBSManager(printedOrdersMap)
 
+	var filePaths []string
+	done := make(chan []string)
+	progressChan := make(chan fbsPrinter.Progress)
+
 	switch flag {
 	case stickersFBS.AllLabels:
 		{
-			filePath, err = manager.GetAllLabels()
+			go func() {
+				filePaths, err := manager.GetAllLabels(progressChan)
+				if err != nil {
+					log.Println("Ошибка при получении файла:", err)
+					done <- []string{}
+					return
+				}
+
+				done <- filePaths
+			}()
+
 		}
 
 	case stickersFBS.NewLabels:
 		{
-			filePath, newOrders, err = manager.GetNewLabels()
+			go func() {
+				filePaths, newOrders, err = manager.GetNewLabels(progressChan)
+				if err != nil {
+					log.Println("Ошибка при получении файла:", err)
+					done <- []string{}
+					return
+				}
+
+				done <- filePaths
+			}()
 		}
 
 	default:
 		err = errors.New("неопознанный флаг для печати")
 	}
 
-	if len(newOrders.Result.PostingsFBS) > 0 {
+	WaitReadyFile(ctx, bot, chatId, progressChan, done)
+
+	if flag == stickersFBS.NewLabels && len(newOrders.Result.PostingsFBS) > 0 {
 		orders := make([]db.Order, 0, len(newOrders.Result.PostingsFBS))
 
 		for _, order := range newOrders.Result.PostingsFBS {
@@ -308,32 +321,7 @@ func (m *Manager) ozonPrintStickers(ctx context.Context, bot *botlib.Bot, update
 		}
 	}
 
-	if err != nil {
-		_, err = sendTextMessage(ctx, bot, chatId, err.Error())
-		if err != nil {
-			log.Println(err)
-			return
-		}
-		return
-	}
-
-	if filePath == "" {
-		log.Println("файла не существует")
-		return
-	}
-	err = sendMediaMessage(ctx, bot, chatId, filePath)
-	if err != nil {
-		log.Println(err)
-		return
-	}
-	m.ozonService.GetStickersFBSManager(printedOrdersMap).CleanFiles("ozon")
-
-	text, markup := createStartAdminMarkup()
-	_, err = bot.SendMessage(ctx, &botlib.SendMessageParams{ChatID: chatId, Text: text, ReplyMarkup: markup})
-	if err != nil {
-		log.Printf("%v", err)
-		return
-	}
+	fbsPrinter.CleanFiles()
 }
 
 func (m *Manager) ozonClustersHandler(ctx context.Context, bot *botlib.Bot, update *models.Update) {

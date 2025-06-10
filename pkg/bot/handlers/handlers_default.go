@@ -12,6 +12,7 @@ import (
 	"math"
 	"os"
 	"tradebot/pkg/db"
+	"tradebot/pkg/fbsPrinter"
 	"tradebot/pkg/marketplaces/OZON"
 	"tradebot/pkg/marketplaces/WB"
 	"tradebot/pkg/marketplaces/YANDEX"
@@ -101,7 +102,7 @@ func (m *Manager) DefaultHandler(ctx context.Context, bot *botlib.Bot, update *m
 	switch user.StatusId {
 	case db.EnabledStatus:
 		{
-			sendTextMessage(ctx, bot, chatId, "Не понял тебя. Нажми /start еще раз")
+			SendTextMessage(ctx, bot, chatId, "Не понял тебя. Нажми /start еще раз")
 		}
 	case db.WaitingWbState:
 		{
@@ -212,7 +213,92 @@ func (m *Manager) startHandler(ctx context.Context, bot *botlib.Bot, update *mod
 	}
 }
 
-func sendTextMessage(ctx context.Context, bot *botlib.Bot, chatId int64, text string) (*models.Message, error) {
+func WaitReadyFile(ctx context.Context, bot *botlib.Bot, chatId int64, progressChan chan fbsPrinter.Progress, done chan []string) {
+	var progressMsgId int
+	var lastReportedCurrent int
+	var lastTotal int
+
+	for {
+		select {
+		case progress := <-progressChan:
+			if progress.Current != lastReportedCurrent || progress.Total != lastTotal {
+				lastReportedCurrent = progress.Current
+				lastTotal = progress.Total
+
+				text := fmt.Sprintf("Обработано заказов: %d из %d", progress.Current, progress.Total)
+
+				if progressMsgId == 0 {
+					msg, err := bot.SendMessage(ctx, &botlib.SendMessageParams{
+						ChatID: chatId,
+						Text:   text,
+					})
+					if err != nil {
+						log.Println(err)
+					} else {
+						progressMsgId = msg.ID
+					}
+				} else {
+					_, err := bot.EditMessageText(ctx, &botlib.EditMessageTextParams{
+						ChatID:    chatId,
+						MessageID: progressMsgId,
+						Text:      text,
+					})
+					if err != nil {
+						log.Println(err)
+					}
+				}
+			}
+
+		case filePath := <-done:
+
+			_, err := bot.SendChatAction(ctx, &botlib.SendChatActionParams{
+				ChatID: chatId,
+				Action: models.ChatActionUploadDocument,
+			})
+			if err != nil {
+				return
+			}
+
+			if len(filePath) == 0 {
+				_, err = SendTextMessage(ctx, bot, chatId, "Ошибка при получении файла")
+				if err != nil {
+					log.Println(err)
+				}
+				return
+			}
+
+			for _, batchPath := range filePath {
+				err = SendMediaMessage(ctx, bot, chatId, batchPath)
+				if err != nil {
+					log.Println(err)
+				}
+			}
+
+			if progressMsgId != 0 {
+				_, err = bot.DeleteMessage(ctx, &botlib.DeleteMessageParams{
+					ChatID:    chatId,
+					MessageID: progressMsgId,
+				})
+				if err != nil {
+					return
+				}
+			}
+
+			text, markup := createStartAdminMarkup()
+			_, err = bot.SendMessage(ctx, &botlib.SendMessageParams{
+				ChatID:      chatId,
+				Text:        text,
+				ReplyMarkup: markup,
+			})
+			if err != nil {
+				log.Printf("%v", err)
+			}
+			return
+		}
+	}
+}
+
+func SendTextMessage(ctx context.Context, bot *botlib.Bot, chatId int64, text string) (*models.Message, error) {
 	message, err := bot.SendMessage(ctx, &botlib.SendMessageParams{ChatID: chatId, Text: text})
 	if err != nil {
 		return nil, err
@@ -220,7 +306,7 @@ func sendTextMessage(ctx context.Context, bot *botlib.Bot, chatId int64, text st
 	return message, nil
 }
 
-func sendMediaMessage(ctx context.Context, bot *botlib.Bot, chatId int64, filePath string) error {
+func SendMediaMessage(ctx context.Context, bot *botlib.Bot, chatId int64, filePath string) error {
 
 	file, err := os.Open(filePath)
 	if err != nil {
