@@ -54,10 +54,6 @@ func (m WbManager) GetReadyFile(supplyId string, progressChan chan fbsPrinter.Pr
 		decodeToPDF(stickers.Stickers[0].File, stickers.Stickers[0].OrderId, order)
 		ordersSlice = append(ordersSlice, fbsPrinter.ReadyPath+strconv.Itoa(order.ID)+".pdf")
 
-		if i%10 == 0 {
-			time.Sleep(2 * time.Second)
-		}
-
 		// Батчи по 300 заказов
 		if (i+1)%300 == 0 || i == totalOrders-1 {
 			batchCount++
@@ -82,6 +78,7 @@ func (m WbManager) GetReadyFile(supplyId string, progressChan chan fbsPrinter.Pr
 		}
 
 		progressChan <- fbsPrinter.Progress{Current: i + 1, Total: totalOrders}
+		time.Sleep(200 * time.Millisecond)
 	}
 
 	if len(resultFiles) == 0 {
