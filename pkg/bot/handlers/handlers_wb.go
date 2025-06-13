@@ -236,7 +236,7 @@ func (m *Manager) AnalyzeStocks(apiKey string, ctx context.Context, b *botlib.Bo
 			// Отправляем уведомление
 			_, err = b.SendMessage(ctx, &botlib.SendMessageParams{
 				ChatID:    m.myChatId,
-				Text:      fmt.Sprintf("Нужно добавить наличие <b>WB</b> FBS для <code>%v</code>", article),
+				Text:      fmt.Sprintf("На складе <b>WB</b> закончились <code>%v</code>. Проверьте FBS", article),
 				ParseMode: models.ParseModeHTML,
 			})
 			if err != nil {
