@@ -116,13 +116,14 @@ func (m *Manager) getYandexFbs(ctx context.Context, bot *botlib.Bot, chatId int6
 
 	done := make(chan []string)
 	progressChan := make(chan fbsPrinter.Progress)
+	errChan := make(chan error)
 	var filePaths []string
 
 	go func() {
 		filePath, err := m.yandexService.GetStickersFbsManager().GetOrdersInfo(supplyId, progressChan)
 		if err != nil {
 			log.Println("Ошибка при получении файла:", err)
-			done <- []string{}
+			errChan <- err
 			return
 		}
 
@@ -131,5 +132,12 @@ func (m *Manager) getYandexFbs(ctx context.Context, bot *botlib.Bot, chatId int6
 		done <- filePaths
 	}()
 
-	WaitReadyFile(ctx, bot, chatId, progressChan, done)
+	err := WaitReadyFile(ctx, bot, chatId, progressChan, done, errChan)
+	if err != nil {
+		_, err = SendTextMessage(ctx, bot, chatId, err.Error())
+		if err != nil {
+			return
+		}
+		return
+	}
 }

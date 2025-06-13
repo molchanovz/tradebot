@@ -75,20 +75,28 @@ func (m *Manager) wbFbsHandler(ctx context.Context, bot *botlib.Bot, update *mod
 func (m *Manager) getWbFbs(ctx context.Context, bot *botlib.Bot, chatId int64, supplyId string) {
 	done := make(chan []string)
 	progressChan := make(chan fbsPrinter.Progress)
+	errChan := make(chan error)
+
+	defer fbsPrinter.CleanFiles()
 
 	go func() {
 		filePath, err := m.wbService.GetStickersFbsManager().GetReadyFile(supplyId, progressChan)
 		if err != nil {
 			log.Println("Ошибка при получении файла:", err)
-			done <- []string{}
+			errChan <- err
 			return
 		}
 		done <- filePath
 	}()
 
-	WaitReadyFile(ctx, bot, chatId, progressChan, done)
-
-	fbsPrinter.CleanFiles()
+	err := WaitReadyFile(ctx, bot, chatId, progressChan, done, errChan)
+	if err != nil {
+		_, err = SendTextMessage(ctx, bot, chatId, err.Error())
+		if err != nil {
+			return
+		}
+		return
+	}
 
 }
 

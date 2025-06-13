@@ -214,7 +214,7 @@ func (m *Manager) startHandler(ctx context.Context, bot *botlib.Bot, update *mod
 	}
 }
 
-func WaitReadyFile(ctx context.Context, bot *botlib.Bot, chatId int64, progressChan chan fbsPrinter.Progress, done chan []string) error {
+func WaitReadyFile(ctx context.Context, bot *botlib.Bot, chatId int64, progressChan chan fbsPrinter.Progress, done chan []string, errChan chan error) error {
 	var progressMsgId int
 	var lastReportedCurrent int
 	var lastTotal int
@@ -224,12 +224,21 @@ func WaitReadyFile(ctx context.Context, bot *botlib.Bot, chatId int64, progressC
 		case progress := <-progressChan:
 			progressMsgId, err = sendProgress(ctx, bot, chatId, progress, lastReportedCurrent, lastTotal, progressMsgId)
 			if err != nil {
+				log.Println(err)
 				return err
 			}
 
 		case filePath := <-done:
 			err = sendFiles(ctx, bot, chatId, filePath, progressMsgId)
 			if err != nil {
+				log.Println(err)
+				return err
+			}
+
+		case err = <-errChan:
+			_, err = bot.SendMessage(ctx, &botlib.SendMessageParams{ChatID: chatId, Text: err.Error()})
+			if err != nil {
+				log.Println(err)
 				return err
 			}
 		}

@@ -21,14 +21,18 @@ func GetOrdersFbs(wildberriesKey, supplyId string) ([]OrderWB, error) {
 	return orders.Orders, nil
 }
 
-func GetStickersFbs(wildberriesKey string, orderId int) StickerWB {
-	jsonString, _ := getCodesByOrderId(wildberriesKey, orderId)
+func GetStickersFbs(wildberriesKey string, orderId int) (StickerWB, error) {
 	var stickers StickerWB
-	err := json.Unmarshal([]byte(jsonString), &stickers)
+	jsonString, err := getCodesByOrderId(wildberriesKey, orderId)
+	if err != nil {
+		return stickers, err
+	}
+
+	err = json.Unmarshal([]byte(jsonString), &stickers)
 	if err != nil {
 		log.Fatalf("Error decoding JSON: %v", err)
 	}
-	return stickers
+	return stickers, nil
 }
 
 func sortOrdersByArticle(orders []OrderWB) {

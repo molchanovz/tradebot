@@ -268,6 +268,7 @@ func (m *Manager) ozonPrintStickers(ctx context.Context, bot *botlib.Bot, update
 	var filePaths []string
 	done := make(chan []string)
 	progressChan := make(chan fbsPrinter.Progress)
+	errChan := make(chan error)
 
 	switch flag {
 	case stickersFBS.AllLabels:
@@ -276,7 +277,7 @@ func (m *Manager) ozonPrintStickers(ctx context.Context, bot *botlib.Bot, update
 				filePaths, err = manager.GetAllLabels(progressChan)
 				if err != nil {
 					log.Println("Ошибка при получении файла:", err)
-					done <- []string{}
+					errChan <- err
 					return
 				}
 
@@ -291,7 +292,7 @@ func (m *Manager) ozonPrintStickers(ctx context.Context, bot *botlib.Bot, update
 				filePaths, newOrders, err = manager.GetNewLabels(progressChan)
 				if err != nil {
 					log.Println("Ошибка при получении файла:", err)
-					done <- []string{}
+					errChan <- err
 					return
 				}
 
@@ -310,7 +311,7 @@ func (m *Manager) ozonPrintStickers(ctx context.Context, bot *botlib.Bot, update
 		}
 	}
 
-	err = WaitReadyFile(ctx, bot, chatId, progressChan, done)
+	err = WaitReadyFile(ctx, bot, chatId, progressChan, done, errChan)
 	if err != nil {
 		_, err = SendTextMessage(ctx, bot, chatId, err.Error())
 		if err != nil {

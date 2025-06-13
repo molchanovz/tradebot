@@ -41,7 +41,12 @@ func (m WbManager) GetReadyFile(supplyId string, progressChan chan fbsPrinter.Pr
 	batchCount := 0
 
 	for i, order := range orders {
-		stickers := wb.GetStickersFbs(m.token, order.ID)
+		stickers, err := wb.GetStickersFbs(m.token, order.ID)
+
+		if err != nil {
+			return nil, err
+		}
+
 		if len(stickers.Stickers) == 0 {
 			continue
 		}
