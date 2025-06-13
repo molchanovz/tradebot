@@ -102,7 +102,7 @@ func (m *Manager) getYandexFbsDEPRECATED(ctx context.Context, bot *botlib.Bot, c
 	text, markup := createStartAdminMarkup()
 	_, err = bot.SendMessage(ctx, &botlib.SendMessageParams{ChatID: chatId, Text: text, ReplyMarkup: markup})
 	if err != nil {
-		log.Printf("%v", err)
+		log.Println(fmt.Sprintf("ошибка отправки сообщения %v", err))
 		return
 	}
 

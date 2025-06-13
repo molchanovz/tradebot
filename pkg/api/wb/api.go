@@ -5,7 +5,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
-	"log"
 	"net/http"
 	"net/url"
 	"strconv"
@@ -16,7 +15,7 @@ func request(reqType, url string, headers map[string]string, params map[string]s
 	req, err := http.NewRequest(reqType, url, bytes.NewBuffer(body))
 
 	if err != nil {
-		log.Fatalf("Ошибка создания запроса: %v", err)
+		return "", fmt.Errorf("ошибка создания запроса: %v", err)
 	}
 
 	for s := range headers {
@@ -33,7 +32,7 @@ func request(reqType, url string, headers map[string]string, params map[string]s
 	client := &http.Client{}
 	resp, err := client.Do(req)
 	if err != nil {
-		log.Fatalf("Ошибка выполнения запроса: %v", err)
+		return "", fmt.Errorf("ошибка выполнения запроса: %v", err)
 	}
 	defer resp.Body.Close()
 
@@ -41,7 +40,10 @@ func request(reqType, url string, headers map[string]string, params map[string]s
 		return "", fmt.Errorf("получен статус %v", resp.Status)
 	}
 
-	jsonString, _ := io.ReadAll(resp.Body)
+	jsonString, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return "", err
+	}
 	return string(jsonString), nil
 }
 
@@ -122,7 +124,7 @@ func getCodesByOrderId(token string, orderId int) (string, error) {
 
 	body, err := json.Marshal(data)
 	if err != nil {
-		fmt.Println("Ошибка при преобразовании данных в JSON:", err)
+		return "", err
 	}
 
 	headers := map[string]string{

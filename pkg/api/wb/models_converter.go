@@ -2,6 +2,7 @@ package wb
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"log"
 	"sort"
@@ -30,7 +31,7 @@ func GetStickersFbs(wildberriesKey string, orderId int) (StickerWB, error) {
 
 	err = json.Unmarshal([]byte(jsonString), &stickers)
 	if err != nil {
-		log.Fatalf("Error decoding JSON: %v", err)
+		return stickers, errors.New(fmt.Sprintf("error decoding JSON: %v", err))
 	}
 	return stickers, nil
 }

@@ -199,7 +199,7 @@ func (m *Manager) startHandler(ctx context.Context, bot *botlib.Bot, update *mod
 		text = fmt.Sprintf("Привет, %v. %v", name, startMessage)
 		_, err := bot.SendMessage(ctx, &botlib.SendMessageParams{ChatID: chatId, Text: text, ReplyMarkup: markup})
 		if err != nil {
-			log.Printf("%v", err)
+			log.Println(fmt.Sprintf("ошибка отправки сообщения %v", err))
 			return
 		}
 
@@ -238,7 +238,7 @@ func WaitReadyFile(ctx context.Context, bot *botlib.Bot, chatId int64, progressC
 		case err = <-errChan:
 			_, err = bot.SendMessage(ctx, &botlib.SendMessageParams{ChatID: chatId, Text: err.Error()})
 			if err != nil {
-				log.Println(err)
+				log.Println(fmt.Sprintf("ошибка отправки сообщения %v", err))
 				return err
 			}
 		}

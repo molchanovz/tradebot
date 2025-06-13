@@ -93,6 +93,7 @@ func (m *Manager) getWbFbs(ctx context.Context, bot *botlib.Bot, chatId int64, s
 	if err != nil {
 		_, err = SendTextMessage(ctx, bot, chatId, err.Error())
 		if err != nil {
+			log.Println(fmt.Sprintf("ошибка отправки сообщения %v", err))
 			return
 		}
 		return

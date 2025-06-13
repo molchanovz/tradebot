@@ -2,6 +2,7 @@ package stickersFbs
 
 import (
 	"encoding/base64"
+	"errors"
 	"fmt"
 	"github.com/fogleman/gg"
 	"github.com/jung-kurt/gofpdf"
@@ -42,8 +43,8 @@ func (m WbManager) GetReadyFile(supplyId string, progressChan chan fbsPrinter.Pr
 
 	for i, order := range orders {
 		stickers, err := wb.GetStickersFbs(m.token, order.ID)
-
 		if err != nil {
+			fmt.Println("Ошибка GetStickersFbs")
 			return nil, err
 		}
 
@@ -51,7 +52,10 @@ func (m WbManager) GetReadyFile(supplyId string, progressChan chan fbsPrinter.Pr
 			continue
 		}
 
-		decodeToPDF(stickers.Stickers[0].File, stickers.Stickers[0].OrderId, order)
+		err = decodeToPDF(stickers.Stickers[0].File, stickers.Stickers[0].OrderId, order)
+		if err != nil {
+			return nil, err
+		}
 		ordersSlice = append(ordersSlice, fbsPrinter.ReadyPath+strconv.Itoa(order.ID)+".pdf")
 
 		// Батчи по 300 заказов
@@ -77,7 +81,10 @@ func (m WbManager) GetReadyFile(supplyId string, progressChan chan fbsPrinter.Pr
 			ordersSlice = []string{} // Сбрасываем для следующего батча
 		}
 
-		progressChan <- fbsPrinter.Progress{Current: i + 1, Total: totalOrders}
+		if i%5 == 0 {
+			progressChan <- fbsPrinter.Progress{Current: i, Total: totalOrders}
+		}
+
 		time.Sleep(200 * time.Millisecond)
 	}
 
@@ -88,14 +95,14 @@ func (m WbManager) GetReadyFile(supplyId string, progressChan chan fbsPrinter.Pr
 	return resultFiles, nil
 }
 
-func decodeToPNG(base64String string, orderId int) string {
+func decodeToPNG(base64String string, orderId int) (string, error) {
 	// Ваш base64 закодированный контент
 	base64Data := base64String
 
 	// Декодирование base64 в байты
 	data, err := base64.StdEncoding.DecodeString(base64Data)
 	if err != nil {
-		fmt.Println("Ошибка при декодировании base64:", err)
+		return "", errors.New(fmt.Sprintf("ошибка при декодировании base64:%v", err))
 	}
 
 	// Определите путь и имя файла для сохранения
@@ -104,28 +111,31 @@ func decodeToPNG(base64String string, orderId int) string {
 	// Открытие файла для записи
 	file, err := os.Create(filePath)
 	if err != nil {
-		fmt.Println("Ошибка при создании файла:", err)
+		return "", errors.New(fmt.Sprintf("ошибка при создании файла:%v", err))
 	}
 	defer file.Close()
 
 	// Запись данных в файл
 	_, err = file.Write(data)
 	if err != nil {
-		fmt.Println("Ошибка при записи в файл:", err)
+		return "", errors.New(fmt.Sprintf("ошибка при записи в файл:%v", err))
 	}
 
-	return filePath
+	return filePath, nil
 }
 
-func decodeToPDF(base64String string, orderId int, order wb.OrderWB) {
+func decodeToPDF(base64String string, orderId int, order wb.OrderWB) error {
 	pageWidthMM := 75.0
 	pageHeightMM := 120.0
 	// Создание нового PDF-документа
 	pdf := gofpdf.New("P", "mm", "", "")
 	// Добавление страницы с заданными размерами
-	pdf.AddPageFormat("P", gofpdf.SizeType{pageWidthMM, pageHeightMM})
+	pdf.AddPageFormat("P", gofpdf.SizeType{Wd: pageWidthMM, Ht: pageHeightMM})
 	// Путь к первому PNG-файлу
-	imgPath1 := decodeToPNG(base64String, orderId)
+	imgPath1, err := decodeToPNG(base64String, orderId)
+	if err != nil {
+		return err
+	}
 	// Добавление первого изображения в PDF (без изменения размера изображения)
 	pdf.ImageOptions(imgPath1, (75-58)/2, 13, 58, 40, false, gofpdf.ImageOptions{ImageType: "PNG"}, 0, "")
 
@@ -149,10 +159,11 @@ func decodeToPDF(base64String string, orderId int, order wb.OrderWB) {
 
 	pdf.ImageOptions(skuImageUrl, (75-58)/2, 67, 58, 40, false, gofpdf.ImageOptions{ImageType: "PNG"}, 0, "")
 	// Сохранение PDF-документа
-	err := pdf.OutputFileAndClose(fbsPrinter.ReadyPath + strconv.Itoa(orderId) + ".pdf")
+	err = pdf.OutputFileAndClose(fbsPrinter.ReadyPath + strconv.Itoa(orderId) + ".pdf")
 	if err != nil {
-		log.Fatalf("Error saving PDF: %s", err)
+		return err
 	}
+	return nil
 }
 
 func fileExists(filename string) bool {
