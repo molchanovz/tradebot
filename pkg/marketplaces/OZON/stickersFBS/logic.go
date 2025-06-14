@@ -139,7 +139,9 @@ func (m OzonManager) getReadyPdf(orderIds ozon.PostingslistFbs, progressChan cha
 			combinedPDFs = []string{}
 		}
 
-		progressChan <- fbsPrinter.Progress{Current: i + 1, Total: totalOrders}
+		if i/5 == 0 {
+			progressChan <- fbsPrinter.Progress{Current: i, Total: totalOrders}
+		}
 	}
 
 	if len(resultFiles) == 0 {
@@ -151,7 +153,7 @@ func (m OzonManager) getReadyPdf(orderIds ozon.PostingslistFbs, progressChan cha
 
 func (m OzonManager) getSortedFbsOrders() (ozon.PostingslistFbs, error) {
 	since := time.Now().AddDate(0, 0, -7).Format("2006-01-02T15:04:05.000Z")
-	to := time.Now().Format("2006-01-02T15:04:05.000Z")
+	to := time.Now().AddDate(0, 0, 1).Format("2006-01-02T15:04:05.000Z")
 
 	orderIds, err := ozon.PostingsListFbs(m.clientId, m.token, since, to, 0, "awaiting_deliver")
 	if err != nil {
