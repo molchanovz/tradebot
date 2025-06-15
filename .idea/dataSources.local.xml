@@ -40,5 +40,20 @@
         <ssh-config-id>7f0ffcf2-3c7d-4691-814f-aefe349abf9d</ssh-config-id>
       </ssh-properties>
     </data-source>
+    <data-source name="docker local" uuid="24e6219f-abf9-44de-865c-8eb389e5a997">
+      <database-info product="PostgreSQL" version="15.13 (Debian 15.13-1.pgdg120+1)" jdbc-version="4.2" driver-name="PostgreSQL JDBC Driver" driver-version="42.7.3" dbms="POSTGRES" exact-version="15.13" exact-driver-version="42.7">
+        <identifier-quote-string>&quot;</identifier-quote-string>
+      </database-info>
+      <case-sensitivity plain-identifiers="lower" quoted-identifiers="exact" />
+      <secret-storage>master_key</secret-storage>
+      <user-name>sergey</user-name>
+      <schema-mapping>
+        <introspection-scope>
+          <node kind="database" qname="@">
+            <node kind="schema" qname="@" />
+          </node>
+        </introspection-scope>
+      </schema-mapping>
+    </data-source>
   </component>
 </project>

@@ -139,7 +139,7 @@ func (m OzonManager) getReadyPdf(orderIds ozon.PostingslistFbs, progressChan cha
 			combinedPDFs = []string{}
 		}
 
-		if i/5 == 0 {
+		if i%5 == 0 {
 			progressChan <- fbsPrinter.Progress{Current: i, Total: totalOrders}
 		}
 	}
