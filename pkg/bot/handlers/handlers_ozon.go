@@ -270,6 +270,12 @@ func (m *Manager) ozonPrintStickers(ctx context.Context, bot *botlib.Bot, update
 	progressChan := make(chan fbsPrinter.Progress)
 	errChan := make(chan error)
 
+	defer func() {
+		close(done)
+		close(progressChan)
+		close(errChan)
+	}()
+
 	switch flag {
 	case stickersFBS.AllLabels:
 		{
@@ -332,7 +338,11 @@ func (m *Manager) ozonPrintStickers(ctx context.Context, bot *botlib.Bot, update
 
 		result = m.db.Create(orders)
 		if result.Error != nil {
-			log.Println("Error creating orders:", result.Error)
+			_, err = SendTextMessage(ctx, bot, chatId, result.Error.Error())
+			if err != nil {
+				return
+			}
+			return
 		}
 	}
 

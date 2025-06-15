@@ -56,7 +56,10 @@ func (m OzonManager) GetAllLabels(progressChan chan fbsPrinter.Progress) ([]stri
 func (m OzonManager) GetNewLabels(progressChan chan fbsPrinter.Progress) ([]string, ozon.PostingslistFbs, error) {
 	fbsPrinter.CreateDirectories()
 
-	orders, _ := m.getSortedFbsOrders()
+	orders, err := m.getSortedFbsOrders()
+	if err != nil {
+		return []string{}, ozon.PostingslistFbs{}, err
+	}
 
 	//Проверка, есть ли новые заказы
 	newOrders := ozon.PostingslistFbs{}

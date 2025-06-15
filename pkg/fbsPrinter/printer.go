@@ -15,6 +15,16 @@ const (
 	FontPath      = "/assets/font.ttf"
 )
 
+//const (
+//	DirectoryPath = "pkg/fbsPrinter/"
+//	CodesPath     = DirectoryPath + "codes/"
+//	ReadyPath     = DirectoryPath + "ready/"
+//	GeneratedPath = DirectoryPath + "generated/"
+//	BatchesPath   = DirectoryPath + "batches/"
+//	BarcodesPath  = "assets/barcodes/"
+//	FontPath      = "assets/font.ttf"
+//)
+
 type Progress struct {
 	Current int
 	Total   int

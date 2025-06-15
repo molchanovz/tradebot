@@ -234,6 +234,7 @@ func WaitReadyFile(ctx context.Context, bot *botlib.Bot, chatId int64, progressC
 				log.Println(err)
 				return err
 			}
+			return nil
 
 		case err = <-errChan:
 			_, err = bot.SendMessage(ctx, &botlib.SendMessageParams{ChatID: chatId, Text: err.Error()})
@@ -241,6 +242,7 @@ func WaitReadyFile(ctx context.Context, bot *botlib.Bot, chatId int64, progressC
 				log.Println(fmt.Sprintf("ошибка отправки сообщения %v", err))
 				return err
 			}
+			return err
 		}
 	}
 }
