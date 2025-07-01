@@ -8,7 +8,7 @@ import (
 
 func PostingFbo(ClientId, ApiKey, PostingNumber string) PostingFBO {
 	var posting PostingFBO
-	jsonString, _ := V2PostingFboGet(ClientId, ApiKey, PostingNumber)
+	jsonString, _ := v2PostingFboGet(ClientId, ApiKey, PostingNumber)
 	err := json.Unmarshal([]byte(jsonString), &posting)
 	if err != nil {
 		log.Fatalf("Error decoding JSON: %v", err)

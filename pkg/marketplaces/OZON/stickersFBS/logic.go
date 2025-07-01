@@ -63,9 +63,9 @@ func (m OzonManager) GetNewLabels(progressChan chan fbsPrinter.Progress) ([]stri
 
 	//Проверка, есть ли новые заказы
 	newOrders := ozon.PostingslistFbs{}
-	for _, posting := range orders.Result.PostingsFBS {
-		if _, ok := m.printedOrders[posting.PostingNumber]; !ok {
-			newOrders.Result.PostingsFBS = append(newOrders.Result.PostingsFBS, posting)
+	for _, p := range orders.Result.PostingsFBS {
+		if _, ok := m.printedOrders[p.PostingNumber]; !ok {
+			newOrders.Result.PostingsFBS = append(newOrders.Result.PostingsFBS, p)
 		}
 	}
 
@@ -73,12 +73,12 @@ func (m OzonManager) GetNewLabels(progressChan chan fbsPrinter.Progress) ([]stri
 		return []string{}, newOrders, errors.New("новых заказов нет")
 	}
 
-	readyPdfPath, err := m.getReadyPdf(newOrders, progressChan)
+	readyPdfPaths, err := m.getReadyPdf(newOrders, progressChan)
 	if err != nil {
 		return []string{}, newOrders, err
 	}
 
-	return readyPdfPath, newOrders, nil
+	return readyPdfPaths, newOrders, nil
 }
 
 func (m OzonManager) getReadyPdf(orderIds ozon.PostingslistFbs, progressChan chan fbsPrinter.Progress) ([]string, error) {
@@ -158,25 +158,23 @@ func (m OzonManager) getSortedFbsOrders() (ozon.PostingslistFbs, error) {
 	since := time.Now().AddDate(0, 0, -7).Format("2006-01-02T15:04:05.000Z")
 	to := time.Now().AddDate(0, 0, 1).Format("2006-01-02T15:04:05.000Z")
 
-	orderIds, err := ozon.PostingsListFbs(m.clientId, m.token, since, to, 0, "awaiting_deliver")
+	orders, err := ozon.PostingsListFbs(m.clientId, m.token, since, to, 0, "awaiting_deliver")
 	if err != nil {
-		return orderIds, err
+		return orders, err
 	}
 
-	if len(orderIds.Result.PostingsFBS) == 0 {
-		return orderIds, errors.New("заказов в сборке нет")
+	if len(orders.Result.PostingsFBS) == 0 {
+		return orders, errors.New("заказов в сборке нет")
 	}
 
-	sort.Slice(orderIds.Result.PostingsFBS, func(i, j int) bool {
-		return orderIds.Result.PostingsFBS[i].Products[0].OfferId < orderIds.Result.PostingsFBS[j].Products[0].OfferId
+	sort.Slice(orders.Result.PostingsFBS, func(i, j int) bool {
+		return orders.Result.PostingsFBS[i].Products[0].OfferId < orders.Result.PostingsFBS[j].Products[0].OfferId
 	})
-	return orderIds, nil
+	return orders, nil
 }
 
 func combineLabelWithBarcode(ozonPdfPath, outputPath, article string) error {
 	tmpImg := ozonPdfPath + ".jpg"
-
-	fmt.Println(tmpImg)
 
 	defer os.Remove(tmpImg)
 

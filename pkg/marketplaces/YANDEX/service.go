@@ -7,7 +7,7 @@ import (
 )
 
 const (
-	spreadsheetId = "1AdT0oPbO_8enok6ZWJuPXHwMxSb0fHxtaXbGVJ7MqEM"
+	spreadsheetId = "1LNNJaqHzLd78BU_N9VBDB-3n6EhFkWA7dzJPU3ysRIw"
 	daysAgo       = OZON.OrdersDaysAgo
 )
 

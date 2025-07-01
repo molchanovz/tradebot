@@ -97,7 +97,7 @@ func (m *Manager) ozonCabinetHandler(ctx context.Context, bot *botlib.Bot, updat
 
 	var buttonsRow, buttonBack []models.InlineKeyboardButton
 	buttonsRow = append(buttonsRow, models.InlineKeyboardButton{Text: "Вчерашние заказы", CallbackData: fmt.Sprintf("%v%v", CallbackOzonOrdersHandler, cabinetId)})
-	buttonsRow = append(buttonsRow, models.InlineKeyboardButton{Text: "Остатки", CallbackData: fmt.Sprintf("%v%v", CallbackOzonStocksHandler, cabinetId)})
+	buttonsRow = append(buttonsRow, models.InlineKeyboardButton{Text: "Анализ", CallbackData: fmt.Sprintf("%v%v", CallbackOzonStocksHandler, cabinetId)})
 	buttonsRow = append(buttonsRow, models.InlineKeyboardButton{Text: "Этикетки FBS", CallbackData: fmt.Sprintf("%v%v", CallbackOzonStickersHandler, cabinetId)})
 
 	buttonBack = append(buttonBack, models.InlineKeyboardButton{Text: "Назад", CallbackData: CallbackOzonHandler})
