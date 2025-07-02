@@ -4,17 +4,12 @@
     <option name="autoReloadType" value="ALL" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="640077d7-ce81-4039-9739-8ad3e3a8d41a" name="Changes" comment="fix ozon fbs: add return">
-      <change beforePath="$PROJECT_DIR$/.idea/dataSources.local.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources.local.xml" afterDir="false" />
+    <list default="true" id="640077d7-ce81-4039-9739-8ad3e3a8d41a" name="Changes" comment="edit google sheets">
+      <change afterPath="$PROJECT_DIR$/assets/barcodes/VM-Complex-bez-hlora-05x4.jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/assets/barcodes/VM-ECO-MEDLENNIY-1kg-20g.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/assets/barcodes/VM-ECO-MEDLENNIY-3kg-20g.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/assets/barcodes/VM-ECO-MEDLENNIY-5kg-20g.png" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pkg/api/ozon/api.go" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/api/ozon/api.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pkg/api/ozon/models_converter.go" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/api/ozon/models_converter.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pkg/bot/handlers/handlers_ozon.go" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/bot/handlers/handlers_ozon.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pkg/db/tradebot.pdd" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/db/tradebot.pdd" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pkg/marketplaces/OZON/service.go" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/marketplaces/OZON/service.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pkg/marketplaces/OZON/stickersFBS/logic.go" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/marketplaces/OZON/stickersFBS/logic.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pkg/marketplaces/WB/service.go" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/marketplaces/WB/service.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pkg/marketplaces/YANDEX/service.go" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/marketplaces/YANDEX/service.go" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -155,7 +150,6 @@
   </component>
   <component name="VcsManagerConfiguration">
     <option name="CHECK_CODE_SMELLS_BEFORE_PROJECT_COMMIT" value="false" />
-    <MESSAGE value="fix yandex service: start stickersFbs" />
     <MESSAGE value="refactoring: moving full project" />
     <MESSAGE value="refactoring: moving deployment" />
     <MESSAGE value="refactoring: add orderWriter" />
@@ -180,7 +174,8 @@
     <MESSAGE value="fix ozon fbs message editing" />
     <MESSAGE value="fix ozon fbs i%5" />
     <MESSAGE value="fix ozon fbs: add return" />
-    <option name="LAST_COMMIT_MESSAGE" value="fix ozon fbs: add return" />
+    <MESSAGE value="edit google sheets" />
+    <option name="LAST_COMMIT_MESSAGE" value="edit google sheets" />
   </component>
   <component name="VgoProject">
     <settings-migrated>true</settings-migrated>
