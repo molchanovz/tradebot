@@ -1,25 +1,25 @@
-package orders_and_returns
+package OZON
 
 import (
 	"math"
 	"strconv"
 	"time"
-	"tradebot/pkg/api/ozon"
+	"tradebot/api/ozon"
 	"tradebot/pkg/ordersWriter"
 )
 
-type OzonOrdersManager struct {
+type OrdersManager struct {
 	ordersWriter.OrdersManager
 	clientId, token string
 }
 
-func NewOzonOrdersManager(clientId, token, spreadsheetId string, daysAgo int) OzonOrdersManager {
-	manager := OzonOrdersManager{ordersWriter.NewOrdersManager(spreadsheetId, daysAgo), clientId, token}
+func NewOrdersManager(clientId, token, spreadsheetId string, daysAgo int) OrdersManager {
+	manager := OrdersManager{ordersWriter.NewOrdersManager(spreadsheetId, daysAgo), clientId, token}
 	return manager
 }
 
 // WriteToGoogleSheets Заполнение гугл таблицы с id = spreadsheetId
-func (m OzonOrdersManager) WriteToGoogleSheets(titleRange, fbsRange, fboRange, returnsRange string) (int, error) {
+func (m OrdersManager) WriteToGoogleSheets(titleRange, fbsRange, fboRange, returnsRange string) (int, error) {
 	date := time.Now().AddDate(0, 0, -m.DaysAgo)
 	sheetsName := "Заказы OZON-" + strconv.Itoa(date.Day())
 
@@ -101,7 +101,7 @@ func (m OzonOrdersManager) WriteToGoogleSheets(titleRange, fbsRange, fboRange, r
 	return maxValuesCount, nil
 }
 
-func (m OzonOrdersManager) getPostingsMapFBS(clientId, token string) map[string]int {
+func (m OrdersManager) getPostingsMapFBS(clientId, token string) map[string]int {
 	postingsWithCountFBS := make(map[string]int)
 	since := time.Now().AddDate(0, 0, m.DaysAgo*(-1)-1).Format("2006-01-02") + "T21:00:00.000Z"
 	to := time.Now().AddDate(0, 0, m.DaysAgo*(-1)).Format("2006-01-02") + "T21:00:00.000Z"
@@ -115,7 +115,7 @@ func (m OzonOrdersManager) getPostingsMapFBS(clientId, token string) map[string]
 	}
 	return postingsWithCountFBS
 }
-func (m OzonOrdersManager) getPostingsMapFBO(clientId, token string) map[string]int {
+func (m OrdersManager) getPostingsMapFBO(clientId, token string) map[string]int {
 	postingsWithCountFBO := make(map[string]int)
 	since := time.Now().AddDate(0, 0, m.DaysAgo*(-1)-1).Format("2006-01-02") + "T21:00:00.000Z"
 	to := time.Now().AddDate(0, 0, m.DaysAgo*(-1)).Format("2006-01-02") + "T21:00:00.000Z"
@@ -129,7 +129,7 @@ func (m OzonOrdersManager) getPostingsMapFBO(clientId, token string) map[string]
 	}
 	return postingsWithCountFBO
 }
-func (m OzonOrdersManager) getReturnsMap(clientId, token, since, to string) (map[string]int, error) {
+func (m OrdersManager) getReturnsMap(clientId, token, since, to string) (map[string]int, error) {
 	LastID := 0
 	hasNext := true
 	returnsWithCount := make(map[string]int)

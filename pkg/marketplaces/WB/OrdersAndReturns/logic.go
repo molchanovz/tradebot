@@ -5,7 +5,7 @@ import (
 	"strconv"
 	"strings"
 	"time"
-	"tradebot/pkg/api/wb"
+	"tradebot/api/wb"
 	"tradebot/pkg/ordersWriter"
 )
 

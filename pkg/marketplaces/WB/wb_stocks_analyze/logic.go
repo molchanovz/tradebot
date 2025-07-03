@@ -1,7 +1,7 @@
 package wb_stocks_analyze
 
 import (
-	"tradebot/pkg/api/wb"
+	"tradebot/api/wb"
 )
 
 var warehousesMap = map[string]string{

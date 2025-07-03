@@ -11,7 +11,7 @@ import (
 	"os/exec"
 	"strconv"
 	"time"
-	"tradebot/pkg/api/wb"
+	wb2 "tradebot/api/wb"
 	"tradebot/pkg/fbsPrinter"
 	"tradebot/pkg/google"
 )
@@ -31,7 +31,7 @@ func NewWbManager(token string) WbManager {
 func (m WbManager) GetReadyFile(supplyId string, progressChan chan fbsPrinter.Progress) ([]string, error) {
 	fbsPrinter.CreateDirectories()
 
-	orders, err := wb.GetOrdersFbs(m.token, supplyId)
+	orders, err := wb2.GetOrdersFbs(m.token, supplyId)
 	if err != nil {
 		return nil, err
 	}
@@ -42,7 +42,7 @@ func (m WbManager) GetReadyFile(supplyId string, progressChan chan fbsPrinter.Pr
 	batchCount := 0
 
 	for i, order := range orders {
-		stickers, err := wb.GetStickersFbs(m.token, order.ID)
+		stickers, err := wb2.GetStickersFbs(m.token, order.ID)
 		if err != nil {
 			fmt.Println("Ошибка GetStickersFbs")
 			return nil, err
@@ -124,7 +124,7 @@ func decodeToPNG(base64String string, orderId int) (string, error) {
 	return filePath, nil
 }
 
-func decodeToPDF(base64String string, orderId int, order wb.OrderWB) error {
+func decodeToPDF(base64String string, orderId int, order wb2.OrderWB) error {
 	pageWidthMM := 75.0
 	pageHeightMM := 120.0
 	// Создание нового PDF-документа

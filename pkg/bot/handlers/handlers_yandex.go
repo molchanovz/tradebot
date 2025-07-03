@@ -6,7 +6,7 @@ import (
 	botlib "github.com/go-telegram/bot"
 	"github.com/go-telegram/bot/models"
 	"log"
-	"tradebot/pkg/db"
+	db2 "tradebot/db"
 	"tradebot/pkg/fbsPrinter"
 	"tradebot/pkg/marketplaces/YANDEX/yandex_stickers_fbs"
 )
@@ -37,9 +37,9 @@ func (m *Manager) yandexHandler(ctx context.Context, bot *botlib.Bot, update *mo
 func (m *Manager) yandexFbsHandler(ctx context.Context, bot *botlib.Bot, update *models.Update) {
 	chatId := update.CallbackQuery.From.ID
 
-	err := m.db.Model(&db.User{}).Where(`"tgId" = ?`, chatId).Updates(db.User{
+	err := m.db.Model(&db2.User{}).Where(`"tgId" = ?`, chatId).Updates(db2.User{
 		TgId:     chatId,
-		StatusId: db.WaitingYaState,
+		StatusId: db2.WaitingYaState,
 	}).Error
 	if err != nil {
 		log.Println("Ошибка обновления WaitingYaState пользователя: ", err)

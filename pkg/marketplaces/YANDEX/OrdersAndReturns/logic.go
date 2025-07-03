@@ -3,7 +3,7 @@ package OrdersAndReturns
 import (
 	"strconv"
 	"time"
-	"tradebot/pkg/api/yandex"
+	"tradebot/api/yandex"
 	"tradebot/pkg/ordersWriter"
 )
 

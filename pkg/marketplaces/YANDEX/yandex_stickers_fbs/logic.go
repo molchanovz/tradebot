@@ -5,6 +5,7 @@ import (
 	"github.com/fogleman/gg"
 	"github.com/gen2brain/go-fitz"
 	"github.com/jung-kurt/gofpdf"
+	yandex2 "tradebot/api/yandex"
 	"tradebot/pkg/fbsPrinter"
 
 	"image"
@@ -13,7 +14,6 @@ import (
 	"os"
 	"os/exec"
 	"strconv"
-	"tradebot/pkg/api/yandex"
 )
 
 //func GetOrderInfo(token, orderId string) {
@@ -47,7 +47,7 @@ func NewManager(yandexCampaignIdFBO, yandexCampaignIdFBS, token string) *Manager
 
 func (m Manager) GetOrdersInfo(supplyId string, progressChan chan fbsPrinter.Progress) (string, error) {
 	CreateDirectories()
-	orderIds, err := yandex.GetOrdersIds(m.token, supplyId)
+	orderIds, err := yandex2.GetOrdersIds(m.token, supplyId)
 	if err != nil {
 		return "", fmt.Errorf("ошибка в GetOrdersIds: %v", err)
 	}
@@ -57,13 +57,13 @@ func (m Manager) GetOrdersInfo(supplyId string, progressChan chan fbsPrinter.Pro
 	var ordersSlice []string
 	for i, orderId := range orderIds {
 		//Получаем товары в заказе
-		order, err := yandex.GetOrder(m.token, orderId)
+		order, err := yandex2.GetOrder(m.token, orderId)
 		if err != nil {
 			return "", fmt.Errorf("ошибка в GetOrder: %v", err)
 		}
 		//Получаем стикеры к товарам
 
-		stickers, err := yandex.GetStickers(m.token, orderId)
+		stickers, err := yandex2.GetStickers(m.token, orderId)
 		if err != nil {
 			return "", fmt.Errorf("ошибка в GetStickers, %v", err)
 		}
@@ -112,7 +112,7 @@ func (m Manager) GetOrdersInfo(supplyId string, progressChan chan fbsPrinter.Pro
 	return readyFilePath, nil
 }
 
-func CreateLabel(codePath string, items yandex.Items) (*gofpdf.Fpdf, error) {
+func CreateLabel(codePath string, items yandex2.Items) (*gofpdf.Fpdf, error) {
 	// Создаем новый PDF-документ
 	pdf := gofpdf.NewCustom(&gofpdf.InitType{
 		UnitStr: "mm",

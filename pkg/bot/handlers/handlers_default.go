@@ -12,7 +12,7 @@ import (
 	"log"
 	"math"
 	"os"
-	"tradebot/pkg/db"
+	db2 "tradebot/db"
 	"tradebot/pkg/fbsPrinter"
 	"tradebot/pkg/marketplaces/OZON"
 	"tradebot/pkg/marketplaces/WB"
@@ -93,7 +93,7 @@ func (m *Manager) DefaultHandler(ctx context.Context, bot *botlib.Bot, update *m
 	chatId := update.Message.From.ID
 	message := update.Message.Text
 
-	var user db.User
+	var user db2.User
 	// Смотрим есть ли артикул в бд
 	result := m.db.Where(`"tgId" = ?`, chatId).Find(&user)
 	if result.Error != nil {
@@ -101,15 +101,15 @@ func (m *Manager) DefaultHandler(ctx context.Context, bot *botlib.Bot, update *m
 	}
 
 	switch user.StatusId {
-	case db.EnabledStatus:
+	case db2.EnabledStatus:
 		{
 			SendTextMessage(ctx, bot, chatId, "Не понял тебя. Нажми /start еще раз")
 		}
-	case db.WaitingWbState:
+	case db2.WaitingWbState:
 		{
 			m.getWbFbs(ctx, bot, chatId, message)
 		}
-	case db.WaitingYaState:
+	case db2.WaitingYaState:
 		{
 			m.getYandexFbs(ctx, bot, chatId, message)
 		}
@@ -117,9 +117,9 @@ func (m *Manager) DefaultHandler(ctx context.Context, bot *botlib.Bot, update *m
 		panic("unhandled default case")
 	}
 
-	err := m.db.Model(&db.User{}).Where(`"tgId" = ?`, chatId).Updates(db.User{
+	err := m.db.Model(&db2.User{}).Where(`"tgId" = ?`, chatId).Updates(db2.User{
 		TgId:     chatId,
-		StatusId: db.EnabledStatus,
+		StatusId: db2.EnabledStatus,
 	}).Error
 	if err != nil {
 		log.Println("Ошибка обновления EnabledStatus пользователя: ", err)
@@ -160,7 +160,7 @@ func (m *Manager) startHandler(ctx context.Context, bot *botlib.Bot, update *mod
 		chatId = update.CallbackQuery.From.ID
 	}
 
-	var user db.User
+	var user db2.User
 	// Смотрим есть ли юзер в бд
 	result := m.db.Where(`"tgId" = ?`, chatId).Find(&user)
 	if result.Error != nil {
@@ -169,15 +169,15 @@ func (m *Manager) startHandler(ctx context.Context, bot *botlib.Bot, update *mod
 
 	// если юзера нет - заполняем бд
 	if user.TgId == 0 {
-		user = db.User{TgId: chatId, StatusId: db.EnabledStatus}
+		user = db2.User{TgId: chatId, StatusId: db2.EnabledStatus}
 		err := m.db.Create(&user).Error
 		if err != nil {
 			log.Println("Ошибка создания пользователя: ", err)
 		}
 		log.Printf("Пользователь %v создан", chatId)
 	} else {
-		err := m.db.Model(&db.User{}).Where(`"tgId" = ?`, chatId).Updates(db.User{
-			StatusId: db.EnabledStatus,
+		err := m.db.Model(&db2.User{}).Where(`"tgId" = ?`, chatId).Updates(db2.User{
+			StatusId: db2.EnabledStatus,
 		}).Error
 		if err != nil {
 			log.Println("Ошибка обновления EnabledStatus пользователя: ", err)

@@ -12,12 +12,10 @@ import (
 	"strconv"
 	"strings"
 	"time"
-	"tradebot/pkg/api/ozon"
-	"tradebot/pkg/db"
+	"tradebot/api/ozon"
+	"tradebot/db"
 	"tradebot/pkg/fbsPrinter"
 	"tradebot/pkg/marketplaces/OZON"
-	"tradebot/pkg/marketplaces/OZON/stickersFBS"
-	"tradebot/pkg/marketplaces/OZON/stocks_analyzer"
 )
 
 func createCabinetsMarkup(cabinets []db.Cabinet, page int, hasNext bool) models.InlineKeyboardMarkup {
@@ -220,8 +218,8 @@ func (m *Manager) ozonStickersHandler(ctx context.Context, bot *botlib.Bot, upda
 	text := "Печать FBS стикеров. Выберите, какие стикеры распечатать"
 
 	var buttonsRow, buttonBack []models.InlineKeyboardButton
-	buttonsRow = append(buttonsRow, models.InlineKeyboardButton{Text: "Новые", CallbackData: fmt.Sprintf("%v%v_%v", CallbackOzonPrintStickersHandler, cabinetId, stickersFBS.NewLabels)})
-	buttonsRow = append(buttonsRow, models.InlineKeyboardButton{Text: "Все из сборки", CallbackData: fmt.Sprintf("%v%v_%v", CallbackOzonPrintStickersHandler, cabinetId, stickersFBS.AllLabels)})
+	buttonsRow = append(buttonsRow, models.InlineKeyboardButton{Text: "Новые", CallbackData: fmt.Sprintf("%v%v_%v", CallbackOzonPrintStickersHandler, cabinetId, OZON.NewLabels)})
+	buttonsRow = append(buttonsRow, models.InlineKeyboardButton{Text: "Все из сборки", CallbackData: fmt.Sprintf("%v%v_%v", CallbackOzonPrintStickersHandler, cabinetId, OZON.AllLabels)})
 	buttonBack = append(buttonBack, models.InlineKeyboardButton{Text: "Назад", CallbackData: fmt.Sprintf("%v%v", CallbackSelectCabinetHandler, cabinetId)})
 
 	allButtons := [][]models.InlineKeyboardButton{buttonsRow, buttonBack}
@@ -277,7 +275,7 @@ func (m *Manager) ozonPrintStickers(ctx context.Context, bot *botlib.Bot, update
 	}()
 
 	switch flag {
-	case stickersFBS.AllLabels:
+	case OZON.AllLabels:
 		{
 			go func() {
 				filePaths, err = manager.GetAllLabels(progressChan)
@@ -292,7 +290,7 @@ func (m *Manager) ozonPrintStickers(ctx context.Context, bot *botlib.Bot, update
 
 		}
 
-	case stickersFBS.NewLabels:
+	case OZON.NewLabels:
 		{
 			go func() {
 				filePaths, newOrders, err = manager.GetNewLabels(progressChan)
@@ -326,7 +324,7 @@ func (m *Manager) ozonPrintStickers(ctx context.Context, bot *botlib.Bot, update
 		return
 	}
 
-	if flag == stickersFBS.NewLabels && len(newOrders.Result.PostingsFBS) > 0 {
+	if flag == OZON.NewLabels && len(newOrders.Result.PostingsFBS) > 0 {
 		orders := make([]db.Order, 0, len(newOrders.Result.PostingsFBS))
 
 		for _, order := range newOrders.Result.PostingsFBS {
@@ -355,7 +353,7 @@ func (m *Manager) ozonClustersHandler(ctx context.Context, bot *botlib.Bot, upda
 	fmt.Println(clusters.Clusters)
 }
 
-func generateExcelOzon(postings map[string]map[string]map[string]int, stocks map[string]map[string]stocks_analyzer.CustomStocks, K float64, mp string) (string, error) {
+func generateExcelOzon(postings map[string]map[string]map[string]int, stocks map[string]map[string]OZON.CustomStocks, K float64, mp string) (string, error) {
 	file := excelize.NewFile()
 
 	err := createFullStatistic(postings, stocks, file)
@@ -377,7 +375,7 @@ func generateExcelOzon(postings map[string]map[string]map[string]int, stocks map
 	return filePath, nil
 }
 
-func createFullStatistic(postings map[string]map[string]map[string]int, stocks map[string]map[string]stocks_analyzer.CustomStocks, file *excelize.File) error {
+func createFullStatistic(postings map[string]map[string]map[string]int, stocks map[string]map[string]OZON.CustomStocks, file *excelize.File) error {
 	sheetName := "Общая статистика"
 	file.SetSheetName("Sheet1", sheetName)
 
@@ -454,7 +452,7 @@ func createFullStatistic(postings map[string]map[string]map[string]int, stocks m
 	}
 	return nil
 }
-func createStatisticByCluster(cluster string, postings map[string]map[string]map[string]int, stocks map[string]map[string]stocks_analyzer.CustomStocks, file *excelize.File) error {
+func createStatisticByCluster(cluster string, postings map[string]map[string]map[string]int, stocks map[string]map[string]OZON.CustomStocks, file *excelize.File) error {
 	sheetName := cluster
 	file.NewSheet(sheetName)
 

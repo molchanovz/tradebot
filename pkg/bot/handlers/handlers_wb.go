@@ -12,8 +12,8 @@ import (
 	"strconv"
 	"strings"
 	"time"
-	"tradebot/pkg/api/wb"
-	"tradebot/pkg/db"
+	"tradebot/api/wb"
+	db2 "tradebot/db"
 	"tradebot/pkg/fbsPrinter"
 	"tradebot/pkg/marketplaces/OZON"
 	"tradebot/pkg/marketplaces/WB/wb_stocks_analyze"
@@ -46,9 +46,9 @@ func wbHandler(ctx context.Context, bot *botlib.Bot, update *models.Update) {
 func (m *Manager) wbFbsHandler(ctx context.Context, bot *botlib.Bot, update *models.Update) {
 	chatId := update.CallbackQuery.From.ID
 
-	err := m.db.Model(&db.User{}).Where(`"tgId" = ?`, chatId).Updates(db.User{
+	err := m.db.Model(&db2.User{}).Where(`"tgId" = ?`, chatId).Updates(db2.User{
 		TgId:     chatId,
-		StatusId: db.WaitingWbState,
+		StatusId: db2.WaitingWbState,
 	}).Error
 	if err != nil {
 		log.Println("Ошибка обновления WaitingWbState пользователя: ", err)
@@ -210,7 +210,7 @@ func (m *Manager) AnalyzeStocks(apiKey string, ctx context.Context, b *botlib.Bo
 	}
 
 	for article, newStocks := range stocksMap {
-		var stocksDB []db.Stock
+		var stocksDB []db2.Stock
 		// Смотрим есть ли артикул в бд
 		result := m.db.Where("article = ? and marketplace = ?", article, "wildberries").Find(&stocksDB)
 		if result.Error != nil {
@@ -219,7 +219,7 @@ func (m *Manager) AnalyzeStocks(apiKey string, ctx context.Context, b *botlib.Bo
 
 		// если артикула нет - заполняем бд
 		if len(stocksDB) == 0 {
-			stock := db.Stock{Article: article, StocksFBO: &newStocks.stockFBO, UpdatedAt: time.Now(), Marketplace: "wildberries"}
+			stock := db2.Stock{Article: article, StocksFBO: &newStocks.stockFBO, UpdatedAt: time.Now(), Marketplace: "wildberries"}
 			err = m.db.Create(&stock).Error
 			if err != nil {
 				return err
@@ -247,7 +247,7 @@ func (m *Manager) AnalyzeStocks(apiKey string, ctx context.Context, b *botlib.Bo
 
 		log.Println("Обновляем ", stocksDB[0].Article)
 
-		err = m.db.Model(&db.Stock{}).Where("article = ? and marketplace = ?", stocksDB[0].Article, "wildberries").Updates(db.Stock{
+		err = m.db.Model(&db2.Stock{}).Where("article = ? and marketplace = ?", stocksDB[0].Article, "wildberries").Updates(db2.Stock{
 			StocksFBO: &newStocks.stockFBO,
 			UpdatedAt: time.Now(),
 		}).Error
