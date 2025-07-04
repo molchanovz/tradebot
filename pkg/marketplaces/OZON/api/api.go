@@ -1,4 +1,4 @@
-package ozon
+package api
 
 import (
 	"bytes"

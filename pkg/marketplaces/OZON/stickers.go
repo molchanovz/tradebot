@@ -15,8 +15,8 @@ import (
 	"sort"
 	"strings"
 	"time"
-	ozon2 "tradebot/api/ozon"
 	"tradebot/pkg/fbsPrinter"
+	ozonApi "tradebot/pkg/marketplaces/OZON/api"
 )
 
 type StickerManager struct {
@@ -53,16 +53,16 @@ func (m StickerManager) GetAllLabels(progressChan chan fbsPrinter.Progress) ([]s
 	return readyPdfPath, nil
 }
 
-func (m StickerManager) GetNewLabels(progressChan chan fbsPrinter.Progress) ([]string, ozon2.PostingslistFbs, error) {
+func (m StickerManager) GetNewLabels(progressChan chan fbsPrinter.Progress) ([]string, ozonApi.PostingslistFbs, error) {
 	fbsPrinter.CreateDirectories()
 
 	orders, err := m.getSortedFbsOrders()
 	if err != nil {
-		return []string{}, ozon2.PostingslistFbs{}, err
+		return []string{}, ozonApi.PostingslistFbs{}, err
 	}
 
 	//Проверка, есть ли новые заказы
-	newOrders := ozon2.PostingslistFbs{}
+	newOrders := ozonApi.PostingslistFbs{}
 	for _, p := range orders.Result.PostingsFBS {
 		if _, ok := m.printedOrders[p.PostingNumber]; !ok {
 			newOrders.Result.PostingsFBS = append(newOrders.Result.PostingsFBS, p)
@@ -81,7 +81,7 @@ func (m StickerManager) GetNewLabels(progressChan chan fbsPrinter.Progress) ([]s
 	return readyPdfPaths, newOrders, nil
 }
 
-func (m StickerManager) getReadyPdf(orderIds ozon2.PostingslistFbs, progressChan chan fbsPrinter.Progress) ([]string, error) {
+func (m StickerManager) getReadyPdf(orderIds ozonApi.PostingslistFbs, progressChan chan fbsPrinter.Progress) ([]string, error) {
 	fbsPrinter.CreateDirectories()
 
 	totalOrders := len(orderIds.Result.PostingsFBS)
@@ -91,7 +91,7 @@ func (m StickerManager) getReadyPdf(orderIds ozon2.PostingslistFbs, progressChan
 
 	for i, order := range orderIds.Result.PostingsFBS {
 		// 1. Скачиваем этикетку Ozon
-		labelPDF := ozon2.V2PostingFbsPackageLabel(m.clientId, m.token, order.PostingNumber)
+		labelPDF := ozonApi.V2PostingFbsPackageLabel(m.clientId, m.token, order.PostingNumber)
 
 		if labelPDF == "" {
 			return nil, fmt.Errorf("пустой labelPDF для заказа %s", order.PostingNumber)
@@ -154,11 +154,11 @@ func (m StickerManager) getReadyPdf(orderIds ozon2.PostingslistFbs, progressChan
 	return resultFiles, nil
 }
 
-func (m StickerManager) getSortedFbsOrders() (ozon2.PostingslistFbs, error) {
+func (m StickerManager) getSortedFbsOrders() (ozonApi.PostingslistFbs, error) {
 	since := time.Now().AddDate(0, 0, -7).Format("2006-01-02T15:04:05.000Z")
 	to := time.Now().AddDate(0, 0, 1).Format("2006-01-02T15:04:05.000Z")
 
-	orders, err := ozon2.PostingsListFbs(m.clientId, m.token, since, to, 0, "awaiting_deliver")
+	orders, err := ozonApi.PostingsListFbs(m.clientId, m.token, since, to, 0, "awaiting_deliver")
 	if err != nil {
 		return orders, err
 	}

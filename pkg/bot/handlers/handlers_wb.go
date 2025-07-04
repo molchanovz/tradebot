@@ -12,11 +12,19 @@ import (
 	"strconv"
 	"strings"
 	"time"
-	"tradebot/api/wb"
-	db2 "tradebot/db"
+	"tradebot/pkg/db"
 	"tradebot/pkg/fbsPrinter"
 	"tradebot/pkg/marketplaces/OZON"
-	"tradebot/pkg/marketplaces/WB/wb_stocks_analyze"
+	"tradebot/pkg/marketplaces/WB"
+	"tradebot/pkg/marketplaces/WB/api"
+)
+
+const (
+	MarketWb                = "WB"
+	CallbackWbHandler       = MarketWb
+	CallbackWbFbsHandler    = "WB-FBS"
+	CallbackWbOrdersHandler = "WB-ORDERS"
+	CallbackWbStocksHandler = "WB-STOCKS"
 )
 
 func wbHandler(ctx context.Context, bot *botlib.Bot, update *models.Update) {
@@ -30,7 +38,7 @@ func wbHandler(ctx context.Context, bot *botlib.Bot, update *models.Update) {
 	buttonsRow = append(buttonsRow, models.InlineKeyboardButton{Text: "Вчерашние заказы", CallbackData: CallbackWbOrdersHandler})
 	buttonsRow = append(buttonsRow, models.InlineKeyboardButton{Text: "Остатки", CallbackData: CallbackWbStocksHandler})
 
-	buttonBack = append(buttonBack, models.InlineKeyboardButton{Text: "Назад", CallbackData: "START"})
+	buttonBack = append(buttonBack, models.InlineKeyboardButton{Text: "Назад", CallbackData: CallbackStartHandler})
 
 	allButtons := [][]models.InlineKeyboardButton{buttonsRow, buttonBack}
 	markup := models.InlineKeyboardMarkup{InlineKeyboard: allButtons}
@@ -43,13 +51,17 @@ func wbHandler(ctx context.Context, bot *botlib.Bot, update *models.Update) {
 
 }
 
-func (m *Manager) wbFbsHandler(ctx context.Context, bot *botlib.Bot, update *models.Update) {
+func (m *Manager) stickersHandler(ctx context.Context, bot *botlib.Bot, update *models.Update) {
 	chatId := update.CallbackQuery.From.ID
 
-	err := m.db.Model(&db2.User{}).Where(`"tgId" = ?`, chatId).Updates(db2.User{
-		TgId:     chatId,
-		StatusId: db2.WaitingWbState,
-	}).Error
+	user, err := m.repo.GetUserByTgId(chatId)
+	if err != nil {
+		log.Println("Ошибка получения пользователя: ", err)
+		return
+	}
+
+	user.StatusID = db.WaitingWbState
+	err = m.repo.UpdateUser(user)
 	if err != nil {
 		log.Println("Ошибка обновления WaitingWbState пользователя: ", err)
 	}
@@ -59,7 +71,7 @@ func (m *Manager) wbFbsHandler(ctx context.Context, bot *botlib.Bot, update *mod
 
 	var buttonBack []models.InlineKeyboardButton
 
-	buttonBack = append(buttonBack, models.InlineKeyboardButton{Text: "Назад", CallbackData: "START"})
+	buttonBack = append(buttonBack, models.InlineKeyboardButton{Text: "Назад", CallbackData: CallbackStartHandler})
 
 	allButtons := [][]models.InlineKeyboardButton{buttonBack}
 	markup := models.InlineKeyboardMarkup{InlineKeyboard: allButtons}
@@ -72,15 +84,21 @@ func (m *Manager) wbFbsHandler(ctx context.Context, bot *botlib.Bot, update *mod
 
 }
 
-func (m *Manager) getWbFbs(ctx context.Context, bot *botlib.Bot, chatId int64, supplyId string) {
+func (m *Manager) getWbStickers(ctx context.Context, bot *botlib.Bot, chatId int64, supplyId string) {
 	done := make(chan []string)
 	progressChan := make(chan fbsPrinter.Progress)
 	errChan := make(chan error)
 
 	defer fbsPrinter.CleanFiles()
 
+	cabinet, err := m.repo.GetCabinets(MarketWb)
+	if err != nil {
+		log.Println(err)
+		return
+	}
+
 	go func() {
-		filePath, err := m.wbService.GetStickersFbsManager().GetReadyFile(supplyId, progressChan)
+		filePath, err := WB.NewService(cabinet[0]).GetStickersFbsManager().GetReadyFile(supplyId, progressChan)
 		if err != nil {
 			log.Println("Ошибка при получении файла:", err)
 			errChan <- err
@@ -89,7 +107,7 @@ func (m *Manager) getWbFbs(ctx context.Context, bot *botlib.Bot, chatId int64, s
 		done <- filePath
 	}()
 
-	err := WaitReadyFile(ctx, bot, chatId, progressChan, done, errChan)
+	err = WaitReadyFile(ctx, bot, chatId, progressChan, done, errChan)
 	if err != nil {
 		_, err = SendTextMessage(ctx, bot, chatId, err.Error())
 		if err != nil {
@@ -104,7 +122,13 @@ func (m *Manager) getWbFbs(ctx context.Context, bot *botlib.Bot, chatId int64, s
 func (m *Manager) wbOrdersHandler(ctx context.Context, bot *botlib.Bot, update *models.Update) {
 	chatId := update.CallbackQuery.From.ID
 
-	err := m.wbService.GetOrdersManager().WriteToGoogleSheets()
+	cabinet, err := m.repo.GetCabinets(MarketWb)
+	if err != nil {
+		log.Println(err)
+		return
+	}
+
+	err = WB.NewService(cabinet[0]).GetOrdersManager().WriteToGoogleSheets()
 	if err != nil {
 		_, err = SendTextMessage(ctx, bot, chatId, err.Error())
 		if err != nil {
@@ -120,21 +144,21 @@ func (m *Manager) wbOrdersHandler(ctx context.Context, bot *botlib.Bot, update *
 		}
 	}
 }
-func wbStocksHandler(ctx context.Context, bot *botlib.Bot, update *models.Update) {
+func (m *Manager) wbStocksHandler(ctx context.Context, bot *botlib.Bot, update *models.Update) {
 	daysAgo := 14
 	K := 100.0
 
 	chatId := update.CallbackQuery.From.ID
 
-	WbKey, err := initEnv(".env", "API_KEY_WB")
+	cabinet, err := m.repo.GetCabinets(MarketWb)
 	if err != nil {
 		log.Println(err)
 		return
 	}
 
-	orders := wb_stocks_analyze.GetOrders(WbKey, daysAgo)
+	orders := WB.GetOrders(cabinet[0].Key, daysAgo)
 
-	stocks, lostWarehouses, err := wb_stocks_analyze.GetStocks(WbKey)
+	stocks, lostWarehouses, err := WB.GetStocks(cabinet[0].Key)
 	if err != nil {
 		_, err = SendTextMessage(ctx, bot, chatId, fmt.Sprintf("Ошибка при анализе остатков: %v", err))
 		if err != nil {
@@ -176,7 +200,7 @@ func wbStocksHandler(ctx context.Context, bot *botlib.Bot, update *models.Update
 }
 
 func (m *Manager) AnalyzeStocks(apiKey string, ctx context.Context, b *botlib.Bot) error {
-	stocksFBO, err := wb.GetStockFbo(apiKey)
+	stocksFBO, err := api.GetStockFbo(apiKey)
 	if err != nil {
 		return err
 	}
@@ -210,17 +234,16 @@ func (m *Manager) AnalyzeStocks(apiKey string, ctx context.Context, b *botlib.Bo
 	}
 
 	for article, newStocks := range stocksMap {
-		var stocksDB []db2.Stock
 		// Смотрим есть ли артикул в бд
-		result := m.db.Where("article = ? and marketplace = ?", article, "wildberries").Find(&stocksDB)
-		if result.Error != nil {
-			return result.Error
+		stocks, err := m.repo.GetStocks(article, "wildberries")
+		if err != nil {
+			return err
 		}
 
 		// если артикула нет - заполняем бд
-		if len(stocksDB) == 0 {
-			stock := db2.Stock{Article: article, StocksFBO: &newStocks.stockFBO, UpdatedAt: time.Now(), Marketplace: "wildberries"}
-			err = m.db.Create(&stock).Error
+		if len(stocks) == 0 {
+			stock := db.Stock{Article: article, CountFbo: &newStocks.stockFBO, UpdatedAt: time.Now(), CabinetID: 0}
+			err = m.repo.CreateStock(stock)
 			if err != nil {
 				return err
 			}
@@ -228,12 +251,12 @@ func (m *Manager) AnalyzeStocks(apiKey string, ctx context.Context, b *botlib.Bo
 			continue
 		}
 
-		if newStocks.stockFBO == *stocksDB[0].StocksFBO {
+		if newStocks.stockFBO == *stocks[0].CountFbo {
 			continue
 		}
 
 		// Если стало нулем
-		if newStocks.stockFBO == 0 && *stocksDB[0].StocksFBO != 0 {
+		if newStocks.stockFBO == 0 && *stocks[0].CountFbo != 0 {
 			// Отправляем уведомление
 			_, err = b.SendMessage(ctx, &botlib.SendMessageParams{
 				ChatID:    m.myChatId,
@@ -245,12 +268,13 @@ func (m *Manager) AnalyzeStocks(apiKey string, ctx context.Context, b *botlib.Bo
 			}
 		}
 
-		log.Println("Обновляем ", stocksDB[0].Article)
+		log.Println("Обновляем ", stocks[0].Article)
 
-		err = m.db.Model(&db2.Stock{}).Where("article = ? and marketplace = ?", stocksDB[0].Article, "wildberries").Updates(db2.Stock{
-			StocksFBO: &newStocks.stockFBO,
+		err = m.repo.UpdateStock(db.Stock{
+			Article:   stocks[0].Article,
+			CountFbo:  &newStocks.stockFBO,
 			UpdatedAt: time.Now(),
-		}).Error
+		})
 		if err != nil {
 			return err
 		}

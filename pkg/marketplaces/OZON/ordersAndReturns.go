@@ -4,7 +4,7 @@ import (
 	"math"
 	"strconv"
 	"time"
-	"tradebot/api/ozon"
+	"tradebot/pkg/marketplaces/OZON/api"
 	"tradebot/pkg/ordersWriter"
 )
 
@@ -105,7 +105,7 @@ func (m OrdersManager) getPostingsMapFBS(clientId, token string) map[string]int 
 	postingsWithCountFBS := make(map[string]int)
 	since := time.Now().AddDate(0, 0, m.DaysAgo*(-1)-1).Format("2006-01-02") + "T21:00:00.000Z"
 	to := time.Now().AddDate(0, 0, m.DaysAgo*(-1)).Format("2006-01-02") + "T21:00:00.000Z"
-	potingsListFbs, _ := ozon.PostingsListFbs(clientId, token, since, to, 0, "")
+	potingsListFbs, _ := api.PostingsListFbs(clientId, token, since, to, 0, "")
 	for _, posting := range potingsListFbs.Result.PostingsFBS {
 		if posting.Status != "cancelled" {
 			for _, product := range posting.Products {
@@ -119,7 +119,7 @@ func (m OrdersManager) getPostingsMapFBO(clientId, token string) map[string]int 
 	postingsWithCountFBO := make(map[string]int)
 	since := time.Now().AddDate(0, 0, m.DaysAgo*(-1)-1).Format("2006-01-02") + "T21:00:00.000Z"
 	to := time.Now().AddDate(0, 0, m.DaysAgo*(-1)).Format("2006-01-02") + "T21:00:00.000Z"
-	postings_list_fbo := ozon.PostingsListFbo(clientId, token, since, to, 0)
+	postings_list_fbo := api.PostingsListFbo(clientId, token, since, to, 0)
 	for _, posting := range postings_list_fbo.Result {
 		if posting.Status != "cancelled" {
 			for _, product := range posting.Products {
@@ -138,12 +138,12 @@ func (m OrdersManager) getReturnsMap(clientId, token, since, to string) (map[str
 		поэтому делаем цикл с LastID и добавляем в срез returnsFBO
 	*/
 	for hasNext {
-		returns, err := ozon.ReturnsList(clientId, token, LastID, since, to)
+		returns, err := api.ReturnsList(clientId, token, LastID, since, to)
 		if err != nil {
 			return returnsWithCount, err
 		}
 		for _, value := range returns.Returns {
-			if value.Visual.Status.SysName == "ReturnedToOzon" {
+			if value.Visual.Status.SysName == "ReturnedToOZON" {
 				returnsWithCount[value.Product.OfferId] += value.Product.Quantity
 			}
 			LastID = value.Id

@@ -8,11 +8,10 @@ import (
 	"github.com/go-telegram/bot/models"
 	"github.com/joho/godotenv"
 	"github.com/xuri/excelize/v2"
-	"gorm.io/gorm"
 	"log"
 	"math"
 	"os"
-	db2 "tradebot/db"
+	"tradebot/pkg/db"
 	"tradebot/pkg/fbsPrinter"
 	"tradebot/pkg/marketplaces/OZON"
 	"tradebot/pkg/marketplaces/WB"
@@ -20,39 +19,24 @@ import (
 )
 
 const (
-	CallbackStartHandler = "START"
-
-	CallbackWbHandler                = "WB"
-	CallbackYandexHandler            = "YANDEX"
-	CallbackOzonHandler              = "OZON"
-	CallbackWbFbsHandler             = "WB-FBS"
-	CallbackYandexFbsHandler         = "YANDEX-FBS"
-	CallbackWbOrdersHandler          = "WB-ORDERS"
-	CallbackYandexOrdersHandler      = "YANDEX-ORDERS"
-	CallbackOzonOrdersHandler        = "OZON-ORDERS_"
-	CallbackOzonStocksHandler        = "OZON-STOCKS_"
-	CallbackWbStocksHandler          = "WB-STOCKS"
-	CallbackOzonStickersHandler      = "OZON-STICKERS_"
-	CallbackOzonPrintStickersHandler = "OZON-PRINT-STICKERS_"
-	CallbackClustersHandler          = "OZON-CLUSTERS"
-	CallbackOzonCabinetsHandler      = "OZON-CABINETS"
-	CallbackSelectCabinetHandler     = "CABINET_"
+	CallbackStartHandler                 = "start"
+	MessageStartHandler                  = "/start"
+	CallbackSelectOzonCabinetHandler     = "CABINET-OZON_"
+	CallbackSettingsSelectCabinetHandler = "SETTINGS-CABINET_"
 )
 
 type Manager struct {
 	b             *botlib.Bot
-	db            *gorm.DB
+	repo          *db.Repo
 	ozonService   OZON.Service
-	wbService     WB.Service
 	yandexService YANDEX.Service
 	myChatId      string
 }
 
-func NewBotManager(wbService WB.Service, yandexService YANDEX.Service, db *gorm.DB, myChatId string) *Manager {
+func NewBotManager(wbService WB.Service, yandexService YANDEX.Service, repo *db.Repo, myChatId string) *Manager {
 	return &Manager{
-		wbService:     wbService,
 		yandexService: yandexService,
-		db:            db,
+		repo:          repo,
 		myChatId:      myChatId,
 	}
 }
@@ -65,25 +49,29 @@ func (m *Manager) GetBot() *botlib.Bot {
 }
 
 func (m *Manager) RegisterBotHandlers() {
-	m.b.RegisterHandler(botlib.HandlerTypeMessageText, "/start", botlib.MatchTypePrefix, m.startHandler)
+	m.b.RegisterHandler(botlib.HandlerTypeMessageText, MessageStartHandler, botlib.MatchTypePrefix, m.startHandler)
 	m.b.RegisterHandler(botlib.HandlerTypeCallbackQueryData, CallbackStartHandler, botlib.MatchTypePrefix, m.startHandler)
+	m.b.RegisterHandler(botlib.HandlerTypeMessageText, MessageSettingsHandler, botlib.MatchTypePrefix, m.settingsHandler)
+	m.b.RegisterHandler(botlib.HandlerTypeCallbackQueryData, MessageSettingsHandler, botlib.MatchTypePrefix, m.settingsHandler)
+	m.b.RegisterHandler(botlib.HandlerTypeCallbackQueryData, CallbackSettingsHandler, botlib.MatchTypePrefix, m.selectMpSettingsHandler)
+	m.b.RegisterHandler(botlib.HandlerTypeCallbackQueryData, CallbackSettingsSelectCabinetHandler, botlib.MatchTypePrefix, m.settingsMPHandler)
 
 	m.b.RegisterHandler(botlib.HandlerTypeCallbackQueryData, CallbackWbHandler, botlib.MatchTypeExact, wbHandler)
 	m.b.RegisterHandler(botlib.HandlerTypeCallbackQueryData, CallbackYandexHandler, botlib.MatchTypeExact, m.yandexHandler)
 	m.b.RegisterHandler(botlib.HandlerTypeCallbackQueryData, CallbackOzonHandler, botlib.MatchTypeExact, m.ozonHandler)
 
-	m.b.RegisterHandler(botlib.HandlerTypeCallbackQueryData, CallbackWbFbsHandler, botlib.MatchTypeExact, m.wbFbsHandler)
+	m.b.RegisterHandler(botlib.HandlerTypeCallbackQueryData, CallbackWbFbsHandler, botlib.MatchTypeExact, m.stickersHandler)
 	m.b.RegisterHandler(botlib.HandlerTypeCallbackQueryData, CallbackYandexFbsHandler, botlib.MatchTypeExact, m.yandexFbsHandler)
 	m.b.RegisterHandler(botlib.HandlerTypeCallbackQueryData, CallbackWbOrdersHandler, botlib.MatchTypePrefix, m.wbOrdersHandler)
 	m.b.RegisterHandler(botlib.HandlerTypeCallbackQueryData, CallbackYandexOrdersHandler, botlib.MatchTypePrefix, m.yandexOrdersHandler)
 	m.b.RegisterHandler(botlib.HandlerTypeCallbackQueryData, CallbackOzonOrdersHandler, botlib.MatchTypePrefix, m.ozonOrdersHandler)
 	m.b.RegisterHandler(botlib.HandlerTypeCallbackQueryData, CallbackOzonStocksHandler, botlib.MatchTypePrefix, m.ozonStocksHandler)
-	m.b.RegisterHandler(botlib.HandlerTypeCallbackQueryData, CallbackWbStocksHandler, botlib.MatchTypePrefix, wbStocksHandler)
+	m.b.RegisterHandler(botlib.HandlerTypeCallbackQueryData, CallbackWbStocksHandler, botlib.MatchTypePrefix, m.wbStocksHandler)
 	m.b.RegisterHandler(botlib.HandlerTypeCallbackQueryData, CallbackOzonStickersHandler, botlib.MatchTypePrefix, m.ozonStickersHandler)
 	m.b.RegisterHandler(botlib.HandlerTypeCallbackQueryData, CallbackOzonPrintStickersHandler, botlib.MatchTypePrefix, m.ozonPrintStickers)
 	m.b.RegisterHandler(botlib.HandlerTypeCallbackQueryData, CallbackClustersHandler, botlib.MatchTypePrefix, m.ozonClustersHandler)
 
-	m.b.RegisterHandler(botlib.HandlerTypeCallbackQueryData, CallbackSelectCabinetHandler, botlib.MatchTypePrefix, m.ozonCabinetHandler)
+	m.b.RegisterHandler(botlib.HandlerTypeCallbackQueryData, CallbackSelectOzonCabinetHandler, botlib.MatchTypePrefix, m.ozonCabinetHandler)
 
 	//b.RegisterHandler(botlib.HandlerTypeCallbackQueryData, "YANDEX_FBS", botlib.MatchTypePrefix, wbOrdersHandler)
 
@@ -93,23 +81,22 @@ func (m *Manager) DefaultHandler(ctx context.Context, bot *botlib.Bot, update *m
 	chatId := update.Message.From.ID
 	message := update.Message.Text
 
-	var user db2.User
-	// Смотрим есть ли артикул в бд
-	result := m.db.Where(`"tgId" = ?`, chatId).Find(&user)
-	if result.Error != nil {
-		log.Println("Error finding user:", result.Error)
+	user, err := m.repo.GetUserByTgId(chatId)
+	if err != nil {
+		log.Println(err)
+		return
 	}
 
-	switch user.StatusId {
-	case db2.EnabledStatus:
+	switch user.StatusID {
+	case db.EnabledStatus:
 		{
 			SendTextMessage(ctx, bot, chatId, "Не понял тебя. Нажми /start еще раз")
 		}
-	case db2.WaitingWbState:
+	case db.WaitingWbState:
 		{
-			m.getWbFbs(ctx, bot, chatId, message)
+			m.getWbStickers(ctx, bot, chatId, message)
 		}
-	case db2.WaitingYaState:
+	case db.WaitingYaState:
 		{
 			m.getYandexFbs(ctx, bot, chatId, message)
 		}
@@ -117,10 +104,8 @@ func (m *Manager) DefaultHandler(ctx context.Context, bot *botlib.Bot, update *m
 		panic("unhandled default case")
 	}
 
-	err := m.db.Model(&db2.User{}).Where(`"tgId" = ?`, chatId).Updates(db2.User{
-		TgId:     chatId,
-		StatusId: db2.EnabledStatus,
-	}).Error
+	user.StatusID = db.EnabledStatus
+	err = m.repo.UpdateUser(user)
 	if err != nil {
 		log.Println("Ошибка обновления EnabledStatus пользователя: ", err)
 	}
@@ -160,25 +145,46 @@ func (m *Manager) startHandler(ctx context.Context, bot *botlib.Bot, update *mod
 		chatId = update.CallbackQuery.From.ID
 	}
 
-	var user db2.User
-	// Смотрим есть ли юзер в бд
-	result := m.db.Where(`"tgId" = ?`, chatId).Find(&user)
-	if result.Error != nil {
-		log.Println("Error finding chatId: ", result.Error)
+	_, err := bot.SetMyCommands(ctx, &botlib.SetMyCommandsParams{
+		Commands: []models.BotCommand{
+			{Command: MessageStartHandler, Description: "Перезапуск бота"},
+			{Command: MessageSettingsHandler, Description: "Настройки"},
+		},
+	})
+	if err != nil {
+		log.Println("Ошибка регистрации команд:", err)
+		return
+	}
+
+	_, err = bot.SetChatMenuButton(ctx, &botlib.SetChatMenuButtonParams{
+		ChatID: chatId,
+		MenuButton: models.MenuButtonCommands{
+			Type: models.MenuButtonTypeCommands,
+		},
+	})
+	if err != nil {
+		log.Println("Ошибка создания меню: ", err)
+		return
+	}
+
+	user, err := m.repo.GetUserByTgId(chatId)
+	if err != nil {
+		log.Println("Ошибка получения пользователя: ", err)
+		return
 	}
 
 	// если юзера нет - заполняем бд
-	if user.TgId == 0 {
-		user = db2.User{TgId: chatId, StatusId: db2.EnabledStatus}
-		err := m.db.Create(&user).Error
+	if user.TgID == 0 {
+		user = db.User{TgID: chatId, StatusID: db.EnabledStatus, CabinetIDs: make([]int, 0)}
+		err := m.repo.CreateUser(user)
 		if err != nil {
 			log.Println("Ошибка создания пользователя: ", err)
+		} else {
+			log.Printf("Пользователь %v создан", chatId)
 		}
-		log.Printf("Пользователь %v создан", chatId)
 	} else {
-		err := m.db.Model(&db2.User{}).Where(`"tgId" = ?`, chatId).Updates(db2.User{
-			StatusId: db2.EnabledStatus,
-		}).Error
+		user.StatusID = db.EnabledStatus
+		err := m.repo.UpdateUser(user)
 		if err != nil {
 			log.Println("Ошибка обновления EnabledStatus пользователя: ", err)
 		}
@@ -321,6 +327,56 @@ func sendProgress(ctx context.Context, bot *botlib.Bot, chatId int64, progress f
 		}
 	}
 	return progressMsgId, nil
+}
+
+type CallbacksForCabinetMarkup struct {
+	PaginationCallback string
+	SelectCallback     string
+	BackCallback       string
+}
+
+func createCabinetsMarkup(cabinets []db.Cabinet, callbacks CallbacksForCabinetMarkup, page int, hasNext bool) models.InlineKeyboardMarkup {
+	var keyboard [][]models.InlineKeyboardButton
+	var row []models.InlineKeyboardButton
+	var button models.InlineKeyboardButton
+	for _, cabinet := range cabinets {
+		row = []models.InlineKeyboardButton{}
+		button = models.InlineKeyboardButton{Text: cabinet.Name, CallbackData: fmt.Sprintf("%v%v", CallbackSelectOzonCabinetHandler, cabinet.ID)}
+		row = append(row, button)
+
+		keyboard = append(keyboard, row)
+	}
+
+	//Добавление кнопок для пагинации
+	row = []models.InlineKeyboardButton{}
+	if page > 1 {
+		button = models.InlineKeyboardButton{Text: "⬅️", CallbackData: CallbackOzonCabinetsHandler + fmt.Sprintf("%v", page-1)}
+		row = append(row, button)
+	}
+
+	if hasNext {
+		button = models.InlineKeyboardButton{Text: "➡️", CallbackData: CallbackOzonCabinetsHandler + fmt.Sprintf("%v", page+1)}
+		row = append(row, button)
+	}
+
+	if row != nil {
+		keyboard = append(keyboard, row)
+	}
+
+	//row = []models.InlineKeyboardButton{}
+	//button = models.InlineKeyboardButton{Text: "Добавить аккаунт", CallbackData: addParserCallback}
+	//row = append(row, button)
+	//keyboard = append(keyboard, row)
+
+	row = []models.InlineKeyboardButton{}
+	button = models.InlineKeyboardButton{Text: "Назад", CallbackData: CallbackStartHandler}
+	row = append(row, button)
+	keyboard = append(keyboard, row)
+
+	markup := models.InlineKeyboardMarkup{
+		InlineKeyboard: keyboard,
+	}
+	return markup
 }
 
 func SendTextMessage(ctx context.Context, bot *botlib.Bot, chatId int64, text string) (*models.Message, error) {

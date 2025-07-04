@@ -3,9 +3,9 @@ package bot
 import (
 	"context"
 	botlib "github.com/go-telegram/bot"
-	"gorm.io/gorm"
 	"log"
 	bot "tradebot/pkg/bot/handlers"
+	"tradebot/pkg/db"
 	"tradebot/pkg/marketplaces/WB"
 	"tradebot/pkg/marketplaces/YANDEX"
 )
@@ -13,18 +13,17 @@ import (
 type Service struct {
 	token         string
 	manager       *bot.Manager
-	sqlDB         *gorm.DB
+	dbc           *db.Repo
 	myChatId      string
 	wbService     WB.Service
 	yandexService YANDEX.Service
 }
 
-func NewBotService(wbService WB.Service, yandexService YANDEX.Service, token string, sqlDB *gorm.DB, myChatId string) Service {
+func NewBotService(yandexService YANDEX.Service, token string, dbc *db.Repo, myChatId string) Service {
 	return Service{
-		wbService:     wbService,
 		yandexService: yandexService,
 		token:         token,
-		sqlDB:         sqlDB,
+		dbc:           dbc,
 		myChatId:      myChatId,
 	}
 }
@@ -34,7 +33,7 @@ func (s *Service) Manager() *bot.Manager {
 }
 
 func (s *Service) Start() {
-	s.manager = bot.NewBotManager(s.wbService, s.yandexService, s.sqlDB, s.myChatId)
+	s.manager = bot.NewBotManager(s.wbService, s.yandexService, s.dbc, s.myChatId)
 	opts := []botlib.Option{botlib.WithDefaultHandler(s.manager.DefaultHandler)}
 	newBot, _ := botlib.New(s.token, opts...)
 	s.manager.SetBot(newBot)

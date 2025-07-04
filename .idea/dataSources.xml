@@ -25,7 +25,7 @@
       </jdbc-additional-properties>
       <working-dir>$ProjectFileDir$</working-dir>
     </data-source>
-    <data-source source="LOCAL" name="docker local" uuid="24e6219f-abf9-44de-865c-8eb389e5a997">
+    <data-source source="LOCAL" name="docker localhost" uuid="a29fc1c7-214c-4de3-8bd4-3b5d017fac9b">
       <driver-ref>postgresql</driver-ref>
       <synchronize>true</synchronize>
       <jdbc-driver>org.postgresql.Driver</jdbc-driver>

@@ -1,9 +1,9 @@
-package OrdersAndReturns
+package YANDEX
 
 import (
 	"strconv"
 	"time"
-	"tradebot/api/yandex"
+	"tradebot/pkg/marketplaces/YANDEX/api"
 	"tradebot/pkg/ordersWriter"
 )
 
@@ -106,7 +106,7 @@ func (m YandexOrdersManager) WriteToGoogleSheets() error {
 
 func (m YandexOrdersManager) ordersMap(yandexCampaignId string) (map[string]int, error) {
 	postingsWithCountALL := make(map[string]int)
-	ordersFbo, err := yandex.GetOrdersFbo(yandexCampaignId, m.token, m.DaysAgo)
+	ordersFbo, err := api.GetOrdersFbo(yandexCampaignId, m.token, m.DaysAgo)
 	if err != nil {
 		return postingsWithCountALL, err
 	}

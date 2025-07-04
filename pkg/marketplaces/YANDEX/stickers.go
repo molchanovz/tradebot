@@ -1,19 +1,18 @@
-package yandex_stickers_fbs
+package YANDEX
 
 import (
 	"fmt"
 	"github.com/fogleman/gg"
 	"github.com/gen2brain/go-fitz"
 	"github.com/jung-kurt/gofpdf"
-	yandex2 "tradebot/api/yandex"
-	"tradebot/pkg/fbsPrinter"
-
 	"image"
 	"image/jpeg"
 	"log"
 	"os"
 	"os/exec"
 	"strconv"
+	"tradebot/pkg/fbsPrinter"
+	"tradebot/pkg/marketplaces/YANDEX/api"
 )
 
 //func GetOrderInfo(token, orderId string) {
@@ -47,7 +46,7 @@ func NewManager(yandexCampaignIdFBO, yandexCampaignIdFBS, token string) *Manager
 
 func (m Manager) GetOrdersInfo(supplyId string, progressChan chan fbsPrinter.Progress) (string, error) {
 	CreateDirectories()
-	orderIds, err := yandex2.GetOrdersIds(m.token, supplyId)
+	orderIds, err := api.GetOrdersIds(m.token, supplyId)
 	if err != nil {
 		return "", fmt.Errorf("ошибка в GetOrdersIds: %v", err)
 	}
@@ -57,13 +56,13 @@ func (m Manager) GetOrdersInfo(supplyId string, progressChan chan fbsPrinter.Pro
 	var ordersSlice []string
 	for i, orderId := range orderIds {
 		//Получаем товары в заказе
-		order, err := yandex2.GetOrder(m.token, orderId)
+		order, err := api.GetOrder(m.token, orderId)
 		if err != nil {
 			return "", fmt.Errorf("ошибка в GetOrder: %v", err)
 		}
 		//Получаем стикеры к товарам
 
-		stickers, err := yandex2.GetStickers(m.token, orderId)
+		stickers, err := api.GetStickers(m.token, orderId)
 		if err != nil {
 			return "", fmt.Errorf("ошибка в GetStickers, %v", err)
 		}
@@ -91,8 +90,6 @@ func (m Manager) GetOrdersInfo(supplyId string, progressChan chan fbsPrinter.Pro
 		err = pdf.OutputFileAndClose(fmt.Sprintf("%v.pdf", readyPath+strconv.Itoa(int(order.Order.Id))))
 		if err != nil {
 			return "", fmt.Errorf("ошибка при сохранении PDF: %v", err)
-		} else {
-			fmt.Println("PDF успешно создан:", fmt.Sprintf("%v.pdf", readyPath+strconv.Itoa(int(order.Order.Id))))
 		}
 		ordersSlice = append(ordersSlice, fmt.Sprintf("%v.pdf", readyPath+strconv.Itoa(int(order.Order.Id))))
 
@@ -112,7 +109,7 @@ func (m Manager) GetOrdersInfo(supplyId string, progressChan chan fbsPrinter.Pro
 	return readyFilePath, nil
 }
 
-func CreateLabel(codePath string, items yandex2.Items) (*gofpdf.Fpdf, error) {
+func CreateLabel(codePath string, items api.Items) (*gofpdf.Fpdf, error) {
 	// Создаем новый PDF-документ
 	pdf := gofpdf.NewCustom(&gofpdf.InitType{
 		UnitStr: "mm",

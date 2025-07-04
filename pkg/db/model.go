@@ -1,0 +1,162 @@
+// nolint
+//
+//lint:file-ignore U1000 ignore unused code, it's generated
+package db
+
+import (
+	"time"
+)
+
+var Columns = struct {
+	Cabinet struct {
+		ID, Name, ClientID, Key, Marketplace, Type string
+	}
+	Order struct {
+		ID, PostingNumber, Article, Count, CabinetID, CreatedAt string
+
+		Cabinet string
+	}
+	Stock struct {
+		ID, Article, UpdatedAt, CountFbo, CountFbs, CabinetID string
+
+		Cabinet string
+	}
+	User struct {
+		ID, TgID, StatusID, IsAdmin, CabinetIDs string
+	}
+}{
+	Cabinet: struct {
+		ID, Name, ClientID, Key, Marketplace, Type string
+	}{
+		ID:          "cabinetsId",
+		Name:        "name",
+		ClientID:    "clientId",
+		Key:         "key",
+		Marketplace: "marketplace",
+		Type:        "type",
+	},
+	Order: struct {
+		ID, PostingNumber, Article, Count, CabinetID, CreatedAt string
+
+		Cabinet string
+	}{
+		ID:            "orderId",
+		PostingNumber: "postingNumber",
+		Article:       "article",
+		Count:         "count",
+		CabinetID:     "cabinetId",
+		CreatedAt:     "createdAt",
+
+		Cabinet: "Cabinet",
+	},
+	Stock: struct {
+		ID, Article, UpdatedAt, CountFbo, CountFbs, CabinetID string
+
+		Cabinet string
+	}{
+		ID:        "stockId",
+		Article:   "article",
+		UpdatedAt: "updatedAt",
+		CountFbo:  "countFbo",
+		CountFbs:  "countFbs",
+		CabinetID: "cabinetId",
+
+		Cabinet: "Cabinet",
+	},
+	User: struct {
+		ID, TgID, StatusID, IsAdmin, CabinetIDs string
+	}{
+		ID:         "userId",
+		TgID:       "tgId",
+		StatusID:   "statusId",
+		IsAdmin:    "isAdmin",
+		CabinetIDs: "cabinetIds",
+	},
+}
+
+var Tables = struct {
+	Cabinet struct {
+		Name, Alias string
+	}
+	Order struct {
+		Name, Alias string
+	}
+	Stock struct {
+		Name, Alias string
+	}
+	User struct {
+		Name, Alias string
+	}
+}{
+	Cabinet: struct {
+		Name, Alias string
+	}{
+		Name:  "cabinets",
+		Alias: "t",
+	},
+	Order: struct {
+		Name, Alias string
+	}{
+		Name:  "orders",
+		Alias: "t",
+	},
+	Stock: struct {
+		Name, Alias string
+	}{
+		Name:  "stocks",
+		Alias: "t",
+	},
+	User: struct {
+		Name, Alias string
+	}{
+		Name:  "users",
+		Alias: "t",
+	},
+}
+
+type Cabinet struct {
+	tableName struct{} `pg:"cabinets,alias:t,discard_unknown_columns"`
+
+	ID          int     `pg:"cabinetsId,pk"`
+	Name        string  `pg:"name,use_zero"`
+	ClientID    *string `pg:"clientId"`
+	Key         string  `pg:"key,use_zero"`
+	Marketplace string  `pg:"marketplace,use_zero"`
+	Type        string  `pg:"type,use_zero"`
+}
+
+type Order struct {
+	tableName struct{} `pg:"orders,alias:t,discard_unknown_columns"`
+
+	ID            int       `pg:"orderId,pk"`
+	PostingNumber string    `pg:"postingNumber,use_zero"`
+	Article       string    `pg:"article,use_zero"`
+	Count         int       `pg:"count,use_zero"`
+	CabinetID     int       `pg:"cabinetId,use_zero"`
+	CreatedAt     time.Time `pg:"createdAt,use_zero"`
+
+	Cabinet *Cabinet `pg:"fk:cabinetId,rel:has-one"`
+}
+
+type Stock struct {
+	tableName struct{} `pg:"stocks,alias:t,discard_unknown_columns"`
+
+	ID        int       `pg:"stockId,pk"`
+	Article   string    `pg:"article,use_zero"`
+	UpdatedAt time.Time `pg:"updatedAt,use_zero"`
+	CountFbo  *int      `pg:"countFbo"`
+	CountFbs  *int      `pg:"countFbs"`
+	CabinetID int       `pg:"cabinetId,use_zero"`
+
+	Cabinet *Cabinet `pg:"fk:cabinetId,rel:has-one"`
+}
+
+type User struct {
+	tableName struct{} `pg:"users,alias:t,discard_unknown_columns"`
+
+	ID         int   `pg:"userId,pk"`
+	TgID       int64 `pg:"tgId,use_zero"`
+	StatusID   int   `pg:"statusId,use_zero"`
+	IsAdmin    bool  `pg:"isAdmin,use_zero"`
+	CabinetIDs []int `pg:"cabinetIds,array"`
+}

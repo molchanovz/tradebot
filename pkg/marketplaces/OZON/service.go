@@ -1,7 +1,8 @@
 package OZON
 
 import (
-	"tradebot/db"
+	"tradebot/pkg/db"
+	"tradebot/pkg/marketplaces"
 )
 
 const (
@@ -10,19 +11,15 @@ const (
 	spreadsheetId = "1WOUHE2qs-c2idJN4pduWkT6PqJzX8XioI-I3ZoeGxMo"
 )
 
-type Authorization struct {
-	ClientId, Token string
-}
-
 type Service struct {
-	Authorization
+	marketplaces.Authorization
 	spreadsheetId string
 }
 
 func NewService(cabinet db.Cabinet) Service {
 	service := Service{
-		Authorization: Authorization{
-			ClientId: cabinet.ClientId,
+		Authorization: marketplaces.Authorization{
+			ClientId: *cabinet.ClientID,
 			Token:    cabinet.Key,
 		},
 		spreadsheetId: spreadsheetId,

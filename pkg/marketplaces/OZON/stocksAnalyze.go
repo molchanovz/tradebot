@@ -3,7 +3,7 @@ package OZON
 import (
 	"fmt"
 	"time"
-	ozon2 "tradebot/api/ozon"
+	"tradebot/pkg/marketplaces/OZON/api"
 )
 
 type Period struct {
@@ -49,7 +49,7 @@ func (m AnalyzeManager) GetPostings() map[string]map[string]map[string]int {
 		offset := 0
 		limit := 1000
 		for {
-			postingsListFbs, _ := ozon2.PostingsListFbs(m.clientId, m.token, period.since, period.to, offset, "")
+			postingsListFbs, _ := api.PostingsListFbs(m.clientId, m.token, period.since, period.to, offset, "")
 
 			for _, order := range postingsListFbs.Result.PostingsFBS {
 
@@ -77,7 +77,7 @@ func (m AnalyzeManager) GetPostings() map[string]map[string]map[string]int {
 		// Обработка FBO заказов
 		offset = 0
 		for {
-			postingsListFbo := ozon2.PostingsListFbo(m.clientId, m.token, period.since, period.to, offset)
+			postingsListFbo := api.PostingsListFbo(m.clientId, m.token, period.since, period.to, offset)
 
 			for _, order := range postingsListFbo.Result {
 
@@ -114,7 +114,7 @@ type CustomStocks struct {
 
 func (m AnalyzeManager) GetStocks() map[string]map[string]CustomStocks {
 
-	products := ozon2.ProductsWithAttributes(m.clientId, m.token)
+	products := api.ProductsWithAttributes(m.clientId, m.token)
 
 	skus := make([]string, 0, len(products.Result))
 
@@ -132,7 +132,7 @@ func (m AnalyzeManager) GetStocks() map[string]map[string]CustomStocks {
 		}
 		chunk := skus[i:end]
 
-		stocksList := ozon2.StocksAnalytics(m.clientId, m.token, chunk)
+		stocksList := api.StocksAnalytics(m.clientId, m.token, chunk)
 
 		for _, item := range stocksList.Items {
 			if _, exists := stocksMap[item.ClusterName]; !exists {
@@ -156,6 +156,6 @@ func (m AnalyzeManager) GetStocks() map[string]map[string]CustomStocks {
 	return stocksMap
 }
 
-func (m AnalyzeManager) GetClusters() ozon2.ClustersList {
-	return ozon2.Clusters(m.clientId, m.token)
+func (m AnalyzeManager) GetClusters() api.ClustersList {
+	return api.Clusters(m.clientId, m.token)
 }

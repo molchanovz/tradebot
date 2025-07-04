@@ -2,8 +2,6 @@ package YANDEX
 
 import (
 	"tradebot/pkg/marketplaces/OZON"
-	"tradebot/pkg/marketplaces/YANDEX/OrdersAndReturns"
-	"tradebot/pkg/marketplaces/YANDEX/yandex_stickers_fbs"
 )
 
 const (
@@ -12,21 +10,21 @@ const (
 )
 
 type Service struct {
-	ordersAndReturnsManager OrdersAndReturns.YandexOrdersManager
-	stickersFbsManager      *yandex_stickers_fbs.Manager
+	ordersAndReturnsManager YandexOrdersManager
+	stickersFbsManager      *Manager
 }
 
 func NewService(yandexCampaignIdFBO, yandexCampaignIdFBS, token string) *Service {
 	return &Service{
-		ordersAndReturnsManager: OrdersAndReturns.NewYandexOrdersManager(yandexCampaignIdFBO, yandexCampaignIdFBS, token, spreadsheetId, daysAgo),
-		stickersFbsManager:      yandex_stickers_fbs.NewManager(yandexCampaignIdFBO, yandexCampaignIdFBS, token),
+		ordersAndReturnsManager: NewYandexOrdersManager(yandexCampaignIdFBO, yandexCampaignIdFBS, token, spreadsheetId, daysAgo),
+		stickersFbsManager:      NewManager(yandexCampaignIdFBO, yandexCampaignIdFBS, token),
 	}
 }
 
-func (s Service) GetOrdersAndReturnsManager() OrdersAndReturns.YandexOrdersManager {
+func (s Service) GetOrdersAndReturnsManager() YandexOrdersManager {
 	return s.ordersAndReturnsManager
 }
 
-func (s Service) GetStickersFbsManager() *yandex_stickers_fbs.Manager {
+func (s Service) GetStickersFbsManager() *Manager {
 	return s.stickersFbsManager
 }

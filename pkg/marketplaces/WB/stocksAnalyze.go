@@ -1,8 +1,6 @@
-package wb_stocks_analyze
+package WB
 
-import (
-	"tradebot/api/wb"
-)
+import "tradebot/pkg/marketplaces/WB/api"
 
 var warehousesMap = map[string]string{
 	"Санкт-Петербург Уткина Заводь":  "Северо-Западный федеральный округ",
@@ -29,7 +27,7 @@ var warehousesMap = map[string]string{
 }
 
 func GetOrders(apiKey string, daysAgo int) map[string]map[string]int {
-	orders := wb.GetAllOrders(apiKey, daysAgo, 0)
+	orders := api.GetAllOrders(apiKey, daysAgo, 0)
 
 	ordersMap := make(map[string]map[string]int)
 
@@ -48,7 +46,7 @@ func GetOrders(apiKey string, daysAgo int) map[string]map[string]int {
 }
 
 func GetStocks(apiKey string) (map[string]map[string]int, map[string]int, error) {
-	stocks, err := wb.GetStockFbo(apiKey)
+	stocks, err := api.GetStockFbo(apiKey)
 	if err != nil {
 		return nil, nil, err
 	}

@@ -1,12 +1,21 @@
 ﻿-- =============================================================================
 -- Diagram Name: tradebot
--- Created on: 30.05.2025 15:35:01
+-- Created on: 04.07.2025 12:37:31
 -- Diagram Version: 
 -- =============================================================================
 
-CREATE TYPE marketplaces AS ENUM('wildberries', 
-	'ozon', 
-	'yandex');
+
+
+
+
+
+
+
+
+
+CREATE TYPE marketplaces AS ENUM('WB', 
+	'OZON', 
+	'YANDEX');
 
 CREATE TYPE types AS ENUM('fbo', 
 	'fbs', 
@@ -17,9 +26,9 @@ CREATE TABLE "stocks" (
 	"stockId" SERIAL NOT NULL,
 	"article" varchar(64) NOT NULL,
 	"updatedAt" timestamp with time zone NOT NULL DEFAULT now(),
-	"marketplace" marketplaces NOT NULL,
-	"stocksFbo" int4,
-	"stocksFbs" int4,
+	"countFbo" int4,
+	"countFbs" int4,
+	"cabinetId" int4 NOT NULL,
 	PRIMARY KEY("stockId")
 );
 
@@ -28,6 +37,7 @@ CREATE TABLE "users" (
 	"tgId" int8 NOT NULL,
 	"statusId" int2 NOT NULL DEFAULT 1,
 	"isAdmin" bool NOT NULL DEFAULT false,
+	"cabinetIds" int4[],
 	PRIMARY KEY("userId")
 );
 
@@ -43,20 +53,29 @@ CREATE TABLE "cabinets" (
 	"key" varchar(256) NOT NULL,
 	"marketplace" marketplaces NOT NULL,
 	"type" types NOT NULL,
-	"userId" int4 NOT NULL,
 	PRIMARY KEY("cabinetsId")
 );
 
 CREATE TABLE "orders" (
 	"orderId" SERIAL NOT NULL,
 	"postingNumber" varchar(32) NOT NULL,
-	"marketplace" marketplaces,
+	"article" varchar(128) NOT NULL,
+	"count" int4 NOT NULL,
+	"cabinetId" int4 NOT NULL,
+	"createdAt" timestamp with time zone NOT NULL DEFAULT now(),
 	PRIMARY KEY("orderId")
 );
 
 
-ALTER TABLE "cabinets" ADD CONSTRAINT "Ref_cabinets_to_users" FOREIGN KEY ("userId")
-	REFERENCES "users"("userId")
+ALTER TABLE "stocks" ADD CONSTRAINT "Ref_stocks_to_cabinets" FOREIGN KEY ("cabinetId")
+	REFERENCES "cabinets"("cabinetsId")
+	MATCH SIMPLE
+	ON DELETE NO ACTION
+	ON UPDATE NO ACTION
+	NOT DEFERRABLE;
+
+ALTER TABLE "orders" ADD CONSTRAINT "Ref_orders_to_cabinets" FOREIGN KEY ("cabinetId")
+	REFERENCES "cabinets"("cabinetsId")
 	MATCH SIMPLE
 	ON DELETE NO ACTION
 	ON UPDATE NO ACTION

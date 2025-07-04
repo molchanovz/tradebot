@@ -1,9 +1,9 @@
 package WB
 
 import (
+	"tradebot/pkg/db"
+	"tradebot/pkg/marketplaces"
 	"tradebot/pkg/marketplaces/OZON"
-	"tradebot/pkg/marketplaces/WB/OrdersAndReturns"
-	"tradebot/pkg/marketplaces/WB/stickersFbs"
 )
 
 const (
@@ -13,26 +13,28 @@ const (
 )
 
 type Service struct {
-	clientId, token   string
-	ordersWriter      OrdersAndReturns.WbOrdersManager
-	stickersWbManager stickersFbs.WbManager
+	marketplaces.Authorization
+	spreadsheetId string
 }
 
-func NewService(token string) *Service {
-	return &Service{
-		ordersWriter:      OrdersAndReturns.NewWbOrdersManager(token, spreadsheetId, OrdersDaysAgo),
-		stickersWbManager: stickersFbs.NewWbManager(token),
+func NewService(cabinet db.Cabinet) Service {
+	service := Service{
+		Authorization: marketplaces.Authorization{
+			Token: cabinet.Key,
+		},
+		spreadsheetId: spreadsheetId,
 	}
+	return service
 }
 
 type Authorization struct {
 	Token string
 }
 
-func (s Service) GetOrdersManager() OrdersAndReturns.WbOrdersManager {
-	return s.ordersWriter
+func (s Service) GetOrdersManager() OrdersManager {
+	return NewOrdersManager(s.Token, s.spreadsheetId, OrdersDaysAgo)
 }
 
-func (s Service) GetStickersFbsManager() stickersFbs.WbManager {
-	return s.stickersWbManager
+func (s Service) GetStickersFbsManager() StickerManager {
+	return NewStickerManager(s.Token)
 }

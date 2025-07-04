@@ -1,25 +1,25 @@
-package OrdersAndReturns
+package WB
 
 import (
 	"fmt"
 	"strconv"
 	"strings"
 	"time"
-	"tradebot/api/wb"
+	"tradebot/pkg/marketplaces/WB/api"
 	"tradebot/pkg/ordersWriter"
 )
 
-type WbOrdersManager struct {
+type OrdersManager struct {
 	ordersWriter.OrdersManager
 	token string
 }
 
-func NewWbOrdersManager(token, spreadsheetId string, daysAgo int) WbOrdersManager {
-	manager := WbOrdersManager{ordersWriter.NewOrdersManager(spreadsheetId, daysAgo), token}
+func NewOrdersManager(token, spreadsheetId string, daysAgo int) OrdersManager {
+	manager := OrdersManager{ordersWriter.NewOrdersManager(spreadsheetId, daysAgo), token}
 	return manager
 }
 
-func (m WbOrdersManager) WriteToGoogleSheets() error {
+func (m OrdersManager) WriteToGoogleSheets() error {
 	date := time.Now().AddDate(0, 0, -m.DaysAgo)
 	sheetsName := "Заказы WB-" + strconv.Itoa(date.Day())
 
@@ -81,10 +81,10 @@ func (m WbOrdersManager) WriteToGoogleSheets() error {
 	return nil
 }
 
-func (m WbOrdersManager) ordersMapFBS() map[string]int {
+func (m OrdersManager) ordersMapFBS() map[string]int {
 	postingsWithCountFBS := make(map[string]int)
 
-	postingsList := wb.GetOrdersFBS(m.token, m.DaysAgo)
+	postingsList := api.GetOrdersFBS(m.token, m.DaysAgo)
 
 	isOrderCanceled := func(status string) bool {
 
@@ -101,7 +101,7 @@ func (m WbOrdersManager) ordersMapFBS() map[string]int {
 	}
 
 	for _, posting := range postingsList.OrdersFBS {
-		status := wb.GetPostingStatus(m.token, posting.Id)
+		status := api.GetPostingStatus(m.token, posting.Id)
 		if !isOrderCanceled(status) {
 			postingsWithCountFBS[posting.Article] += 1
 		}
@@ -110,11 +110,11 @@ func (m WbOrdersManager) ordersMapFBS() map[string]int {
 	return postingsWithCountFBS
 }
 
-func (m WbOrdersManager) getPostingsMap() (map[string]int, map[string]int, error) {
+func (m OrdersManager) getPostingsMap() (map[string]int, map[string]int, error) {
 	postingsWithCountFBO := make(map[string]int)
 	postingsWithCountFBS := make(map[string]int)
 
-	postingsList := wb.GetAllOrders(m.token, m.DaysAgo, 1)
+	postingsList := api.GetAllOrders(m.token, m.DaysAgo, 1)
 
 	for _, posting := range postingsList {
 		if posting.IsCancel == false {
@@ -134,10 +134,10 @@ func (m WbOrdersManager) getPostingsMap() (map[string]int, map[string]int, error
 	return postingsWithCountFBO, postingsWithCountFBS, nil
 }
 
-func (m WbOrdersManager) getReturnsMap() map[string]int {
+func (m OrdersManager) getReturnsMap() map[string]int {
 	returnsWithCount := make(map[string]int)
 
-	returnsList := wb.GetSalesAndReturns(m.token, m.DaysAgo)
+	returnsList := api.GetSalesAndReturns(m.token, m.DaysAgo)
 	for _, someReturn := range returnsList {
 		if strings.HasPrefix(someReturn.SaleID, "R") {
 			returnsWithCount[someReturn.SupplierArticle]++

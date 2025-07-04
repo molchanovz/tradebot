@@ -1,4 +1,4 @@
-package stickersFbs
+package WB
 
 import (
 	"encoding/base64"
@@ -11,27 +11,27 @@ import (
 	"os/exec"
 	"strconv"
 	"time"
-	wb2 "tradebot/api/wb"
 	"tradebot/pkg/fbsPrinter"
 	"tradebot/pkg/google"
+	"tradebot/pkg/marketplaces/WB/api"
 )
 
-type WbManager struct {
+type StickerManager struct {
 	token        string
 	googleSheets google.SheetsService
 }
 
-func NewWbManager(token string) WbManager {
-	return WbManager{
+func NewStickerManager(token string) StickerManager {
+	return StickerManager{
 		token:        token,
 		googleSheets: google.NewSheetsService("token.json", "credentials.json"),
 	}
 }
 
-func (m WbManager) GetReadyFile(supplyId string, progressChan chan fbsPrinter.Progress) ([]string, error) {
+func (m StickerManager) GetReadyFile(supplyId string, progressChan chan fbsPrinter.Progress) ([]string, error) {
 	fbsPrinter.CreateDirectories()
 
-	orders, err := wb2.GetOrdersFbs(m.token, supplyId)
+	orders, err := api.GetOrdersFbs(m.token, supplyId)
 	if err != nil {
 		return nil, err
 	}
@@ -42,7 +42,7 @@ func (m WbManager) GetReadyFile(supplyId string, progressChan chan fbsPrinter.Pr
 	batchCount := 0
 
 	for i, order := range orders {
-		stickers, err := wb2.GetStickersFbs(m.token, order.ID)
+		stickers, err := api.GetStickersFbs(m.token, order.ID)
 		if err != nil {
 			fmt.Println("Ошибка GetStickersFbs")
 			return nil, err
@@ -124,7 +124,7 @@ func decodeToPNG(base64String string, orderId int) (string, error) {
 	return filePath, nil
 }
 
-func decodeToPDF(base64String string, orderId int, order wb2.OrderWB) error {
+func decodeToPDF(base64String string, orderId int, order api.OrderWB) error {
 	pageWidthMM := 75.0
 	pageHeightMM := 120.0
 	// Создание нового PDF-документа

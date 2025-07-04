@@ -6,9 +6,15 @@ import (
 	botlib "github.com/go-telegram/bot"
 	"github.com/go-telegram/bot/models"
 	"log"
-	db2 "tradebot/db"
+	"tradebot/pkg/db"
 	"tradebot/pkg/fbsPrinter"
-	"tradebot/pkg/marketplaces/YANDEX/yandex_stickers_fbs"
+	"tradebot/pkg/marketplaces/YANDEX"
+)
+
+const (
+	CallbackYandexHandler       = "YANDEX"
+	CallbackYandexFbsHandler    = "YANDEX-FBS"
+	CallbackYandexOrdersHandler = "YANDEX-ORDERS"
 )
 
 func (m *Manager) yandexHandler(ctx context.Context, bot *botlib.Bot, update *models.Update) {
@@ -21,7 +27,7 @@ func (m *Manager) yandexHandler(ctx context.Context, bot *botlib.Bot, update *mo
 	buttonsRow = append(buttonsRow, models.InlineKeyboardButton{Text: "Этикетки FBS", CallbackData: CallbackYandexFbsHandler})
 	buttonsRow = append(buttonsRow, models.InlineKeyboardButton{Text: "Вчерашние заказы", CallbackData: CallbackYandexOrdersHandler})
 
-	buttonBack = append(buttonBack, models.InlineKeyboardButton{Text: "Назад", CallbackData: "START"})
+	buttonBack = append(buttonBack, models.InlineKeyboardButton{Text: "Назад", CallbackData: CallbackStartHandler})
 
 	allButtons := [][]models.InlineKeyboardButton{buttonsRow, buttonBack}
 	markup := models.InlineKeyboardMarkup{InlineKeyboard: allButtons}
@@ -37,10 +43,14 @@ func (m *Manager) yandexHandler(ctx context.Context, bot *botlib.Bot, update *mo
 func (m *Manager) yandexFbsHandler(ctx context.Context, bot *botlib.Bot, update *models.Update) {
 	chatId := update.CallbackQuery.From.ID
 
-	err := m.db.Model(&db2.User{}).Where(`"tgId" = ?`, chatId).Updates(db2.User{
-		TgId:     chatId,
-		StatusId: db2.WaitingYaState,
-	}).Error
+	user, err := m.repo.GetUserByTgId(chatId)
+	if err != nil {
+		log.Println("Ошибка получения пользователя: ", err)
+		return
+	}
+
+	user.StatusID = db.WaitingYaState
+	err = m.repo.UpdateUser(user)
 	if err != nil {
 		log.Println("Ошибка обновления WaitingYaState пользователя: ", err)
 	}
@@ -49,7 +59,7 @@ func (m *Manager) yandexFbsHandler(ctx context.Context, bot *botlib.Bot, update 
 	text := fmt.Sprintf("Отправь мне номер отгрузки")
 	var buttonBack []models.InlineKeyboardButton
 
-	buttonBack = append(buttonBack, models.InlineKeyboardButton{Text: "Назад", CallbackData: "START"})
+	buttonBack = append(buttonBack, models.InlineKeyboardButton{Text: "Назад", CallbackData: CallbackStartHandler})
 
 	allButtons := [][]models.InlineKeyboardButton{buttonBack}
 	markup := models.InlineKeyboardMarkup{InlineKeyboard: allButtons}
@@ -94,9 +104,9 @@ func (m *Manager) getYandexFbsDEPRECATED(ctx context.Context, bot *botlib.Bot, c
 			return
 		}
 	} else {
-		filePath := fmt.Sprintf("%v.pdf", yandex_stickers_fbs.YaDirectoryPath+supplyId)
+		filePath := fmt.Sprintf("%v.pdf", YANDEX.YaDirectoryPath+supplyId)
 		SendMediaMessage(ctx, bot, chatId, filePath)
-		yandex_stickers_fbs.CleanFiles(supplyId)
+		YANDEX.CleanFiles(supplyId)
 	}
 
 	text, markup := createStartAdminMarkup()

@@ -1,4 +1,4 @@
-package wb
+package api
 
 import (
 	"encoding/json"

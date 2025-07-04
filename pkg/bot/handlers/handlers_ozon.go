@@ -12,71 +12,43 @@ import (
 	"strconv"
 	"strings"
 	"time"
-	"tradebot/api/ozon"
-	"tradebot/db"
+	"tradebot/pkg/db"
+
 	"tradebot/pkg/fbsPrinter"
 	"tradebot/pkg/marketplaces/OZON"
+	"tradebot/pkg/marketplaces/OZON/api"
 )
 
-func createCabinetsMarkup(cabinets []db.Cabinet, page int, hasNext bool) models.InlineKeyboardMarkup {
-	var keyboard [][]models.InlineKeyboardButton
-	var row []models.InlineKeyboardButton
-	var button models.InlineKeyboardButton
-	for _, cabinet := range cabinets {
-		row = []models.InlineKeyboardButton{}
-		button = models.InlineKeyboardButton{Text: cabinet.Name, CallbackData: fmt.Sprintf("%v%v", CallbackSelectCabinetHandler, cabinet.ID)}
-		row = append(row, button)
-
-		keyboard = append(keyboard, row)
-	}
-
-	//Добавление кнопок для пагинации
-	row = []models.InlineKeyboardButton{}
-	if page > 1 {
-		button = models.InlineKeyboardButton{Text: "⬅️", CallbackData: CallbackOzonCabinetsHandler + fmt.Sprintf("%v", page-1)}
-		row = append(row, button)
-	}
-
-	if hasNext {
-		button = models.InlineKeyboardButton{Text: "➡️", CallbackData: CallbackOzonCabinetsHandler + fmt.Sprintf("%v", page+1)}
-		row = append(row, button)
-	}
-
-	if row != nil {
-		keyboard = append(keyboard, row)
-	}
-
-	//row = []models.InlineKeyboardButton{}
-	//button = models.InlineKeyboardButton{Text: "Добавить аккаунт", CallbackData: addParserCallback}
-	//row = append(row, button)
-	//keyboard = append(keyboard, row)
-
-	row = []models.InlineKeyboardButton{}
-	button = models.InlineKeyboardButton{Text: "Назад", CallbackData: CallbackStartHandler}
-	row = append(row, button)
-	keyboard = append(keyboard, row)
-
-	markup := models.InlineKeyboardMarkup{
-		InlineKeyboard: keyboard,
-	}
-	return markup
-}
+const (
+	MarketOzon                       = "OZON"
+	CallbackOzonHandler              = MarketOzon
+	CallbackOzonOrdersHandler        = "OZON-ORDERS_"
+	CallbackOzonStocksHandler        = "OZON-STOCKS_"
+	CallbackOzonStickersHandler      = "OZON-STICKERS_"
+	CallbackOzonPrintStickersHandler = "OZON-PRINT-STICKERS_"
+	CallbackClustersHandler          = "OZON-CLUSTERS"
+	CallbackOzonCabinetsHandler      = "OZON-CABINETS"
+)
 
 func (m *Manager) ozonHandler(ctx context.Context, bot *botlib.Bot, update *models.Update) {
 	chatId := update.CallbackQuery.From.ID
 	messageId := update.CallbackQuery.Message.Message.ID
 
-	var cabinets []db.Cabinet
-	// Смотрим есть ли артикул в бд
-	result := m.db.Where(`"marketplace" = ?`, "ozon").Find(&cabinets)
-	if result.Error != nil {
-		log.Println("Error finding user:", result.Error)
+	cabinets, err := m.repo.GetCabinets(MarketOzon)
+	if err != nil {
+		log.Println(err)
+		return
 	}
 
 	text := "Выберите кабинет"
-	markup := createCabinetsMarkup(cabinets, 0, false)
+	callbacks := CallbacksForCabinetMarkup{
+		PaginationCallback: CallbackOzonCabinetsHandler,
+		SelectCallback:     CallbackSelectOzonCabinetHandler,
+		BackCallback:       CallbackStartHandler,
+	}
+	markup := createCabinetsMarkup(cabinets, callbacks, 0, false)
 
-	_, err := bot.EditMessageText(ctx, &botlib.EditMessageTextParams{ChatID: chatId, MessageID: messageId, Text: text, ReplyMarkup: markup})
+	_, err = bot.EditMessageText(ctx, &botlib.EditMessageTextParams{ChatID: chatId, MessageID: messageId, Text: text, ReplyMarkup: markup})
 	if err != nil {
 		log.Printf("%v", err)
 		return
@@ -117,11 +89,10 @@ func (m *Manager) ozonOrdersHandler(ctx context.Context, bot *botlib.Bot, update
 	//parts := strings.Split(update.CallbackQuery.Data, "_")
 	//cabinetId := parts[1]
 
-	var cabinets []db.Cabinet
-
-	result := m.db.Where(`"marketplace" = ?`, "ozon").Find(&cabinets)
-	if result.Error != nil {
-		log.Println("Error finding user:", result.Error)
+	cabinets, err := m.repo.GetCabinets(MarketOzon)
+	if err != nil {
+		log.Println(err)
+		return
 	}
 
 	titleRange := "!A1"
@@ -173,12 +144,7 @@ func (m *Manager) ozonStocksHandler(ctx context.Context, bot *botlib.Bot, update
 	parts := strings.Split(update.CallbackQuery.Data, "_")
 	cabinetId := parts[1]
 
-	var cabinet db.Cabinet
-
-	result := m.db.Where(`"cabinetsId" = ?`, cabinetId).Find(&cabinet)
-	if result.Error != nil {
-		log.Println("Error finding user:", result.Error)
-	}
+	cabinet, _ := m.repo.GetCabinetById(cabinetId)
 
 	postings := OZON.NewService(cabinet).GetStocksManager().GetPostings()
 
@@ -199,7 +165,7 @@ func (m *Manager) ozonStocksHandler(ctx context.Context, bot *botlib.Bot, update
 
 }
 
-// Хендрер для "FBS"
+// Хендлер для "FBS"
 func (m *Manager) ozonStickersHandler(ctx context.Context, bot *botlib.Bot, update *models.Update) {
 	chatId := update.CallbackQuery.From.ID
 
@@ -208,19 +174,12 @@ func (m *Manager) ozonStickersHandler(ctx context.Context, bot *botlib.Bot, upda
 	parts := strings.Split(update.CallbackQuery.Data, "_")
 	cabinetId := parts[1]
 
-	var cabinet db.Cabinet
-
-	result := m.db.Where(`"cabinetsId" = ?`, cabinetId).Find(&cabinet)
-	if result.Error != nil {
-		log.Println("Error finding user:", result.Error)
-	}
-
 	text := "Печать FBS стикеров. Выберите, какие стикеры распечатать"
 
 	var buttonsRow, buttonBack []models.InlineKeyboardButton
 	buttonsRow = append(buttonsRow, models.InlineKeyboardButton{Text: "Новые", CallbackData: fmt.Sprintf("%v%v_%v", CallbackOzonPrintStickersHandler, cabinetId, OZON.NewLabels)})
 	buttonsRow = append(buttonsRow, models.InlineKeyboardButton{Text: "Все из сборки", CallbackData: fmt.Sprintf("%v%v_%v", CallbackOzonPrintStickersHandler, cabinetId, OZON.AllLabels)})
-	buttonBack = append(buttonBack, models.InlineKeyboardButton{Text: "Назад", CallbackData: fmt.Sprintf("%v%v", CallbackSelectCabinetHandler, cabinetId)})
+	buttonBack = append(buttonBack, models.InlineKeyboardButton{Text: "Назад", CallbackData: fmt.Sprintf("%v%v", CallbackSelectOzonCabinetHandler, cabinetId)})
 
 	allButtons := [][]models.InlineKeyboardButton{buttonsRow, buttonBack}
 	markup := models.InlineKeyboardMarkup{InlineKeyboard: allButtons}
@@ -240,22 +199,14 @@ func (m *Manager) ozonPrintStickers(ctx context.Context, bot *botlib.Bot, update
 	cabinetId := parts[1]
 	flag := parts[2]
 	var err error
-	var cabinet db.Cabinet
 
-	result := m.db.Where(`"cabinetsId" = ?`, cabinetId).Find(&cabinet)
-	if result.Error != nil {
-		log.Println("Error finding user:", result.Error)
-	}
+	cabinet, _ := m.repo.GetCabinetById(cabinetId)
 
-	newOrders := ozon.PostingslistFbs{}
+	newOrders := api.PostingslistFbs{}
 
 	printedOrdersMap := make(map[string]struct{})
-	var printedOrders []db.Order
 
-	result = m.db.Where(`"marketplace" = ?`, "ozon").Find(&printedOrders)
-	if result.Error != nil {
-		log.Println("Error finding user:", result.Error)
-	}
+	printedOrders, _ := m.repo.GetPrintedOrders("ozon")
 
 	for _, order := range printedOrders {
 		printedOrdersMap[order.PostingNumber] = struct{}{}
@@ -309,6 +260,7 @@ func (m *Manager) ozonPrintStickers(ctx context.Context, bot *botlib.Bot, update
 		if err != nil {
 			_, err = SendTextMessage(ctx, bot, chatId, err.Error())
 			if err != nil {
+				log.Println(err)
 				return
 			}
 			return
@@ -319,8 +271,15 @@ func (m *Manager) ozonPrintStickers(ctx context.Context, bot *botlib.Bot, update
 	if err != nil {
 		_, err = SendTextMessage(ctx, bot, chatId, err.Error())
 		if err != nil {
+			log.Println(err)
 			return
 		}
+		return
+	}
+
+	cabId, err := strconv.Atoi(cabinetId)
+	if err != nil {
+		log.Println(err)
 		return
 	}
 
@@ -330,13 +289,13 @@ func (m *Manager) ozonPrintStickers(ctx context.Context, bot *botlib.Bot, update
 		for _, order := range newOrders.Result.PostingsFBS {
 			orders = append(orders, db.Order{
 				PostingNumber: order.PostingNumber,
-				Marketplace:   "ozon",
+				CabinetID:     cabId,
 			})
 		}
 
-		result = m.db.Create(orders)
-		if result.Error != nil {
-			_, err = SendTextMessage(ctx, bot, chatId, result.Error.Error())
+		err = m.repo.CreateOrders(orders)
+		if err != nil {
+			_, err = SendTextMessage(ctx, bot, chatId, err.Error())
 			if err != nil {
 				return
 			}
