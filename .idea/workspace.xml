@@ -4,49 +4,12 @@
     <option name="autoReloadType" value="ALL" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="640077d7-ce81-4039-9739-8ad3e3a8d41a" name="Changes" comment="refactoring">
-      <change afterPath="$PROJECT_DIR$/docs/patches/2-edit-enum-mp.sql" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/pkg/bot/handlers/handlers_settings.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/pkg/db/db_test.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/pkg/db/dbc" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/pkg/marketplaces/model.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/dataSources.local.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources.local.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/dataSources.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/sqldialects.xml" beforeDir="false" />
+    <list default="true" id="640077d7-ce81-4039-9739-8ad3e3a8d41a" name="Changes" comment="add wb cabinets">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/api/ozon/api.go" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/marketplaces/OZON/api/api.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/api/ozon/models.go" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/marketplaces/OZON/api/model.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/api/ozon/models_converter.go" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/marketplaces/OZON/api/models_converter.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/api/wb/api.go" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/marketplaces/WB/api/api.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/api/wb/models.go" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/marketplaces/WB/api/model.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/api/wb/models_converter.go" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/marketplaces/WB/api/model_converter.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/api/yandex/api.go" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/marketplaces/YANDEX/api/api.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/api/yandex/models.go" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/marketplaces/YANDEX/api/models.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/api/yandex/models_converter.go" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/marketplaces/YANDEX/api/models_converter.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmd/main.go" beforeDir="false" afterPath="$PROJECT_DIR$/cmd/main.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/db/db.go" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/db/db.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/db/model.go" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/db/model.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/docs/tradebot.pdd" beforeDir="false" afterPath="$PROJECT_DIR$/docs/tradebot.pdd" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/docs/tradebot.sql" beforeDir="false" afterPath="$PROJECT_DIR$/docs/tradebot.sql" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/go.mod" beforeDir="false" afterPath="$PROJECT_DIR$/go.mod" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/go.sum" beforeDir="false" afterPath="$PROJECT_DIR$/go.sum" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pkg/app/app.go" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/pkg/bot/handlers/handlers_default.go" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/bot/handlers/handlers_default.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pkg/bot/handlers/handlers_ozon.go" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/bot/handlers/handlers_ozon.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pkg/bot/handlers/handlers_wb.go" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/bot/handlers/handlers_wb.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pkg/bot/handlers/handlers_yandex.go" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/bot/handlers/handlers_yandex.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pkg/bot/service.go" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/bot/service.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pkg/marketplaces/OZON/analyze.go" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/marketplaces/OZON/stocksAnalyze.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pkg/marketplaces/OZON/ordersAndReturns.go" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/marketplaces/OZON/ordersAndReturns.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pkg/marketplaces/OZON/service.go" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/marketplaces/OZON/service.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pkg/marketplaces/OZON/stickers.go" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/marketplaces/OZON/stickers.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pkg/marketplaces/WB/OrdersAndReturns/logic.go" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/marketplaces/WB/ordersAndReturns.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pkg/marketplaces/WB/service.go" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/marketplaces/WB/service.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pkg/marketplaces/WB/stickersFbs/logic.go" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/marketplaces/WB/stickers.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pkg/marketplaces/WB/wb_stocks_analyze/logic.go" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/marketplaces/WB/stocksAnalyze.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pkg/marketplaces/YANDEX/OrdersAndReturns/logic.go" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/marketplaces/YANDEX/ordersAndReturns.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pkg/marketplaces/YANDEX/service.go" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/marketplaces/YANDEX/service.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pkg/marketplaces/YANDEX/yandex_stickers_fbs/logic.go" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/marketplaces/YANDEX/stickers.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pkg/bot/handlers/handlers_settings.go" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/bot/handlers/handlers_settings.go" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -231,7 +194,6 @@
   </component>
   <component name="VcsManagerConfiguration">
     <option name="CHECK_CODE_SMELLS_BEFORE_PROJECT_COMMIT" value="false" />
-    <MESSAGE value="refactoring: moving deployment" />
     <MESSAGE value="refactoring: add orderWriter" />
     <MESSAGE value="moving dockerfiles" />
     <MESSAGE value="add new barcodes" />
@@ -256,7 +218,8 @@
     <MESSAGE value="fix ozon fbs: add return" />
     <MESSAGE value="edit google sheets" />
     <MESSAGE value="add barcodes" />
-    <option name="LAST_COMMIT_MESSAGE" value="add barcodes" />
+    <MESSAGE value="add wb cabinets" />
+    <option name="LAST_COMMIT_MESSAGE" value="add wb cabinets" />
   </component>
   <component name="VgoProject">
     <settings-migrated>true</settings-migrated>

@@ -1,17 +1,8 @@
 ﻿-- =============================================================================
 -- Diagram Name: tradebot
--- Created on: 04.07.2025 12:37:31
+-- Created on: 04.07.2025 15:33:19
 -- Diagram Version: 
 -- =============================================================================
-
-
-
-
-
-
-
-
-
 
 CREATE TYPE marketplaces AS ENUM('WB', 
 	'OZON', 
@@ -50,7 +41,7 @@ CREATE TABLE "cabinets" (
 	"cabinetsId" SERIAL NOT NULL,
 	"name" varchar(64) NOT NULL,
 	"clientId" varchar(64),
-	"key" varchar(256) NOT NULL,
+	"key" varchar(1024) NOT NULL,
 	"marketplace" marketplaces NOT NULL,
 	"type" types NOT NULL,
 	PRIMARY KEY("cabinetsId")

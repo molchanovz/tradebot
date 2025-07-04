@@ -341,7 +341,7 @@ func createCabinetsMarkup(cabinets []db.Cabinet, callbacks CallbacksForCabinetMa
 	var button models.InlineKeyboardButton
 	for _, cabinet := range cabinets {
 		row = []models.InlineKeyboardButton{}
-		button = models.InlineKeyboardButton{Text: cabinet.Name, CallbackData: fmt.Sprintf("%v%v", CallbackSelectOzonCabinetHandler, cabinet.ID)}
+		button = models.InlineKeyboardButton{Text: cabinet.Name, CallbackData: fmt.Sprintf("%v%v", callbacks.SelectCallback, cabinet.ID)}
 		row = append(row, button)
 
 		keyboard = append(keyboard, row)
@@ -350,12 +350,12 @@ func createCabinetsMarkup(cabinets []db.Cabinet, callbacks CallbacksForCabinetMa
 	//Добавление кнопок для пагинации
 	row = []models.InlineKeyboardButton{}
 	if page > 1 {
-		button = models.InlineKeyboardButton{Text: "⬅️", CallbackData: CallbackOzonCabinetsHandler + fmt.Sprintf("%v", page-1)}
+		button = models.InlineKeyboardButton{Text: "⬅️", CallbackData: callbacks.PaginationCallback + fmt.Sprintf("%v", page-1)}
 		row = append(row, button)
 	}
 
 	if hasNext {
-		button = models.InlineKeyboardButton{Text: "➡️", CallbackData: CallbackOzonCabinetsHandler + fmt.Sprintf("%v", page+1)}
+		button = models.InlineKeyboardButton{Text: "➡️", CallbackData: callbacks.PaginationCallback + fmt.Sprintf("%v", page+1)}
 		row = append(row, button)
 	}
 
@@ -369,7 +369,7 @@ func createCabinetsMarkup(cabinets []db.Cabinet, callbacks CallbacksForCabinetMa
 	//keyboard = append(keyboard, row)
 
 	row = []models.InlineKeyboardButton{}
-	button = models.InlineKeyboardButton{Text: "Назад", CallbackData: CallbackStartHandler}
+	button = models.InlineKeyboardButton{Text: "Назад", CallbackData: callbacks.BackCallback}
 	row = append(row, button)
 	keyboard = append(keyboard, row)
 

@@ -55,9 +55,9 @@ func (m *Manager) settingsHandler(ctx context.Context, bot *botlib.Bot, update *
 func createSettingsMarkup() (string, models.InlineKeyboardMarkup) {
 	startMessage := "Настройки кабинетов. Выбери маркетплейс для настройки"
 	var buttonsRow []models.InlineKeyboardButton
-	buttonsRow = append(buttonsRow, models.InlineKeyboardButton{Text: "ВБ", CallbackData: CallbackSettingsHandler + CallbackWbHandler})
+	buttonsRow = append(buttonsRow, models.InlineKeyboardButton{Text: "ВБ", CallbackData: CallbackSettingsHandler + MarketWb})
 	buttonsRow = append(buttonsRow, models.InlineKeyboardButton{Text: "ЯНДЕКС", CallbackData: CallbackSettingsHandler + CallbackYandexHandler})
-	buttonsRow = append(buttonsRow, models.InlineKeyboardButton{Text: "ОЗОН", CallbackData: CallbackSettingsHandler + CallbackOzonHandler})
+	buttonsRow = append(buttonsRow, models.InlineKeyboardButton{Text: "ОЗОН", CallbackData: CallbackSettingsHandler + MarketOzon})
 	allButtons := [][]models.InlineKeyboardButton{buttonsRow}
 
 	buttonsRow = []models.InlineKeyboardButton{}
@@ -88,17 +88,17 @@ func (m *Manager) selectMpSettingsHandler(ctx context.Context, bot *botlib.Bot, 
 	callbacks := CallbacksForCabinetMarkup{
 		PaginationCallback: CallbackOzonCabinetsHandler,
 		SelectCallback:     CallbackSettingsSelectCabinetHandler,
-		BackCallback:       CallbackStartHandler,
+		BackCallback:       MessageSettingsHandler,
 	}
 
 	markup := createCabinetsMarkup(cabinets, callbacks, 0, false)
 
-	_, err = bot.SendMessage(ctx, &botlib.SendMessageParams{
-		ChatID:          chatId,
-		MessageThreadID: 0,
-		Text:            "Выберите кабинет",
-		ParseMode:       models.ParseModeHTML,
-		ReplyMarkup:     markup,
+	_, err = bot.EditMessageText(ctx, &botlib.EditMessageTextParams{
+		MessageID:   update.CallbackQuery.Message.Message.ID,
+		ChatID:      chatId,
+		Text:        "Выберите кабинет",
+		ParseMode:   models.ParseModeHTML,
+		ReplyMarkup: markup,
 	})
 	if err != nil {
 		log.Println(err)
