@@ -1,0 +1,108 @@
+Index: .idea/workspace.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+><?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<project version=\"4\">\n  <component name=\"AutoImportSettings\">\n    <option name=\"autoReloadType\" value=\"ALL\" />\n  </component>\n  <component name=\"ChangeListManager\">\n    <list default=\"true\" id=\"640077d7-ce81-4039-9739-8ad3e3a8d41a\" name=\"Changes\" comment=\"edit google sheets\">\n      <change afterPath=\"$PROJECT_DIR$/assets/barcodes/VM-Complex-bez-hlora-05x4.jpg\" afterDir=\"false\" />\n      <change afterPath=\"$PROJECT_DIR$/assets/barcodes/VM-ECO-MEDLENNIY-1kg-20g.png\" afterDir=\"false\" />\n      <change afterPath=\"$PROJECT_DIR$/assets/barcodes/VM-ECO-MEDLENNIY-3kg-20g.png\" afterDir=\"false\" />\n      <change afterPath=\"$PROJECT_DIR$/assets/barcodes/VM-ECO-MEDLENNIY-5kg-20g.png\" afterDir=\"false\" />\n      <change beforePath=\"$PROJECT_DIR$/.idea/workspace.xml\" beforeDir=\"false\" afterPath=\"$PROJECT_DIR$/.idea/workspace.xml\" afterDir=\"false\" />\n    </list>\n    <option name=\"SHOW_DIALOG\" value=\"false\" />\n    <option name=\"HIGHLIGHT_CONFLICTS\" value=\"true\" />\n    <option name=\"HIGHLIGHT_NON_ACTIVE_CHANGELIST\" value=\"false\" />\n    <option name=\"LAST_RESOLUTION\" value=\"IGNORE\" />\n  </component>\n  <component name=\"FileTemplateManagerImpl\">\n    <option name=\"RECENT_TEMPLATES\">\n      <list>\n        <option value=\"Dockerfile\" />\n        <option value=\"Go File\" />\n      </list>\n    </option>\n  </component>\n  <component name=\"GOROOT\" url=\"file://$USER_HOME$/sdk/go1.23.5\" />\n  <component name=\"Git.Settings\">\n    <option name=\"RECENT_BRANCH_BY_REPOSITORY\">\n      <map>\n        <entry key=\"$PROJECT_DIR$\" value=\"ozon-fbs\" />\n      </map>\n    </option>\n    <option name=\"RECENT_GIT_ROOT_PATH\" value=\"$PROJECT_DIR$\" />\n  </component>\n  <component name=\"GitHubPullRequestSearchHistory\">{\n  &quot;lastFilter&quot;: {\n    &quot;state&quot;: &quot;OPEN&quot;,\n    &quot;assignee&quot;: &quot;molchanovz&quot;\n  }\n}</component>\n  <component name=\"GithubPullRequestsUISettings\">{\n  &quot;selectedUrlAndAccountId&quot;: {\n    &quot;url&quot;: &quot;https://github.com/molchanovz/tradebot&quot;,\n    &quot;accountId&quot;: &quot;61a9d8c1-3ce4-4719-aca3-2fc3d354d079&quot;\n  }\n}</component>\n  <component name=\"KubernetesApiPersistence\">{}</component>\n  <component name=\"KubernetesApiProvider\">{\n  &quot;isMigrated&quot;: true\n}</component>\n  <component name=\"MigrationScriptOptions\">\n    <option name=\"ignoreImplicitObjects\" value=\"true\" />\n    <option name=\"ignoreSourceCode\" value=\"false\" />\n  </component>\n  <component name=\"ProjectColorInfo\">{\n  &quot;associatedIndex&quot;: 8\n}</component>\n  <component name=\"ProjectId\" id=\"2s9xnKi5rljFAwRe5zYYpfZIAo0\" />\n  <component name=\"ProjectViewState\">\n    <option name=\"hideEmptyMiddlePackages\" value=\"true\" />\n    <option name=\"showLibraryContents\" value=\"true\" />\n  </component>\n  <component name=\"PropertiesComponent\">{\n  &quot;keyToString&quot;: {\n    &quot;DefaultGoTemplateProperty&quot;: &quot;Go File&quot;,\n    &quot;Go Build.go build WildberriesGo_bot.executor&quot;: &quot;Run&quot;,\n    &quot;Go Build.go build WildberriesGo_bot/cmd.executor&quot;: &quot;Run&quot;,\n    &quot;Go Build.go build tradebot/cmd.executor&quot;: &quot;Run&quot;,\n    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,\n    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,\n    &quot;RunOnceActivity.go.formatter.settings.were.checked&quot;: &quot;true&quot;,\n    &quot;RunOnceActivity.go.migrated.go.modules.settings&quot;: &quot;true&quot;,\n    &quot;RunOnceActivity.go.modules.go.list.on.any.changes.was.set&quot;: &quot;true&quot;,\n    &quot;configurable.GoLibrariesConfigurable.is.expanded&quot;: &quot;true&quot;,\n    &quot;git-widget-placeholder&quot;: &quot;yandex-stickers&quot;,\n    &quot;go.import.settings.migrated&quot;: &quot;true&quot;,\n    &quot;go.sdk.automatically.set&quot;: &quot;true&quot;,\n    &quot;last_opened_file_path&quot;: &quot;/Users/sergey/GolandProjects/tradebot/assets/barcodes&quot;,\n    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,\n    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,\n    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,\n    &quot;settings.editor.selected.configurable&quot;: &quot;com.goide.configuration.GoLibrariesConfigurableProvider&quot;\n  },\n  &quot;keyToStringList&quot;: {\n    &quot;DatabaseDriversLRU&quot;: [\n      &quot;postgresql&quot;\n    ]\n  }\n}</component>\n  <component name=\"RecentsManager\">\n    <key name=\"CopyFile.RECENT_KEYS\">\n      <recent name=\"$PROJECT_DIR$/assets/barcodes\" />\n      <recent name=\"$PROJECT_DIR$/pkg/barcodes\" />\n      <recent name=\"$PROJECT_DIR$/pkg/OZON\" />\n      <recent name=\"$PROJECT_DIR$/pkg/WB\" />\n      <recent name=\"$PROJECT_DIR$/pkg/YANDEX/yandex_stickers_fbs/barcodes\" />\n    </key>\n    <key name=\"MoveFile.RECENT_KEYS\">\n      <recent name=\"$PROJECT_DIR$/assets/barcodes\" />\n      <recent name=\"$PROJECT_DIR$\" />\n      <recent name=\"$PROJECT_DIR$/deployments\" />\n      <recent name=\"$PROJECT_DIR$/pkg/google/utils\" />\n      <recent name=\"$PROJECT_DIR$/config\" />\n    </key>\n  </component>\n  <component name=\"RunManager\" selected=\"Go Build.go build tradebot/cmd\">\n    <configuration name=\"go build WildberriesGo_bot/cmd\" type=\"GoApplicationRunConfiguration\" factoryName=\"Go Application\" temporary=\"true\" nameIsGenerated=\"true\">\n      <module name=\"tradebot\" />\n      <working_directory value=\"$PROJECT_DIR$\" />\n      <kind value=\"PACKAGE\" />\n      <package value=\"WildberriesGo_bot/cmd\" />\n      <directory value=\"$PROJECT_DIR$\" />\n      <filePath value=\"$PROJECT_DIR$/cmd/main.go\" />\n      <method v=\"2\" />\n    </configuration>\n    <configuration name=\"go build tradebot/cmd\" type=\"GoApplicationRunConfiguration\" factoryName=\"Go Application\" temporary=\"true\" nameIsGenerated=\"true\">\n      <module name=\"tradebot\" />\n      <working_directory value=\"$PROJECT_DIR$\" />\n      <kind value=\"PACKAGE\" />\n      <package value=\"tradebot/cmd\" />\n      <directory value=\"$PROJECT_DIR$\" />\n      <filePath value=\"$PROJECT_DIR$/cmd/main.go\" />\n      <method v=\"2\" />\n    </configuration>\n    <recent_temporary>\n      <list>\n        <item itemvalue=\"Go Build.go build tradebot/cmd\" />\n        <item itemvalue=\"Go Build.go build WildberriesGo_bot/cmd\" />\n        <item itemvalue=\"Go Build.go build tradebot/cmd\" />\n        <item itemvalue=\"Go Build.go build WildberriesGo_bot/cmd\" />\n        <item itemvalue=\"Go Build.go build WildberriesGo_bot/cmd\" />\n      </list>\n    </recent_temporary>\n  </component>\n  <component name=\"SpellCheckerSettings\" RuntimeDictionaries=\"0\" Folders=\"0\" CustomDictionaries=\"0\" DefaultDictionary=\"application-level\" UseSingleDictionary=\"true\" transferred=\"true\" />\n  <component name=\"TypeScriptGeneratedFilesManager\">\n    <option name=\"version\" value=\"3\" />\n  </component>\n  <component name=\"Vcs.Log.Tabs.Properties\">\n    <option name=\"TAB_STATES\">\n      <map>\n        <entry key=\"MAIN\">\n          <value>\n            <State />\n          </value>\n        </entry>\n      </map>\n    </option>\n  </component>\n  <component name=\"VcsManagerConfiguration\">\n    <option name=\"CHECK_CODE_SMELLS_BEFORE_PROJECT_COMMIT\" value=\"false\" />\n    <MESSAGE value=\"refactoring: moving full project\" />\n    <MESSAGE value=\"refactoring: moving deployment\" />\n    <MESSAGE value=\"refactoring: add orderWriter\" />\n    <MESSAGE value=\"moving dockerfiles\" />\n    <MESSAGE value=\"add new barcodes\" />\n    <MESSAGE value=\"edit logic: all/new ozon fbs orders\" />\n    <MESSAGE value=\"fix paths\" />\n    <MESSAGE value=\"fix barcodes path\" />\n    <MESSAGE value=\"update spreadsheetId\" />\n    <MESSAGE value=\"fix mupdf\" />\n    <MESSAGE value=\"fix alpine ver\" />\n    <MESSAGE value=\"fix Returns model: int to float64\" />\n    <MESSAGE value=\"fix yandex fbs: update stickers service\" />\n    <MESSAGE value=\"fix ozon/wb fbs: add batches\" />\n    <MESSAGE value=\"add ozon CreateDirectories\" />\n    <MESSAGE value=\"fix comment\" />\n    <MESSAGE value=\"extract methods\" />\n    <MESSAGE value=\"add errChan\" />\n    <MESSAGE value=\"fix wb fbs timeout\" />\n    <MESSAGE value=\"fix wb stocks analyze: edit text\" />\n    <MESSAGE value=\"fix wb fbs logs\" />\n    <MESSAGE value=\"fix ozon fbs message editing\" />\n    <MESSAGE value=\"fix ozon fbs i%5\" />\n    <MESSAGE value=\"fix ozon fbs: add return\" />\n    <MESSAGE value=\"edit google sheets\" />\n    <option name=\"LAST_COMMIT_MESSAGE\" value=\"edit google sheets\" />\n  </component>\n  <component name=\"VgoProject\">\n    <settings-migrated>true</settings-migrated>\n  </component>\n  <component name=\"XDebuggerManager\">\n    <breakpoint-manager>\n      <breakpoints>\n        <line-breakpoint enabled=\"true\" type=\"DlvLineBreakpoint\">\n          <url>file://$PROJECT_DIR$/pkg/bot/handlers/handlers_ozon.go</url>\n          <line>294</line>\n          <option name=\"timeStamp\" value=\"3\" />\n        </line-breakpoint>\n      </breakpoints>\n    </breakpoint-manager>\n  </component>\n</project>
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/.idea/workspace.xml b/.idea/workspace.xml
+--- a/.idea/workspace.xml	(revision d6a66f8b35b4082f9425bc1ab18e629d592a0b1e)
++++ b/.idea/workspace.xml	(date 1751702994433)
+@@ -4,12 +4,16 @@
+     <option name="autoReloadType" value="ALL" />
+   </component>
+   <component name="ChangeListManager">
+-    <list default="true" id="640077d7-ce81-4039-9739-8ad3e3a8d41a" name="Changes" comment="edit google sheets">
+-      <change afterPath="$PROJECT_DIR$/assets/barcodes/VM-Complex-bez-hlora-05x4.jpg" afterDir="false" />
+-      <change afterPath="$PROJECT_DIR$/assets/barcodes/VM-ECO-MEDLENNIY-1kg-20g.png" afterDir="false" />
+-      <change afterPath="$PROJECT_DIR$/assets/barcodes/VM-ECO-MEDLENNIY-3kg-20g.png" afterDir="false" />
+-      <change afterPath="$PROJECT_DIR$/assets/barcodes/VM-ECO-MEDLENNIY-5kg-20g.png" afterDir="false" />
++    <list default="true" id="640077d7-ce81-4039-9739-8ad3e3a8d41a" name="Changes" comment="fix alpine ver">
++      <change beforePath="$PROJECT_DIR$/.idea/dataSources.local.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources.local.xml" afterDir="false" />
++      <change beforePath="$PROJECT_DIR$/.idea/dataSources/e915e4db-fea0-4ca4-b31c-9c265a2d58ef.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources/e915e4db-fea0-4ca4-b31c-9c265a2d58ef.xml" afterDir="false" />
++      <change beforePath="$PROJECT_DIR$/.idea/dataSources/e915e4db-fea0-4ca4-b31c-9c265a2d58ef/storage_v2/_src_/database/tradebot.42HFSw/schema/public.abK9xQ.meta" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources/e915e4db-fea0-4ca4-b31c-9c265a2d58ef/storage_v2/_src_/database/tradebot.42HFSw/schema/public.abK9xQ.meta" afterDir="false" />
+       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
++      <change beforePath="$PROJECT_DIR$/pkg/api/ozon/api.go" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/api/ozon/api.go" afterDir="false" />
++      <change beforePath="$PROJECT_DIR$/pkg/bot/handlers/handlers_default.go" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/bot/handlers/handlers_default.go" afterDir="false" />
++      <change beforePath="$PROJECT_DIR$/pkg/bot/handlers/handlers_ozon.go" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/bot/handlers/handlers_ozon.go" afterDir="false" />
++      <change beforePath="$PROJECT_DIR$/pkg/bot/handlers/handlers_wb.go" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/bot/handlers/handlers_wb.go" afterDir="false" />
++      <change beforePath="$PROJECT_DIR$/pkg/bot/handlers/handlers_yandex.go" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/bot/handlers/handlers_yandex.go" afterDir="false" />
+     </list>
+     <option name="SHOW_DIALOG" value="false" />
+     <option name="HIGHLIGHT_CONFLICTS" value="true" />
+@@ -28,7 +32,7 @@
+   <component name="Git.Settings">
+     <option name="RECENT_BRANCH_BY_REPOSITORY">
+       <map>
+-        <entry key="$PROJECT_DIR$" value="ozon-fbs" />
++        <entry key="$PROJECT_DIR$" value="master" />
+       </map>
+     </option>
+     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+@@ -73,7 +77,7 @@
+     &quot;RunOnceActivity.go.migrated.go.modules.settings&quot;: &quot;true&quot;,
+     &quot;RunOnceActivity.go.modules.go.list.on.any.changes.was.set&quot;: &quot;true&quot;,
+     &quot;configurable.GoLibrariesConfigurable.is.expanded&quot;: &quot;true&quot;,
+-    &quot;git-widget-placeholder&quot;: &quot;yandex-stickers&quot;,
++    &quot;git-widget-placeholder&quot;: &quot;ozon-fbs&quot;,
+     &quot;go.import.settings.migrated&quot;: &quot;true&quot;,
+     &quot;go.sdk.automatically.set&quot;: &quot;true&quot;,
+     &quot;last_opened_file_path&quot;: &quot;/Users/sergey/GolandProjects/tradebot/assets/barcodes&quot;,
+@@ -150,6 +154,20 @@
+   </component>
+   <component name="VcsManagerConfiguration">
+     <option name="CHECK_CODE_SMELLS_BEFORE_PROJECT_COMMIT" value="false" />
++    <MESSAGE value="fix docker compose: network_mode: &quot;host&quot;" />
++    <MESSAGE value="fix docker compose: add dns" />
++    <MESSAGE value="fix docker compose: edit host" />
++    <MESSAGE value="fix docker file: ipv6 disable" />
++    <MESSAGE value="fix docker file" />
++    <MESSAGE value="fix docker compose: delete dns" />
++    <MESSAGE value="fix docker file: add curl" />
++    <MESSAGE value="fix compose: add mtu" />
++    <MESSAGE value="fix app: start scheduler" />
++    <MESSAGE value="fix dockerfile: add ENV CGO_ENABLED=0" />
++    <MESSAGE value="fix dockerfile: add gcc" />
++    <MESSAGE value="fix dockerfile: fix addition gcc" />
++    <MESSAGE value="stop yandex service" />
++    <MESSAGE value="fix yandex service: start stickersFbs" />
+     <MESSAGE value="refactoring: moving full project" />
+     <MESSAGE value="refactoring: moving deployment" />
+     <MESSAGE value="refactoring: add orderWriter" />
+@@ -161,34 +179,9 @@
+     <MESSAGE value="update spreadsheetId" />
+     <MESSAGE value="fix mupdf" />
+     <MESSAGE value="fix alpine ver" />
+-    <MESSAGE value="fix Returns model: int to float64" />
+-    <MESSAGE value="fix yandex fbs: update stickers service" />
+-    <MESSAGE value="fix ozon/wb fbs: add batches" />
+-    <MESSAGE value="add ozon CreateDirectories" />
+-    <MESSAGE value="fix comment" />
+-    <MESSAGE value="extract methods" />
+-    <MESSAGE value="add errChan" />
+-    <MESSAGE value="fix wb fbs timeout" />
+-    <MESSAGE value="fix wb stocks analyze: edit text" />
+-    <MESSAGE value="fix wb fbs logs" />
+-    <MESSAGE value="fix ozon fbs message editing" />
+-    <MESSAGE value="fix ozon fbs i%5" />
+-    <MESSAGE value="fix ozon fbs: add return" />
+-    <MESSAGE value="edit google sheets" />
+-    <option name="LAST_COMMIT_MESSAGE" value="edit google sheets" />
++    <option name="LAST_COMMIT_MESSAGE" value="fix alpine ver" />
+   </component>
+   <component name="VgoProject">
+     <settings-migrated>true</settings-migrated>
+   </component>
+-  <component name="XDebuggerManager">
+-    <breakpoint-manager>
+-      <breakpoints>
+-        <line-breakpoint enabled="true" type="DlvLineBreakpoint">
+-          <url>file://$PROJECT_DIR$/pkg/bot/handlers/handlers_ozon.go</url>
+-          <line>294</line>
+-          <option name="timeStamp" value="3" />
+-        </line-breakpoint>
+-      </breakpoints>
+-    </breakpoint-manager>
+-  </component>
+ </project>
+\ No newline at end of file
