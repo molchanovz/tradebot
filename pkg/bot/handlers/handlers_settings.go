@@ -2,15 +2,20 @@ package bot
 
 import (
 	"context"
+	"fmt"
 	botlib "github.com/go-telegram/bot"
 	"github.com/go-telegram/bot/models"
 	"log"
+	"strconv"
 	"strings"
+	"tradebot/pkg/db"
 )
 
 const (
-	MessageSettingsHandler  = "/settings"
-	CallbackSettingsHandler = "SETTINGS_"
+	MessageSettingsHandler     = "/settings"
+	CallbackSettingsHandler    = "SETTINGS_"
+	CallbackChangeAPIHandler   = "CHANGE-API_"
+	CallbackChangeSheetHandler = "CHANGE-SHEET_"
 )
 
 func (m *Manager) settingsHandler(ctx context.Context, bot *botlib.Bot, update *models.Update) {
@@ -116,11 +121,15 @@ func (m *Manager) settingsMPHandler(ctx context.Context, bot *botlib.Bot, update
 		return
 	}
 
-	cabinetId := parts[1]
+	cabinetId, err := strconv.Atoi(parts[1])
+	if err != nil {
+		log.Println("ошибка получения cabinetId")
+		return
+	}
 
 	text, keyboardMarkup := createSettingsMPMarkup(cabinetId)
 
-	_, err := bot.EditMessageText(ctx, &botlib.EditMessageTextParams{
+	_, err = bot.EditMessageText(ctx, &botlib.EditMessageTextParams{
 		MessageID:   update.CallbackQuery.Message.Message.ID,
 		ChatID:      chatId,
 		Text:        text,
@@ -134,16 +143,16 @@ func (m *Manager) settingsMPHandler(ctx context.Context, bot *botlib.Bot, update
 
 }
 
-func createSettingsMPMarkup(cabinetId string) (string, models.InlineKeyboardMarkup) {
+func createSettingsMPMarkup(cabinetId int) (string, models.InlineKeyboardMarkup) {
 	startMessage := "Настройки кабинетов. Выбери настройку"
 	var buttonsRow []models.InlineKeyboardButton
 	var allButtons [][]models.InlineKeyboardButton
 
-	buttonsRow = append(buttonsRow, models.InlineKeyboardButton{Text: "Изменить ключ API", CallbackData: CallbackSettingsHandler + cabinetId})
+	buttonsRow = append(buttonsRow, models.InlineKeyboardButton{Text: "Изменить ключ API", CallbackData: fmt.Sprintf("%v+%v", CallbackChangeAPIHandler, cabinetId)})
 	allButtons = append(allButtons, buttonsRow)
 	buttonsRow = []models.InlineKeyboardButton{}
 
-	buttonsRow = append(buttonsRow, models.InlineKeyboardButton{Text: "Изменить таблицу для заказов", CallbackData: CallbackSettingsHandler + cabinetId})
+	buttonsRow = append(buttonsRow, models.InlineKeyboardButton{Text: "Изменить таблицу для заказов", CallbackData: fmt.Sprintf("%v+%v", CallbackChangeSheetHandler, cabinetId)})
 	allButtons = append(allButtons, buttonsRow)
 	buttonsRow = []models.InlineKeyboardButton{}
 
@@ -153,4 +162,180 @@ func createSettingsMPMarkup(cabinetId string) (string, models.InlineKeyboardMark
 
 	markup := models.InlineKeyboardMarkup{InlineKeyboard: allButtons}
 	return startMessage, markup
+}
+
+func (m *Manager) ChangeApiHandler(ctx context.Context, bot *botlib.Bot, update *models.Update) {
+	chatId := update.CallbackQuery.From.ID
+	parts := strings.Split(update.CallbackQuery.Data, "_")
+
+	if len(parts) != 2 {
+		log.Println("ChangeApiHandler неверное кол-во parts")
+		return
+	}
+
+	cabinetId := parts[1]
+
+	user, err := m.repo.GetUserByTgId(chatId)
+	if err != nil {
+		log.Println("Ошибка получения User")
+		return
+	}
+
+	if user == nil {
+		log.Println("Ошибка получения User")
+		return
+	}
+
+	user.StatusID = db.WaitingAPI
+
+	err = m.repo.UpdateUser(user)
+	if err != nil {
+		log.Println("Ошибка обновления User")
+		return
+	}
+
+	m.ApiMap.Store(chatId, cabinetId)
+
+	_, err = bot.EditMessageText(ctx, &botlib.EditMessageTextParams{
+		MessageID: update.CallbackQuery.Message.Message.ID,
+		ChatID:    chatId,
+		Text:      "Отправь новый API ключ",
+		ParseMode: models.ParseModeHTML,
+	})
+	if err != nil {
+		log.Println("Ошибка отправки сообщения")
+		return
+	}
+
+}
+
+func (m *Manager) ChangeSheetHandler(ctx context.Context, bot *botlib.Bot, update *models.Update) {
+	chatId := update.CallbackQuery.From.ID
+	parts := strings.Split(update.CallbackQuery.Data, "_")
+
+	if len(parts) != 2 {
+		log.Println("ChangeSheetHandler неверное кол-во parts")
+		return
+	}
+
+	cabinetId := parts[1]
+
+	user, err := m.repo.GetUserByTgId(chatId)
+	if err != nil {
+		log.Println("Ошибка получения User")
+		return
+	}
+
+	if user == nil {
+		log.Println("Ошибка получения User")
+		return
+	}
+
+	user.StatusID = db.WaitingSheet
+
+	err = m.repo.UpdateUser(user)
+	if err != nil {
+		log.Println("Ошибка обновления User")
+		return
+	}
+
+	m.SheetMap.Store(chatId, cabinetId)
+
+	_, err = bot.SendMessage(ctx, &botlib.SendMessageParams{
+		ChatID:    nil,
+		Text:      "Отправь ссылку на гугл таблицу",
+		ParseMode: models.ParseModeHTML,
+	})
+	if err != nil {
+		log.Println("Ошибка отправки сообщения")
+		return
+	}
+
+}
+
+func (m *Manager) changeSheet(ctx context.Context, bot *botlib.Bot, chatId int64, message *models.Message) {
+	var text string
+	if value, ok := m.SheetMap.Load(chatId); ok == true {
+
+		cabinet, err := m.repo.GetCabinetById(value.(string))
+		if err != nil {
+			log.Println("Ошибка получения кабинета")
+			return
+		}
+
+		//TODO Добавить поле с гугл таблицей
+		//cabinet.Key = message
+
+		err = m.repo.UpdateCabinet(cabinet)
+		if err != nil {
+			log.Println("Ошибка обновления кабинета")
+			return
+		}
+
+		m.ApiMap.Delete(chatId)
+		text = "Таблица изменена"
+	} else {
+		text = "Таблица не изменена"
+	}
+
+	_, markup := createStartAdminMarkup()
+
+	_, err := bot.SendMessage(ctx, &botlib.SendMessageParams{
+		ChatID:      chatId,
+		Text:        text,
+		ReplyMarkup: markup,
+	})
+	if err != nil {
+		log.Println("Ошибка отправки сообщения")
+		return
+	}
+
+}
+
+func (m *Manager) changeApi(ctx context.Context, bot *botlib.Bot, chatId int64, message *models.Message) {
+	var text string
+	var cabinet db.Cabinet
+	var err error
+	if value, ok := m.ApiMap.Load(chatId); ok == true {
+		cabinet, err = m.repo.GetCabinetById(value.(string))
+		if err != nil {
+			log.Println("Ошибка получения кабинета: ", err)
+			return
+		}
+
+		cabinet.Key = message.Text
+
+		err = m.repo.UpdateCabinet(cabinet)
+		if err != nil {
+			log.Println("Ошибка обновления кабинета: ", err)
+			return
+		}
+
+		m.ApiMap.Delete(chatId)
+		text = "Ключ изменен"
+	} else {
+		text = "Ключ не изменен"
+	}
+
+	_, err = bot.DeleteMessage(ctx, &botlib.DeleteMessageParams{
+		ChatID:    chatId,
+		MessageID: message.ID,
+	})
+	if err != nil {
+		log.Println("Ошибка удаления сообщения с API: ", err)
+		return
+	}
+
+	_, markup := createSettingsMPMarkup(cabinet.ID)
+
+	_, err = bot.SendMessage(ctx, &botlib.SendMessageParams{
+		ChatID:      chatId,
+		Text:        text,
+		ReplyMarkup: markup,
+	})
+	if err != nil {
+		log.Println("Ошибка отправки сообщения: ", err)
+		return
+	}
+
 }

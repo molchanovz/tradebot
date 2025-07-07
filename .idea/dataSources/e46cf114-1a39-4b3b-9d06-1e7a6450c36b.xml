@@ -3,7 +3,7 @@
   <database-model serializer="dbm" dbms="POSTGRES" family-id="POSTGRES" format-version="4.53">
     <root id="1">
       <DateStyle>mdy</DateStyle>
-      <IntrospectionStateNumber>11854</IntrospectionStateNumber>
+      <IntrospectionStateNumber>11870</IntrospectionStateNumber>
       <ServerVersion>15.13</ServerVersion>
       <StartupTime>1751541259</StartupTime>
       <TimeZones>true ACDT
@@ -808,7 +808,7 @@ false Zulu
 13535||10|C|G
 13535||-9223372036854775808|U|G
 13535||10|U|G</Grants>
-      <IntrospectionStateNumber>11725</IntrospectionStateNumber>
+      <IntrospectionStateNumber>11871</IntrospectionStateNumber>
       <ObjectId>19943</ObjectId>
       <OwnerName>sergey</OwnerName>
     </database>
@@ -832,6 +832,7 @@ false Zulu
 13535||10|C|G
 13535||-9223372036854775808|U|G
 13535||10|U|G</Grants>
+      <IntrospectionStateNumber>11870</IntrospectionStateNumber>
       <ObjectId>5</ObjectId>
       <OwnerName>sergey</OwnerName>
     </database>
@@ -853,7 +854,7 @@ false Zulu
 13535||10|C|G
 13535||-9223372036854775808|U|G
 13535||10|U|G</Grants>
-      <IntrospectionStateNumber>11854</IntrospectionStateNumber>
+      <IntrospectionStateNumber>11872</IntrospectionStateNumber>
       <ObjectId>16495</ObjectId>
       <OwnerName>sergey</OwnerName>
     </database>
@@ -4270,8 +4271,8 @@ false Zulu
     <schema id="270" parent="4" name="public">
       <Comment>standard public schema</Comment>
       <Current>1</Current>
-      <IntrospectionStateNumber>11725</IntrospectionStateNumber>
-      <LastIntrospectionLocalTimestamp>2025-07-04.09:17:51</LastIntrospectionLocalTimestamp>
+      <IntrospectionStateNumber>11871</IntrospectionStateNumber>
+      <LastIntrospectionLocalTimestamp>2025-07-07.10:27:55</LastIntrospectionLocalTimestamp>
       <ObjectId>2200</ObjectId>
       <StateNumber>517</StateNumber>
       <OwnerName>pg_database_owner</OwnerName>
@@ -7627,7 +7628,8 @@ false Zulu
     <schema id="514" parent="7" name="public">
       <Comment>standard public schema</Comment>
       <Current>1</Current>
-      <LastIntrospectionLocalTimestamp>2025-06-11.10:14:38</LastIntrospectionLocalTimestamp>
+      <IntrospectionStateNumber>11870</IntrospectionStateNumber>
+      <LastIntrospectionLocalTimestamp>2025-07-07.10:27:55</LastIntrospectionLocalTimestamp>
       <ObjectId>2200</ObjectId>
       <StateNumber>517</StateNumber>
       <OwnerName>pg_database_owner</OwnerName>
@@ -10983,8 +10985,8 @@ false Zulu
     <schema id="758" parent="10" name="public">
       <Comment>standard public schema</Comment>
       <Current>1</Current>
-      <IntrospectionStateNumber>11854</IntrospectionStateNumber>
-      <LastIntrospectionLocalTimestamp>2025-07-04.11:52:50</LastIntrospectionLocalTimestamp>
+      <IntrospectionStateNumber>11872</IntrospectionStateNumber>
+      <LastIntrospectionLocalTimestamp>2025-07-07.10:27:55</LastIntrospectionLocalTimestamp>
       <ObjectId>2200</ObjectId>
       <StateNumber>517</StateNumber>
       <OwnerName>pg_database_owner</OwnerName>
@@ -11065,7 +11067,49 @@ all</Labels>
       <AccessMethodId>2</AccessMethodId>
       <OwnerName>sergey</OwnerName>
     </table>
-    <object-type id="769" parent="758" name="marketplaces">
+    <sequence id="769" parent="514" name="categories_categoryId_seq">
+      <ObjectId>30563</ObjectId>
+      <SequenceIdentity>1</SequenceIdentity>
+      <StartValue>1</StartValue>
+      <StateNumber>11384</StateNumber>
+      <StoredType>integer|0s</StoredType>
+      <OwnerName>sergey</OwnerName>
+    </sequence>
+    <sequence id="770" parent="514" name="news_newId_seq">
+      <ObjectId>30552</ObjectId>
+      <SequenceIdentity>1</SequenceIdentity>
+      <StartValue>1</StartValue>
+      <StateNumber>11383</StateNumber>
+      <StoredType>integer|0s</StoredType>
+      <OwnerName>sergey</OwnerName>
+    </sequence>
+    <sequence id="771" parent="514" name="tags_tagId_seq">
+      <ObjectId>30571</ObjectId>
+      <SequenceIdentity>1</SequenceIdentity>
+      <StartValue>1</StartValue>
+      <StateNumber>11385</StateNumber>
+      <StoredType>integer|0s</StoredType>
+      <OwnerName>sergey</OwnerName>
+    </sequence>
+    <table id="772" parent="514" name="categories">
+      <ObjectId>30564</ObjectId>
+      <StateNumber>11387</StateNumber>
+      <AccessMethodId>2</AccessMethodId>
+      <OwnerName>sergey</OwnerName>
+    </table>
+    <table id="773" parent="514" name="news">
+      <ObjectId>30553</ObjectId>
+      <StateNumber>11386</StateNumber>
+      <AccessMethodId>2</AccessMethodId>
+      <OwnerName>sergey</OwnerName>
+    </table>
+    <table id="774" parent="514" name="tags">
+      <ObjectId>30572</ObjectId>
+      <StateNumber>11386</StateNumber>
+      <AccessMethodId>2</AccessMethodId>
+      <OwnerName>sergey</OwnerName>
+    </table>
+    <object-type id="775" parent="758" name="marketplaces">
       <Labels>WB
 OZON
 YANDEX</Labels>
@@ -11075,7 +11119,7 @@ YANDEX</Labels>
       <SubKind>enum</SubKind>
       <OwnerName>sergey</OwnerName>
     </object-type>
-    <object-type id="770" parent="758" name="types">
+    <object-type id="776" parent="758" name="types">
       <Labels>fbo
 fbs
 all</Labels>
@@ -11085,7 +11129,7 @@ all</Labels>
       <SubKind>enum</SubKind>
       <OwnerName>sergey</OwnerName>
     </object-type>
-    <sequence id="771" parent="758" name="cabinets_cabinetsId_seq">
+    <sequence id="777" parent="758" name="cabinets_cabinetsId_seq">
       <ObjectId>31017</ObjectId>
       <SequenceIdentity>1</SequenceIdentity>
       <StartValue>1</StartValue>
@@ -11093,7 +11137,7 @@ all</Labels>
       <StoredType>integer|0s</StoredType>
       <OwnerName>sergey</OwnerName>
     </sequence>
-    <sequence id="772" parent="758" name="orders_orderId_seq">
+    <sequence id="778" parent="758" name="orders_orderId_seq">
       <ObjectId>31024</ObjectId>
       <SequenceIdentity>1</SequenceIdentity>
       <StartValue>1</StartValue>
@@ -11101,7 +11145,7 @@ all</Labels>
       <StoredType>integer|0s</StoredType>
       <OwnerName>sergey</OwnerName>
     </sequence>
-    <sequence id="773" parent="758" name="stocks_stockId_seq">
+    <sequence id="779" parent="758" name="stocks_stockId_seq">
       <ObjectId>30997</ObjectId>
       <SequenceIdentity>1</SequenceIdentity>
       <StartValue>1</StartValue>
@@ -11109,7 +11153,7 @@ all</Labels>
       <StoredType>integer|0s</StoredType>
       <OwnerName>sergey</OwnerName>
     </sequence>
-    <sequence id="774" parent="758" name="users_userId_seq">
+    <sequence id="780" parent="758" name="users_userId_seq">
       <ObjectId>31005</ObjectId>
       <SequenceIdentity>1</SequenceIdentity>
       <StartValue>1</StartValue>
@@ -11117,31 +11161,31 @@ all</Labels>
       <StoredType>integer|0s</StoredType>
       <OwnerName>sergey</OwnerName>
     </sequence>
-    <table id="775" parent="758" name="cabinets">
+    <table id="781" parent="758" name="cabinets">
       <ObjectId>31018</ObjectId>
       <StateNumber>11853</StateNumber>
       <AccessMethodId>2</AccessMethodId>
       <OwnerName>sergey</OwnerName>
     </table>
-    <table id="776" parent="758" name="orders">
+    <table id="782" parent="758" name="orders">
       <ObjectId>31025</ObjectId>
       <StateNumber>11836</StateNumber>
       <AccessMethodId>2</AccessMethodId>
       <OwnerName>sergey</OwnerName>
     </table>
-    <table id="777" parent="758" name="stocks">
+    <table id="783" parent="758" name="stocks">
       <ObjectId>30998</ObjectId>
       <StateNumber>11835</StateNumber>
       <AccessMethodId>2</AccessMethodId>
       <OwnerName>sergey</OwnerName>
     </table>
-    <table id="778" parent="758" name="users">
+    <table id="784" parent="758" name="users">
       <ObjectId>31006</ObjectId>
       <StateNumber>11831</StateNumber>
       <AccessMethodId>2</AccessMethodId>
       <OwnerName>sergey</OwnerName>
     </table>
-    <column id="779" parent="765" name="cabinetsId">
+    <column id="785" parent="765" name="cabinetsId">
       <DefaultExpression>nextval(&apos;&quot;cabinets_cabinetsId_seq&quot;&apos;::regclass)</DefaultExpression>
       <NotNull>1</NotNull>
       <Position>1</Position>
@@ -11150,41 +11194,41 @@ all</Labels>
       <SequenceId>30911</SequenceId>
       <TypeId>23</TypeId>
     </column>
-    <column id="780" parent="765" name="name">
+    <column id="786" parent="765" name="name">
       <NotNull>1</NotNull>
       <Position>2</Position>
       <StateNumber>11721</StateNumber>
       <StoredType>varchar(64)|0s</StoredType>
       <TypeId>1043</TypeId>
     </column>
-    <column id="781" parent="765" name="clientId">
+    <column id="787" parent="765" name="clientId">
       <Position>3</Position>
       <StateNumber>11721</StateNumber>
       <StoredType>varchar(64)|0s</StoredType>
       <TypeId>1043</TypeId>
     </column>
-    <column id="782" parent="765" name="key">
+    <column id="788" parent="765" name="key">
       <NotNull>1</NotNull>
       <Position>4</Position>
       <StateNumber>11721</StateNumber>
       <StoredType>varchar(256)|0s</StoredType>
       <TypeId>1043</TypeId>
     </column>
-    <column id="783" parent="765" name="marketplace">
+    <column id="789" parent="765" name="marketplace">
       <NotNull>1</NotNull>
       <Position>5</Position>
       <StateNumber>11721</StateNumber>
       <StoredType>marketplaces|0s</StoredType>
       <TypeId>30877</TypeId>
     </column>
-    <column id="784" parent="765" name="type">
+    <column id="790" parent="765" name="type">
       <NotNull>1</NotNull>
       <Position>6</Position>
       <StateNumber>11721</StateNumber>
       <StoredType>types|0s</StoredType>
       <TypeId>30884</TypeId>
     </column>
-    <index id="785" parent="765" name="cabinets_pkey">
+    <index id="791" parent="765" name="cabinets_pkey">
       <ColNames>cabinetsId</ColNames>
       <NameSurrogate>1</NameSurrogate>
       <ObjectId>30916</ObjectId>
@@ -11193,14 +11237,14 @@ all</Labels>
       <Unique>1</Unique>
       <AccessMethodId>403</AccessMethodId>
     </index>
-    <key id="786" parent="765" name="cabinets_pkey">
+    <key id="792" parent="765" name="cabinets_pkey">
       <NameSurrogate>1</NameSurrogate>
       <ObjectId>30917</ObjectId>
       <Primary>1</Primary>
       <StateNumber>11721</StateNumber>
       <UnderlyingIndexId>30916</UnderlyingIndexId>
     </key>
-    <column id="787" parent="766" name="orderId">
+    <column id="793" parent="766" name="orderId">
       <DefaultExpression>nextval(&apos;&quot;orders_orderId_seq&quot;&apos;::regclass)</DefaultExpression>
       <NotNull>1</NotNull>
       <Position>1</Position>
@@ -11209,35 +11253,35 @@ all</Labels>
       <SequenceId>30918</SequenceId>
       <TypeId>23</TypeId>
     </column>
-    <column id="788" parent="766" name="postingNumber">
+    <column id="794" parent="766" name="postingNumber">
       <NotNull>1</NotNull>
       <Position>2</Position>
       <StateNumber>11722</StateNumber>
       <StoredType>varchar(32)|0s</StoredType>
       <TypeId>1043</TypeId>
     </column>
-    <column id="789" parent="766" name="article">
+    <column id="795" parent="766" name="article">
       <NotNull>1</NotNull>
       <Position>3</Position>
       <StateNumber>11722</StateNumber>
       <StoredType>varchar(128)|0s</StoredType>
       <TypeId>1043</TypeId>
     </column>
-    <column id="790" parent="766" name="count">
+    <column id="796" parent="766" name="count">
       <NotNull>1</NotNull>
       <Position>4</Position>
       <StateNumber>11722</StateNumber>
       <StoredType>integer|0s</StoredType>
       <TypeId>23</TypeId>
     </column>
-    <column id="791" parent="766" name="cabinetId">
+    <column id="797" parent="766" name="cabinetId">
       <NotNull>1</NotNull>
       <Position>5</Position>
       <StateNumber>11722</StateNumber>
       <StoredType>integer|0s</StoredType>
       <TypeId>23</TypeId>
     </column>
-    <column id="792" parent="766" name="createdAt">
+    <column id="798" parent="766" name="createdAt">
       <DefaultExpression>now()</DefaultExpression>
       <NotNull>1</NotNull>
       <Position>6</Position>
@@ -11245,14 +11289,14 @@ all</Labels>
       <StoredType>timestamp with time zone|0s</StoredType>
       <TypeId>1184</TypeId>
     </column>
-    <foreign-key id="793" parent="766" name="Ref_orders_to_cabinets">
+    <foreign-key id="799" parent="766" name="Ref_orders_to_cabinets">
       <ColNames>cabinetId</ColNames>
       <ObjectId>30931</ObjectId>
       <StateNumber>11724</StateNumber>
       <RefKeyColPositions>1</RefKeyColPositions>
       <RefTableId>30912</RefTableId>
     </foreign-key>
-    <index id="794" parent="766" name="orders_pkey">
+    <index id="800" parent="766" name="orders_pkey">
       <ColNames>orderId</ColNames>
       <NameSurrogate>1</NameSurrogate>
       <ObjectId>30924</ObjectId>
@@ -11261,14 +11305,14 @@ all</Labels>
       <Unique>1</Unique>
       <AccessMethodId>403</AccessMethodId>
     </index>
-    <key id="795" parent="766" name="orders_pkey">
+    <key id="801" parent="766" name="orders_pkey">
       <NameSurrogate>1</NameSurrogate>
       <ObjectId>30925</ObjectId>
       <Primary>1</Primary>
       <StateNumber>11722</StateNumber>
       <UnderlyingIndexId>30924</UnderlyingIndexId>
     </key>
-    <column id="796" parent="767" name="stockId">
+    <column id="802" parent="767" name="stockId">
       <DefaultExpression>nextval(&apos;&quot;stocks_stockId_seq&quot;&apos;::regclass)</DefaultExpression>
       <NotNull>1</NotNull>
       <Position>1</Position>
@@ -11277,14 +11321,14 @@ all</Labels>
       <SequenceId>30891</SequenceId>
       <TypeId>23</TypeId>
     </column>
-    <column id="797" parent="767" name="article">
+    <column id="803" parent="767" name="article">
       <NotNull>1</NotNull>
       <Position>2</Position>
       <StateNumber>11718</StateNumber>
       <StoredType>varchar(64)|0s</StoredType>
       <TypeId>1043</TypeId>
     </column>
-    <column id="798" parent="767" name="updatedAt">
+    <column id="804" parent="767" name="updatedAt">
       <DefaultExpression>now()</DefaultExpression>
       <NotNull>1</NotNull>
       <Position>3</Position>
@@ -11292,33 +11336,33 @@ all</Labels>
       <StoredType>timestamp with time zone|0s</StoredType>
       <TypeId>1184</TypeId>
     </column>
-    <column id="799" parent="767" name="countFbo">
+    <column id="805" parent="767" name="countFbo">
       <Position>4</Position>
       <StateNumber>11718</StateNumber>
       <StoredType>integer|0s</StoredType>
       <TypeId>23</TypeId>
     </column>
-    <column id="800" parent="767" name="countFbs">
+    <column id="806" parent="767" name="countFbs">
       <Position>5</Position>
       <StateNumber>11718</StateNumber>
       <StoredType>integer|0s</StoredType>
       <TypeId>23</TypeId>
     </column>
-    <column id="801" parent="767" name="cabinetId">
+    <column id="807" parent="767" name="cabinetId">
       <NotNull>1</NotNull>
       <Position>6</Position>
       <StateNumber>11718</StateNumber>
       <StoredType>integer|0s</StoredType>
       <TypeId>23</TypeId>
     </column>
-    <foreign-key id="802" parent="767" name="Ref_stocks_to_cabinets">
+    <foreign-key id="808" parent="767" name="Ref_stocks_to_cabinets">
       <ColNames>cabinetId</ColNames>
       <ObjectId>30926</ObjectId>
       <StateNumber>11723</StateNumber>
       <RefKeyColPositions>1</RefKeyColPositions>
       <RefTableId>30912</RefTableId>
     </foreign-key>
-    <index id="803" parent="767" name="stocks_pkey">
+    <index id="809" parent="767" name="stocks_pkey">
       <ColNames>stockId</ColNames>
       <NameSurrogate>1</NameSurrogate>
       <ObjectId>30897</ObjectId>
@@ -11327,14 +11371,14 @@ all</Labels>
       <Unique>1</Unique>
       <AccessMethodId>403</AccessMethodId>
     </index>
-    <key id="804" parent="767" name="stocks_pkey">
+    <key id="810" parent="767" name="stocks_pkey">
       <NameSurrogate>1</NameSurrogate>
       <ObjectId>30898</ObjectId>
       <Primary>1</Primary>
       <StateNumber>11718</StateNumber>
       <UnderlyingIndexId>30897</UnderlyingIndexId>
     </key>
-    <column id="805" parent="768" name="userId">
+    <column id="811" parent="768" name="userId">
       <DefaultExpression>nextval(&apos;&quot;users_userId_seq&quot;&apos;::regclass)</DefaultExpression>
       <NotNull>1</NotNull>
       <Position>1</Position>
@@ -11343,14 +11387,14 @@ all</Labels>
       <SequenceId>30899</SequenceId>
       <TypeId>23</TypeId>
     </column>
-    <column id="806" parent="768" name="tgId">
+    <column id="812" parent="768" name="tgId">
       <NotNull>1</NotNull>
       <Position>2</Position>
       <StateNumber>11719</StateNumber>
       <StoredType>bigint|0s</StoredType>
       <TypeId>20</TypeId>
     </column>
-    <column id="807" parent="768" name="statusId">
+    <column id="813" parent="768" name="statusId">
       <DefaultExpression>1</DefaultExpression>
       <NotNull>1</NotNull>
       <Position>3</Position>
@@ -11358,7 +11402,7 @@ all</Labels>
       <StoredType>smallint|0s</StoredType>
       <TypeId>21</TypeId>
     </column>
-    <column id="808" parent="768" name="isAdmin">
+    <column id="814" parent="768" name="isAdmin">
       <DefaultExpression>false</DefaultExpression>
       <NotNull>1</NotNull>
       <Position>4</Position>
@@ -11366,14 +11410,14 @@ all</Labels>
       <StoredType>boolean|0s</StoredType>
       <TypeId>16</TypeId>
     </column>
-    <column id="809" parent="768" name="cabinetIds">
+    <column id="815" parent="768" name="cabinetIds">
       <NotNull>1</NotNull>
       <Position>5</Position>
       <StateNumber>11719</StateNumber>
       <StoredType>integer[]|0s</StoredType>
       <TypeId>1007</TypeId>
     </column>
-    <index id="810" parent="768" name="users_pkey">
+    <index id="816" parent="768" name="users_pkey">
       <ColNames>userId</ColNames>
       <NameSurrogate>1</NameSurrogate>
       <ObjectId>30908</ObjectId>
@@ -11382,21 +11426,210 @@ all</Labels>
       <Unique>1</Unique>
       <AccessMethodId>403</AccessMethodId>
     </index>
-    <index id="811" parent="768" name="IX_tgId_unique">
+    <index id="817" parent="768" name="IX_tgId_unique">
       <ColNames>tgId</ColNames>
       <ObjectId>30910</ObjectId>
       <StateNumber>11720</StateNumber>
       <Unique>1</Unique>
       <AccessMethodId>403</AccessMethodId>
     </index>
-    <key id="812" parent="768" name="users_pkey">
+    <key id="818" parent="768" name="users_pkey">
       <NameSurrogate>1</NameSurrogate>
       <ObjectId>30909</ObjectId>
       <Primary>1</Primary>
       <StateNumber>11719</StateNumber>
       <UnderlyingIndexId>30908</UnderlyingIndexId>
     </key>
-    <column id="813" parent="775" name="cabinetsId">
+    <column id="819" parent="772" name="categoryId">
+      <DefaultExpression>nextval(&apos;&quot;categories_categoryId_seq&quot;&apos;::regclass)</DefaultExpression>
+      <NotNull>1</NotNull>
+      <Position>1</Position>
+      <StateNumber>11384</StateNumber>
+      <StoredType>integer|0s</StoredType>
+      <SequenceId>30563</SequenceId>
+      <TypeId>23</TypeId>
+    </column>
+    <column id="820" parent="772" name="name">
+      <NotNull>1</NotNull>
+      <Position>2</Position>
+      <StateNumber>11384</StateNumber>
+      <StoredType>varchar(64)|0s</StoredType>
+      <TypeId>1043</TypeId>
+    </column>
+    <column id="821" parent="772" name="index">
+      <NotNull>1</NotNull>
+      <Position>3</Position>
+      <StateNumber>11384</StateNumber>
+      <StoredType>integer|0s</StoredType>
+      <TypeId>23</TypeId>
+    </column>
+    <column id="822" parent="772" name="statusId">
+      <DefaultExpression>1</DefaultExpression>
+      <NotNull>1</NotNull>
+      <Position>4</Position>
+      <StateNumber>11384</StateNumber>
+      <StoredType>integer|0s</StoredType>
+      <TypeId>23</TypeId>
+    </column>
+    <index id="823" parent="772" name="categories_pkey">
+      <ColNames>categoryId</ColNames>
+      <NameSurrogate>1</NameSurrogate>
+      <ObjectId>30569</ObjectId>
+      <Primary>1</Primary>
+      <StateNumber>11384</StateNumber>
+      <Unique>1</Unique>
+      <AccessMethodId>403</AccessMethodId>
+    </index>
+    <key id="824" parent="772" name="categories_pkey">
+      <NameSurrogate>1</NameSurrogate>
+      <ObjectId>30570</ObjectId>
+      <Primary>1</Primary>
+      <StateNumber>11384</StateNumber>
+      <UnderlyingIndexId>30569</UnderlyingIndexId>
+    </key>
+    <column id="825" parent="773" name="newId">
+      <DefaultExpression>nextval(&apos;&quot;news_newId_seq&quot;&apos;::regclass)</DefaultExpression>
+      <NotNull>1</NotNull>
+      <Position>1</Position>
+      <StateNumber>11383</StateNumber>
+      <StoredType>integer|0s</StoredType>
+      <SequenceId>30552</SequenceId>
+      <TypeId>23</TypeId>
+    </column>
+    <column id="826" parent="773" name="name">
+      <NotNull>1</NotNull>
+      <Position>2</Position>
+      <StateNumber>11383</StateNumber>
+      <StoredType>varchar(128)|0s</StoredType>
+      <TypeId>1043</TypeId>
+    </column>
+    <column id="827" parent="773" name="summaryText">
+      <NotNull>1</NotNull>
+      <Position>3</Position>
+      <StateNumber>11383</StateNumber>
+      <StoredType>text|0s</StoredType>
+      <TypeId>25</TypeId>
+    </column>
+    <column id="828" parent="773" name="fullText">
+      <Position>4</Position>
+      <StateNumber>11383</StateNumber>
+      <StoredType>text|0s</StoredType>
+      <TypeId>25</TypeId>
+    </column>
+    <column id="829" parent="773" name="createdAt">
+      <DefaultExpression>now()</DefaultExpression>
+      <NotNull>1</NotNull>
+      <Position>5</Position>
+      <StateNumber>11383</StateNumber>
+      <StoredType>timestamp with time zone|0s</StoredType>
+      <TypeId>1184</TypeId>
+    </column>
+    <column id="830" parent="773" name="publishedAt">
+      <NotNull>1</NotNull>
+      <Position>6</Position>
+      <StateNumber>11383</StateNumber>
+      <StoredType>timestamp with time zone|0s</StoredType>
+      <TypeId>1184</TypeId>
+    </column>
+    <column id="831" parent="773" name="categoryId">
+      <NotNull>1</NotNull>
+      <Position>7</Position>
+      <StateNumber>11383</StateNumber>
+      <StoredType>integer|0s</StoredType>
+      <TypeId>23</TypeId>
+    </column>
+    <column id="832" parent="773" name="tagId">
+      <NotNull>1</NotNull>
+      <Position>8</Position>
+      <StateNumber>11383</StateNumber>
+      <StoredType>integer|0s</StoredType>
+      <TypeId>23</TypeId>
+    </column>
+    <column id="833" parent="773" name="author">
+      <Position>9</Position>
+      <StateNumber>11383</StateNumber>
+      <StoredType>varchar(64)|0s</StoredType>
+      <TypeId>1043</TypeId>
+    </column>
+    <column id="834" parent="773" name="statusId">
+      <DefaultExpression>1</DefaultExpression>
+      <NotNull>1</NotNull>
+      <Position>10</Position>
+      <StateNumber>11383</StateNumber>
+      <StoredType>integer|0s</StoredType>
+      <TypeId>23</TypeId>
+    </column>
+    <foreign-key id="835" parent="773" name="Ref_news_to_categories">
+      <ColNames>categoryId</ColNames>
+      <ObjectId>30584</ObjectId>
+      <StateNumber>11387</StateNumber>
+      <RefKeyColPositions>1</RefKeyColPositions>
+      <RefTableId>30564</RefTableId>
+    </foreign-key>
+    <foreign-key id="836" parent="773" name="Ref_news_to_tags">
+      <ColNames>tagId</ColNames>
+      <ObjectId>30579</ObjectId>
+      <StateNumber>11386</StateNumber>
+      <RefKeyColPositions>1</RefKeyColPositions>
+      <RefTableId>30572</RefTableId>
+    </foreign-key>
+    <index id="837" parent="773" name="news_pkey">
+      <ColNames>newId</ColNames>
+      <NameSurrogate>1</NameSurrogate>
+      <ObjectId>30561</ObjectId>
+      <Primary>1</Primary>
+      <StateNumber>11383</StateNumber>
+      <Unique>1</Unique>
+      <AccessMethodId>403</AccessMethodId>
+    </index>
+    <key id="838" parent="773" name="news_pkey">
+      <NameSurrogate>1</NameSurrogate>
+      <ObjectId>30562</ObjectId>
+      <Primary>1</Primary>
+      <StateNumber>11383</StateNumber>
+      <UnderlyingIndexId>30561</UnderlyingIndexId>
+    </key>
+    <column id="839" parent="774" name="tagId">
+      <DefaultExpression>nextval(&apos;&quot;tags_tagId_seq&quot;&apos;::regclass)</DefaultExpression>
+      <NotNull>1</NotNull>
+      <Position>1</Position>
+      <StateNumber>11385</StateNumber>
+      <StoredType>integer|0s</StoredType>
+      <SequenceId>30571</SequenceId>
+      <TypeId>23</TypeId>
+    </column>
+    <column id="840" parent="774" name="name">
+      <NotNull>1</NotNull>
+      <Position>2</Position>
+      <StateNumber>11385</StateNumber>
+      <StoredType>varchar(64)|0s</StoredType>
+      <TypeId>1043</TypeId>
+    </column>
+    <column id="841" parent="774" name="statusId">
+      <DefaultExpression>1</DefaultExpression>
+      <NotNull>1</NotNull>
+      <Position>3</Position>
+      <StateNumber>11385</StateNumber>
+      <StoredType>integer|0s</StoredType>
+      <TypeId>23</TypeId>
+    </column>
+    <index id="842" parent="774" name="tags_pkey">
+      <ColNames>tagId</ColNames>
+      <NameSurrogate>1</NameSurrogate>
+      <ObjectId>30577</ObjectId>
+      <Primary>1</Primary>
+      <StateNumber>11385</StateNumber>
+      <Unique>1</Unique>
+      <AccessMethodId>403</AccessMethodId>
+    </index>
+    <key id="843" parent="774" name="tags_pkey">
+      <NameSurrogate>1</NameSurrogate>
+      <ObjectId>30578</ObjectId>
+      <Primary>1</Primary>
+      <StateNumber>11385</StateNumber>
+      <UnderlyingIndexId>30577</UnderlyingIndexId>
+    </key>
+    <column id="844" parent="781" name="cabinetsId">
       <DefaultExpression>nextval(&apos;&quot;cabinets_cabinetsId_seq&quot;&apos;::regclass)</DefaultExpression>
       <NotNull>1</NotNull>
       <Position>1</Position>
@@ -11405,41 +11638,41 @@ all</Labels>
       <SequenceId>31017</SequenceId>
       <TypeId>23</TypeId>
     </column>
-    <column id="814" parent="775" name="name">
+    <column id="845" parent="781" name="name">
       <NotNull>1</NotNull>
       <Position>2</Position>
       <StateNumber>11833</StateNumber>
       <StoredType>varchar(64)|0s</StoredType>
       <TypeId>1043</TypeId>
     </column>
-    <column id="815" parent="775" name="clientId">
+    <column id="846" parent="781" name="clientId">
       <Position>3</Position>
       <StateNumber>11833</StateNumber>
       <StoredType>varchar(64)|0s</StoredType>
       <TypeId>1043</TypeId>
     </column>
-    <column id="816" parent="775" name="key">
+    <column id="847" parent="781" name="key">
       <NotNull>1</NotNull>
       <Position>4</Position>
       <StateNumber>11853</StateNumber>
       <StoredType>varchar(1024)|0s</StoredType>
       <TypeId>1043</TypeId>
     </column>
-    <column id="817" parent="775" name="marketplace">
+    <column id="848" parent="781" name="marketplace">
       <NotNull>1</NotNull>
       <Position>5</Position>
       <StateNumber>11833</StateNumber>
       <StoredType>marketplaces|0s</StoredType>
       <TypeId>30982</TypeId>
     </column>
-    <column id="818" parent="775" name="type">
+    <column id="849" parent="781" name="type">
       <NotNull>1</NotNull>
       <Position>6</Position>
       <StateNumber>11833</StateNumber>
       <StoredType>types|0s</StoredType>
       <TypeId>30990</TypeId>
     </column>
-    <index id="819" parent="775" name="cabinets_pkey">
+    <index id="850" parent="781" name="cabinets_pkey">
       <ColNames>cabinetsId</ColNames>
       <NameSurrogate>1</NameSurrogate>
       <ObjectId>31022</ObjectId>
@@ -11448,14 +11681,14 @@ all</Labels>
       <Unique>1</Unique>
       <AccessMethodId>403</AccessMethodId>
     </index>
-    <key id="820" parent="775" name="cabinets_pkey">
+    <key id="851" parent="781" name="cabinets_pkey">
       <NameSurrogate>1</NameSurrogate>
       <ObjectId>31023</ObjectId>
       <Primary>1</Primary>
       <StateNumber>11833</StateNumber>
       <UnderlyingIndexId>31022</UnderlyingIndexId>
     </key>
-    <column id="821" parent="776" name="orderId">
+    <column id="852" parent="782" name="orderId">
       <DefaultExpression>nextval(&apos;&quot;orders_orderId_seq&quot;&apos;::regclass)</DefaultExpression>
       <NotNull>1</NotNull>
       <Position>1</Position>
@@ -11464,35 +11697,35 @@ all</Labels>
       <SequenceId>31024</SequenceId>
       <TypeId>23</TypeId>
     </column>
-    <column id="822" parent="776" name="postingNumber">
+    <column id="853" parent="782" name="postingNumber">
       <NotNull>1</NotNull>
       <Position>2</Position>
       <StateNumber>11834</StateNumber>
       <StoredType>varchar(32)|0s</StoredType>
       <TypeId>1043</TypeId>
     </column>
-    <column id="823" parent="776" name="article">
+    <column id="854" parent="782" name="article">
       <NotNull>1</NotNull>
       <Position>3</Position>
       <StateNumber>11834</StateNumber>
       <StoredType>varchar(128)|0s</StoredType>
       <TypeId>1043</TypeId>
     </column>
-    <column id="824" parent="776" name="count">
+    <column id="855" parent="782" name="count">
       <NotNull>1</NotNull>
       <Position>4</Position>
       <StateNumber>11834</StateNumber>
       <StoredType>integer|0s</StoredType>
       <TypeId>23</TypeId>
     </column>
-    <column id="825" parent="776" name="cabinetId">
+    <column id="856" parent="782" name="cabinetId">
       <NotNull>1</NotNull>
       <Position>5</Position>
       <StateNumber>11834</StateNumber>
       <StoredType>integer|0s</StoredType>
       <TypeId>23</TypeId>
     </column>
-    <column id="826" parent="776" name="createdAt">
+    <column id="857" parent="782" name="createdAt">
       <DefaultExpression>now()</DefaultExpression>
       <NotNull>1</NotNull>
       <Position>6</Position>
@@ -11500,14 +11733,14 @@ all</Labels>
       <StoredType>timestamp with time zone|0s</StoredType>
       <TypeId>1184</TypeId>
     </column>
-    <foreign-key id="827" parent="776" name="Ref_orders_to_cabinets">
+    <foreign-key id="858" parent="782" name="Ref_orders_to_cabinets">
       <ColNames>cabinetId</ColNames>
       <ObjectId>31037</ObjectId>
       <StateNumber>11836</StateNumber>
       <RefKeyColPositions>1</RefKeyColPositions>
       <RefTableId>31018</RefTableId>
     </foreign-key>
-    <index id="828" parent="776" name="orders_pkey">
+    <index id="859" parent="782" name="orders_pkey">
       <ColNames>orderId</ColNames>
       <NameSurrogate>1</NameSurrogate>
       <ObjectId>31030</ObjectId>
@@ -11516,14 +11749,14 @@ all</Labels>
       <Unique>1</Unique>
       <AccessMethodId>403</AccessMethodId>
     </index>
-    <key id="829" parent="776" name="orders_pkey">
+    <key id="860" parent="782" name="orders_pkey">
       <NameSurrogate>1</NameSurrogate>
       <ObjectId>31031</ObjectId>
       <Primary>1</Primary>
       <StateNumber>11834</StateNumber>
       <UnderlyingIndexId>31030</UnderlyingIndexId>
     </key>
-    <column id="830" parent="777" name="stockId">
+    <column id="861" parent="783" name="stockId">
       <DefaultExpression>nextval(&apos;&quot;stocks_stockId_seq&quot;&apos;::regclass)</DefaultExpression>
       <NotNull>1</NotNull>
       <Position>1</Position>
@@ -11532,14 +11765,14 @@ all</Labels>
       <SequenceId>30997</SequenceId>
       <TypeId>23</TypeId>
     </column>
-    <column id="831" parent="777" name="article">
+    <column id="862" parent="783" name="article">
       <NotNull>1</NotNull>
       <Position>2</Position>
       <StateNumber>11830</StateNumber>
       <StoredType>varchar(64)|0s</StoredType>
       <TypeId>1043</TypeId>
     </column>
-    <column id="832" parent="777" name="updatedAt">
+    <column id="863" parent="783" name="updatedAt">
       <DefaultExpression>now()</DefaultExpression>
       <NotNull>1</NotNull>
       <Position>3</Position>
@@ -11547,33 +11780,33 @@ all</Labels>
       <StoredType>timestamp with time zone|0s</StoredType>
       <TypeId>1184</TypeId>
     </column>
-    <column id="833" parent="777" name="countFbo">
+    <column id="864" parent="783" name="countFbo">
       <Position>4</Position>
       <StateNumber>11830</StateNumber>
       <StoredType>integer|0s</StoredType>
       <TypeId>23</TypeId>
     </column>
-    <column id="834" parent="777" name="countFbs">
+    <column id="865" parent="783" name="countFbs">
       <Position>5</Position>
       <StateNumber>11830</StateNumber>
       <StoredType>integer|0s</StoredType>
       <TypeId>23</TypeId>
     </column>
-    <column id="835" parent="777" name="cabinetId">
+    <column id="866" parent="783" name="cabinetId">
       <NotNull>1</NotNull>
       <Position>6</Position>
       <StateNumber>11830</StateNumber>
       <StoredType>integer|0s</StoredType>
       <TypeId>23</TypeId>
     </column>
-    <foreign-key id="836" parent="777" name="Ref_stocks_to_cabinets">
+    <foreign-key id="867" parent="783" name="Ref_stocks_to_cabinets">
       <ColNames>cabinetId</ColNames>
       <ObjectId>31032</ObjectId>
       <StateNumber>11835</StateNumber>
       <RefKeyColPositions>1</RefKeyColPositions>
       <RefTableId>31018</RefTableId>
     </foreign-key>
-    <index id="837" parent="777" name="stocks_pkey">
+    <index id="868" parent="783" name="stocks_pkey">
       <ColNames>stockId</ColNames>
       <NameSurrogate>1</NameSurrogate>
       <ObjectId>31003</ObjectId>
@@ -11582,14 +11815,14 @@ all</Labels>
       <Unique>1</Unique>
       <AccessMethodId>403</AccessMethodId>
     </index>
-    <key id="838" parent="777" name="stocks_pkey">
+    <key id="869" parent="783" name="stocks_pkey">
       <NameSurrogate>1</NameSurrogate>
       <ObjectId>31004</ObjectId>
       <Primary>1</Primary>
       <StateNumber>11830</StateNumber>
       <UnderlyingIndexId>31003</UnderlyingIndexId>
     </key>
-    <column id="839" parent="778" name="userId">
+    <column id="870" parent="784" name="userId">
       <DefaultExpression>nextval(&apos;&quot;users_userId_seq&quot;&apos;::regclass)</DefaultExpression>
       <NotNull>1</NotNull>
       <Position>1</Position>
@@ -11598,14 +11831,14 @@ all</Labels>
       <SequenceId>31005</SequenceId>
       <TypeId>23</TypeId>
     </column>
-    <column id="840" parent="778" name="tgId">
+    <column id="871" parent="784" name="tgId">
       <NotNull>1</NotNull>
       <Position>2</Position>
       <StateNumber>11831</StateNumber>
       <StoredType>bigint|0s</StoredType>
       <TypeId>20</TypeId>
     </column>
-    <column id="841" parent="778" name="statusId">
+    <column id="872" parent="784" name="statusId">
       <DefaultExpression>1</DefaultExpression>
       <NotNull>1</NotNull>
       <Position>3</Position>
@@ -11613,7 +11846,7 @@ all</Labels>
       <StoredType>smallint|0s</StoredType>
       <TypeId>21</TypeId>
     </column>
-    <column id="842" parent="778" name="isAdmin">
+    <column id="873" parent="784" name="isAdmin">
       <DefaultExpression>false</DefaultExpression>
       <NotNull>1</NotNull>
       <Position>4</Position>
@@ -11621,13 +11854,13 @@ all</Labels>
       <StoredType>boolean|0s</StoredType>
       <TypeId>16</TypeId>
     </column>
-    <column id="843" parent="778" name="cabinetIds">
+    <column id="874" parent="784" name="cabinetIds">
       <Position>5</Position>
       <StateNumber>11831</StateNumber>
       <StoredType>integer[]|0s</StoredType>
       <TypeId>1007</TypeId>
     </column>
-    <index id="844" parent="778" name="users_pkey">
+    <index id="875" parent="784" name="users_pkey">
       <ColNames>userId</ColNames>
       <NameSurrogate>1</NameSurrogate>
       <ObjectId>31014</ObjectId>
@@ -11636,14 +11869,14 @@ all</Labels>
       <Unique>1</Unique>
       <AccessMethodId>403</AccessMethodId>
     </index>
-    <index id="845" parent="778" name="IX_tgId_unique">
+    <index id="876" parent="784" name="IX_tgId_unique">
       <ColNames>tgId</ColNames>
       <ObjectId>31016</ObjectId>
       <StateNumber>11832</StateNumber>
       <Unique>1</Unique>
       <AccessMethodId>403</AccessMethodId>
     </index>
-    <key id="846" parent="778" name="users_pkey">
+    <key id="877" parent="784" name="users_pkey">
       <NameSurrogate>1</NameSurrogate>
       <ObjectId>31015</ObjectId>
       <Primary>1</Primary>

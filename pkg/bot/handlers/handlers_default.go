@@ -11,10 +11,9 @@ import (
 	"log"
 	"math"
 	"os"
+	"sync"
 	"tradebot/pkg/db"
 	"tradebot/pkg/fbsPrinter"
-	"tradebot/pkg/marketplaces/OZON"
-	"tradebot/pkg/marketplaces/WB"
 	"tradebot/pkg/marketplaces/YANDEX"
 )
 
@@ -28,16 +27,19 @@ const (
 type Manager struct {
 	b             *botlib.Bot
 	repo          *db.Repo
-	ozonService   OZON.Service
 	yandexService YANDEX.Service
 	myChatId      string
+	SheetMap      *sync.Map
+	ApiMap        *sync.Map
 }
 
-func NewBotManager(wbService WB.Service, yandexService YANDEX.Service, repo *db.Repo, myChatId string) *Manager {
+func NewBotManager(yandexService YANDEX.Service, repo *db.Repo, myChatId string) *Manager {
 	return &Manager{
 		yandexService: yandexService,
 		repo:          repo,
 		myChatId:      myChatId,
+		SheetMap:      new(sync.Map),
+		ApiMap:        new(sync.Map),
 	}
 }
 
@@ -55,6 +57,8 @@ func (m *Manager) RegisterBotHandlers() {
 	m.b.RegisterHandler(botlib.HandlerTypeCallbackQueryData, MessageSettingsHandler, botlib.MatchTypePrefix, m.settingsHandler)
 	m.b.RegisterHandler(botlib.HandlerTypeCallbackQueryData, CallbackSettingsHandler, botlib.MatchTypePrefix, m.selectMpSettingsHandler)
 	m.b.RegisterHandler(botlib.HandlerTypeCallbackQueryData, CallbackSettingsSelectCabinetHandler, botlib.MatchTypePrefix, m.settingsMPHandler)
+	m.b.RegisterHandler(botlib.HandlerTypeCallbackQueryData, CallbackChangeAPIHandler, botlib.MatchTypePrefix, m.ChangeApiHandler)
+	m.b.RegisterHandler(botlib.HandlerTypeCallbackQueryData, CallbackChangeSheetHandler, botlib.MatchTypePrefix, m.ChangeSheetHandler)
 
 	m.b.RegisterHandler(botlib.HandlerTypeCallbackQueryData, CallbackWbHandler, botlib.MatchTypeExact, wbHandler)
 	m.b.RegisterHandler(botlib.HandlerTypeCallbackQueryData, CallbackYandexHandler, botlib.MatchTypeExact, m.yandexHandler)
@@ -69,7 +73,6 @@ func (m *Manager) RegisterBotHandlers() {
 	m.b.RegisterHandler(botlib.HandlerTypeCallbackQueryData, CallbackWbStocksHandler, botlib.MatchTypePrefix, m.wbStocksHandler)
 	m.b.RegisterHandler(botlib.HandlerTypeCallbackQueryData, CallbackOzonStickersHandler, botlib.MatchTypePrefix, m.ozonStickersHandler)
 	m.b.RegisterHandler(botlib.HandlerTypeCallbackQueryData, CallbackOzonPrintStickersHandler, botlib.MatchTypePrefix, m.ozonPrintStickers)
-	m.b.RegisterHandler(botlib.HandlerTypeCallbackQueryData, CallbackClustersHandler, botlib.MatchTypePrefix, m.ozonClustersHandler)
 
 	m.b.RegisterHandler(botlib.HandlerTypeCallbackQueryData, CallbackSelectOzonCabinetHandler, botlib.MatchTypePrefix, m.ozonCabinetHandler)
 
@@ -77,6 +80,7 @@ func (m *Manager) RegisterBotHandlers() {
 
 }
 
+// DefaultHandler ловит сообщения без команд, проверяет статус пользователя, после обновляет статус на enabled
 func (m *Manager) DefaultHandler(ctx context.Context, bot *botlib.Bot, update *models.Update) {
 	chatId := update.Message.From.ID
 	message := update.Message.Text
@@ -100,8 +104,16 @@ func (m *Manager) DefaultHandler(ctx context.Context, bot *botlib.Bot, update *m
 		{
 			m.getYandexFbs(ctx, bot, chatId, message)
 		}
+	case db.WaitingAPI:
+		{
+			m.changeApi(ctx, bot, chatId, update.Message)
+		}
+	case db.WaitingSheet:
+		{
+			m.changeSheet(ctx, bot, chatId, update.Message)
+		}
 	default:
-		panic("unhandled default case")
+		log.Println("Такого статуса пользователя нет")
 	}
 
 	user.StatusID = db.EnabledStatus
@@ -113,6 +125,7 @@ func (m *Manager) DefaultHandler(ctx context.Context, bot *botlib.Bot, update *m
 
 }
 
+// createStartAdminMarkup создает клавиатуру с кнопками для авторизованного пользователя
 func createStartAdminMarkup() (string, models.InlineKeyboardMarkup) {
 	startMessage := "Выбери маркетплейс для работы"
 	var buttonsRow []models.InlineKeyboardButton
@@ -124,6 +137,7 @@ func createStartAdminMarkup() (string, models.InlineKeyboardMarkup) {
 	return startMessage, markup
 }
 
+// createStartUserMarkup создает клавиатуру с кнопками для неавторизованного пользователя
 func createStartUserMarkup() (string, models.InlineKeyboardMarkup) {
 	startMessage := "Для доступа к функционалу бота пиши @molchanovz. А пока можешь перейти в наши магазины"
 	var buttonsRow []models.InlineKeyboardButton
@@ -175,7 +189,7 @@ func (m *Manager) startHandler(ctx context.Context, bot *botlib.Bot, update *mod
 
 	// если юзера нет - заполняем бд
 	if user.TgID == 0 {
-		user = db.User{TgID: chatId, StatusID: db.EnabledStatus, CabinetIDs: make([]int, 0)}
+		user = &db.User{TgID: chatId, StatusID: db.EnabledStatus, CabinetIDs: make([]int, 0)}
 		err := m.repo.CreateUser(user)
 		if err != nil {
 			log.Println("Ошибка создания пользователя: ", err)

@@ -27,7 +27,7 @@ func TestGetCabinetById(t *testing.T) {
 }
 
 func TestRepo_GetUserByTgId(t *testing.T) {
-	got, err := testRepo.GetUserByTgId(1)
+	got, err := testRepo.GetUserByTgId(406363099)
 	assert.Nil(t, err)
 	t.Log(got)
 }

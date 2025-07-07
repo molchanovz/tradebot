@@ -12,6 +12,8 @@ const (
 	DeletedStatus
 	WaitingWbState
 	WaitingYaState
+	WaitingAPI
+	WaitingSheet
 )
 
 type Repo struct {
@@ -48,16 +50,16 @@ func (r Repo) GetCabinetById(id string) (Cabinet, error) {
 	return cabinet, err
 }
 
-func (r Repo) GetUserByTgId(tgId int64) (User, error) {
+func (r Repo) GetUserByTgId(tgId int64) (*User, error) {
 	var user User
 	err := r.DB.Model(&user).Where(`"tgId" = ?`, tgId).Select()
 	if errors.Is(err, pg.ErrNoRows) {
-		return user, nil
+		return &user, nil
 	} else if err != nil {
-		return user, err
+		return &user, err
 	}
 
-	return user, nil
+	return &user, nil
 }
 
 func (r Repo) GetPrintedOrders(marketplace string) ([]Order, error) {
@@ -71,13 +73,13 @@ func (r Repo) CreateOrders(orders []Order) error {
 	return err
 }
 
-func (r Repo) UpdateUser(u User) error {
-	_, err := r.DB.Model(&u).Where(`"tgId" = ?`, u.TgID).Update()
+func (r Repo) UpdateUser(u *User) error {
+	_, err := r.DB.Model(u).Where(`"tgId" = ?`, u.TgID).Update()
 	return err
 }
 
-func (r Repo) CreateUser(u User) error {
-	_, err := r.DB.Model(&u).Insert()
+func (r Repo) CreateUser(u *User) error {
+	_, err := r.DB.Model(u).Insert()
 	return err
 }
 
@@ -92,7 +94,12 @@ func (r Repo) CreateStock(s Stock) error {
 	return err
 }
 
-func (r Repo) UpdateStock(stock Stock) error {
-	_, err := r.DB.Model(&stock).Where("article = ? and cabinetId = ?", stock.Article, stock.CabinetID).Update()
+func (r Repo) UpdateStock(s Stock) error {
+	_, err := r.DB.Model(&s).Where("article = ? and cabinetId = ?", s.Article, s.CabinetID).Update()
+	return err
+}
+
+func (r Repo) UpdateCabinet(c Cabinet) error {
+	_, err := r.DB.Model(&c).Where(`"cabinetsId" = ?`, c.ID).Update()
 	return err
 }

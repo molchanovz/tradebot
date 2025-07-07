@@ -165,7 +165,7 @@ func (m *Manager) ozonStocksHandler(ctx context.Context, bot *botlib.Bot, update
 
 }
 
-// Хендлер для "FBS"
+// ozonStickersHandler создает клавиатуру кнопок для печати FBS стикеров
 func (m *Manager) ozonStickersHandler(ctx context.Context, bot *botlib.Bot, update *models.Update) {
 	chatId := update.CallbackQuery.From.ID
 
@@ -191,7 +191,7 @@ func (m *Manager) ozonStickersHandler(ctx context.Context, bot *botlib.Bot, upda
 	}
 }
 
-// Хендлер для печати стикеров "FBS"
+// ozonPrintStickers точка входа для печати FBS стикеров
 func (m *Manager) ozonPrintStickers(ctx context.Context, bot *botlib.Bot, update *models.Update) {
 	chatId := update.CallbackQuery.From.ID
 
@@ -306,12 +306,6 @@ func (m *Manager) ozonPrintStickers(ctx context.Context, bot *botlib.Bot, update
 	fbsPrinter.CleanFiles()
 }
 
-func (m *Manager) ozonClustersHandler(ctx context.Context, bot *botlib.Bot, update *models.Update) {
-	clusters := m.ozonService.GetStocksManager().GetClusters()
-
-	fmt.Println(clusters.Clusters)
-}
-
 func generateExcelOzon(postings map[string]map[string]map[string]int, stocks map[string]map[string]OZON.CustomStocks, K float64, mp string) (string, error) {
 	file := excelize.NewFile()
 
@@ -411,6 +405,7 @@ func createFullStatistic(postings map[string]map[string]map[string]int, stocks m
 	}
 	return nil
 }
+
 func createStatisticByCluster(cluster string, postings map[string]map[string]map[string]int, stocks map[string]map[string]OZON.CustomStocks, file *excelize.File) error {
 	sheetName := cluster
 	file.NewSheet(sheetName)

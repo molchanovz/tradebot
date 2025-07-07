@@ -33,7 +33,7 @@ func (s *Service) Manager() *bot.Manager {
 }
 
 func (s *Service) Start() {
-	s.manager = bot.NewBotManager(s.wbService, s.yandexService, s.dbc, s.myChatId)
+	s.manager = bot.NewBotManager(s.yandexService, s.dbc, s.myChatId)
 	opts := []botlib.Option{botlib.WithDefaultHandler(s.manager.DefaultHandler)}
 	newBot, _ := botlib.New(s.token, opts...)
 	s.manager.SetBot(newBot)
