@@ -61,8 +61,12 @@ func (m Manager) GetOrdersInfo(supplyId string, progressChan chan fbsPrinter.Pro
 		if err != nil {
 			return "", fmt.Errorf("ошибка в GetOrder: %v", err)
 		}
-		//Получаем стикеры к товарам
 
+		if order.Order.Status == "CANCELLED" {
+			continue
+		}
+
+		//Получаем стикеры к товарам
 		stickers, err := yandex.GetStickers(m.token, orderId)
 		if err != nil {
 			return "", fmt.Errorf("ошибка в GetStickers, %v", err)
