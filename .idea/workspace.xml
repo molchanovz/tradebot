@@ -4,19 +4,19 @@
     <option name="autoReloadType" value="ALL" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="640077d7-ce81-4039-9739-8ad3e3a8d41a" name="Changes" comment="add workspace.xml">
+    <list default="true" id="640077d7-ce81-4039-9739-8ad3e3a8d41a" name="Changes" comment="add api/sheet editing">
+      <change beforePath="$PROJECT_DIR$/.idea/dataSources.local.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources.local.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/dataSources/1b64e527-6db9-43cd-b9c3-7934f9a53ece.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources/1b64e527-6db9-43cd-b9c3-7934f9a53ece.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/dataSources/1b64e527-6db9-43cd-b9c3-7934f9a53ece/storage_v2/_src_/database/tradebot.42HFSw/schema/public.abK9xQ.meta" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources/1b64e527-6db9-43cd-b9c3-7934f9a53ece/storage_v2/_src_/database/tradebot.42HFSw/schema/public.abK9xQ.meta" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/dataSources/a29fc1c7-214c-4de3-8bd4-3b5d017fac9b.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources/a29fc1c7-214c-4de3-8bd4-3b5d017fac9b.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/dataSources/e46cf114-1a39-4b3b-9d06-1e7a6450c36b.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources/e46cf114-1a39-4b3b-9d06-1e7a6450c36b.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/dataSources/e46cf114-1a39-4b3b-9d06-1e7a6450c36b/storage_v2/_src_/database/migration.zjM2zQ/schema/public.abK9xQ.meta" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources/e46cf114-1a39-4b3b-9d06-1e7a6450c36b/storage_v2/_src_/database/migration.zjM2zQ/schema/public.abK9xQ.meta" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/dataSources/e46cf114-1a39-4b3b-9d06-1e7a6450c36b/storage_v2/_src_/database/postgres.edMnLQ/schema/public.abK9xQ.meta" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources/e46cf114-1a39-4b3b-9d06-1e7a6450c36b/storage_v2/_src_/database/postgres.edMnLQ/schema/public.abK9xQ.meta" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/dataSources/e46cf114-1a39-4b3b-9d06-1e7a6450c36b/storage_v2/_src_/database/tradebot.42HFSw/schema/public.abK9xQ.meta" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources/e46cf114-1a39-4b3b-9d06-1e7a6450c36b/storage_v2/_src_/database/tradebot.42HFSw/schema/public.abK9xQ.meta" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/dataSources/a29fc1c7-214c-4de3-8bd4-3b5d017fac9b/storage_v2/_src_/database/tradebot.42HFSw/schema/public.abK9xQ.meta" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources/a29fc1c7-214c-4de3-8bd4-3b5d017fac9b/storage_v2/_src_/database/tradebot.42HFSw/schema/public.abK9xQ.meta" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pkg/bot/handlers/handlers_default.go" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/bot/handlers/handlers_default.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/pkg/bot/handlers/handlers_ozon.go" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/bot/handlers/handlers_ozon.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pkg/bot/handlers/handlers_settings.go" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/bot/handlers/handlers_settings.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pkg/bot/service.go" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/bot/service.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pkg/bot/handlers/handlers_wb.go" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/bot/handlers/handlers_wb.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/pkg/db/db.go" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/db/db.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pkg/db/db_test.go" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/db/db_test.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pkg/marketplaces/OZON/service.go" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/marketplaces/OZON/service.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pkg/marketplaces/OZON/stickers.go" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/marketplaces/OZON/stickers.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pkg/marketplaces/YANDEX/stickers.go" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/marketplaces/YANDEX/stickers.go" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -201,7 +201,6 @@
   </component>
   <component name="VcsManagerConfiguration">
     <option name="CHECK_CODE_SMELLS_BEFORE_PROJECT_COMMIT" value="false" />
-    <MESSAGE value="refactoring: add orderWriter" />
     <MESSAGE value="moving dockerfiles" />
     <MESSAGE value="add new barcodes" />
     <MESSAGE value="edit logic: all/new ozon fbs orders" />
@@ -226,7 +225,8 @@
     <MESSAGE value="edit google sheets" />
     <MESSAGE value="add barcodes" />
     <MESSAGE value="add wb cabinets" />
-    <option name="LAST_COMMIT_MESSAGE" value="add wb cabinets" />
+    <MESSAGE value="add api/sheet editing" />
+    <option name="LAST_COMMIT_MESSAGE" value="add api/sheet editing" />
   </component>
   <component name="VgoProject">
     <settings-migrated>true</settings-migrated>

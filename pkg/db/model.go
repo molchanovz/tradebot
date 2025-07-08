@@ -9,7 +9,7 @@ import (
 
 var Columns = struct {
 	Cabinet struct {
-		ID, Name, ClientID, Key, Marketplace, Type string
+		ID, Name, ClientID, Key, Marketplace, Type, SheetLink string
 	}
 	Order struct {
 		ID, PostingNumber, Article, Count, CabinetID, CreatedAt string
@@ -26,7 +26,7 @@ var Columns = struct {
 	}
 }{
 	Cabinet: struct {
-		ID, Name, ClientID, Key, Marketplace, Type string
+		ID, Name, ClientID, Key, Marketplace, Type, SheetLink string
 	}{
 		ID:          "cabinetsId",
 		Name:        "name",
@@ -34,6 +34,7 @@ var Columns = struct {
 		Key:         "key",
 		Marketplace: "marketplace",
 		Type:        "type",
+		SheetLink:   "sheetLink",
 	},
 	Order: struct {
 		ID, PostingNumber, Article, Count, CabinetID, CreatedAt string
@@ -123,6 +124,7 @@ type Cabinet struct {
 	Key         string  `pg:"key,use_zero"`
 	Marketplace string  `pg:"marketplace,use_zero"`
 	Type        string  `pg:"type,use_zero"`
+	SheetLink   *string `pg:"sheetLink"`
 }
 
 type Order struct {

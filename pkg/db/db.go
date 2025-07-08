@@ -62,14 +62,14 @@ func (r Repo) GetUserByTgId(tgId int64) (*User, error) {
 	return &user, nil
 }
 
-func (r Repo) GetPrintedOrders(marketplace string) ([]Order, error) {
+func (r Repo) GetPrintedOrders(cabinetId string) ([]Order, error) {
 	var printedOrders []Order
-	err := r.DB.Model(printedOrders).Where(`"marketplace" = ?`, marketplace).Select()
+	err := r.DB.Model(&printedOrders).Where(`"cabinetId" = ?`, cabinetId).Select()
 	return printedOrders, err
 }
 
 func (r Repo) CreateOrders(orders []Order) error {
-	_, err := r.DB.Model(orders).Insert()
+	_, err := r.DB.Model(&orders).Insert()
 	return err
 }
 
@@ -85,7 +85,7 @@ func (r Repo) CreateUser(u *User) error {
 
 func (r Repo) GetStocks(article, cabinetId string) ([]Stock, error) {
 	var stocks []Stock
-	err := r.DB.Model(stocks).Where("article = ? and cabinetId = ?", article, cabinetId).Select()
+	err := r.DB.Model(stocks).Where(`"article" = ? and "cabinetId" = ?`, article, cabinetId).Select()
 	return stocks, err
 }
 
@@ -95,7 +95,7 @@ func (r Repo) CreateStock(s Stock) error {
 }
 
 func (r Repo) UpdateStock(s Stock) error {
-	_, err := r.DB.Model(&s).Where("article = ? and cabinetId = ?", s.Article, s.CabinetID).Update()
+	_, err := r.DB.Model(&s).Where(`"article" = ? and "cabinetId" = ?`, s.Article, s.CabinetID).Update()
 	return err
 }
 

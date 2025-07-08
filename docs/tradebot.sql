@@ -1,6 +1,6 @@
 ﻿-- =============================================================================
 -- Diagram Name: tradebot
--- Created on: 04.07.2025 15:33:19
+-- Created on: 08.07.2025 10:40:13
 -- Diagram Version: 
 -- =============================================================================
 
@@ -44,6 +44,7 @@ CREATE TABLE "cabinets" (
 	"key" varchar(1024) NOT NULL,
 	"marketplace" marketplaces NOT NULL,
 	"type" types NOT NULL,
+	"sheetLink" varchar(1024),
 	PRIMARY KEY("cabinetsId")
 );
 
