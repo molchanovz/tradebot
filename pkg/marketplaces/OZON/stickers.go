@@ -70,7 +70,7 @@ func (m StickerManager) GetNewLabels(progressChan chan fbsPrinter.Progress) ([]s
 	}
 
 	if len(newOrders.Result.PostingsFBS) == 0 {
-		return []string{}, newOrders, errors.New("новых заказов нет")
+		return []string{}, newOrders, ErrNoRows
 	}
 
 	readyPdfPaths, err := m.getReadyPdf(newOrders, progressChan)

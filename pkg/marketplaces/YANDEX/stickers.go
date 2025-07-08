@@ -98,7 +98,9 @@ func (m Manager) GetOrdersInfo(supplyId string, progressChan chan fbsPrinter.Pro
 		}
 		ordersSlice = append(ordersSlice, fmt.Sprintf("%v.pdf", readyPath+strconv.Itoa(int(order.Order.Id))))
 
-		progressChan <- fbsPrinter.Progress{Current: i + 1, Total: totalOrders}
+		if i%5 == 0 {
+			progressChan <- fbsPrinter.Progress{Current: i, Total: totalOrders}
+		}
 	}
 
 	readyFilePath := YaDirectoryPath + supplyId + ".pdf"

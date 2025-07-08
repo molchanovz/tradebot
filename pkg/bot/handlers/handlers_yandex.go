@@ -54,7 +54,6 @@ func (m *Manager) yandexFbsHandler(ctx context.Context, bot *botlib.Bot, update 
 	if err != nil {
 		log.Println("Ошибка обновления WaitingYaState пользователя: ", err)
 	}
-	log.Printf("У пользователя %v обновлен WaitingYaState", chatId)
 
 	text := fmt.Sprintf("Отправь мне номер отгрузки")
 	var buttonBack []models.InlineKeyboardButton

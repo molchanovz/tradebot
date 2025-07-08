@@ -1,6 +1,7 @@
 package OZON
 
 import (
+	"errors"
 	"tradebot/pkg/db"
 	"tradebot/pkg/marketplaces"
 )
@@ -10,6 +11,8 @@ const (
 	OrdersDaysAgo = 1
 	spreadsheetId = "1WOUHE2qs-c2idJN4pduWkT6PqJzX8XioI-I3ZoeGxMo"
 )
+
+var ErrNoRows = errors.New("no rows in result set")
 
 type Service struct {
 	marketplaces.Authorization

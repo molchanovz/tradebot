@@ -65,7 +65,6 @@ func (m *Manager) stickersHandler(ctx context.Context, bot *botlib.Bot, update *
 	if err != nil {
 		log.Println("Ошибка обновления WaitingWbState пользователя: ", err)
 	}
-	log.Printf("У пользователя %v обновлен WaitingWbState", chatId)
 
 	text := fmt.Sprintf("Отправь мне номер отгрузки")
 
@@ -168,7 +167,7 @@ func (m *Manager) wbStocksHandler(ctx context.Context, bot *botlib.Bot, update *
 		return
 	}
 
-	filePath, err := generateExcelWB(orders, stocks, K, "wb")
+	filePath, err := generateExcelWB(orders, stocks, K, MarketWb)
 	if err != nil {
 		_, err = SendTextMessage(ctx, bot, chatId, fmt.Sprintf("Ошибка при генерации экселя: %v", err))
 		if err != nil {

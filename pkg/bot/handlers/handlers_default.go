@@ -121,8 +121,6 @@ func (m *Manager) DefaultHandler(ctx context.Context, bot *botlib.Bot, update *m
 	if err != nil {
 		log.Println("Ошибка обновления EnabledStatus пользователя: ", err)
 	}
-	log.Printf("У пользователя %v обновлен EnabledStatus", chatId)
-
 }
 
 // createStartAdminMarkup создает клавиатуру с кнопками для авторизованного пользователя
@@ -198,11 +196,10 @@ func (m *Manager) startHandler(ctx context.Context, bot *botlib.Bot, update *mod
 		}
 	} else {
 		user.StatusID = db.EnabledStatus
-		err := m.repo.UpdateUser(user)
+		err = m.repo.UpdateUser(user)
 		if err != nil {
 			log.Println("Ошибка обновления EnabledStatus пользователя: ", err)
 		}
-		log.Printf("У пользователя %v обновлен EnabledStatus", chatId)
 	}
 
 	var startMessage string

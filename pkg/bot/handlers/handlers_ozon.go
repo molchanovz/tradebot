@@ -150,7 +150,7 @@ func (m *Manager) ozonStocksHandler(ctx context.Context, bot *botlib.Bot, update
 
 	stocks := OZON.NewService(cabinet).GetStocksManager().GetStocks()
 
-	filePath, err := generateExcelOzon(postings, stocks, K, "ozon")
+	filePath, err := generateExcelOzon(postings, stocks, K, MarketOzon)
 	if err != nil {
 		log.Println("Ошибка при создании Excel:", err)
 		return
@@ -200,13 +200,21 @@ func (m *Manager) ozonPrintStickers(ctx context.Context, bot *botlib.Bot, update
 	flag := parts[2]
 	var err error
 
-	cabinet, _ := m.repo.GetCabinetById(cabinetId)
+	cabinet, err := m.repo.GetCabinetById(cabinetId)
+	if err != nil {
+		log.Println(err)
+		return
+	}
 
 	newOrders := api.PostingslistFbs{}
 
 	printedOrdersMap := make(map[string]struct{})
 
-	printedOrders, _ := m.repo.GetPrintedOrders("ozon")
+	printedOrders, err := m.repo.GetPrintedOrders(cabinetId)
+	if err != nil {
+		log.Println(err)
+		return
+	}
 
 	for _, order := range printedOrders {
 		printedOrdersMap[order.PostingNumber] = struct{}{}
@@ -245,7 +253,14 @@ func (m *Manager) ozonPrintStickers(ctx context.Context, bot *botlib.Bot, update
 		{
 			go func() {
 				filePaths, newOrders, err = manager.GetNewLabels(progressChan)
-				if err != nil {
+				if errors.Is(err, OZON.ErrNoRows) {
+					_, err = bot.AnswerCallbackQuery(ctx, &botlib.AnswerCallbackQueryParams{Text: "Новых заказов нет", ShowAlert: true, CallbackQueryID: update.CallbackQuery.ID})
+					if err != nil {
+						log.Println(err)
+						return
+					}
+					return
+				} else if err != nil {
 					log.Println("Ошибка при получении файла:", err)
 					errChan <- err
 					return
@@ -290,6 +305,8 @@ func (m *Manager) ozonPrintStickers(ctx context.Context, bot *botlib.Bot, update
 			orders = append(orders, db.Order{
 				PostingNumber: order.PostingNumber,
 				CabinetID:     cabId,
+				Article:       order.Products[0].OfferId,
+				CreatedAt:     time.Now(),
 			})
 		}
 
