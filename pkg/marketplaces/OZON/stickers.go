@@ -158,10 +158,25 @@ func (m StickerManager) getSortedFbsOrders() (ozonApi.PostingslistFbs, error) {
 	since := time.Now().AddDate(0, 0, -7).Format("2006-01-02T15:04:05.000Z")
 	to := time.Now().AddDate(0, 0, 1).Format("2006-01-02T15:04:05.000Z")
 
-	orders, err := ozonApi.PostingsListFbs(m.clientId, m.token, since, to, 0, "awaiting_deliver")
-	if err != nil {
-		return orders, err
+	// Обработка FBS заказов
+	var orders ozonApi.PostingslistFbs
+	offset := 0
+	limit := 1000
+	for {
+		postingsListFbs, err := ozonApi.PostingsListFbs(m.clientId, m.token, since, to, offset, "awaiting_deliver")
+		if err != nil {
+			return postingsListFbs, err
+		}
+
+		orders.Result.PostingsFBS = append(orders.Result.PostingsFBS, postingsListFbs.Result.PostingsFBS...)
+
+		if !postingsListFbs.Result.HasNext || len(postingsListFbs.Result.PostingsFBS) < limit {
+			break
+		}
+		offset += len(postingsListFbs.Result.PostingsFBS)
 	}
+
+	fmt.Println(len(orders.Result.PostingsFBS))
 
 	if len(orders.Result.PostingsFBS) == 0 {
 		return orders, errors.New("заказов в сборке нет")
