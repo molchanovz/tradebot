@@ -176,8 +176,6 @@ func (m StickerManager) getSortedFbsOrders() (ozonApi.PostingslistFbs, error) {
 		offset += len(postingsListFbs.Result.PostingsFBS)
 	}
 
-	fmt.Println(len(orders.Result.PostingsFBS))
-
 	if len(orders.Result.PostingsFBS) == 0 {
 		return orders, errors.New("заказов в сборке нет")
 	}
