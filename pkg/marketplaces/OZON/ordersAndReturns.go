@@ -77,7 +77,7 @@ func (m OrdersManager) WriteToGoogleSheets(titleRange, fbsRange, fboRange, retur
 	since := time.Now().AddDate(0, 0, m.DaysAgo*(-1)-1).Format("2006-01-02") + "T21:00:00.000Z"
 	to := time.Now().AddDate(0, 0, m.DaysAgo*(-1)).Format("2006-01-02") + "T21:00:00.000Z"
 	//Заполнение возвратов
-	returnsWithCount, err := m.getReturnsMap(m.clientId, m.token, since, to)
+	returnsWithCount, err := m.GetReturnsMap(m.clientId, m.token, since, to)
 	if err != nil {
 		return 0, err
 	}
@@ -129,7 +129,7 @@ func (m OrdersManager) getPostingsMapFBO(clientId, token string) map[string]int 
 	}
 	return postingsWithCountFBO
 }
-func (m OrdersManager) getReturnsMap(clientId, token, since, to string) (map[string]int, error) {
+func (m OrdersManager) GetReturnsMap(clientId, token, since, to string) (map[string]int, error) {
 	LastID := 0
 	hasNext := true
 	returnsWithCount := make(map[string]int)
@@ -142,13 +142,15 @@ func (m OrdersManager) getReturnsMap(clientId, token, since, to string) (map[str
 		if err != nil {
 			return returnsWithCount, err
 		}
+
 		for _, value := range returns.Returns {
-			if value.Visual.Status.SysName == "ReturnedToOZON" {
+			if value.Visual.Status.SysName == "ReturnedToOzon" {
 				returnsWithCount[value.Product.OfferId] += value.Product.Quantity
 			}
 			LastID = value.Id
 		}
 		hasNext = returns.HasNext
 	}
+
 	return returnsWithCount, nil
 }
