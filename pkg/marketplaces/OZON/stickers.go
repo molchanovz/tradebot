@@ -1,7 +1,6 @@
 package OZON
 
 import (
-	"errors"
 	"fmt"
 	"github.com/fogleman/gg"
 	"github.com/gen2brain/go-fitz"
@@ -177,7 +176,7 @@ func (m StickerManager) getSortedFbsOrders() (ozonApi.PostingslistFbs, error) {
 	}
 
 	if len(orders.Result.PostingsFBS) == 0 {
-		return orders, errors.New("заказов в сборке нет")
+		return orders, ErrNoRows
 	}
 
 	sort.Slice(orders.Result.PostingsFBS, func(i, j int) bool {

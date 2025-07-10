@@ -238,7 +238,14 @@ func (m *Manager) ozonPrintStickers(ctx context.Context, bot *botlib.Bot, update
 		{
 			go func() {
 				filePaths, err = manager.GetAllLabels(progressChan)
-				if err != nil {
+				if errors.Is(err, OZON.ErrNoRows) {
+					_, err = bot.AnswerCallbackQuery(ctx, &botlib.AnswerCallbackQueryParams{Text: "Заказов в сборке нет", ShowAlert: true, CallbackQueryID: update.CallbackQuery.ID})
+					if err != nil {
+						log.Println(err)
+						return
+					}
+					return
+				} else if err != nil {
 					log.Println("Ошибка при получении файла:", err)
 					errChan <- err
 					return
