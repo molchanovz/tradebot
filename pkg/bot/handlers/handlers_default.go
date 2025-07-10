@@ -14,32 +14,28 @@ import (
 	"sync"
 	"tradebot/pkg/db"
 	"tradebot/pkg/fbsPrinter"
-	"tradebot/pkg/marketplaces/YANDEX"
 )
 
 const (
 	CallbackStartHandler                 = "start"
 	MessageStartHandler                  = "/start"
-	CallbackSelectOzonCabinetHandler     = "CABINET-OZON_"
 	CallbackSettingsSelectCabinetHandler = "SETTINGS-CABINET_"
 )
 
 type Manager struct {
-	b             *botlib.Bot
-	repo          *db.Repo
-	yandexService YANDEX.Service
-	myChatId      string
-	SheetMap      *sync.Map
-	ApiMap        *sync.Map
+	b        *botlib.Bot
+	repo     *db.Repo
+	myChatId string
+	SheetMap *sync.Map
+	ApiMap   *sync.Map
 }
 
-func NewBotManager(yandexService YANDEX.Service, repo *db.Repo, myChatId string) *Manager {
+func NewBotManager(repo *db.Repo, myChatId string) *Manager {
 	return &Manager{
-		yandexService: yandexService,
-		repo:          repo,
-		myChatId:      myChatId,
-		SheetMap:      new(sync.Map),
-		ApiMap:        new(sync.Map),
+		repo:     repo,
+		myChatId: myChatId,
+		SheetMap: new(sync.Map),
+		ApiMap:   new(sync.Map),
 	}
 }
 
@@ -65,7 +61,7 @@ func (m *Manager) RegisterBotHandlers() {
 	m.b.RegisterHandler(botlib.HandlerTypeCallbackQueryData, CallbackOzonHandler, botlib.MatchTypeExact, m.ozonHandler)
 
 	m.b.RegisterHandler(botlib.HandlerTypeCallbackQueryData, CallbackWbFbsHandler, botlib.MatchTypeExact, m.stickersHandler)
-	m.b.RegisterHandler(botlib.HandlerTypeCallbackQueryData, CallbackYandexFbsHandler, botlib.MatchTypeExact, m.yandexFbsHandler)
+	m.b.RegisterHandler(botlib.HandlerTypeCallbackQueryData, CallbackYandexStickersHandler, botlib.MatchTypePrefix, m.yandexFbsHandler)
 	m.b.RegisterHandler(botlib.HandlerTypeCallbackQueryData, CallbackWbOrdersHandler, botlib.MatchTypePrefix, m.wbOrdersHandler)
 	m.b.RegisterHandler(botlib.HandlerTypeCallbackQueryData, CallbackYandexOrdersHandler, botlib.MatchTypePrefix, m.yandexOrdersHandler)
 	m.b.RegisterHandler(botlib.HandlerTypeCallbackQueryData, CallbackOzonOrdersHandler, botlib.MatchTypePrefix, m.ozonOrdersHandler)
@@ -75,6 +71,7 @@ func (m *Manager) RegisterBotHandlers() {
 	m.b.RegisterHandler(botlib.HandlerTypeCallbackQueryData, CallbackOzonPrintStickersHandler, botlib.MatchTypePrefix, m.ozonPrintStickers)
 
 	m.b.RegisterHandler(botlib.HandlerTypeCallbackQueryData, CallbackSelectOzonCabinetHandler, botlib.MatchTypePrefix, m.ozonCabinetHandler)
+	m.b.RegisterHandler(botlib.HandlerTypeCallbackQueryData, CallbackSelectYandexCabinetHandler, botlib.MatchTypePrefix, m.yandexCabinetHandler)
 
 	//b.RegisterHandler(botlib.HandlerTypeCallbackQueryData, "YANDEX_FBS", botlib.MatchTypePrefix, wbOrdersHandler)
 

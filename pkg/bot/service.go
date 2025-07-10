@@ -7,24 +7,21 @@ import (
 	bot "tradebot/pkg/bot/handlers"
 	"tradebot/pkg/db"
 	"tradebot/pkg/marketplaces/WB"
-	"tradebot/pkg/marketplaces/YANDEX"
 )
 
 type Service struct {
-	token         string
-	manager       *bot.Manager
-	dbc           *db.Repo
-	myChatId      string
-	wbService     WB.Service
-	yandexService YANDEX.Service
+	token     string
+	manager   *bot.Manager
+	dbc       *db.Repo
+	myChatId  string
+	wbService WB.Service
 }
 
-func NewBotService(yandexService YANDEX.Service, token string, dbc *db.Repo, myChatId string) Service {
+func NewBotService(token string, dbc *db.Repo, myChatId string) Service {
 	return Service{
-		yandexService: yandexService,
-		token:         token,
-		dbc:           dbc,
-		myChatId:      myChatId,
+		token:    token,
+		dbc:      dbc,
+		myChatId: myChatId,
 	}
 }
 
@@ -33,7 +30,7 @@ func (s *Service) Manager() *bot.Manager {
 }
 
 func (s *Service) Start() {
-	s.manager = bot.NewBotManager(s.yandexService, s.dbc, s.myChatId)
+	s.manager = bot.NewBotManager(s.dbc, s.myChatId)
 	opts := []botlib.Option{botlib.WithDefaultHandler(s.manager.DefaultHandler)}
 	newBot, _ := botlib.New(s.token, opts...)
 	s.manager.SetBot(newBot)

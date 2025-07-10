@@ -9,7 +9,6 @@ import (
 const (
 	StocksDaysAgo = 14
 	OrdersDaysAgo = 1
-	spreadsheetId = "1WOUHE2qs-c2idJN4pduWkT6PqJzX8XioI-I3ZoeGxMo"
 )
 
 var ErrNoRows = errors.New("no rows in result set")
@@ -22,11 +21,18 @@ type Service struct {
 func NewService(cabinet db.Cabinet) Service {
 	service := Service{
 		Authorization: marketplaces.Authorization{
-			ClientId: *cabinet.ClientID,
-			Token:    cabinet.Key,
+			Token: cabinet.Key,
 		},
-		spreadsheetId: spreadsheetId,
 	}
+
+	if cabinet.ClientID != nil {
+		service.ClientId = *cabinet.ClientID
+	}
+
+	if cabinet.SheetLink != nil {
+		service.spreadsheetId = *cabinet.SheetLink
+	}
+
 	return service
 }
 

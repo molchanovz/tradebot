@@ -15,8 +15,8 @@ import (
 	"tradebot/pkg/marketplaces/YANDEX/api"
 )
 
-//func GetOrderInfo(token, orderId string) {
-//	info, err := API.OrderInfo(token, orderId)
+//func GetOrderInfo(Token, orderId string) {
+//	info, err := API.OrderInfo(Token, orderId)
 //	if err != nil {
 //		return
 //	}
@@ -32,21 +32,20 @@ const (
 	fontPath      = "/app/assets/font.ttf"
 )
 
-type Manager struct {
-	yandexCampaignIdFBO, yandexCampaignIdFBS, token string
+type StickersManager struct {
+	CampaignId, Token string
 }
 
-func NewManager(yandexCampaignIdFBO, yandexCampaignIdFBS, token string) *Manager {
-	return &Manager{
-		yandexCampaignIdFBO: yandexCampaignIdFBO,
-		yandexCampaignIdFBS: yandexCampaignIdFBS,
-		token:               token,
+func NewStickersManager(yandexCampaignIdFBS, token string) *StickersManager {
+	return &StickersManager{
+		CampaignId: yandexCampaignIdFBS,
+		Token:      token,
 	}
 }
 
-func (m Manager) GetOrdersInfo(supplyId string, progressChan chan fbsPrinter.Progress) (string, error) {
+func (m StickersManager) GetOrdersInfo(supplyId string, progressChan chan fbsPrinter.Progress) (string, error) {
 	CreateDirectories()
-	orderIds, err := api.GetOrdersIds(m.token, supplyId)
+	orderIds, err := api.GetOrdersIds(m.Token, supplyId)
 	if err != nil {
 		return "", fmt.Errorf("ошибка в GetOrdersIds: %v", err)
 	}
@@ -56,7 +55,7 @@ func (m Manager) GetOrdersInfo(supplyId string, progressChan chan fbsPrinter.Pro
 	var ordersSlice []string
 	for i, orderId := range orderIds {
 		//Получаем товары в заказе
-		order, err := api.GetOrder(m.token, orderId)
+		order, err := api.GetOrder(m.Token, orderId)
 		if err != nil {
 			return "", fmt.Errorf("ошибка в GetOrder: %v", err)
 		}
@@ -67,7 +66,7 @@ func (m Manager) GetOrdersInfo(supplyId string, progressChan chan fbsPrinter.Pro
 
 		//Получаем стикеры к товарам
 
-		stickers, err := api.GetStickers(m.token, orderId)
+		stickers, err := api.GetStickers(m.Token, orderId)
 		if err != nil {
 			return "", fmt.Errorf("ошибка в GetStickers, %v", err)
 		}

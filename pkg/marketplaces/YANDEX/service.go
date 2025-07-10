@@ -1,30 +1,68 @@
 package YANDEX
 
 import (
+	"tradebot/pkg/db"
+	"tradebot/pkg/marketplaces"
 	"tradebot/pkg/marketplaces/OZON"
 )
 
 const (
-	spreadsheetId = "1LNNJaqHzLd78BU_N9VBDB-3n6EhFkWA7dzJPU3ysRIw"
-	daysAgo       = OZON.OrdersDaysAgo
+	daysAgo = OZON.OrdersDaysAgo
 )
 
 type Service struct {
-	ordersAndReturnsManager YandexOrdersManager
-	stickersFbsManager      *Manager
+	Authorizations []marketplaces.Authorization
+	SheetLink      string
 }
 
-func NewService(yandexCampaignIdFBO, yandexCampaignIdFBS, token string) *Service {
-	return &Service{
-		ordersAndReturnsManager: NewYandexOrdersManager(yandexCampaignIdFBO, yandexCampaignIdFBS, token, spreadsheetId, daysAgo),
-		stickersFbsManager:      NewManager(yandexCampaignIdFBO, yandexCampaignIdFBS, token),
+func NewService(cabinets ...db.Cabinet) Service {
+	service := Service{
+		Authorizations: make([]marketplaces.Authorization, 0),
 	}
+
+	if cabinets[0].SheetLink != nil {
+		service.SheetLink = *cabinets[0].SheetLink
+	}
+
+	for _, c := range cabinets {
+		a := marketplaces.Authorization{
+			Token: c.Key,
+			Type:  c.Type,
+		}
+		if c.ClientID != nil {
+			a.ClientId = *c.ClientID
+		}
+
+		service.Authorizations = append(service.Authorizations, a)
+	}
+
+	return service
 }
 
-func (s Service) GetOrdersAndReturnsManager() YandexOrdersManager {
-	return s.ordersAndReturnsManager
+func (s Service) GetOrdersAndReturnsManager() OrdersManager {
+	var yandexCampaignIdFBO string
+	var yandexCampaignIdFBS string
+	for _, a := range s.Authorizations {
+		switch a.Type {
+		case "fbo":
+			yandexCampaignIdFBO = a.ClientId
+		case "fbs":
+			yandexCampaignIdFBS = a.ClientId
+		}
+	}
+
+	return NewOrdersManager(yandexCampaignIdFBO, yandexCampaignIdFBS, s.Authorizations[0].Token, s.SheetLink, daysAgo)
 }
 
-func (s Service) GetStickersFbsManager() *Manager {
-	return s.stickersFbsManager
+func (s Service) GetStickersFbsManager() *StickersManager {
+
+	var yandexCampaignIdFBS string
+	for _, a := range s.Authorizations {
+		switch a.Type {
+		case "fbs":
+			yandexCampaignIdFBS = a.ClientId
+		}
+	}
+
+	return NewStickersManager(yandexCampaignIdFBS, s.Authorizations[0].Token)
 }

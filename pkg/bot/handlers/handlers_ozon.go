@@ -26,8 +26,8 @@ const (
 	CallbackOzonStocksHandler        = "OZON-STOCKS_"
 	CallbackOzonStickersHandler      = "OZON-STICKERS_"
 	CallbackOzonPrintStickersHandler = "OZON-PRINT-STICKERS_"
-	CallbackClustersHandler          = "OZON-CLUSTERS"
 	CallbackOzonCabinetsHandler      = "OZON-CABINETS"
+	CallbackSelectOzonCabinetHandler = "CABINET-OZON_"
 )
 
 func (m *Manager) ozonHandler(ctx context.Context, bot *botlib.Bot, update *models.Update) {

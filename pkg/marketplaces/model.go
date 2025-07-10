@@ -3,7 +3,7 @@ package marketplaces
 import "tradebot/pkg/db"
 
 type Authorization struct {
-	ClientId, Token string
+	ClientId, Token, Type string
 }
 
 type Cabinet struct {

@@ -10,7 +10,6 @@ import (
 	"syscall"
 	"tradebot/pkg/bot"
 	"tradebot/pkg/db"
-	"tradebot/pkg/marketplaces/YANDEX"
 )
 
 func main() {
@@ -42,28 +41,14 @@ func (a Application) Start() {
 		return
 	}
 
-	yandexCampaignIdFBO, err := initEnv(a.envPath, "yandexCampaignIdFBO")
-	if err != nil {
-		fmt.Printf("%v", err)
-	}
-	yandexCampaignIdFBS, err := initEnv(a.envPath, "yandexCampaignIdFBS")
-	if err != nil {
-		fmt.Printf("%v", err)
-	}
-	yandexToken, err := initEnv(a.envPath, "yandexToken")
-	if err != nil {
-		fmt.Printf("%v", err)
-	}
-	yandexService := YANDEX.NewService(yandexCampaignIdFBO, yandexCampaignIdFBS, yandexToken)
-
 	botToken, err := initEnv(a.envPath, "token")
 	if err != nil {
 		fmt.Printf("%v", err)
 	}
-	botService := bot.NewBotService(*yandexService, botToken, repo, myChatId)
+	botService := bot.NewBotService(botToken, repo, myChatId)
 	botService.Start()
 
-	//schedulerService := scheduler.NewService(botService.Manager(), wbToken)
+	//schedulerService := scheduler.NewService(botService.StickersManager(), wbToken)
 	//err = schedulerService.Start()
 	//if err != nil {
 	//	log.Println(err)

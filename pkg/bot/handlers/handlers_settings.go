@@ -241,8 +241,9 @@ func (m *Manager) ChangeSheetHandler(ctx context.Context, bot *botlib.Bot, updat
 
 	m.SheetMap.Store(chatId, cabinetId)
 
-	_, err = bot.SendMessage(ctx, &botlib.SendMessageParams{
-		ChatID:    nil,
+	_, err = bot.EditMessageText(ctx, &botlib.EditMessageTextParams{
+		MessageID: update.CallbackQuery.Message.Message.ID,
+		ChatID:    chatId,
 		Text:      "Отправь ссылку на гугл таблицу",
 		ParseMode: models.ParseModeHTML,
 	})
@@ -255,16 +256,18 @@ func (m *Manager) ChangeSheetHandler(ctx context.Context, bot *botlib.Bot, updat
 
 func (m *Manager) changeSheet(ctx context.Context, bot *botlib.Bot, chatId int64, message *models.Message) {
 	var text string
+	var cabinet db.Cabinet
+	var err error
+
 	if value, ok := m.SheetMap.Load(chatId); ok == true {
 
-		cabinet, err := m.repo.GetCabinetById(value.(string))
+		cabinet, err = m.repo.GetCabinetById(value.(string))
 		if err != nil {
 			log.Println("Ошибка получения кабинета")
 			return
 		}
 
-		//TODO Добавить поле с гугл таблицей
-		//cabinet.Key = message
+		cabinet.SheetLink = &message.Text
 
 		err = m.repo.UpdateCabinet(cabinet)
 		if err != nil {
@@ -278,18 +281,26 @@ func (m *Manager) changeSheet(ctx context.Context, bot *botlib.Bot, chatId int64
 		text = "Таблица не изменена"
 	}
 
-	_, markup := createStartAdminMarkup()
+	_, err = bot.DeleteMessage(ctx, &botlib.DeleteMessageParams{
+		ChatID:    chatId,
+		MessageID: message.ID,
+	})
+	if err != nil {
+		log.Println("Ошибка удаления сообщения с API: ", err)
+		return
+	}
 
-	_, err := bot.SendMessage(ctx, &botlib.SendMessageParams{
+	_, markup := createSettingsMPMarkup(cabinet.ID)
+
+	_, err = bot.SendMessage(ctx, &botlib.SendMessageParams{
 		ChatID:      chatId,
 		Text:        text,
 		ReplyMarkup: markup,
 	})
 	if err != nil {
-		log.Println("Ошибка отправки сообщения")
+		log.Println("Ошибка отправки сообщения: ", err)
 		return
 	}
-
 }
 
 func (m *Manager) changeApi(ctx context.Context, bot *botlib.Bot, chatId int64, message *models.Message) {

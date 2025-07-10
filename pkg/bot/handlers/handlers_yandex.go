@@ -6,26 +6,58 @@ import (
 	botlib "github.com/go-telegram/bot"
 	"github.com/go-telegram/bot/models"
 	"log"
+	"strings"
 	"tradebot/pkg/db"
 	"tradebot/pkg/fbsPrinter"
 	"tradebot/pkg/marketplaces/YANDEX"
 )
 
 const (
-	CallbackYandexHandler       = "YANDEX"
-	CallbackYandexFbsHandler    = "YANDEX-FBS"
-	CallbackYandexOrdersHandler = "YANDEX-ORDERS"
+	MarketYandex                       = "YANDEX"
+	CallbackYandexHandler              = MarketYandex
+	CallbackYandexStickersHandler      = "YANDEX-STICKERS_"
+	CallbackYandexOrdersHandler        = "YANDEX-ORDERS_"
+	CallbackYandexCabinetsHandler      = "YANDEX-CABINETS"
+	CallbackSelectYandexCabinetHandler = "CABINET-YANDEX_"
 )
 
 func (m *Manager) yandexHandler(ctx context.Context, bot *botlib.Bot, update *models.Update) {
 	chatId := update.CallbackQuery.From.ID
 	messageId := update.CallbackQuery.Message.Message.ID
 
+	cabinets, err := m.repo.GetCabinets(MarketYandex)
+	if err != nil {
+		log.Println(err)
+		return
+	}
+
+	text := "Выберите кабинет"
+	callbacks := CallbacksForCabinetMarkup{
+		PaginationCallback: CallbackYandexCabinetsHandler,
+		SelectCallback:     CallbackSelectYandexCabinetHandler,
+		BackCallback:       CallbackStartHandler,
+	}
+	markup := createCabinetsMarkup(cabinets, callbacks, 0, false)
+
+	_, err = bot.EditMessageText(ctx, &botlib.EditMessageTextParams{ChatID: chatId, MessageID: messageId, Text: text, ReplyMarkup: markup})
+	if err != nil {
+		log.Printf("%v", err)
+		return
+	}
+
+}
+func (m *Manager) yandexCabinetHandler(ctx context.Context, bot *botlib.Bot, update *models.Update) {
+	chatId := update.CallbackQuery.From.ID
+	messageId := update.CallbackQuery.Message.Message.ID
+
+	parts := strings.Split(update.CallbackQuery.Data, "_")
+	cabinetId := parts[1]
+
 	text := "Кабинет Яндекс"
 
 	var buttonsRow, buttonBack []models.InlineKeyboardButton
-	buttonsRow = append(buttonsRow, models.InlineKeyboardButton{Text: "Этикетки FBS", CallbackData: CallbackYandexFbsHandler})
-	buttonsRow = append(buttonsRow, models.InlineKeyboardButton{Text: "Вчерашние заказы", CallbackData: CallbackYandexOrdersHandler})
+	buttonsRow = append(buttonsRow, models.InlineKeyboardButton{Text: "Этикетки FBS", CallbackData: fmt.Sprintf("%v+%v", CallbackYandexStickersHandler, cabinetId)})
+	buttonsRow = append(buttonsRow, models.InlineKeyboardButton{Text: "Вчерашние заказы", CallbackData: fmt.Sprintf("%v+%v", CallbackYandexOrdersHandler, cabinetId)})
 
 	buttonBack = append(buttonBack, models.InlineKeyboardButton{Text: "Назад", CallbackData: CallbackStartHandler})
 
@@ -74,9 +106,20 @@ func (m *Manager) yandexFbsHandler(ctx context.Context, bot *botlib.Bot, update 
 func (m *Manager) yandexOrdersHandler(ctx context.Context, bot *botlib.Bot, update *models.Update) {
 	chatId := update.CallbackQuery.From.ID
 
-	err := m.yandexService.GetOrdersAndReturnsManager().WriteToGoogleSheets()
+	cabinets, err := m.repo.GetCabinets(MarketYandex)
+	if err != nil {
+		log.Println(err)
+		return
+	}
+
+	err = YANDEX.NewService(cabinets...).GetOrdersAndReturnsManager().WriteToGoogleSheets()
 	if err != nil {
 		log.Printf("%v", err)
+		_, err = SendTextMessage(ctx, bot, chatId, err.Error())
+		if err != nil {
+			log.Printf("%v", err)
+			return
+		}
 		return
 	}
 
@@ -88,48 +131,29 @@ func (m *Manager) yandexOrdersHandler(ctx context.Context, bot *botlib.Bot, upda
 
 }
 
-func (m *Manager) getYandexFbsDEPRECATED(ctx context.Context, bot *botlib.Bot, chatId int64, supplyId string) {
-	text := fmt.Sprintf("Подготовка файла Яндекс")
-	message, err := SendTextMessage(ctx, bot, chatId, text)
-	if err != nil {
-		return
-	}
-
-	_, err = m.yandexService.GetStickersFbsManager().GetOrdersInfo(supplyId, nil)
-	if err != nil {
-		_, err := SendTextMessage(ctx, bot, chatId, err.Error())
-		if err != nil {
-			log.Println(err)
-			return
-		}
-	} else {
-		filePath := fmt.Sprintf("%v.pdf", YANDEX.YaDirectoryPath+supplyId)
-		SendMediaMessage(ctx, bot, chatId, filePath)
-		YANDEX.CleanFiles(supplyId)
-	}
-
-	text, markup := createStartAdminMarkup()
-	_, err = bot.SendMessage(ctx, &botlib.SendMessageParams{ChatID: chatId, Text: text, ReplyMarkup: markup})
-	if err != nil {
-		log.Println(fmt.Sprintf("ошибка отправки сообщения %v", err))
-		return
-	}
-
-	_, err = bot.DeleteMessage(ctx, &botlib.DeleteMessageParams{ChatID: chatId, MessageID: message.ID})
-	if err != nil {
-		return
-	}
-
-}
 func (m *Manager) getYandexFbs(ctx context.Context, bot *botlib.Bot, chatId int64, supplyId string) {
-
 	done := make(chan []string)
 	progressChan := make(chan fbsPrinter.Progress)
 	errChan := make(chan error)
 	var filePaths []string
 
+	cabinets, err := m.repo.GetCabinets(MarketYandex)
+	if err != nil {
+		log.Println(err)
+		return
+	}
+
+	var cabinetFBS db.Cabinet
+
+	for _, c := range cabinets {
+		if c.Type == "fbs" {
+			cabinetFBS = c
+			break
+		}
+	}
+
 	go func() {
-		filePath, err := m.yandexService.GetStickersFbsManager().GetOrdersInfo(supplyId, progressChan)
+		filePath, err := YANDEX.NewService(cabinetFBS).GetStickersFbsManager().GetOrdersInfo(supplyId, progressChan)
 		if err != nil {
 			log.Println("Ошибка при получении файла:", err)
 			errChan <- err
@@ -141,7 +165,7 @@ func (m *Manager) getYandexFbs(ctx context.Context, bot *botlib.Bot, chatId int6
 		done <- filePaths
 	}()
 
-	err := WaitReadyFile(ctx, bot, chatId, progressChan, done, errChan)
+	err = WaitReadyFile(ctx, bot, chatId, progressChan, done, errChan)
 	if err != nil {
 		_, err = SendTextMessage(ctx, bot, chatId, err.Error())
 		if err != nil {

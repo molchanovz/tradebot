@@ -7,17 +7,17 @@ import (
 	"tradebot/pkg/ordersWriter"
 )
 
-type YandexOrdersManager struct {
+type OrdersManager struct {
 	ordersWriter.OrdersManager
 	yandexCampaignIdFBO, yandexCampaignIdFBS, token string
 }
 
-func NewYandexOrdersManager(yandexCampaignIdFBO, yandexCampaignIdFBS, token, spreadsheetId string, daysAgo int) YandexOrdersManager {
-	manager := YandexOrdersManager{ordersWriter.NewOrdersManager(spreadsheetId, daysAgo), yandexCampaignIdFBO, yandexCampaignIdFBS, token}
+func NewOrdersManager(yandexCampaignIdFBO, yandexCampaignIdFBS, token, spreadsheetId string, daysAgo int) OrdersManager {
+	manager := OrdersManager{ordersWriter.NewOrdersManager(spreadsheetId, daysAgo), yandexCampaignIdFBO, yandexCampaignIdFBS, token}
 	return manager
 }
 
-func (m YandexOrdersManager) WriteToGoogleSheets() error {
+func (m OrdersManager) WriteToGoogleSheets() error {
 	date := time.Now().AddDate(0, 0, -m.DaysAgo)
 	sheetsName := "Заказы YM-" + strconv.Itoa(date.Day())
 
@@ -104,7 +104,7 @@ func (m YandexOrdersManager) WriteToGoogleSheets() error {
 //	return postingsWithCountFBS
 //}
 
-func (m YandexOrdersManager) ordersMap(yandexCampaignId string) (map[string]int, error) {
+func (m OrdersManager) ordersMap(yandexCampaignId string) (map[string]int, error) {
 	postingsWithCountALL := make(map[string]int)
 	ordersFbo, err := api.GetOrdersFbo(yandexCampaignId, m.token, m.DaysAgo)
 	if err != nil {
