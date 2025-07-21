@@ -1,105 +1,84 @@
+//lint:file-ignore U1000 ignore unused code, it's generated
+//nolint:structcheck,unused
 package db
 
 import (
-	"errors"
+	"context"
+	"hash/crc64"
+	"reflect"
+
 	"github.com/go-pg/pg/v10"
-	"log"
+	"github.com/go-pg/pg/v10/orm"
 )
 
-const (
-	EnabledStatus = iota + 1
-	DisabledStatus
-	DeletedStatus
-	WaitingWbState
-	WaitingYaState
-	WaitingAPI
-	WaitingSheet
-)
+// DB stores db connection
+type DB struct {
+	*pg.DB
 
-type Repo struct {
-	DB *pg.DB
+	crcTable *crc64.Table
 }
 
-func NewRepo(dsn string) (*Repo, error) {
-	dbc, err := initDB(dsn)
-	if err != nil {
-		return nil, err
-	}
-	return &Repo{DB: dbc}, nil
+// New is a function that returns DB as wrapper on postgres connection.
+func New(db *pg.DB) DB {
+	d := DB{DB: db, crcTable: crc64.MakeTable(crc64.ECMA)}
+
+	return d
 }
 
-func initDB(dsn string) (*pg.DB, error) {
-	log.Println("Инициализация базы данных")
-	options, err := pg.ParseURL(dsn)
-	if err != nil {
-		return nil, err
-	}
-	dbc := pg.Connect(options)
-	return dbc, nil
-}
-
-func (r Repo) GetCabinets(marketplace string) ([]Cabinet, error) {
-	var cabinets []Cabinet
-	err := r.DB.Model(&cabinets).Where(`"marketplace" = ?`, marketplace).Select()
-	return cabinets, err
-}
-
-func (r Repo) GetCabinetById(id string) (Cabinet, error) {
-	var cabinet Cabinet
-	err := r.DB.Model(&cabinet).Where(`"cabinetsId" = ?`, id).Select()
-	return cabinet, err
-}
-
-func (r Repo) GetUserByTgId(tgId int64) (*User, error) {
-	var user User
-	err := r.DB.Model(&user).Where(`"tgId" = ?`, tgId).Select()
-	if errors.Is(err, pg.ErrNoRows) {
-		return &user, nil
-	} else if err != nil {
-		return &user, err
+// Version is a function that returns Postgres version.
+func (db *DB) Version() (string, error) {
+	var v string
+	if _, err := db.QueryOne(pg.Scan(&v), "select version()"); err != nil {
+		return "", err
 	}
 
-	return &user, nil
+	return v, nil
 }
 
-func (r Repo) GetPrintedOrders(cabinetId string) ([]Order, error) {
-	var printedOrders []Order
-	err := r.DB.Model(&printedOrders).Where(`"cabinetId" = ?`, cabinetId).Select()
-	return printedOrders, err
+// runInTransaction runs chain of functions in transaction until first error
+func (db *DB) runInTransaction(ctx context.Context, fns ...func(*pg.Tx) error) error {
+	return db.RunInTransaction(ctx, func(tx *pg.Tx) error {
+		for _, fn := range fns {
+			if err := fn(tx); err != nil {
+				return err
+			}
+		}
+		return nil
+	})
 }
 
-func (r Repo) CreateOrders(orders []Order) error {
-	_, err := r.DB.Model(&orders).Insert()
-	return err
+// RunInLock runs chain of functions in transaction with lock until first error
+func (db *DB) RunInLock(ctx context.Context, lockName string, fns ...func(*pg.Tx) error) error {
+	lock := int64(crc64.Checksum([]byte(lockName), db.crcTable))
+
+	return db.RunInTransaction(ctx, func(tx *pg.Tx) (err error) {
+		if _, err = tx.Exec("select pg_advisory_xact_lock(?) -- ?", lock, lockName); err != nil {
+			return
+		}
+
+		for _, fn := range fns {
+			if err = fn(tx); err != nil {
+				return
+			}
+		}
+
+		return
+	})
 }
 
-func (r Repo) UpdateUser(u *User) error {
-	_, err := r.DB.Model(u).Where(`"tgId" = ?`, u.TgID).Update()
-	return err
-}
+// buildQuery applies all functions to orm query.
+func buildQuery(ctx context.Context, db orm.DB, model interface{}, search Searcher, filters []Filter, pager Pager, ops ...OpFunc) *orm.Query {
+	q := db.ModelContext(ctx, model)
+	for _, filter := range filters {
+		filter.Apply(q)
+	}
 
-func (r Repo) CreateUser(u *User) error {
-	_, err := r.DB.Model(u).Insert()
-	return err
-}
+	if reflect.ValueOf(search).IsValid() && !reflect.ValueOf(search).IsNil() { // is it good?
+		search.Apply(q)
+	}
 
-func (r Repo) GetStocks(article, cabinetId string) ([]Stock, error) {
-	var stocks []Stock
-	err := r.DB.Model(stocks).Where(`"article" = ? and "cabinetId" = ?`, article, cabinetId).Select()
-	return stocks, err
-}
+	q = pager.Apply(q)
+	applyOps(q, ops...)
 
-func (r Repo) CreateStock(s Stock) error {
-	_, err := r.DB.Model(&s).Insert()
-	return err
-}
-
-func (r Repo) UpdateStock(s Stock) error {
-	_, err := r.DB.Model(&s).Where(`"article" = ? and "cabinetId" = ?`, s.Article, s.CabinetID).Update()
-	return err
-}
-
-func (r Repo) UpdateCabinet(c Cabinet) error {
-	_, err := r.DB.Model(&c).Where(`"cabinetsId" = ?`, c.ID).Update()
-	return err
+	return q
 }

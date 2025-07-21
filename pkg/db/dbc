@@ -1,1 +1,0 @@
-genna model -c [DSN] -o pkg/db/model.go -t cabinets,orders,stocks,users -f

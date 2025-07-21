@@ -3,10 +3,12 @@ module tradebot
 go 1.24.4
 
 require (
+	github.com/BurntSushi/toml v0.3.1
 	github.com/fogleman/gg v1.3.0
 	github.com/gen2brain/go-fitz v1.24.15
 	github.com/go-co-op/gocron v1.37.0
 	github.com/go-pg/pg/v10 v10.14.0
+	github.com/go-pg/urlstruct v1.0.1
 	github.com/go-telegram/bot v1.15.0
 	github.com/joho/godotenv v1.5.1
 	github.com/jung-kurt/gofpdf v1.16.2
@@ -15,13 +17,13 @@ require (
 	github.com/xuri/excelize/v2 v2.9.1
 	golang.org/x/oauth2 v0.30.0
 	google.golang.org/api v0.240.0
-	gorm.io/gorm v1.30.0
 )
 
 require (
 	cloud.google.com/go/auth v0.16.2 // indirect
 	cloud.google.com/go/auth/oauth2adapt v0.2.8 // indirect
 	cloud.google.com/go/compute/metadata v0.7.0 // indirect
+	github.com/codemodus/kace v0.5.1 // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/ebitengine/purego v0.8.4 // indirect
 	github.com/felixge/httpsnoop v1.0.4 // indirect
@@ -37,7 +39,6 @@ require (
 	github.com/hhrutter/pkcs7 v0.2.0 // indirect
 	github.com/hhrutter/tiff v1.0.2 // indirect
 	github.com/jinzhu/inflection v1.0.0 // indirect
-	github.com/jinzhu/now v1.1.5 // indirect
 	github.com/jupiterrider/ffi v0.5.0 // indirect
 	github.com/mattn/go-runewidth v0.0.16 // indirect
 	github.com/pkg/errors v0.9.1 // indirect

@@ -1,6 +1,6 @@
 #google service
-pkg/google/utils/token.json
-pkg/google/utils/credentials.json
+pkg/client/googlesheet/token.json
+pkg/client/googlesheet/credentials.json
 #invaroments
 .env
 vendor

@@ -1,0 +1,9 @@
+[Database]
+Addr = "localhost:5432"
+User = "sergey"
+Password = "1719"
+Database = "tradebot"
+
+[Bot]
+MyChatId = "-4719787562"
+Token = "7452367294:AAFL2ELzKJEzEr_T4Z8XRdRvtefxi5P8p8k"

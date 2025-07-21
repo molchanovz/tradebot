@@ -4,35 +4,37 @@ import (
 	"context"
 	botlib "github.com/go-telegram/bot"
 	"log"
-	bot "tradebot/pkg/bot/handlers"
 	"tradebot/pkg/db"
-	"tradebot/pkg/marketplaces/WB"
 )
 
-type Service struct {
-	token     string
-	manager   *bot.Manager
-	dbc       *db.Repo
-	myChatId  string
-	wbService WB.Service
+type Config struct {
+	Token    string
+	MyChatId string
 }
 
-func NewBotService(token string, dbc *db.Repo, myChatId string) Service {
-	return Service{
-		token:    token,
-		dbc:      dbc,
-		myChatId: myChatId,
+type Service struct {
+	cfg     Config
+	manager *Manager
+}
+
+func NewBotService(cfg Config, dbc db.DB) *Service {
+	return &Service{
+		cfg:     cfg,
+		manager: NewManager(dbc, cfg.MyChatId),
 	}
 }
 
-func (s *Service) Manager() *bot.Manager {
+func (s *Service) Manager() *Manager {
 	return s.manager
 }
 
 func (s *Service) Start() {
-	s.manager = bot.NewBotManager(s.dbc, s.myChatId)
 	opts := []botlib.Option{botlib.WithDefaultHandler(s.manager.DefaultHandler)}
-	newBot, _ := botlib.New(s.token, opts...)
+	newBot, err := botlib.New(s.cfg.Token, opts...)
+	if err != nil {
+		log.Printf("ошибка запуска бота: %v", err)
+		return
+	}
 	s.manager.SetBot(newBot)
 	go func() {
 		log.Printf("Бот запущен\n")

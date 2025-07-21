@@ -1,7 +1,9 @@
 package main
 
 import (
+	"context"
 	"fmt"
+	"github.com/BurntSushi/toml"
 	"github.com/go-pg/pg/v10"
 	"github.com/joho/godotenv"
 	"log"
@@ -13,39 +15,35 @@ import (
 )
 
 func main() {
-	app := NewApplication(".env")
+	app := NewApplication()
 	app.Start()
 }
 
 type Application struct {
-	envPath string
+	Config struct {
+		Database *pg.Options
+		Bot      bot.Config
+	}
 }
 
-func NewApplication(envPath string) Application {
-	return Application{envPath: envPath}
+func NewApplication() *Application {
+	a := new(Application)
+	_, err := toml.DecodeFile("cfg/local.toml", &a.Config)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	return a
 }
 
 func (a Application) Start() {
-	myChatId, err := initEnv(a.envPath, "myChatId")
+	pgdb := pg.Connect(a.Config.Database)
+	dbc := db.New(pgdb)
+	err := dbc.Ping(context.Background())
 	if err != nil {
-		fmt.Printf("%v", err)
+		log.Fatal(err)
 	}
-
-	dsn, err := initEnv(a.envPath, "DSN")
-	if err != nil {
-		fmt.Printf("%v", err)
-	}
-	repo, err := db.NewRepo(dsn)
-	if err != nil {
-		fmt.Printf("%v", err)
-		return
-	}
-
-	botToken, err := initEnv(a.envPath, "token")
-	if err != nil {
-		fmt.Printf("%v", err)
-	}
-	botService := bot.NewBotService(botToken, repo, myChatId)
+	botService := bot.NewBotService(a.Config.Bot, dbc)
 	botService.Start()
 
 	//schedulerService := scheduler.NewService(botService.StickersManager(), wbToken)
@@ -63,7 +61,7 @@ func (a Application) Start() {
 		}
 
 		log.Println("Соединение закрыто")
-	}(repo.DB)
+	}(pgdb)
 
 	stopChan := make(chan os.Signal, 1)
 	signal.Notify(stopChan, os.Interrupt, syscall.SIGTERM)
