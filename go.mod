@@ -8,7 +8,6 @@ require (
 	github.com/gen2brain/go-fitz v1.24.15
 	github.com/getsentry/sentry-go v0.34.1
 	github.com/getsentry/sentry-go/echo v0.34.1
-	github.com/go-co-op/gocron v1.37.0
 	github.com/go-pg/pg/v10 v10.14.0
 	github.com/go-pg/urlstruct v1.0.1
 	github.com/go-telegram/bot v1.15.0
