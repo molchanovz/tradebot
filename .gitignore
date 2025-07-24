@@ -4,3 +4,4 @@ pkg/client/googlesheet/credentials.json
 #invaroments
 cfg/local.toml
 vendor
+.env
