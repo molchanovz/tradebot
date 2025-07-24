@@ -22,6 +22,8 @@ services:
     restart: always
     depends_on:
       - db
+    ports:
+      - "8075:8075"
     volumes:
       - ./pkg/google/utils/credentials.json:/app/pkg/google/utils/credentials.json
       - ./pkg/google/utils/token.json:/app/pkg/google/utils/token.json

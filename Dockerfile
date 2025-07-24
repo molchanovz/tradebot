@@ -9,7 +9,7 @@ COPY .. .
 
 ENV CGO_ENABLED=0
 
-RUN go build ./cmd/main.go
+RUN go build ./cmd/tradebot/main.go
 
 FROM alpine:3.21
 
@@ -37,9 +37,10 @@ RUN wget https://github.com/pdfcpu/pdfcpu/releases/download/v0.11.0/pdfcpu_0.11.
 
 
 COPY --from=builder /app/main .
-COPY pkg/client/googlesheet/credentials.json .
-COPY pkg/client/googlesheet/token.json .
-COPY assets/font.ttf .
-COPY assets/barcodes pkg/barcodes
+COPY cfg/local.toml cfg/local.toml
+COPY pkg/client/googlesheet/credentials.json pkg/client/googlesheet/credentials.json
+COPY pkg/client/googlesheet/token.json pkg/client/googlesheet/token.json
+COPY assets/font.ttf assets/font.ttf
+COPY assets/barcodes assets/barcodes
 
 CMD ["./main"]
