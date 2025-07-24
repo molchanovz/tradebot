@@ -2,6 +2,7 @@ package ozon
 
 import (
 	"errors"
+
 	"tradebot/pkg/tradeplus"
 )
 
@@ -14,7 +15,7 @@ var ErrNoRows = errors.New("no rows in result set")
 
 type Service struct {
 	tradeplus.Authorization
-	spreadsheetId string
+	spreadsheetID string
 }
 
 func NewService(cabinet tradeplus.Cabinet) Service {
@@ -25,27 +26,24 @@ func NewService(cabinet tradeplus.Cabinet) Service {
 	}
 
 	if cabinet.ClientID != nil {
-		service.ClientId = *cabinet.ClientID
+		service.ClientID = *cabinet.ClientID
 	}
 
 	if cabinet.SheetLink != nil {
-		service.spreadsheetId = *cabinet.SheetLink
+		service.spreadsheetID = *cabinet.SheetLink
 	}
 
 	return service
 }
 
 func (s Service) GetOrdersAndReturnsManager() OrdersManager {
-	return NewOrdersManager(s.ClientId, s.Token, s.spreadsheetId, OrdersDaysAgo)
-
+	return NewOrdersManager(s.ClientID, s.Token, s.spreadsheetID, OrdersDaysAgo)
 }
 
 func (s Service) GetStocksManager() AnalyzeManager {
-	return NewAnalyzeManager(s.ClientId, s.Token, StocksDaysAgo)
-
+	return NewAnalyzeManager(s.ClientID, s.Token, StocksDaysAgo)
 }
 
 func (s Service) GetStickersFBSManager(printedOrders map[string]struct{}) StickerManager {
-	return NewStickerManager(s.ClientId, s.Token, printedOrders)
-
+	return NewStickerManager(s.ClientID, s.Token, printedOrders)
 }

@@ -3,18 +3,20 @@ package bot
 import (
 	"context"
 	"fmt"
-	botlib "github.com/go-telegram/bot"
-	"github.com/go-telegram/bot/models"
-	"github.com/xuri/excelize/v2"
 	"log"
 	"os"
 	"strconv"
 	"strings"
 	"time"
+
 	"tradebot/pkg/db"
 	"tradebot/pkg/tradeplus"
 	"tradebot/pkg/tradeplus/ozon"
 	"tradebot/pkg/tradeplus/wb"
+
+	botlib "github.com/go-telegram/bot"
+	"github.com/go-telegram/bot/models"
+	"github.com/xuri/excelize/v2"
 )
 
 const (
@@ -25,8 +27,8 @@ const (
 )
 
 func wbHandler(ctx context.Context, bot *botlib.Bot, update *models.Update) {
-	chatId := update.CallbackQuery.From.ID
-	messageId := update.CallbackQuery.Message.Message.ID
+	chatID := update.CallbackQuery.From.ID
+	messageID := update.CallbackQuery.Message.Message.ID
 
 	text := "Кабинет ВБ"
 
@@ -40,18 +42,17 @@ func wbHandler(ctx context.Context, bot *botlib.Bot, update *models.Update) {
 	allButtons := [][]models.InlineKeyboardButton{buttonsRow, buttonBack}
 	markup := models.InlineKeyboardMarkup{InlineKeyboard: allButtons}
 
-	_, err := bot.EditMessageText(ctx, &botlib.EditMessageTextParams{ChatID: chatId, MessageID: messageId, Text: text, ReplyMarkup: markup})
+	_, err := bot.EditMessageText(ctx, &botlib.EditMessageTextParams{ChatID: chatID, MessageID: messageID, Text: text, ReplyMarkup: markup})
 	if err != nil {
 		log.Printf("%v", err)
 		return
 	}
-
 }
 
 func (m *Manager) stickersHandler(ctx context.Context, bot *botlib.Bot, update *models.Update) {
-	chatId := update.CallbackQuery.From.ID
+	chatID := update.CallbackQuery.From.ID
 
-	user, err := m.bl.UserByChatID(ctx, chatId)
+	user, err := m.bl.UserByChatID(ctx, chatID)
 	if err != nil {
 		log.Println("Ошибка получения пользователя: ", err)
 		return
@@ -63,7 +64,7 @@ func (m *Manager) stickersHandler(ctx context.Context, bot *botlib.Bot, update *
 		return
 	}
 
-	text := fmt.Sprintf("Отправь мне номер отгрузки")
+	text := "Отправь мне номер отгрузки"
 
 	var buttonBack []models.InlineKeyboardButton
 
@@ -72,15 +73,14 @@ func (m *Manager) stickersHandler(ctx context.Context, bot *botlib.Bot, update *
 	allButtons := [][]models.InlineKeyboardButton{buttonBack}
 	markup := models.InlineKeyboardMarkup{InlineKeyboard: allButtons}
 
-	_, err = bot.EditMessageText(ctx, &botlib.EditMessageTextParams{MessageID: update.CallbackQuery.Message.Message.ID, ChatID: chatId, Text: text, ReplyMarkup: markup})
+	_, err = bot.EditMessageText(ctx, &botlib.EditMessageTextParams{MessageID: update.CallbackQuery.Message.Message.ID, ChatID: chatID, Text: text, ReplyMarkup: markup})
 	if err != nil {
 		log.Printf("%v", err)
 		return
 	}
-
 }
 
-func (m *Manager) getWbStickers(ctx context.Context, bot *botlib.Bot, chatId int64, supplyId string) {
+func (m *Manager) getWbStickers(ctx context.Context, bot *botlib.Bot, chatID int64, supplyID string) error {
 	done := make(chan []string)
 	progressChan := make(chan tradeplus.Progress)
 	errChan := make(chan error)
@@ -89,12 +89,11 @@ func (m *Manager) getWbStickers(ctx context.Context, bot *botlib.Bot, chatId int
 
 	cabinets, err := m.bl.GetCabinetsByMp(ctx, db.MarketWB)
 	if err != nil {
-		log.Println(err)
-		return
+		return err
 	}
 
 	go func() {
-		filePath, err := wb.NewService(cabinets[0]).GetStickersFbsManager().GetReadyFile(supplyId, progressChan)
+		filePath, err := wb.NewService(cabinets[0]).GetStickersFbsManager().GetReadyFile(supplyID, progressChan)
 		if err != nil {
 			log.Println("Ошибка при получении файла:", err)
 			errChan <- err
@@ -103,20 +102,15 @@ func (m *Manager) getWbStickers(ctx context.Context, bot *botlib.Bot, chatId int
 		done <- filePath
 	}()
 
-	err = WaitReadyFile(ctx, bot, chatId, progressChan, done, errChan)
+	err = WaitReadyFile(ctx, bot, chatID, progressChan, done, errChan)
 	if err != nil {
-		_, err = SendTextMessage(ctx, bot, chatId, err.Error())
-		if err != nil {
-			log.Println(fmt.Sprintf("ошибка отправки сообщения %v", err))
-			return
-		}
-		return
+		return err
 	}
-
+	return nil
 }
 
 func (m *Manager) wbOrdersHandler(ctx context.Context, bot *botlib.Bot, update *models.Update) {
-	chatId := update.CallbackQuery.From.ID
+	chatID := update.CallbackQuery.From.ID
 
 	cabinets, err := m.bl.GetCabinetsByMp(ctx, db.MarketWB)
 	if err != nil {
@@ -126,25 +120,25 @@ func (m *Manager) wbOrdersHandler(ctx context.Context, bot *botlib.Bot, update *
 
 	err = wb.NewService(cabinets[0]).GetOrdersManager().Write()
 	if err != nil {
-		_, err = SendTextMessage(ctx, bot, chatId, err.Error())
-		if err != nil {
-			log.Println(err)
-			return
-		}
-	} else {
-		date := time.Now().AddDate(0, 0, -ozon.OrdersDaysAgo)
-		_, err = SendTextMessage(ctx, bot, chatId, fmt.Sprintf("Заказы вб за %v были внесены", date))
+		_, err = SendTextMessage(ctx, bot, chatID, err.Error())
 		if err != nil {
 			log.Println(err)
 			return
 		}
 	}
+
+	date := time.Now().AddDate(0, 0, -ozon.OrdersDaysAgo)
+	_, err = SendTextMessage(ctx, bot, chatID, fmt.Sprintf("Заказы вб за %v были внесены", date))
+	if err != nil {
+		log.Println(err)
+		return
+	}
+
 }
 func (m *Manager) wbStocksHandler(ctx context.Context, bot *botlib.Bot, update *models.Update) {
 	daysAgo := 14
-	K := 100.0
 
-	chatId := update.CallbackQuery.From.ID
+	chatID := update.CallbackQuery.From.ID
 
 	cabinets, err := m.bl.GetCabinetsByMp(ctx, db.MarketWB)
 	if err != nil {
@@ -156,7 +150,7 @@ func (m *Manager) wbStocksHandler(ctx context.Context, bot *botlib.Bot, update *
 
 	stocks, lostWarehouses, err := wb.GetStocks(cabinets[0].Key)
 	if err != nil {
-		_, err = SendTextMessage(ctx, bot, chatId, fmt.Sprintf("Ошибка при анализе остатков: %v", err))
+		_, err = SendTextMessage(ctx, bot, chatID, fmt.Sprintf("Ошибка при анализе остатков: %w", err))
 		if err != nil {
 			log.Println("Ошибка отправки сообщения:", err)
 			return
@@ -164,9 +158,9 @@ func (m *Manager) wbStocksHandler(ctx context.Context, bot *botlib.Bot, update *
 		return
 	}
 
-	filePath, err := generateExcelWB(orders, stocks, K, db.MarketWB)
+	filePath, err := generateExcelWB(orders, stocks, db.MarketWB)
 	if err != nil {
-		_, err = SendTextMessage(ctx, bot, chatId, fmt.Sprintf("Ошибка при генерации экселя: %v", err))
+		_, err = SendTextMessage(ctx, bot, chatID, fmt.Sprintf("Ошибка при генерации экселя: %w", err))
 		if err != nil {
 			log.Println("Ошибка отправки сообщения:", err)
 			return
@@ -174,7 +168,7 @@ func (m *Manager) wbStocksHandler(ctx context.Context, bot *botlib.Bot, update *
 		return
 	}
 
-	err = SendMediaMessage(ctx, bot, chatId, filePath)
+	err = SendMediaMessage(ctx, bot, chatID, filePath)
 	if err != nil {
 		log.Println("Ошибка отправки сообщения:", err)
 		return
@@ -187,12 +181,11 @@ func (m *Manager) wbStocksHandler(ctx context.Context, bot *botlib.Bot, update *
 		for warehouse := range lostWarehouses {
 			warehousesStr.WriteString(warehouse + "\n")
 		}
-		_, err := SendTextMessage(ctx, bot, chatId, fmt.Sprintf("Нужно добавить:\n"+warehousesStr.String()))
+		_, err = SendTextMessage(ctx, bot, chatID, fmt.Sprintf("Нужно добавить: %v\n", warehousesStr.String()))
 		if err != nil {
 			return
 		}
 	}
-
 }
 
 func (m *Manager) AnalyzeStocks(apiKey string, ctx context.Context, b *botlib.Bot) error {
@@ -255,7 +248,7 @@ func (m *Manager) AnalyzeStocks(apiKey string, ctx context.Context, b *botlib.Bo
 	//	if newStocks.stockFBO == 0 && *stocks[0].CountFbo != 0 {
 	//		// Отправляем уведомление
 	//		_, err = b.SendMessage(ctx, &botlib.SendMessageParams{
-	//			ChatID:    m.myChatId,
+	//			ChatID:    m.myChatID,
 	//			Text:      fmt.Sprintf("На складе <b>WB</b> закончились <code>%v</code>. Проверьте FBS", article),
 	//			ParseMode: models.ParseModeHTML,
 	//		})
@@ -281,16 +274,22 @@ func (m *Manager) AnalyzeStocks(apiKey string, ctx context.Context, b *botlib.Bo
 	return nil
 }
 
-func generateExcelWB(postings map[string]map[string]int, stocks map[string]map[string]int, K float64, mp string) (string, error) {
+func generateExcelWB(postings map[string]map[string]int, stocks map[string]map[string]int, mp string) (string, error) {
 	file := excelize.NewFile()
 	sheetName := "StocksFBO Analysis"
-	file.SetSheetName("Sheet1", sheetName)
+	err := file.SetSheetName("Sheet1", sheetName)
+	if err != nil {
+		return "", err
+	}
 
 	// Заголовки
 	headers := []string{"Кластер", "Артикул", "Заказано", "Остатки"}
 	for i, h := range headers {
 		cell := string(rune('A'+i)) + "1"
-		file.SetCellValue(sheetName, cell, h)
+		err = file.SetCellValue(sheetName, cell, h)
+		if err != nil {
+			return "", err
+		}
 	}
 
 	articles := make(map[string]struct{})
@@ -309,7 +308,6 @@ func generateExcelWB(postings map[string]map[string]int, stocks map[string]map[s
 
 	row := 2
 	for cluster, postingsMap := range postings {
-
 		for article := range articles {
 			postingCount := postingsMap[article]
 			stock := 0
@@ -317,12 +315,23 @@ func generateExcelWB(postings map[string]map[string]int, stocks map[string]map[s
 				stock = clusterStocks[article]
 			}
 
-			file.SetCellValue(sheetName, "A"+strconv.Itoa(row), cluster)
-			file.SetCellValue(sheetName, "B"+strconv.Itoa(row), article)
-			file.SetCellValue(sheetName, "C"+strconv.Itoa(row), postingCount)
-			file.SetCellValue(sheetName, "D"+strconv.Itoa(row), stock)
+			err = file.SetCellValue(sheetName, "A"+strconv.Itoa(row), cluster)
+			if err != nil {
+				return "", err
+			}
+			err = file.SetCellValue(sheetName, "B"+strconv.Itoa(row), article)
+			if err != nil {
+				return "", err
+			}
+			err = file.SetCellValue(sheetName, "C"+strconv.Itoa(row), postingCount)
+			if err != nil {
+				return "", err
+			}
+			err = file.SetCellValue(sheetName, "D"+strconv.Itoa(row), stock)
+			if err != nil {
+				return "", err
+			}
 			row++
-
 		}
 	}
 
@@ -333,14 +342,14 @@ func generateExcelWB(postings map[string]map[string]int, stocks map[string]map[s
 
 	rangeRef := fmt.Sprintf("A1:A%v", row)
 
-	err := file.AutoFilter(sheetName, rangeRef, opt)
+	err = file.AutoFilter(sheetName, rangeRef, opt)
 	if err != nil {
 		return "", err
 	}
 
 	// Сохраняем файл
 	filePath := mp + "_stock_analysis.xlsx"
-	if err := file.SaveAs(filePath); err != nil {
+	if err = file.SaveAs(filePath); err != nil {
 		return "", err
 	}
 	return filePath, nil

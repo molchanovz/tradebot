@@ -3,13 +3,15 @@ package bot
 import (
 	"context"
 	"fmt"
-	botlib "github.com/go-telegram/bot"
-	"github.com/go-telegram/bot/models"
 	"log"
 	"strconv"
 	"strings"
+
 	"tradebot/pkg/db"
 	"tradebot/pkg/tradeplus"
+
+	botlib "github.com/go-telegram/bot"
+	"github.com/go-telegram/bot/models"
 )
 
 const (
@@ -20,12 +22,12 @@ const (
 )
 
 func (m *Manager) settingsHandler(ctx context.Context, bot *botlib.Bot, update *models.Update) {
-	var chatId int64
+	var chatID int64
 
 	if update.Message != nil {
-		chatId = update.Message.From.ID
+		chatID = update.Message.From.ID
 	} else {
-		chatId = update.CallbackQuery.From.ID
+		chatID = update.CallbackQuery.From.ID
 	}
 
 	text, settingsMarkup := createSettingsMarkup()
@@ -33,7 +35,7 @@ func (m *Manager) settingsHandler(ctx context.Context, bot *botlib.Bot, update *
 	if update.CallbackQuery != nil {
 		_, err := bot.EditMessageText(ctx, &botlib.EditMessageTextParams{
 			MessageID:   update.CallbackQuery.Message.Message.ID,
-			ChatID:      chatId,
+			ChatID:      chatID,
 			Text:        text,
 			ParseMode:   models.ParseModeHTML,
 			ReplyMarkup: settingsMarkup,
@@ -46,7 +48,7 @@ func (m *Manager) settingsHandler(ctx context.Context, bot *botlib.Bot, update *
 	}
 
 	_, err := bot.SendMessage(ctx, &botlib.SendMessageParams{
-		ChatID:      chatId,
+		ChatID:      chatID,
 		Text:        text,
 		ParseMode:   models.ParseModeHTML,
 		ReplyMarkup: settingsMarkup,
@@ -55,7 +57,6 @@ func (m *Manager) settingsHandler(ctx context.Context, bot *botlib.Bot, update *
 		log.Println(err)
 		return
 	}
-
 }
 
 func createSettingsMarkup() (string, models.InlineKeyboardMarkup) {
@@ -75,7 +76,7 @@ func createSettingsMarkup() (string, models.InlineKeyboardMarkup) {
 }
 
 func (m *Manager) selectMpSettingsHandler(ctx context.Context, bot *botlib.Bot, update *models.Update) {
-	chatId := update.CallbackQuery.From.ID
+	chatID := update.CallbackQuery.From.ID
 	parts := strings.Split(update.CallbackQuery.Data, "_")
 
 	if len(parts) != 2 {
@@ -101,7 +102,7 @@ func (m *Manager) selectMpSettingsHandler(ctx context.Context, bot *botlib.Bot, 
 
 	_, err = bot.EditMessageText(ctx, &botlib.EditMessageTextParams{
 		MessageID:   update.CallbackQuery.Message.Message.ID,
-		ChatID:      chatId,
+		ChatID:      chatID,
 		Text:        "Выберите кабинет",
 		ParseMode:   models.ParseModeHTML,
 		ReplyMarkup: markup,
@@ -110,11 +111,10 @@ func (m *Manager) selectMpSettingsHandler(ctx context.Context, bot *botlib.Bot, 
 		log.Println(err)
 		return
 	}
-
 }
 
 func (m *Manager) settingsMPHandler(ctx context.Context, bot *botlib.Bot, update *models.Update) {
-	chatId := update.CallbackQuery.From.ID
+	chatID := update.CallbackQuery.From.ID
 	parts := strings.Split(update.CallbackQuery.Data, "_")
 
 	if len(parts) != 2 {
@@ -122,17 +122,17 @@ func (m *Manager) settingsMPHandler(ctx context.Context, bot *botlib.Bot, update
 		return
 	}
 
-	cabinetId, err := strconv.Atoi(parts[1])
+	cabinetID, err := strconv.Atoi(parts[1])
 	if err != nil {
-		log.Println("ошибка получения cabinetId")
+		log.Println("ошибка получения cabinetID")
 		return
 	}
 
-	text, keyboardMarkup := createSettingsMPMarkup(cabinetId)
+	text, keyboardMarkup := createSettingsMPMarkup(cabinetID)
 
 	_, err = bot.EditMessageText(ctx, &botlib.EditMessageTextParams{
 		MessageID:   update.CallbackQuery.Message.Message.ID,
-		ChatID:      chatId,
+		ChatID:      chatID,
 		Text:        text,
 		ParseMode:   models.ParseModeHTML,
 		ReplyMarkup: keyboardMarkup,
@@ -141,23 +141,21 @@ func (m *Manager) settingsMPHandler(ctx context.Context, bot *botlib.Bot, update
 		log.Println("Ошибка отправки сообщения")
 		return
 	}
-
 }
 
-func createSettingsMPMarkup(cabinetId int) (string, models.InlineKeyboardMarkup) {
+func createSettingsMPMarkup(cabinetID int) (string, models.InlineKeyboardMarkup) {
 	startMessage := "Настройки кабинетов. Выбери настройку"
 	var buttonsRow []models.InlineKeyboardButton
 	var allButtons [][]models.InlineKeyboardButton
 
-	buttonsRow = append(buttonsRow, models.InlineKeyboardButton{Text: "Изменить ключ API", CallbackData: fmt.Sprintf("%v+%v", CallbackChangeAPIHandler, cabinetId)})
+	buttonsRow = append(buttonsRow, models.InlineKeyboardButton{Text: "Изменить ключ API", CallbackData: fmt.Sprintf("%v+%v", CallbackChangeAPIHandler, cabinetID)})
 	allButtons = append(allButtons, buttonsRow)
 	buttonsRow = []models.InlineKeyboardButton{}
 
-	buttonsRow = append(buttonsRow, models.InlineKeyboardButton{Text: "Изменить таблицу для заказов", CallbackData: fmt.Sprintf("%v+%v", CallbackChangeSheetHandler, cabinetId)})
+	buttonsRow = append(buttonsRow, models.InlineKeyboardButton{Text: "Изменить таблицу для заказов", CallbackData: fmt.Sprintf("%v+%v", CallbackChangeSheetHandler, cabinetID)})
 	allButtons = append(allButtons, buttonsRow)
 	buttonsRow = []models.InlineKeyboardButton{}
 
-	buttonsRow = []models.InlineKeyboardButton{}
 	buttonsRow = append(buttonsRow, models.InlineKeyboardButton{Text: "Назад", CallbackData: MessageSettingsHandler})
 	allButtons = append(allButtons, buttonsRow)
 
@@ -166,7 +164,7 @@ func createSettingsMPMarkup(cabinetId int) (string, models.InlineKeyboardMarkup)
 }
 
 func (m *Manager) ChangeApiHandler(ctx context.Context, bot *botlib.Bot, update *models.Update) {
-	chatId := update.CallbackQuery.From.ID
+	chatID := update.CallbackQuery.From.ID
 	parts := strings.Split(update.CallbackQuery.Data, "_")
 
 	if len(parts) != 2 {
@@ -174,9 +172,9 @@ func (m *Manager) ChangeApiHandler(ctx context.Context, bot *botlib.Bot, update 
 		return
 	}
 
-	cabinetId := parts[1]
+	cabinetID := parts[1]
 
-	user, err := m.bl.UserByChatID(ctx, chatId)
+	user, err := m.bl.UserByChatID(ctx, chatID)
 	if err != nil {
 		log.Println("Ошибка получения User")
 		return
@@ -193,11 +191,11 @@ func (m *Manager) ChangeApiHandler(ctx context.Context, bot *botlib.Bot, update 
 		return
 	}
 
-	m.ApiMap.Store(chatId, cabinetId)
+	m.APIMap.Store(chatID, cabinetID)
 
 	_, err = bot.EditMessageText(ctx, &botlib.EditMessageTextParams{
 		MessageID: update.CallbackQuery.Message.Message.ID,
-		ChatID:    chatId,
+		ChatID:    chatID,
 		Text:      "Отправь новый API ключ",
 		ParseMode: models.ParseModeHTML,
 	})
@@ -205,11 +203,10 @@ func (m *Manager) ChangeApiHandler(ctx context.Context, bot *botlib.Bot, update 
 		log.Println("Ошибка отправки сообщения")
 		return
 	}
-
 }
 
 func (m *Manager) ChangeSheetHandler(ctx context.Context, bot *botlib.Bot, update *models.Update) {
-	chatId := update.CallbackQuery.From.ID
+	chatID := update.CallbackQuery.From.ID
 	parts := strings.Split(update.CallbackQuery.Data, "_")
 
 	if len(parts) != 2 {
@@ -217,9 +214,9 @@ func (m *Manager) ChangeSheetHandler(ctx context.Context, bot *botlib.Bot, updat
 		return
 	}
 
-	cabinetId := parts[1]
+	cabinetID := parts[1]
 
-	user, err := m.bl.UserByChatID(ctx, chatId)
+	user, err := m.bl.UserByChatID(ctx, chatID)
 	if err != nil {
 		log.Println("Ошибка получения User")
 		return
@@ -236,11 +233,11 @@ func (m *Manager) ChangeSheetHandler(ctx context.Context, bot *botlib.Bot, updat
 		return
 	}
 
-	m.SheetMap.Store(chatId, cabinetId)
+	m.SheetMap.Store(chatID, cabinetID)
 
 	_, err = bot.EditMessageText(ctx, &botlib.EditMessageTextParams{
 		MessageID: update.CallbackQuery.Message.Message.ID,
-		ChatID:    chatId,
+		ChatID:    chatID,
 		Text:      "Отправь ссылку на гугл таблицу",
 		ParseMode: models.ParseModeHTML,
 	})
@@ -248,16 +245,15 @@ func (m *Manager) ChangeSheetHandler(ctx context.Context, bot *botlib.Bot, updat
 		log.Println("Ошибка отправки сообщения")
 		return
 	}
-
 }
 
-func (m *Manager) changeSheet(ctx context.Context, bot *botlib.Bot, chatId int64, message *models.Message) {
+func (m *Manager) changeSheet(ctx context.Context, bot *botlib.Bot, chatID int64, message *models.Message) {
 	var text string
 	var cabinet tradeplus.Cabinet
 
-	if value, ok := m.SheetMap.Load(chatId); ok == true {
+	if value, ok := m.SheetMap.Load(chatID); ok {
 		var err error
-		cabinet, err = m.bl.GetCabinetById(ctx, value.(int))
+		cabinet, err = m.bl.GetCabinetByID(ctx, value.(int))
 		if err != nil {
 			log.Println("Ошибка получения кабинета")
 			return
@@ -271,14 +267,14 @@ func (m *Manager) changeSheet(ctx context.Context, bot *botlib.Bot, chatId int64
 			return
 		}
 
-		m.ApiMap.Delete(chatId)
+		m.APIMap.Delete(chatID)
 		text = "Таблица изменена"
 	} else {
 		text = "Таблица не изменена"
 	}
 
 	_, err := bot.DeleteMessage(ctx, &botlib.DeleteMessageParams{
-		ChatID:    chatId,
+		ChatID:    chatID,
 		MessageID: message.ID,
 	})
 	if err != nil {
@@ -289,7 +285,7 @@ func (m *Manager) changeSheet(ctx context.Context, bot *botlib.Bot, chatId int64
 	_, markup := createSettingsMPMarkup(cabinet.ID)
 
 	_, err = bot.SendMessage(ctx, &botlib.SendMessageParams{
-		ChatID:      chatId,
+		ChatID:      chatID,
 		Text:        text,
 		ReplyMarkup: markup,
 	})
@@ -299,12 +295,12 @@ func (m *Manager) changeSheet(ctx context.Context, bot *botlib.Bot, chatId int64
 	}
 }
 
-func (m *Manager) changeApi(ctx context.Context, bot *botlib.Bot, chatId int64, message *models.Message) {
+func (m *Manager) changeAPI(ctx context.Context, bot *botlib.Bot, chatID int64, message *models.Message) {
 	var text string
 	var cabinet tradeplus.Cabinet
-	if value, ok := m.ApiMap.Load(chatId); ok == true {
+	if value, ok := m.APIMap.Load(chatID); ok {
 		var err error
-		cabinet, err = m.bl.GetCabinetById(ctx, value.(int))
+		cabinet, err = m.bl.GetCabinetByID(ctx, value.(int))
 		if err != nil {
 			log.Println("Ошибка получения кабинета")
 			return
@@ -318,14 +314,14 @@ func (m *Manager) changeApi(ctx context.Context, bot *botlib.Bot, chatId int64, 
 			return
 		}
 
-		m.ApiMap.Delete(chatId)
+		m.APIMap.Delete(chatID)
 		text = "Ключ изменен"
 	} else {
 		text = "Ключ не изменен"
 	}
 
 	_, err := bot.DeleteMessage(ctx, &botlib.DeleteMessageParams{
-		ChatID:    chatId,
+		ChatID:    chatID,
 		MessageID: message.ID,
 	})
 	if err != nil {
@@ -336,7 +332,7 @@ func (m *Manager) changeApi(ctx context.Context, bot *botlib.Bot, chatId int64, 
 	_, markup := createSettingsMPMarkup(cabinet.ID)
 
 	_, err = bot.SendMessage(ctx, &botlib.SendMessageParams{
-		ChatID:      chatId,
+		ChatID:      chatID,
 		Text:        text,
 		ReplyMarkup: markup,
 	})
@@ -344,5 +340,4 @@ func (m *Manager) changeApi(ctx context.Context, bot *botlib.Bot, chatId int64, 
 		log.Println("Ошибка отправки сообщения: ", err)
 		return
 	}
-
 }

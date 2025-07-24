@@ -24,18 +24,18 @@ type ReturnsFBO struct {
 
 type PostingFBO struct {
 	Result struct {
-		OrderId        int64     `json:"order_id"`
+		OrderID        int64     `json:"order_id"`
 		OrderNumber    string    `json:"order_number"`
 		PostingNumber  string    `json:"posting_number"`
 		Status         string    `json:"status"`
-		CancelReasonId int       `json:"cancel_reason_id"`
+		CancelReasonID int       `json:"cancel_reason_id"`
 		CreatedAt      time.Time `json:"created_at"`
 		InProcessAt    time.Time `json:"in_process_at"`
 		Products       []struct {
 			Sku          int           `json:"sku"`
 			Name         string        `json:"name"`
 			Quantity     int           `json:"quantity"`
-			OfferId      string        `json:"offer_id"`
+			OfferID      string        `json:"offer_id"`
 			Price        string        `json:"price"`
 			DigitalCodes []interface{} `json:"digital_codes"`
 			CurrencyCode string        `json:"currency_code"`
@@ -47,26 +47,26 @@ type PostingFBO struct {
 }
 
 type ReturnFBS struct {
-	ClearingId               int     `json:"clearing_id"`
+	ClearingID               int     `json:"clearing_id"`
 	Commission               float64 `json:"commission"`
 	CommissionPercent        float64 `json:"commission_percent"`
-	ExemplarId               int     `json:"exemplar_id"`
-	Id                       int     `json:"id"`
+	ExemplarID               int     `json:"exemplar_id"`
+	ID                       int     `json:"id"`
 	IsMoving                 bool    `json:"is_moving"`
 	IsOpened                 bool    `json:"is_opened"`
 	LastFreeWaitingDay       string  `json:"last_free_waiting_day"`
-	PlaceId                  int     `json:"place_id"`
+	PlaceID                  int     `json:"place_id"`
 	MovingToPlaceName        string  `json:"moving_to_place_name"`
 	PickingAmount            int     `json:"picking_amount"`
 	PostingNumber            string  `json:"posting_number"`
 	PickingTag               string  `json:"picking_tag"`
 	Price                    float64 `json:"price"`
 	PriceWithoutCommission   float64 `json:"price_without_commission"`
-	ProductId                int     `json:"product_id"`
+	ProductID                int     `json:"product_id"`
 	ProductName              string  `json:"product_name"`
 	Quantity                 int     `json:"quantity"`
 	ReturnBarcode            string  `json:"return_barcode"`
-	ReturnClearingId         int     `json:"return_clearing_id"`
+	ReturnClearingID         int     `json:"return_clearing_id"`
 	ReturnDate               string  `json:"return_date"`
 	ReturnReasonName         string  `json:"return_reason_name"`
 	WaitingForSellerDateTime string  `json:"waiting_for_seller_date_time"`
@@ -85,16 +85,16 @@ type ReturnsFBS struct {
 type PostingFBS struct {
 	Result struct {
 		PostingNumber  string `json:"posting_number"`
-		OrderId        int    `json:"order_id"`
+		OrderID        int    `json:"order_id"`
 		OrderNumber    string `json:"order_number"`
 		Status         string `json:"status"`
 		Substatus      string `json:"substatus"`
 		DeliveryMethod struct {
-			Id            int64  `json:"id"`
+			ID            int64  `json:"id"`
 			Name          string `json:"name"`
-			WarehouseId   int64  `json:"warehouse_id"`
+			WarehouseID   int64  `json:"warehouse_id"`
 			Warehouse     string `json:"warehouse"`
-			TplProviderId int    `json:"tpl_provider_id"`
+			TplProviderID int    `json:"tpl_provider_id"`
 			TplProvider   string `json:"tpl_provider"`
 		} `json:"delivery_method"`
 		TrackingNumber     string      `json:"tracking_number"`
@@ -105,7 +105,7 @@ type PostingFBS struct {
 		ProviderStatus     string      `json:"provider_status"`
 		DeliveryPrice      string      `json:"delivery_price"`
 		Cancellation       struct {
-			CancelReasonId           int    `json:"cancel_reason_id"`
+			CancelReasonID           int    `json:"cancel_reason_id"`
 			CancelReason             string `json:"cancel_reason"`
 			CancellationType         string `json:"cancellation_type"`
 			CancelledAfterShip       bool   `json:"cancelled_after_ship"`
@@ -117,7 +117,7 @@ type PostingFBS struct {
 		Products  []struct {
 			CurrencyCode  string        `json:"currency_code"`
 			Price         string        `json:"price"`
-			OfferId       string        `json:"offer_id"`
+			OfferID       string        `json:"offer_id"`
 			Name          string        `json:"name"`
 			Sku           int           `json:"sku"`
 			Quantity      int           `json:"quantity"`
@@ -154,16 +154,16 @@ type PostingslistFbs struct {
 	Result struct {
 		PostingsFBS []struct {
 			PostingNumber  string `json:"posting_number"`
-			OrderId        int    `json:"order_id"`
+			OrderID        int    `json:"order_id"`
 			OrderNumber    string `json:"order_number"`
 			Status         string `json:"status"`
 			Substatus      string `json:"substatus"`
 			DeliveryMethod struct {
-				Id            int64  `json:"id"`
+				ID            int64  `json:"id"`
 				Name          string `json:"name"`
-				WarehouseId   int64  `json:"warehouse_id"`
+				WarehouseID   int64  `json:"warehouse_id"`
 				Warehouse     string `json:"warehouse"`
-				TplProviderId int    `json:"tpl_provider_id"`
+				TplProviderID int    `json:"tpl_provider_id"`
 				TplProvider   string `json:"tpl_provider"`
 			} `json:"delivery_method"`
 			TrackingNumber     string      `json:"tracking_number"`
@@ -172,7 +172,7 @@ type PostingslistFbs struct {
 			ShipmentDate       time.Time   `json:"shipment_date"`
 			DeliveringDate     interface{} `json:"delivering_date"`
 			Cancellation       struct {
-				CancelReasonId           int    `json:"cancel_reason_id"`
+				CancelReasonID           int    `json:"cancel_reason_id"`
 				CancelReason             string `json:"cancel_reason"`
 				CancellationType         string `json:"cancellation_type"`
 				CancelledAfterShip       bool   `json:"cancelled_after_ship"`
@@ -183,7 +183,7 @@ type PostingslistFbs struct {
 			Products []struct {
 				Price         string        `json:"price"`
 				CurrencyCode  string        `json:"currency_code"`
-				OfferId       string        `json:"offer_id"`
+				OfferID       string        `json:"offer_id"`
 				Name          string        `json:"name"`
 				Sku           int           `json:"sku"`
 				Quantity      int           `json:"quantity"`
@@ -198,7 +198,7 @@ type PostingslistFbs struct {
 					CommissionAmount     float64     `json:"commission_amount"`
 					CommissionPercent    int         `json:"commission_percent"`
 					Payout               float64     `json:"payout"`
-					ProductId            int         `json:"product_id"`
+					ProductID            int         `json:"product_id"`
 					OldPrice             float64     `json:"old_price"`
 					Price                float64     `json:"price"`
 					TotalDiscountValue   float64     `json:"total_discount_value"`
@@ -252,18 +252,18 @@ type PostingslistFbs struct {
 
 type PostingslistFbo struct {
 	Result []struct {
-		OrderId        int       `json:"order_id"`
+		OrderID        int       `json:"order_id"`
 		OrderNumber    string    `json:"order_number"`
 		PostingNumber  string    `json:"posting_number"`
 		Status         string    `json:"status"`
-		CancelReasonId int       `json:"cancel_reason_id"`
+		CancelReasonID int       `json:"cancel_reason_id"`
 		CreatedAt      time.Time `json:"created_at"`
 		InProcessAt    time.Time `json:"in_process_at"`
 		Products       []struct {
 			Sku          int           `json:"sku"`
 			Name         string        `json:"name"`
 			Quantity     int           `json:"quantity"`
-			OfferId      string        `json:"offer_id"`
+			OfferID      string        `json:"offer_id"`
 			Price        string        `json:"price"`
 			DigitalCodes []interface{} `json:"digital_codes"`
 			CurrencyCode string        `json:"currency_code"`
@@ -274,7 +274,7 @@ type PostingslistFbo struct {
 			DeliveryType         string `json:"delivery_type"`
 			IsPremium            bool   `json:"is_premium"`
 			PaymentTypeGroupName string `json:"payment_type_group_name"`
-			WarehouseId          int64  `json:"warehouse_id"`
+			WarehouseID          int64  `json:"warehouse_id"`
 			WarehouseName        string `json:"warehouse_name"`
 			IsLegal              bool   `json:"is_legal"`
 		} `json:"analytics_data"`
@@ -284,7 +284,7 @@ type PostingslistFbo struct {
 				CommissionAmount     float64     `json:"commission_amount"`
 				CommissionPercent    int         `json:"commission_percent"`
 				Payout               float64     `json:"payout"`
-				ProductId            int         `json:"product_id"`
+				ProductID            int         `json:"product_id"`
 				OldPrice             float64     `json:"old_price"`
 				Price                float64     `json:"price"`
 				TotalDiscountValue   float64     `json:"total_discount_value"`
@@ -346,12 +346,12 @@ type ClustersList struct {
 	Clusters []struct {
 		LogisticClusters []struct {
 			Warehouses []struct {
-				WarehouseId int64  `json:"warehouse_id"`
+				WarehouseID int64  `json:"warehouse_id"`
 				Type        string `json:"type"`
 				Name        string `json:"name"`
 			} `json:"warehouses"`
 		} `json:"logistic_clusters"`
-		Id   int    `json:"id"`
+		ID   int    `json:"id"`
 		Name string `json:"name"`
 		Type string `json:"type"`
 	} `json:"clusters"`
@@ -359,20 +359,20 @@ type ClustersList struct {
 
 type Returns struct {
 	Returns []struct {
-		Id               int    `json:"id"`
-		CompanyId        int    `json:"company_id"`
+		ID               int    `json:"id"`
+		CompanyID        int    `json:"company_id"`
 		ReturnReasonName string `json:"return_reason_name"`
 		Type             string `json:"type"`
 		Schema           string `json:"schema"`
-		OrderId          int64  `json:"order_id"`
+		OrderID          int64  `json:"order_id"`
 		OrderNumber      string `json:"order_number"`
 		Place            struct {
-			Id      int64  `json:"id"`
+			ID      int64  `json:"id"`
 			Name    string `json:"name"`
 			Address string `json:"address"`
 		} `json:"place"`
 		TargetPlace struct {
-			Id      int64  `json:"id"`
+			ID      int64  `json:"id"`
 			Name    string `json:"name"`
 			Address string `json:"address"`
 		} `json:"target_place"`
@@ -393,7 +393,7 @@ type Returns struct {
 		} `json:"storage"`
 		Product struct {
 			Sku     int    `json:"sku"`
-			OfferId string `json:"offer_id"`
+			OfferID string `json:"offer_id"`
 			Name    string `json:"name"`
 			Price   struct {
 				CurrencyCode string  `json:"currency_code"`
@@ -419,23 +419,23 @@ type Returns struct {
 		} `json:"logistic"`
 		Visual struct {
 			Status struct {
-				Id          int    `json:"id"`
+				ID          int    `json:"id"`
 				DisplayName string `json:"display_name"`
 				SysName     string `json:"sys_name"`
 			} `json:"status"`
 			ChangeMoment time.Time `json:"change_moment"`
 		} `json:"visual"`
 		Exemplars []struct {
-			Id int64 `json:"id"`
+			ID int64 `json:"id"`
 		} `json:"exemplars"`
 		AdditionalInfo struct {
 			IsOpened      bool `json:"is_opened"`
 			IsSuperEconom bool `json:"is_super_econom"`
 		} `json:"additional_info"`
-		ClearingId       int64  `json:"clearing_id"`
+		ClearingID       int64  `json:"clearing_id"`
 		PostingNumber    string `json:"posting_number"`
-		ReturnClearingId int64  `json:"return_clearing_id"`
-		SourceId         int64  `json:"source_id"`
+		ReturnClearingID int64  `json:"return_clearing_id"`
+		SourceID         int64  `json:"source_id"`
 	} `json:"returns"`
 	HasNext bool `json:"has_next"`
 }
@@ -450,10 +450,10 @@ type StocksNew struct {
 	Items []struct {
 		Sku                          int      `json:"sku"`
 		Name                         string   `json:"name"`
-		OfferId                      string   `json:"offer_id"`
-		WarehouseId                  int64    `json:"warehouse_id"`
+		OfferID                      string   `json:"offer_id"`
+		WarehouseID                  int64    `json:"warehouse_id"`
 		WarehouseName                string   `json:"warehouse_name"`
-		ClusterId                    int      `json:"cluster_id"`
+		ClusterID                    int      `json:"cluster_id"`
 		ClusterName                  string   `json:"cluster_name"`
 		ItemTags                     []string `json:"item_tags"`
 		Ads                          float64  `json:"ads"`
@@ -478,8 +478,8 @@ type StocksNew struct {
 type ProductList struct {
 	Result struct {
 		Items []struct {
-			ProductId    int           `json:"product_id"`
-			OfferId      string        `json:"offer_id"`
+			ProductID    int           `json:"product_id"`
+			OfferID      string        `json:"offer_id"`
 			HasFboStocks bool          `json:"has_fbo_stocks"`
 			HasFbsStocks bool          `json:"has_fbs_stocks"`
 			Archived     bool          `json:"archived"`
@@ -487,44 +487,44 @@ type ProductList struct {
 			Quants       []interface{} `json:"quants"`
 		} `json:"items"`
 		Total  int    `json:"total"`
-		LastId string `json:"last_id"`
+		LastID string `json:"last_id"`
 	} `json:"result"`
 }
 
 type ProductListWithAttributes struct {
 	Result []struct {
-		Id                    int    `json:"id"`
+		ID                    int    `json:"id"`
 		Barcode               string `json:"barcode"`
 		Name                  string `json:"name"`
-		OfferId               string `json:"offer_id"`
+		OfferID               string `json:"offer_id"`
 		Height                int    `json:"height"`
 		Depth                 int    `json:"depth"`
 		Width                 int    `json:"width"`
 		DimensionUnit         string `json:"dimension_unit"`
 		Weight                int    `json:"weight"`
 		WeightUnit            string `json:"weight_unit"`
-		DescriptionCategoryId int    `json:"description_category_id"`
-		TypeId                int    `json:"type_id"`
+		DescriptionCategoryID int    `json:"description_category_id"`
+		TypeID                int    `json:"type_id"`
 		PrimaryImage          string `json:"primary_image"`
 		ModelInfo             struct {
-			ModelId int `json:"model_id"`
+			ModelID int `json:"model_id"`
 			Count   int `json:"count"`
 		} `json:"model_info"`
 		Images     []string      `json:"images"`
 		PdfList    []interface{} `json:"pdf_list"`
 		Attributes []struct {
-			Id        int `json:"id"`
-			ComplexId int `json:"complex_id"`
+			ID        int `json:"id"`
+			ComplexID int `json:"complex_id"`
 			Values    []struct {
-				DictionaryValueId int    `json:"dictionary_value_id"`
+				DictionaryValueID int    `json:"dictionary_value_id"`
 				Value             string `json:"value"`
 			} `json:"values"`
 		} `json:"attributes"`
 		ComplexAttributes []struct {
-			Id        int `json:"id"`
-			ComplexId int `json:"complex_id"`
+			ID        int `json:"id"`
+			ComplexID int `json:"complex_id"`
 			Values    []struct {
-				DictionaryValueId int    `json:"dictionary_value_id"`
+				DictionaryValueID int    `json:"dictionary_value_id"`
 				Value             string `json:"value"`
 			} `json:"values"`
 		} `json:"complex_attributes"`
@@ -533,5 +533,5 @@ type ProductListWithAttributes struct {
 		Barcodes   []string `json:"barcodes"`
 	} `json:"result"`
 	Total  int    `json:"total"`
-	LastId string `json:"last_id"`
+	LastID string `json:"last_id"`
 }

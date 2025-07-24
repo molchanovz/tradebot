@@ -6,15 +6,15 @@ type OrdersFbo struct {
 	Status string `json:"status"`
 	Result struct {
 		Orders []struct {
-			Id               int64     `json:"id"`
+			ID               int64     `json:"id"`
 			CreationDate     string    `json:"creationDate"`
 			StatusUpdateDate time.Time `json:"statusUpdateDate"`
 			Status           string    `json:"status"`
-			PartnerOrderId   string    `json:"partnerOrderId"`
+			PartnerOrderID   string    `json:"partnerOrderId"`
 			PaymentType      string    `json:"paymentType"`
 			Fake             bool      `json:"fake"`
 			DeliveryRegion   struct {
-				Id   int    `json:"id"`
+				ID   int    `json:"id"`
 				Name string `json:"name"`
 			} `json:"deliveryRegion"`
 			Items []struct {
@@ -28,7 +28,7 @@ type OrdersFbo struct {
 					Total       float64 `json:"total"`
 				} `json:"prices"`
 				Warehouse struct {
-					Id   int    `json:"id"`
+					ID   int    `json:"id"`
 					Name string `json:"name"`
 				} `json:"warehouse"`
 				Details []interface{} `json:"details"`
@@ -36,7 +36,7 @@ type OrdersFbo struct {
 				BidFee  int           `json:"bidFee,omitempty"`
 			} `json:"items"`
 			Payments []struct {
-				Id     string  `json:"id"`
+				ID     string  `json:"id"`
 				Date   string  `json:"date"`
 				Type   string  `json:"type"`
 				Source string  `json:"source"`
@@ -63,23 +63,23 @@ type OrdersFbo struct {
 type Shipment struct {
 	Status string `json:"status"`
 	Result struct {
-		Id               int       `json:"id"`
+		ID               int       `json:"id"`
 		PlanIntervalFrom time.Time `json:"planIntervalFrom"`
 		PlanIntervalTo   time.Time `json:"planIntervalTo"`
 		ShipmentType     string    `json:"shipmentType"`
 		Warehouse        struct {
-			Id      int64  `json:"id"`
+			ID      int64  `json:"id"`
 			Name    string `json:"name"`
 			Address string `json:"address"`
 		} `json:"warehouse"`
 		WarehouseTo struct {
-			Id      int64  `json:"id"`
+			ID      int64  `json:"id"`
 			Name    string `json:"name"`
 			Address string `json:"address"`
 		} `json:"warehouseTo"`
-		ExternalId      string `json:"externalId"`
+		ExternalID      string `json:"externalId"`
 		DeliveryService struct {
-			Id   int    `json:"id"`
+			ID   int    `json:"id"`
 			Name string `json:"name"`
 		} `json:"deliveryService"`
 		PalletsCount struct {
@@ -100,9 +100,9 @@ type Shipment struct {
 
 type Order struct {
 	Order struct {
-		Id                            int64   `json:"id"`
+		ID                            int64   `json:"id"`
 		Status                        string  `json:"status"`
-		Substatus                     string  `json:"substatus"`
+		SubStatus                     string  `json:"substatus"`
 		CreationDate                  string  `json:"creationDate"`
 		UpdatedAt                     string  `json:"updatedAt"`
 		Currency                      string  `json:"currency"`
@@ -116,8 +116,8 @@ type Order struct {
 		PaymentMethod                 string  `json:"paymentMethod"`
 		Fake                          bool    `json:"fake"`
 		Items                         []struct {
-			Id                       int     `json:"id"`
-			OfferId                  string  `json:"offerId"`
+			ID                       int     `json:"id"`
+			OfferID                  string  `json:"offerId"`
 			OfferName                string  `json:"offerName"`
 			Price                    float64 `json:"price"`
 			BuyerPrice               float64 `json:"buyerPrice"`
@@ -127,7 +127,7 @@ type Order struct {
 			Vat                      string  `json:"vat"`
 			ShopSku                  string  `json:"shopSku"`
 			Subsidy                  float64 `json:"subsidy"`
-			PartnerWarehouseId       string  `json:"partnerWarehouseId"`
+			PartnerWarehouseID       string  `json:"partnerWarehouseId"`
 			Promos                   []struct {
 				Type    string  `json:"type"`
 				Subsidy float64 `json:"subsidy"`
@@ -153,19 +153,19 @@ type Order struct {
 				ToTime   string `json:"toTime"`
 			} `json:"dates"`
 			Region struct {
-				Id     int    `json:"id"`
+				ID     int    `json:"id"`
 				Name   string `json:"name"`
 				Type   string `json:"type"`
 				Parent struct {
-					Id     int    `json:"id"`
+					ID     int    `json:"id"`
 					Name   string `json:"name"`
 					Type   string `json:"type"`
 					Parent struct {
-						Id     int    `json:"id"`
+						ID     int    `json:"id"`
 						Name   string `json:"name"`
 						Type   string `json:"type"`
 						Parent struct {
-							Id   int    `json:"id"`
+							ID   int    `json:"id"`
 							Name string `json:"name"`
 							Type string `json:"type"`
 						} `json:"parent"`
@@ -184,15 +184,15 @@ type Order struct {
 					Longitude float64 `json:"longitude"`
 				} `json:"gps"`
 			} `json:"address"`
-			DeliveryServiceId int     `json:"deliveryServiceId"`
+			DeliveryServiceID int     `json:"deliveryServiceId"`
 			LiftPrice         float64 `json:"liftPrice"`
 			OutletCode        string  `json:"outletCode"`
 			Shipments         []struct {
-				Id           int    `json:"id"`
+				ID           int    `json:"id"`
 				ShipmentDate string `json:"shipmentDate"`
 				Boxes        []struct {
-					Id           int    `json:"id"`
-					FulfilmentId string `json:"fulfilmentId"`
+					ID           int    `json:"id"`
+					FulfilmentID string `json:"fulfilmentId"`
 				} `json:"boxes"`
 			} `json:"shipments"`
 		} `json:"delivery"`
@@ -205,8 +205,8 @@ type Order struct {
 }
 
 type Items []struct {
-	Id                       int     `json:"id"`
-	OfferId                  string  `json:"offerId"`
+	ID                       int     `json:"id"`
+	OfferID                  string  `json:"offerId"`
 	OfferName                string  `json:"offerName"`
 	Price                    float64 `json:"price"`
 	BuyerPrice               float64 `json:"buyerPrice"`
@@ -216,7 +216,7 @@ type Items []struct {
 	Vat                      string  `json:"vat"`
 	ShopSku                  string  `json:"shopSku"`
 	Subsidy                  float64 `json:"subsidy"`
-	PartnerWarehouseId       string  `json:"partnerWarehouseId"`
+	PartnerWarehouseID       string  `json:"partnerWarehouseId"`
 	Promos                   []struct {
 		Type    string  `json:"type"`
 		Subsidy float64 `json:"subsidy"`

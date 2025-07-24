@@ -12,7 +12,7 @@ const (
 
 type Service struct {
 	tradeplus.Authorization
-	spreadsheetId string
+	spreadsheetID string
 }
 
 func NewService(cabinet tradeplus.Cabinet) Service {
@@ -23,7 +23,7 @@ func NewService(cabinet tradeplus.Cabinet) Service {
 	}
 
 	if cabinet.SheetLink != nil {
-		service.spreadsheetId = *cabinet.SheetLink
+		service.spreadsheetID = *cabinet.SheetLink
 	}
 
 	return service
@@ -34,7 +34,7 @@ type Authorization struct {
 }
 
 func (s Service) GetOrdersManager() OrdersManager {
-	return NewOrdersManager(s.Token, s.spreadsheetId, OrdersDaysAgo)
+	return NewOrdersManager(s.Token, s.spreadsheetID, OrdersDaysAgo)
 }
 
 func (s Service) GetStickersFbsManager() StickerManager {

@@ -15,8 +15,8 @@ type jsonField struct {
 	LastElement string
 }
 
-// prepareJson prepares SQL where-condition for json field filtering
-func (f Filter) prepareJson(st string) (field, value types.ValueAppender) {
+// prepareJSON prepares SQL where-condition for json field filtering
+func (f Filter) prepareJSON(st string) (field, value types.ValueAppender) {
 	jsonField := f.jsonField(f.Field)
 	switch f.SearchType {
 	case SearchTypeArrayContains:

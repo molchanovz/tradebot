@@ -1,3 +1,4 @@
+// nolint:gocritic
 package db
 
 import (
@@ -95,7 +96,7 @@ func (f Filter) prepare() (field, value types.ValueAppender) {
 
 	// process json field
 	if strings.Contains(f.Field, "->") {
-		return f.prepareJson(st)
+		return f.prepareJSON(st)
 	}
 
 	// preparing value

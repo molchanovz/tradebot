@@ -8,16 +8,15 @@ import (
 	"time"
 )
 
-var campaignId = 90788543
+var campaignID = 90788543
 
-func ShipmentInfo(token, supplyId string) (string, error) {
+func ShipmentInfo(token, supplyID string) (string, error) {
+	url := fmt.Sprintf("https://api.partner.market.yandex.ru/campaigns/%v/first-mile/shipments/%v", campaignID, supplyID)
 
-	url := fmt.Sprintf("https://api.partner.market.yandex.ru/campaigns/%v/first-mile/shipments/%v", campaignId, supplyId)
-
-	req, err := http.NewRequest("GET", url, nil)
+	req, err := http.NewRequest(http.MethodGet, url, nil)
 
 	if err != nil {
-		return "", fmt.Errorf("ошибка создания запроса: %v", err)
+		return "", fmt.Errorf("ошибка создания запроса: %w", err)
 	}
 
 	// Устанавливаем необходимые заголовки (если нужны)
@@ -28,7 +27,7 @@ func ShipmentInfo(token, supplyId string) (string, error) {
 	client := &http.Client{}
 	resp, err := client.Do(req)
 	if err != nil {
-		return "", fmt.Errorf("ошибка выполнения запроса ShipmentInfo: %v", err)
+		return "", fmt.Errorf("ошибка выполнения запроса ShipmentInfo: %w", err)
 	}
 	defer resp.Body.Close()
 
@@ -44,14 +43,13 @@ func ShipmentInfo(token, supplyId string) (string, error) {
 	return string(jsonString), nil
 }
 
-func OrderInfo(token string, orderId int64) (string, error) {
+func OrderInfo(token string, orderID int64) (string, error) {
+	url := fmt.Sprintf("https://api.partner.market.yandex.ru/campaigns/%v/orders/%v", campaignID, orderID)
 
-	url := fmt.Sprintf("https://api.partner.market.yandex.ru/campaigns/%v/orders/%v", campaignId, orderId)
-
-	req, err := http.NewRequest("GET", url, nil)
+	req, err := http.NewRequest(http.MethodGet, url, nil)
 
 	if err != nil {
-		return "", fmt.Errorf("ошибка создания запроса: %v", err)
+		return "", fmt.Errorf("ошибка создания запроса: %w", err)
 	}
 
 	// Устанавливаем необходимые заголовки (если нужны)
@@ -62,7 +60,7 @@ func OrderInfo(token string, orderId int64) (string, error) {
 	client := &http.Client{}
 	resp, err := client.Do(req)
 	if err != nil {
-		return "", fmt.Errorf("ошибка выполнения запроса: %v", err)
+		return "", fmt.Errorf("ошибка выполнения запроса: %w", err)
 	}
 	defer resp.Body.Close()
 
@@ -78,13 +76,13 @@ func OrderInfo(token string, orderId int64) (string, error) {
 	return string(jsonString), nil
 }
 
-func GetStickers(token string, orderId int64) (string, error) {
-	url := fmt.Sprintf("https://api.partner.market.yandex.ru/campaigns/%v/orders/%v/delivery/labels?format=A9_HORIZONTALLY", campaignId, orderId)
+func GetStickers(token string, orderID int64) (string, error) {
+	url := fmt.Sprintf("https://api.partner.market.yandex.ru/campaigns/%v/orders/%v/delivery/labels?format=A9_HORIZONTALLY", campaignID, orderID)
 
-	req, err := http.NewRequest("GET", url, nil)
+	req, err := http.NewRequest(http.MethodGet, url, nil)
 
 	if err != nil {
-		return "", fmt.Errorf("ошибка создания запроса: %v", err)
+		return "", fmt.Errorf("ошибка создания запроса: %w", err)
 	}
 
 	// Устанавливаем необходимые заголовки (если нужны)
@@ -95,7 +93,7 @@ func GetStickers(token string, orderId int64) (string, error) {
 	client := &http.Client{}
 	resp, err := client.Do(req)
 	if err != nil {
-		return "", fmt.Errorf("ошибка выполнения запроса: %v", err)
+		return "", fmt.Errorf("ошибка выполнения запроса: %w", err)
 	}
 	defer resp.Body.Close()
 
@@ -111,11 +109,10 @@ func GetStickers(token string, orderId int64) (string, error) {
 	return string(jsonString), nil
 }
 
-func getOrders(campaignId, yandexKey string, daysAgo int) (string, error) {
-
+func getOrders(campaignID, yandexKey string, daysAgo int) (string, error) {
 	date := time.Now().AddDate(0, 0, -daysAgo)
 
-	url := fmt.Sprintf("https://api.partner.market.yandex.ru/campaigns/%v/stats/orders", campaignId)
+	url := fmt.Sprintf("https://api.partner.market.yandex.ru/campaigns/%v/stats/orders", campaignID)
 
 	body := []byte(fmt.Sprintf(`{
   "dateFrom": "%v",
@@ -127,10 +124,10 @@ func getOrders(campaignId, yandexKey string, daysAgo int) (string, error) {
     "fake":false
 }`, date.Format("2006-01-02"), date.Format("2006-01-02")))
 
-	req, err := http.NewRequest("POST", url, bytes.NewBuffer(body))
+	req, err := http.NewRequest(http.MethodPost, url, bytes.NewBuffer(body))
 
 	if err != nil {
-		return "", fmt.Errorf("ошибка создания запроса: %v", err)
+		return "", fmt.Errorf("ошибка создания запроса: %w", err)
 	}
 
 	req.Header.Set("Content-Type", "application/json")
@@ -139,7 +136,7 @@ func getOrders(campaignId, yandexKey string, daysAgo int) (string, error) {
 	client := &http.Client{}
 	resp, err := client.Do(req)
 	if err != nil {
-		return "", fmt.Errorf("ошибка выполнения запроса: %v", err)
+		return "", fmt.Errorf("ошибка выполнения запроса: %w", err)
 	}
 	defer resp.Body.Close()
 

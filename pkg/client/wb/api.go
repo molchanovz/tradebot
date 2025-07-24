@@ -15,7 +15,7 @@ func request(reqType, url string, headers map[string]string, params map[string]s
 	req, err := http.NewRequest(reqType, url, bytes.NewBuffer(body))
 
 	if err != nil {
-		return "", fmt.Errorf("ошибка создания запроса: %v", err)
+		return "", fmt.Errorf("ошибка создания запроса: %w", err)
 	}
 
 	for s := range headers {
@@ -32,7 +32,7 @@ func request(reqType, url string, headers map[string]string, params map[string]s
 	client := &http.Client{}
 	resp, err := client.Do(req)
 	if err != nil {
-		return "", fmt.Errorf("ошибка выполнения запроса: %v", err)
+		return "", fmt.Errorf("ошибка выполнения запроса: %w", err)
 	}
 	defer resp.Body.Close()
 
@@ -48,15 +48,16 @@ func request(reqType, url string, headers map[string]string, params map[string]s
 }
 
 func GET(url string, headers map[string]string, params map[string]string, body []byte) (string, error) {
-	response, err := request("GET", url, headers, params, body)
+	response, err := request(http.MethodGet, url, headers, params, body)
 	if err != nil {
 		return "", err
 	}
+
 	return response, nil
 }
 
 func POST(url string, headers map[string]string, params map[string]string, body []byte) (string, error) {
-	response, err := request("POST", url, headers, params, body)
+	response, err := request(http.MethodPost, url, headers, params, body)
 	if err != nil {
 		return "", err
 	}
@@ -84,9 +85,8 @@ func stocksFbo(token string) (string, error) {
 	return response, nil
 }
 
-func getOrdersBySupplyId(token, supplyId string) (string, error) {
-
-	baseURL := "https://marketplace-api.wildberries.ru/api/v3/supplies/" + supplyId + "/orders"
+func getOrdersBySupplyID(token, supplyID string) (string, error) {
+	baseURL := "https://marketplace-api.wildberries.ru/api/v3/supplies/" + supplyID + "/orders"
 	body := []byte(``)
 
 	headers := map[string]string{
@@ -101,8 +101,7 @@ func getOrdersBySupplyId(token, supplyId string) (string, error) {
 	return response, nil
 }
 
-func getCodesByOrderId(token string, orderId int) (string, error) {
-
+func getCodesByOrderID(token string, orderID int) (string, error) {
 	params := url.Values{}
 	params.Add("type", "png")
 	params.Add("width", "58")
@@ -119,7 +118,7 @@ func getCodesByOrderId(token string, orderId int) (string, error) {
 	}
 
 	data := RequestBody{
-		Orders: []int{orderId},
+		Orders: []int{orderID},
 	}
 
 	body, err := json.Marshal(data)
@@ -142,7 +141,6 @@ func getCodesByOrderId(token string, orderId int) (string, error) {
 
 // Получения фбс заказов
 func ordersFBS(token string, daysAgo int) (string, error) {
-
 	baseURL := "https://marketplace-api.wildberries.ru/api/v3/orders"
 	body := []byte(``)
 
@@ -165,8 +163,7 @@ func ordersFBS(token string, daysAgo int) (string, error) {
 	return response, nil
 }
 
-func ordersFBSStatus(token string, orderId int) (string, error) {
-
+func ordersFBSStatus(token string, orderID int) (string, error) {
 	baseURL := "https://marketplace-api.wildberries.ru/api/v3/orders/status"
 
 	type RequestBody struct {
@@ -174,13 +171,13 @@ func ordersFBSStatus(token string, orderId int) (string, error) {
 	}
 
 	data := RequestBody{
-		Orders: []int{orderId},
+		Orders: []int{orderID},
 	}
 
 	// Преобразование данных в JSON
 	body, err := json.Marshal(data)
 	if err != nil {
-		fmt.Println("Ошибка при преобразовании данных в JSON:", err)
+		return "", fmt.Errorf("ошибка при преобразовании данных в JSON: %w", err)
 	}
 
 	headers := map[string]string{
@@ -200,7 +197,6 @@ func ordersFBSStatus(token string, orderId int) (string, error) {
 API метод для получения всех заказов за дату, равную (now() - daysAgo). Максимум 1 запрос в минуту
 */
 func apiOrdersALL(token string, daysAgo, flag int) (string, error) {
-
 	date := time.Now().AddDate(0, 0, -daysAgo)
 
 	baseURL := "https://statistics-api.wildberries.ru/api/v1/supplier/orders"
@@ -225,7 +221,6 @@ func apiOrdersALL(token string, daysAgo, flag int) (string, error) {
 }
 
 func apiSalesAndReturns(token string, daysAgo int) (string, error) {
-
 	date := time.Now().AddDate(0, 0, -daysAgo)
 
 	baseURL := "https://statistics-api.wildberries.ru/api/v1/supplier/sales"

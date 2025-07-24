@@ -29,7 +29,7 @@ func NewService(cabinets ...tradeplus.Cabinet) Service {
 			Type:  c.Type,
 		}
 		if c.ClientID != nil {
-			a.ClientId = *c.ClientID
+			a.ClientID = *c.ClientID
 		}
 
 		service.Authorizations = append(service.Authorizations, a)
@@ -39,29 +39,27 @@ func NewService(cabinets ...tradeplus.Cabinet) Service {
 }
 
 func (s Service) GetOrdersAndReturnsManager() OrdersManager {
-	var yandexCampaignIdFBO string
-	var yandexCampaignIdFBS string
+	var yandexCampaignIDFBO string
+	var yandexCampaignIDFBS string
 	for _, a := range s.Authorizations {
 		switch a.Type {
 		case "fbo":
-			yandexCampaignIdFBO = a.ClientId
+			yandexCampaignIDFBO = a.ClientID
 		case "fbs":
-			yandexCampaignIdFBS = a.ClientId
+			yandexCampaignIDFBS = a.ClientID
 		}
 	}
 
-	return NewOrdersManager(yandexCampaignIdFBO, yandexCampaignIdFBS, s.Authorizations[0].Token, s.SheetLink, daysAgo)
+	return NewOrdersManager(yandexCampaignIDFBO, yandexCampaignIDFBS, s.Authorizations[0].Token, s.SheetLink, daysAgo)
 }
 
 func (s Service) GetStickersFbsManager() *StickersManager {
-
-	var yandexCampaignIdFBS string
+	var yandexCampaignIDFBS string
 	for _, a := range s.Authorizations {
-		switch a.Type {
-		case "fbs":
-			yandexCampaignIdFBS = a.ClientId
+		if a.Type == "fbs" {
+			yandexCampaignIDFBS = a.ClientID
 		}
 	}
 
-	return NewStickersManager(yandexCampaignIdFBS, s.Authorizations[0].Token)
+	return NewStickersManager(yandexCampaignIDFBS, s.Authorizations[0].Token)
 }

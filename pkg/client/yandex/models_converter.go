@@ -5,9 +5,9 @@ import (
 	"log"
 )
 
-func GetOrdersFbo(campaignId, apiKey string, daysAgo int) (OrdersFbo, error) {
+func GetOrdersFbo(campaignID, apiKey string, daysAgo int) (OrdersFbo, error) {
 	var orders OrdersFbo
-	jsonString, err := getOrders(campaignId, apiKey, daysAgo)
+	jsonString, err := getOrders(campaignID, apiKey, daysAgo)
 	if err != nil {
 		return orders, err
 	}
@@ -18,7 +18,7 @@ func GetOrdersFbo(campaignId, apiKey string, daysAgo int) (OrdersFbo, error) {
 	return orders, nil
 }
 
-//func ordersFBS(ApiKey string, daysAgo int) OrdersListFBS {
+// func ordersFBS(ApiKey string, daysAgo int) OrdersListFBS {
 //	var posting OrdersListFBS
 //	jsonString := API.OrdersFBS(ApiKey, daysAgo)
 //	err := json.Unmarshal([]byte(jsonString), &posting)
@@ -26,9 +26,9 @@ func GetOrdersFbo(campaignId, apiKey string, daysAgo int) (OrdersFbo, error) {
 //		log.Fatalf("Error decoding JSON: %v", err)
 //	}
 //	return posting
-//}
+// }
 //
-//func salesAndReturns(ApiKey string, daysAgo int) SalesAndReturns {
+// func salesAndReturns(ApiKey string, daysAgo int) SalesAndReturns {
 //	var sales SalesAndReturns
 //	jsonString := API.ApiSalesAndReturns(ApiKey, daysAgo)
 //	err := json.Unmarshal([]byte(jsonString), &sales)
@@ -36,9 +36,9 @@ func GetOrdersFbo(campaignId, apiKey string, daysAgo int) (OrdersFbo, error) {
 //		log.Fatalf("Error decoding JSON: %v", err)
 //	}
 //	return sales
-//}
+// }
 
-//func postingStatus(ApiKey string, postingId int) string {
+// func postingStatus(ApiKey string, postingId int) string {
 //	var postingStatuses OrdersWithStatuses
 //	jsonString := API.OrdersFBS_status(ApiKey, postingId)
 //	err := json.Unmarshal([]byte(jsonString), &postingStatuses)
@@ -46,12 +46,12 @@ func GetOrdersFbo(campaignId, apiKey string, daysAgo int) (OrdersFbo, error) {
 //		log.Fatalf("Error decoding JSON: %v", err)
 //	}
 //	return postingStatuses.Orders[0].WbStatus
-//}
+// }
 
 // GetOrdersIds Получение id всех заказов
-func GetOrdersIds(token, supplyId string) ([]int64, error) {
+func GetOrdersIds(token, supplyID string) ([]int64, error) {
 	var shipment Shipment
-	jsonString, err := ShipmentInfo(token, supplyId)
+	jsonString, err := ShipmentInfo(token, supplyID)
 	if err != nil {
 		return []int64{}, err
 	}
@@ -63,9 +63,9 @@ func GetOrdersIds(token, supplyId string) ([]int64, error) {
 }
 
 // GetOrder Получение заказа
-func GetOrder(token string, orderId int64) (Order, error) {
+func GetOrder(token string, orderID int64) (Order, error) {
 	var order Order
-	jsonString, err := OrderInfo(token, orderId)
+	jsonString, err := OrderInfo(token, orderID)
 	if err != nil {
 		return order, err
 	}

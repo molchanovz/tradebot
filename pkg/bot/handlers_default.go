@@ -4,16 +4,18 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	botlib "github.com/go-telegram/bot"
-	"github.com/go-telegram/bot/models"
-	"github.com/joho/godotenv"
-	"github.com/xuri/excelize/v2"
 	"log"
 	"math"
 	"os"
+	"strconv"
 	"sync"
+
 	"tradebot/pkg/db"
 	"tradebot/pkg/tradeplus"
+
+	botlib "github.com/go-telegram/bot"
+	"github.com/go-telegram/bot/models"
+	"github.com/xuri/excelize/v2"
 )
 
 const (
@@ -25,17 +27,17 @@ const (
 type Manager struct {
 	b        *botlib.Bot
 	bl       *tradeplus.Manager
-	myChatId string
+	myChatID string
 	SheetMap *sync.Map
-	ApiMap   *sync.Map
+	APIMap   *sync.Map
 }
 
-func NewManager(dbc db.DB, myChatId string) *Manager {
+func NewManager(dbc db.DB, cfg Config) *Manager {
 	return &Manager{
 		bl:       tradeplus.NewManager(dbc),
-		myChatId: myChatId,
+		myChatID: cfg.MyChatID,
 		SheetMap: new(sync.Map),
-		ApiMap:   new(sync.Map),
+		APIMap:   new(sync.Map),
 	}
 }
 
@@ -74,43 +76,49 @@ func (m *Manager) RegisterBotHandlers() {
 	m.b.RegisterHandler(botlib.HandlerTypeCallbackQueryData, CallbackSelectYandexCabinetHandler, botlib.MatchTypePrefix, m.yandexCabinetHandler)
 
 	//b.RegisterHandler(botlib.HandlerTypeCallbackQueryData, "YANDEX_FBS", botlib.MatchTypePrefix, wbOrdersHandler)
-
 }
 
 // DefaultHandler ловит сообщения без команд, проверяет статус пользователя, после обновляет статус на enabled
 func (m *Manager) DefaultHandler(ctx context.Context, bot *botlib.Bot, update *models.Update) {
-	chatId := update.Message.From.ID
+	chatID := update.Message.From.ID
 	message := update.Message.Text
 
-	user, err := m.bl.UserByChatID(ctx, chatId)
+	user, err := m.bl.UserByChatID(ctx, chatID)
 	if err != nil {
 		log.Println(err)
 		return
 	} else if user == nil {
-		log.Println("user not found", chatId)
+		log.Println("user not found", chatID)
 		return
 	}
 
 	switch user.StatusID {
 	case db.StatusEnabled:
 		{
-			SendTextMessage(ctx, bot, chatId, "Не понял тебя. Нажми /start еще раз")
+			_, err := SendTextMessage(ctx, bot, chatID, "Не понял тебя. Нажми /start еще раз")
+			if err != nil {
+				log.Println("ошибка отправки сообщения")
+				return
+			}
 		}
 	case db.StatusWaitingWbState:
 		{
-			m.getWbStickers(ctx, bot, chatId, message)
+			err = m.getWbStickers(ctx, bot, chatID, message)
+			if err != nil {
+				return
+			}
 		}
 	case db.StatusWaitingYaState:
 		{
-			m.getYandexFbs(ctx, bot, chatId, message)
+			m.getYandexFbs(ctx, bot, chatID, message)
 		}
 	case db.StatusWaitingAPI:
 		{
-			m.changeApi(ctx, bot, chatId, update.Message)
+			m.changeAPI(ctx, bot, chatID, update.Message)
 		}
 	case db.StatusWaitingSheet:
 		{
-			m.changeSheet(ctx, bot, chatId, update.Message)
+			m.changeSheet(ctx, bot, chatID, update.Message)
 		}
 	default:
 		log.Println("Такого статуса пользователя нет")
@@ -121,7 +129,6 @@ func (m *Manager) DefaultHandler(ctx context.Context, bot *botlib.Bot, update *m
 		log.Println("Ошибка обновления статуса пользователя: ", err)
 		return
 	}
-
 }
 
 // createStartAdminMarkup создает клавиатуру с кнопками для авторизованного пользователя
@@ -149,13 +156,13 @@ func createStartUserMarkup() (string, models.InlineKeyboardMarkup) {
 }
 
 func (m *Manager) startHandler(ctx context.Context, bot *botlib.Bot, update *models.Update) {
-	var chatId int64
+	var chatID int64
 	var text string
 
 	if update.Message != nil {
-		chatId = update.Message.From.ID
+		chatID = update.Message.From.ID
 	} else {
-		chatId = update.CallbackQuery.From.ID
+		chatID = update.CallbackQuery.From.ID
 	}
 
 	_, err := bot.SetMyCommands(ctx, &botlib.SetMyCommandsParams{
@@ -170,7 +177,7 @@ func (m *Manager) startHandler(ctx context.Context, bot *botlib.Bot, update *mod
 	}
 
 	_, err = bot.SetChatMenuButton(ctx, &botlib.SetChatMenuButtonParams{
-		ChatID: chatId,
+		ChatID: chatID,
 		MenuButton: models.MenuButtonCommands{
 			Type: models.MenuButtonTypeCommands,
 		},
@@ -180,7 +187,7 @@ func (m *Manager) startHandler(ctx context.Context, bot *botlib.Bot, update *mod
 		return
 	}
 
-	user, err := m.bl.CreateUser(ctx, chatId)
+	user, err := m.bl.CreateUser(ctx, chatID)
 	if err != nil {
 		log.Println("Ошибка создания меню: ", err)
 		return
@@ -198,59 +205,52 @@ func (m *Manager) startHandler(ctx context.Context, bot *botlib.Bot, update *mod
 	if update.Message != nil {
 		name := update.Message.From.FirstName
 		text = fmt.Sprintf("Привет, %v. %v", name, startMessage)
-		_, err := bot.SendMessage(ctx, &botlib.SendMessageParams{ChatID: chatId, Text: text, ReplyMarkup: markup})
+		_, err = bot.SendMessage(ctx, &botlib.SendMessageParams{ChatID: chatID, Text: text, ReplyMarkup: markup})
 		if err != nil {
-			log.Println(fmt.Sprintf("ошибка отправки сообщения %v", err))
+			log.Printf("ошибка отправки сообщения %v", err)
 			return
 		}
-
 	} else {
-		messageId := update.CallbackQuery.Message.Message.ID
+		messageID := update.CallbackQuery.Message.Message.ID
 		text = startMessage
-		_, err := bot.EditMessageText(ctx, &botlib.EditMessageTextParams{MessageID: messageId, ChatID: chatId, Text: text, ReplyMarkup: markup})
+		_, err = bot.EditMessageText(ctx, &botlib.EditMessageTextParams{MessageID: messageID, ChatID: chatID, Text: text, ReplyMarkup: markup})
 		if err != nil {
-			log.Printf("%v", err)
+			log.Printf("ошибка редактирования сообщения %v", err)
 			return
 		}
 	}
 }
 
-func WaitReadyFile(ctx context.Context, bot *botlib.Bot, chatId int64, progressChan chan tradeplus.Progress, done chan []string, errChan chan error) error {
-	var progressMsgId int
+func WaitReadyFile(ctx context.Context, bot *botlib.Bot, chatID int64, progressChan chan tradeplus.Progress, done chan []string, errChan chan error) error {
+	var progressMsgID int
 	var lastReportedCurrent int
 	var lastTotal int
 	var err error
 	for {
 		select {
 		case progress := <-progressChan:
-			progressMsgId, err = sendProgress(ctx, bot, chatId, progress, lastReportedCurrent, lastTotal, progressMsgId)
+			progressMsgID, err = sendProgress(ctx, bot, chatID, progress, lastReportedCurrent, lastTotal, progressMsgID)
 			if err != nil {
-				log.Println(err)
 				return err
 			}
 
 		case filePath := <-done:
-			err = sendFiles(ctx, bot, chatId, filePath, progressMsgId)
+			err = sendFiles(ctx, bot, chatID, filePath, progressMsgID)
 			if err != nil {
-				log.Println(err)
 				return err
 			}
 			return nil
 
 		case err = <-errChan:
-			_, err = bot.SendMessage(ctx, &botlib.SendMessageParams{ChatID: chatId, Text: err.Error()})
-			if err != nil {
-				log.Println(fmt.Sprintf("ошибка отправки сообщения %v", err))
-				return err
-			}
+			_, err = bot.SendMessage(ctx, &botlib.SendMessageParams{ChatID: chatID, Text: err.Error()})
 			return err
 		}
 	}
 }
 
-func sendFiles(ctx context.Context, bot *botlib.Bot, chatId int64, filePath []string, progressMsgId int) error {
+func sendFiles(ctx context.Context, bot *botlib.Bot, chatID int64, filePath []string, progressMsgID int) error {
 	_, err := bot.SendChatAction(ctx, &botlib.SendChatActionParams{
-		ChatID: chatId,
+		ChatID: chatID,
 		Action: models.ChatActionUploadDocument,
 	})
 	if err != nil {
@@ -262,17 +262,17 @@ func sendFiles(ctx context.Context, bot *botlib.Bot, chatId int64, filePath []st
 	}
 
 	for _, batchPath := range filePath {
-		err = SendMediaMessage(ctx, bot, chatId, batchPath)
+		err = SendMediaMessage(ctx, bot, chatID, batchPath)
 		if err != nil {
 			log.Println(err)
 			return err
 		}
 	}
 
-	if progressMsgId != 0 {
+	if progressMsgID != 0 {
 		_, err = bot.DeleteMessage(ctx, &botlib.DeleteMessageParams{
-			ChatID:    chatId,
-			MessageID: progressMsgId,
+			ChatID:    chatID,
+			MessageID: progressMsgID,
 		})
 		if err != nil {
 			return err
@@ -281,7 +281,7 @@ func sendFiles(ctx context.Context, bot *botlib.Bot, chatId int64, filePath []st
 
 	text, markup := createStartAdminMarkup()
 	_, err = bot.SendMessage(ctx, &botlib.SendMessageParams{
-		ChatID:      chatId,
+		ChatID:      chatID,
 		Text:        text,
 		ReplyMarkup: markup,
 	})
@@ -291,28 +291,28 @@ func sendFiles(ctx context.Context, bot *botlib.Bot, chatId int64, filePath []st
 	return nil
 }
 
-func sendProgress(ctx context.Context, bot *botlib.Bot, chatId int64, progress tradeplus.Progress, lastReportedCurrent int, lastTotal int, progressMsgId int) (int, error) {
+func sendProgress(ctx context.Context, bot *botlib.Bot, chatID int64, progress tradeplus.Progress, lastReportedCurrent int, lastTotal int, progressMsgID int) (int, error) {
 	if progress.Current != lastReportedCurrent || progress.Total != lastTotal {
 		lastReportedCurrent = progress.Current
 		lastTotal = progress.Total
 
 		text := fmt.Sprintf("Обработано заказов: %d из %d", progress.Current, progress.Total)
 
-		if progressMsgId == 0 {
+		if progressMsgID == 0 {
 			msg, err := bot.SendMessage(ctx, &botlib.SendMessageParams{
-				ChatID: chatId,
+				ChatID: chatID,
 				Text:   text,
 			})
 			if err != nil {
 				log.Println(err)
 				return 0, err
 			} else {
-				progressMsgId = msg.ID
+				progressMsgID = msg.ID
 			}
 		} else {
 			_, err := bot.EditMessageText(ctx, &botlib.EditMessageTextParams{
-				ChatID:    chatId,
-				MessageID: progressMsgId,
+				ChatID:    chatID,
+				MessageID: progressMsgID,
 				Text:      text,
 			})
 			if err != nil {
@@ -321,7 +321,7 @@ func sendProgress(ctx context.Context, bot *botlib.Bot, chatId int64, progress t
 			}
 		}
 	}
-	return progressMsgId, nil
+	return progressMsgID, nil
 }
 
 type CallbacksForCabinetMarkup struct {
@@ -345,12 +345,12 @@ func createCabinetsMarkup(cabinetsIds tradeplus.Cabinets, callbacks CallbacksFor
 	//Добавление кнопок для пагинации
 	row = []models.InlineKeyboardButton{}
 	if page > 1 {
-		button = models.InlineKeyboardButton{Text: "⬅️", CallbackData: callbacks.PaginationCallback + fmt.Sprintf("%v", page-1)}
+		button = models.InlineKeyboardButton{Text: "⬅️", CallbackData: callbacks.PaginationCallback + strconv.Itoa(page-1)}
 		row = append(row, button)
 	}
 
 	if hasNext {
-		button = models.InlineKeyboardButton{Text: "➡️", CallbackData: callbacks.PaginationCallback + fmt.Sprintf("%v", page+1)}
+		button = models.InlineKeyboardButton{Text: "➡️", CallbackData: callbacks.PaginationCallback + strconv.Itoa(page+1)}
 		row = append(row, button)
 	}
 
@@ -374,16 +374,15 @@ func createCabinetsMarkup(cabinetsIds tradeplus.Cabinets, callbacks CallbacksFor
 	return markup
 }
 
-func SendTextMessage(ctx context.Context, bot *botlib.Bot, chatId int64, text string) (*models.Message, error) {
-	message, err := bot.SendMessage(ctx, &botlib.SendMessageParams{ChatID: chatId, Text: text})
+func SendTextMessage(ctx context.Context, bot *botlib.Bot, chatID int64, text string) (*models.Message, error) {
+	message, err := bot.SendMessage(ctx, &botlib.SendMessageParams{ChatID: chatID, Text: text})
 	if err != nil {
 		return nil, err
 	}
 	return message, nil
 }
 
-func SendMediaMessage(ctx context.Context, bot *botlib.Bot, chatId int64, filePath string) error {
-
+func SendMediaMessage(ctx context.Context, bot *botlib.Bot, chatID int64, filePath string) error {
 	file, err := os.Open(filePath)
 	if err != nil {
 		return err
@@ -394,26 +393,11 @@ func SendMediaMessage(ctx context.Context, bot *botlib.Bot, chatId int64, filePa
 		Data:     file,
 	}
 
-	_, err = bot.SendDocument(ctx, &botlib.SendDocumentParams{ChatID: chatId, Document: &inputFile})
+	_, err = bot.SendDocument(ctx, &botlib.SendDocumentParams{ChatID: chatID, Document: &inputFile})
 	if err != nil {
 		return err
 	}
 	return nil
-}
-
-func initEnv(path, name string) (string, error) {
-	err := godotenv.Load(path)
-	if err != nil {
-		log.Printf("Ошибка загрузки файла %s: %v\n", path, err)
-		return "", fmt.Errorf("ошибка загрузки файла " + path)
-	}
-	// Получаем значения переменных среды
-	env := os.Getenv(name)
-
-	if env == "" {
-		return "", fmt.Errorf("переменная среды " + name + " не установлена")
-	}
-	return env, err
 }
 
 // Функция для автоподбора ширины колонок
@@ -471,7 +455,7 @@ func calculateSmartDemandForecast(salesData []float64) float64 {
 	fullPeriodAverage := mean(salesData)
 
 	//Среднее за последние 4 дня
-	recentAverage := 0.0
+	var recentAverage float64
 	if len(salesData) >= shortWindow {
 		recentAverage = mean(salesData[len(salesData)-shortWindow:])
 	} else {

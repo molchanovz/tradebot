@@ -27,7 +27,7 @@ type Orders struct {
 
 type StickerWB struct {
 	Stickers []struct {
-		OrderId int    `json:"orderId"`
+		OrderID int    `json:"orderId"`
 		PartA   string `json:"partA"`
 		PartB   string `json:"partB"`
 		Barcode string `json:"barcode"`
@@ -44,7 +44,7 @@ type OrdersListALL []struct {
 	OblastOkrugName string  `json:"oblastOkrugName"`
 	RegionName      string  `json:"regionName"`
 	SupplierArticle string  `json:"supplierArticle"`
-	NmId            int     `json:"nmId"`
+	NmID            int     `json:"nmId"`
 	Barcode         string  `json:"barcode"`
 	Category        string  `json:"category"`
 	Subject         string  `json:"subject"`
@@ -62,7 +62,7 @@ type OrdersListALL []struct {
 	CancelDate      string  `json:"cancelDate"`
 	Sticker         string  `json:"sticker"`
 	GNumber         string  `json:"gNumber"`
-	Srid            string  `json:"srid"`
+	SrID            string  `json:"srid"`
 }
 
 type OrdersListFBS struct {
@@ -82,18 +82,18 @@ type OrdersListFBS struct {
 		} `json:"address"`
 		ScanPrice             float64   `json:"scanPrice"`
 		DeliveryType          string    `json:"deliveryType"`
-		SupplyId              string    `json:"supplyId"`
-		OrderUid              string    `json:"orderUid"`
+		SupplyID              string    `json:"supplyId"`
+		OrderUID              string    `json:"orderUid"`
 		Article               string    `json:"article"`
 		ColorCode             string    `json:"colorCode"`
-		Rid                   string    `json:"rid"`
+		RID                   string    `json:"rid"`
 		CreatedAt             time.Time `json:"createdAt"`
 		Offices               []string  `json:"offices"`
 		Skus                  []string  `json:"skus"`
-		Id                    int       `json:"id"`
-		WarehouseId           int       `json:"warehouseId"`
-		NmId                  int       `json:"nmId"`
-		ChrtId                int       `json:"chrtId"`
+		ID                    int       `json:"id"`
+		WarehouseID           int       `json:"warehouseId"`
+		NmID                  int       `json:"nmId"`
+		ChrtID                int       `json:"chrtId"`
 		Price                 float64   `json:"price"`
 		ConvertedPrice        float64   `json:"convertedPrice"`
 		CurrencyCode          int       `json:"currencyCode"`
@@ -111,7 +111,7 @@ type SalesReturns []struct {
 	OblastOkrugName   string  `json:"oblastOkrugName"`
 	RegionName        string  `json:"regionName"`
 	SupplierArticle   string  `json:"supplierArticle"`
-	NmId              int     `json:"nmId"`
+	NmID              int     `json:"nmId"`
 	Barcode           string  `json:"barcode"`
 	Category          string  `json:"category"`
 	Subject           string  `json:"subject"`
@@ -131,12 +131,12 @@ type SalesReturns []struct {
 	OrderType         string  `json:"orderType"`
 	Sticker           string  `json:"sticker"`
 	GNumber           string  `json:"gNumber"`
-	Srid              string  `json:"srid"`
+	SrID              string  `json:"srid"`
 }
 
 type OrdersWithStatuses struct {
 	Orders []struct {
-		Id             int    `json:"id"`
+		ID             int    `json:"id"`
 		SupplierStatus string `json:"supplierStatus"`
 		WbStatus       string `json:"wbStatus"`
 	} `json:"orders"`
@@ -146,7 +146,7 @@ type Stock struct {
 	LastChangeDate  string `json:"lastChangeDate"`
 	WarehouseName   string `json:"warehouseName"`
 	SupplierArticle string `json:"supplierArticle"`
-	NmId            int    `json:"nmId"`
+	NmID            int    `json:"nmId"`
 	Barcode         string `json:"barcode"`
 	Quantity        int    `json:"quantity"`
 	InWayToClient   int    `json:"inWayToClient"`

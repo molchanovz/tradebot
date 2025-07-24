@@ -4,10 +4,12 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"github.com/go-pg/pg/v10"
 	"time"
+
 	"tradebot/pkg/client/ozon"
 	"tradebot/pkg/db"
+
+	"github.com/go-pg/pg/v10"
 )
 
 type Manager struct {
@@ -39,6 +41,10 @@ func (m Manager) CreateUser(ctx context.Context, chatID int64) (*User, error) {
 		// check user from db if exists
 		var err error
 		dbUser, err = repo.OneUser(ctx, &db.UserSearch{TgID: Pointer(chatID)})
+		if err != nil {
+			return fmt.Errorf("get user failed: %w", err)
+		}
+
 		if dbUser == nil {
 			// create user
 			dbUser, err = repo.AddUser(ctx, NewUserFromChatID(chatID).ToDB())
@@ -67,7 +73,7 @@ func (m Manager) GetCabinetsByMp(ctx context.Context, mp string) ([]Cabinet, err
 	return NewCabinets(dbCabinets), nil
 }
 
-func (m Manager) GetCabinetById(ctx context.Context, id int) (Cabinet, error) {
+func (m Manager) GetCabinetByID(ctx context.Context, id int) (Cabinet, error) {
 	cabinet, err := m.repo.CabinetByID(ctx, id)
 	if err != nil {
 		return Cabinet{}, err
@@ -93,12 +99,12 @@ func (m Manager) GetPrintedOrders(ctx context.Context, id int) (map[string]struc
 	return printedOrdersMap, nil
 }
 
-func (m Manager) CreateOrders(ctx context.Context, cabinetId int, newOrders ozon.PostingslistFbs) error {
+func (m Manager) CreateOrders(ctx context.Context, cabinetID int, newOrders ozon.PostingslistFbs) error {
 	for _, order := range newOrders.Result.PostingsFBS {
 		dbOrder := db.Order{
 			PostingNumber: order.PostingNumber,
-			CabinetID:     cabinetId,
-			Article:       order.Products[0].OfferId,
+			CabinetID:     cabinetID,
+			Article:       order.Products[0].OfferID,
 			CreatedAt:     time.Now(),
 		}
 		_, err := m.repo.AddOrder(ctx, &dbOrder)
@@ -112,7 +118,6 @@ func (m Manager) CreateOrders(ctx context.Context, cabinetId int, newOrders ozon
 func (m Manager) UpdateCabinet(ctx context.Context, cabinet Cabinet) error {
 	_, err := m.repo.UpdateCabinet(ctx, &cabinet.Cabinet)
 	return err
-
 }
 
 func Pointer[T any](in T) *T {

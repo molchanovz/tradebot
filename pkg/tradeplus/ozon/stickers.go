@@ -1,11 +1,8 @@
 package ozon
 
 import (
+	"errors"
 	"fmt"
-	"github.com/fogleman/gg"
-	"github.com/gen2brain/go-fitz"
-	"github.com/jung-kurt/gofpdf"
-	"github.com/pdfcpu/pdfcpu/pkg/api"
 	"image/jpeg"
 	"log"
 	"os"
@@ -14,18 +11,24 @@ import (
 	"sort"
 	"strings"
 	"time"
+
 	"tradebot/pkg/client/ozon"
 	"tradebot/pkg/tradeplus"
+
+	"github.com/fogleman/gg"
+	"github.com/gen2brain/go-fitz"
+	"github.com/jung-kurt/gofpdf"
+	"github.com/pdfcpu/pdfcpu/pkg/api"
 )
 
 type StickerManager struct {
-	clientId, token string
+	clientID, token string
 	printedOrders   map[string]struct{}
 }
 
-func NewStickerManager(clientId, token string, printedOrders map[string]struct{}) StickerManager {
+func NewStickerManager(clientID, token string, printedOrders map[string]struct{}) StickerManager {
 	return StickerManager{
-		clientId:      clientId,
+		clientID:      clientID,
 		token:         token,
 		printedOrders: printedOrders,
 	}
@@ -90,7 +93,7 @@ func (m StickerManager) getReadyPdf(orderIds ozon.PostingslistFbs, progressChan 
 
 	for i, order := range orderIds.Result.PostingsFBS {
 		// 1. Скачиваем этикетку Ozon
-		labelPDF := ozon.V2PostingFbsPackageLabel(m.clientId, m.token, order.PostingNumber)
+		labelPDF := ozon.V2PostingFbsPackageLabel(m.clientID, m.token, order.PostingNumber)
 
 		if labelPDF == "" {
 			return nil, fmt.Errorf("пустой labelPDF для заказа %s", order.PostingNumber)
@@ -99,18 +102,18 @@ func (m StickerManager) getReadyPdf(orderIds ozon.PostingslistFbs, progressChan 
 		// 2. Сохраняем во временный файл
 		orderPDF := fmt.Sprintf("%v.pdf", tradeplus.CodesPath+order.PostingNumber)
 		if err := os.WriteFile(orderPDF, []byte(labelPDF), 0644); err != nil {
-			return nil, fmt.Errorf("ошибка записи PDF: %v", err)
+			return nil, fmt.Errorf("ошибка записи PDF: %w", err)
 		}
 
 		// 3. Извлекаем первую страницу
 		if err := extractFirstPage(orderPDF); err != nil {
-			return nil, fmt.Errorf("ошибка извлечения страницы: %v", err)
+			return nil, fmt.Errorf("ошибка извлечения страницы: %w", err)
 		}
 
 		// 4. Объединяем с баркодом
 		finalPDF := fmt.Sprintf("%v.pdf", tradeplus.ReadyPath+order.PostingNumber)
-		if err := combineLabelWithBarcode(orderPDF, finalPDF, order.Products[0].OfferId); err != nil {
-			return nil, fmt.Errorf("ошибка объединения PDF с баркодом: %v", err)
+		if err := combineLabelWithBarcode(orderPDF, finalPDF, order.Products[0].OfferID); err != nil {
+			return nil, fmt.Errorf("ошибка объединения PDF с баркодом: %w", err)
 		}
 
 		// 5. Удаляем временные файлы
@@ -147,7 +150,7 @@ func (m StickerManager) getReadyPdf(orderIds ozon.PostingslistFbs, progressChan 
 	}
 
 	if len(resultFiles) == 0 {
-		return nil, fmt.Errorf("не было создано ни одного PDF файла")
+		return nil, errors.New("не было создано ни одного PDF файла")
 	}
 
 	return resultFiles, nil
@@ -162,7 +165,7 @@ func (m StickerManager) getSortedFbsOrders() (ozon.PostingslistFbs, error) {
 	offset := 0
 	limit := 1000
 	for {
-		postingsListFbs, err := ozon.PostingsListFbs(m.clientId, m.token, since, to, offset, "awaiting_deliver")
+		postingsListFbs, err := ozon.PostingsListFbs(m.clientID, m.token, since, to, offset, "awaiting_deliver")
 		if err != nil {
 			return postingsListFbs, err
 		}
@@ -180,7 +183,7 @@ func (m StickerManager) getSortedFbsOrders() (ozon.PostingslistFbs, error) {
 	}
 
 	sort.Slice(orders.Result.PostingsFBS, func(i, j int) bool {
-		return orders.Result.PostingsFBS[i].Products[0].OfferId < orders.Result.PostingsFBS[j].Products[0].OfferId
+		return orders.Result.PostingsFBS[i].Products[0].OfferID < orders.Result.PostingsFBS[j].Products[0].OfferID
 	})
 	return orders, nil
 }
@@ -192,23 +195,23 @@ func combineLabelWithBarcode(ozonPdfPath, outputPath, article string) error {
 
 	doc, err := fitz.New(ozonPdfPath)
 	if err != nil {
-		return fmt.Errorf("ошибка открытия PDF: %v", err)
+		return fmt.Errorf("ошибка открытия PDF: %w", err)
 	}
 	defer doc.Close()
 
 	img, err := doc.Image(0)
 	if err != nil {
-		return fmt.Errorf("ошибка извлечения страницы: %v", err)
+		return fmt.Errorf("ошибка извлечения страницы: %w", err)
 	}
 
 	file, err := os.Create(tmpImg)
 	if err != nil {
-		return fmt.Errorf("ошибка создания JPEG: %v", err)
+		return fmt.Errorf("ошибка создания JPEG: %w", err)
 	}
 	defer file.Close()
 
-	if err := jpeg.Encode(file, img, &jpeg.Options{Quality: 90}); err != nil {
-		return fmt.Errorf("ошибка сохранения JPEG: %v", err)
+	if err = jpeg.Encode(file, img, &jpeg.Options{Quality: 90}); err != nil {
+		return fmt.Errorf("ошибка сохранения JPEG: %w", err)
 	}
 
 	pdf := gofpdf.New("P", "mm", "", "")
@@ -240,7 +243,7 @@ func combineLabelWithBarcode(ozonPdfPath, outputPath, article string) error {
 	if !fileExists(barcodePath) {
 		barcodePath = tradeplus.GeneratedPath + article + "_generated.png"
 		if err = createBarcodeWithSKU(article, barcodePath, 40); err != nil {
-			fmt.Println(err)
+			log.Println(err)
 			barcodePath = tradeplus.BarcodesPath + "0.png"
 		}
 	}
@@ -293,7 +296,7 @@ func extractFirstPage(pdfPath string) error {
 
 	// Создаём временную директорию
 	if err := os.MkdirAll(tempDir, 0755); err != nil {
-		return fmt.Errorf("ошибка при создании временной директории: %v", err)
+		return fmt.Errorf("ошибка при создании временной директории: %w", err)
 	}
 	defer os.RemoveAll(tempDir) // Удаляем временную директорию в конце
 
@@ -302,7 +305,7 @@ func extractFirstPage(pdfPath string) error {
 
 	// Извлекаем первую страницу во временную директорию
 	if err := api.ExtractPagesFile(pdfPath, tempDir, selectedPages, nil); err != nil {
-		return fmt.Errorf("ошибка при извлечении страницы: %v", err)
+		return fmt.Errorf("ошибка при извлечении страницы: %w", err)
 	}
 
 	// Получаем путь к извлеченному файлу (ожидаем формат filename_page_1.pdf)
@@ -311,12 +314,12 @@ func extractFirstPage(pdfPath string) error {
 
 	// Удаляем оригинальный файл
 	if err := os.Remove(pdfPath); err != nil {
-		return fmt.Errorf("ошибка при удалении оригинального файла: %v", err)
+		return fmt.Errorf("ошибка при удалении оригинального файла: %w", err)
 	}
 
 	// Перемещаем извлеченный файл на место оригинального
 	if err := os.Rename(extractedFile, pdfPath); err != nil {
-		return fmt.Errorf("ошибка при перемещении файла: %v", err)
+		return fmt.Errorf("ошибка при перемещении файла: %w", err)
 	}
 
 	return nil
@@ -331,10 +334,9 @@ func fileExists(filename string) bool {
 }
 
 func mergePDFsInDirectory(orderSlice []string, outputFile string) error {
-
 	// Проверяем, есть ли PDF-файлы для объединения
 	if len(orderSlice) == 0 {
-		return fmt.Errorf("нет PDF-файлов в директории")
+		return errors.New("нет PDF-файлов в директории")
 	}
 
 	// Формируем команду для выполнения merge PDF через pdfcpu

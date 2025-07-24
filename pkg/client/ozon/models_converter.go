@@ -2,13 +2,14 @@ package ozon
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"log"
 )
 
-func PostingFbo(ClientId, ApiKey, PostingNumber string) PostingFBO {
+func PostingFbo(clientID, apiKey, postingNumber string) PostingFBO {
 	var posting PostingFBO
-	jsonString, _ := v2PostingFboGet(ClientId, ApiKey, PostingNumber)
+	jsonString, _ := v2PostingFboGet(clientID, apiKey, postingNumber)
 	err := json.Unmarshal([]byte(jsonString), &posting)
 	if err != nil {
 		log.Fatalf("Error decoding JSON: %v", err)
@@ -16,19 +17,19 @@ func PostingFbo(ClientId, ApiKey, PostingNumber string) PostingFBO {
 	return posting
 }
 
-func ReturnsList(ClientId, ApiKey string, LastID int, since, to string) (Returns, error) {
+func ReturnsList(clientID, apiKey string, lastID int, since, to string) (Returns, error) {
 	var returns Returns
-	jsonSrting := returnsList(ClientId, ApiKey, LastID, since, to)
+	jsonSrting := returnsList(clientID, apiKey, lastID, since, to)
 	err := json.Unmarshal([]byte(jsonSrting), &returns)
 	if err != nil {
-		return returns, fmt.Errorf("error decoding JSON: %v", err)
+		return returns, fmt.Errorf("error decoding JSON: %w", err)
 	}
 	return returns, nil
 }
 
-func PostingFbs(ClientId, ApiKey, PostingNumber string) PostingFBS {
+func PostingFbs(clientID, apiKey, postingNumber string) PostingFBS {
 	var posting PostingFBS
-	jsonString := V3PostingFbsGet(ClientId, ApiKey, PostingNumber) // assuming this function returns the JSON string
+	jsonString := V3PostingFbsGet(clientID, apiKey, postingNumber) // assuming this function returns the JSON string
 	err := json.Unmarshal([]byte(jsonString), &posting)
 	if err != nil {
 		log.Fatalf("Error decoding JSON: %v", err)
@@ -36,21 +37,21 @@ func PostingFbs(ClientId, ApiKey, PostingNumber string) PostingFBS {
 	return posting
 }
 
-func PostingsListFbs(ClientId, ApiKey, since, to string, offset int, status string) (PostingslistFbs, error) {
+func PostingsListFbs(clientID, apiKey, since, to string, offset int, status string) (PostingslistFbs, error) {
 	var postingList PostingslistFbs
-	jsonString, _ := V3PostingFbsList(ClientId, ApiKey, since, to, offset, status)
+	jsonString, _ := V3PostingFbsList(clientID, apiKey, since, to, offset, status)
 	if jsonString == "" {
-		return postingList, fmt.Errorf("json пустой")
+		return postingList, errors.New("json пустой")
 	}
 	err := json.Unmarshal([]byte(jsonString), &postingList)
 	if err != nil {
-		return postingList, fmt.Errorf("error decoding JSON: %v", err)
+		return postingList, fmt.Errorf("error decoding JSON: %w", err)
 	}
 	return postingList, nil
 }
-func PostingsListFbo(ClientId, ApiKey, since, to string, offset int) PostingslistFbo {
+func PostingsListFbo(clientID, apiKey, since, to string, offset int) PostingslistFbo {
 	var postingList PostingslistFbo
-	jsonString := V2PostingFboList(ClientId, ApiKey, since, to, offset)
+	jsonString := V2PostingFboList(clientID, apiKey, since, to, offset)
 	err := json.Unmarshal([]byte(jsonString), &postingList)
 	if err != nil {
 		log.Fatalf("Error decoding JSON: %v", err)
@@ -58,9 +59,9 @@ func PostingsListFbo(ClientId, ApiKey, since, to string, offset int) Postingslis
 	return postingList
 }
 
-func Stocks(ClientId, ApiKey string) StocksList {
+func Stocks(clientID, apiKey string) StocksList {
 	var stocks StocksList
-	jsonString := v2StockOnWarehouses(ClientId, ApiKey)
+	jsonString := v2StockOnWarehouses(clientID, apiKey)
 	err := json.Unmarshal([]byte(jsonString), &stocks)
 	if err != nil {
 		log.Fatalf("Error decoding JSON: %v", err)
@@ -68,9 +69,9 @@ func Stocks(ClientId, ApiKey string) StocksList {
 	return stocks
 }
 
-func StocksAnalytics(ClientId, ApiKey string, skus []string) StocksNew {
+func StocksAnalytics(clientID, apiKey string, skus []string) StocksNew {
 	var stocks StocksNew
-	jsonString := v1AnalyticsStocks(ClientId, ApiKey, skus)
+	jsonString := v1AnalyticsStocks(clientID, apiKey, skus)
 	err := json.Unmarshal([]byte(jsonString), &stocks)
 	if err != nil {
 		log.Fatalf("Error decoding JSON: %v", err)
@@ -78,9 +79,9 @@ func StocksAnalytics(ClientId, ApiKey string, skus []string) StocksNew {
 	return stocks
 }
 
-func Products(ClientId, ApiKey string) ProductList {
+func Products(clientID, apiKey string) ProductList {
 	var products ProductList
-	jsonString := v3ProductList(ClientId, ApiKey)
+	jsonString := v3ProductList(clientID, apiKey)
 	err := json.Unmarshal([]byte(jsonString), &products)
 	if err != nil {
 		log.Fatalf("Error decoding JSON: %v", err)
@@ -88,9 +89,9 @@ func Products(ClientId, ApiKey string) ProductList {
 	return products
 }
 
-func ProductsWithAttributes(ClientId, ApiKey string) ProductListWithAttributes {
+func ProductsWithAttributes(clientID, apiKey string) ProductListWithAttributes {
 	var products ProductListWithAttributes
-	jsonString := v4ProductInfoAttributes(ClientId, ApiKey)
+	jsonString := v4ProductInfoAttributes(clientID, apiKey)
 	err := json.Unmarshal([]byte(jsonString), &products)
 	if err != nil {
 		log.Fatalf("Error decoding JSON: %v", err)
@@ -98,9 +99,9 @@ func ProductsWithAttributes(ClientId, ApiKey string) ProductListWithAttributes {
 	return products
 }
 
-func Clusters(ClientId, ApiKey string) ClustersList {
+func Clusters(clientID, apiKey string) ClustersList {
 	var clusters ClustersList
-	jsonString := v1Clusters(ClientId, ApiKey)
+	jsonString := v1Clusters(clientID, apiKey)
 	err := json.Unmarshal([]byte(jsonString), &clusters)
 	if err != nil {
 		log.Fatalf("Error decoding JSON: %v", err)
@@ -108,9 +109,9 @@ func Clusters(ClientId, ApiKey string) ClustersList {
 	return clusters
 }
 
-//func GetLabel(ClientId, ApiKey, PostingNumber string) PackageLabel {
+//func GetLabel(clientID, apiKey, postingNumber string) PackageLabel {
 //	var label PackageLabel
-//	jsonString := V2PostingFbsPackageLabel(ClientId, ApiKey, PostingNumber)
+//	jsonString := V2PostingFbsPackageLabel(clientID, apiKey, postingNumber)
 //	err := json.Unmarshal([]byte(jsonString), &label)
 //	if err != nil {
 //		log.Fatalf("Error decoding JSON: %v", err)

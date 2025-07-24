@@ -1,22 +1,51 @@
 package ozon
 
 import (
-	"github.com/stretchr/testify/assert"
+	"context"
 	"testing"
 	"time"
+
 	"tradebot/pkg/db"
+
+	"github.com/BurntSushi/toml"
+	"github.com/go-pg/pg/v10"
+	"github.com/stretchr/testify/require"
+	"github.com/vmkteam/vfs"
 )
 
-var testRepo *db.Repo
-var cabinet db.Cabinet
-var err error
+type Config struct {
+	Database *pg.Options
+	Server   struct {
+		Host      string
+		Port      int
+		IsDevel   bool
+		EnableVFS bool
+	}
+	Sentry struct {
+		Environment string
+		DSN         string
+	}
+	VFS vfs.Config
+}
+
+var (
+	testRepo db.TradebotRepo
+	cabinet  *db.Cabinet
+	err      error
+	cfg      Config
+	ctx      = context.Background()
+)
 
 func TestMain(m *testing.M) {
-	testRepo, err = db.NewRepo("postgres://sergey:1719@localhost:5432/tradebot?sslmode=disable")
-	if err != nil {
+	if _, err = toml.DecodeFile("/Users/sergey/GolandProjects/tradebot/cfg/local.toml", &cfg); err != nil {
 		return
 	}
-	cabinet, err = testRepo.GetCabinetById("3")
+
+	pgdb := pg.Connect(cfg.Database)
+	dbc := db.New(pgdb)
+	testRepo = db.NewTradebotRepo(dbc)
+
+	cabinet, err = testRepo.CabinetByID(ctx, 3)
 	if err != nil {
 		return
 	}
@@ -29,6 +58,6 @@ func TestOrdersManager_GetReturnsMap(t *testing.T) {
 	to := time.Now().AddDate(0, 0, -1).Format("2006-01-02") + "T21:00:00.000Z"
 
 	got, err := m.GetReturnsMap(*cabinet.ClientID, cabinet.Key, since, to)
-	assert.Nil(t, err)
+	require.NoError(t, err)
 	t.Log(got)
 }

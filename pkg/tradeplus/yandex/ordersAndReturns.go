@@ -3,17 +3,18 @@ package yandex
 import (
 	"strconv"
 	"time"
+
 	"tradebot/pkg/client/yandex"
 	"tradebot/pkg/tradeplus"
 )
 
 type OrdersManager struct {
 	tradeplus.OrderManager
-	yandexCampaignIdFBO, yandexCampaignIdFBS, token string
+	yandexCampaignIDFBO, yandexCampaignIDFBS, token string
 }
 
-func NewOrdersManager(yandexCampaignIdFBO, yandexCampaignIdFBS, token, spreadsheetId string, daysAgo int) OrdersManager {
-	manager := OrdersManager{tradeplus.NewOrdersManager(spreadsheetId, daysAgo), yandexCampaignIdFBO, yandexCampaignIdFBS, token}
+func NewOrdersManager(yandexCampaignIDFBO, yandexCampaignIDFBS, token, spreadsheetID string, daysAgo int) OrdersManager {
+	manager := OrdersManager{tradeplus.NewOrdersManager(spreadsheetID, daysAgo), yandexCampaignIDFBO, yandexCampaignIDFBS, token}
 	return manager
 }
 
@@ -22,17 +23,16 @@ func (m OrdersManager) Write() error {
 	sheetsName := "Заказы YM-" + strconv.Itoa(date.Day())
 
 	var values [][]interface{}
-
 	values = append(values, []interface{}{"Отчет за " + date.Format("02.01.2006")})
 
 	writeRange := sheetsName + "!A1"
-	err := m.GoogleService.Write(m.SpreadsheetId, writeRange, values)
+	err := m.GoogleService.Write(m.SpreadsheetID, writeRange, values)
 	if err != nil {
 		return err
 	}
 
-	//Запись FBO заказов
-	postingsWithCountFBO, err := m.ordersMap(m.yandexCampaignIdFBO)
+	// Запись FBO заказов
+	postingsWithCountFBO, err := m.ordersMap(m.yandexCampaignIDFBO)
 	if err != nil {
 		return err
 	}
@@ -43,13 +43,13 @@ func (m OrdersManager) Write() error {
 	for article, count := range postingsWithCountFBO {
 		values = append(values, []interface{}{article, count})
 	}
-	err = m.GoogleService.Write(m.SpreadsheetId, writeRange, values)
+	err = m.GoogleService.Write(m.SpreadsheetID, writeRange, values)
 	if err != nil {
 		return err
 	}
 
 	//Запись FBS заказов
-	postingsWithCountFBS, err := m.ordersMap(m.yandexCampaignIdFBS)
+	postingsWithCountFBS, err := m.ordersMap(m.yandexCampaignIDFBS)
 	if err != nil {
 		return err
 	}
@@ -60,7 +60,7 @@ func (m OrdersManager) Write() error {
 	for article, count := range postingsWithCountFBS {
 		values = append(values, []interface{}{article, count})
 	}
-	err = m.GoogleService.Write(m.SpreadsheetId, writeRange, values)
+	err = m.GoogleService.Write(m.SpreadsheetID, writeRange, values)
 	if err != nil {
 		return err
 	}
@@ -104,9 +104,9 @@ func (m OrdersManager) Write() error {
 //	return postingsWithCountFBS
 //}
 
-func (m OrdersManager) ordersMap(yandexCampaignId string) (map[string]int, error) {
+func (m OrdersManager) ordersMap(yandexCampaignID string) (map[string]int, error) {
 	postingsWithCountALL := make(map[string]int)
-	ordersFbo, err := yandex.GetOrdersFbo(yandexCampaignId, m.token, m.DaysAgo)
+	ordersFbo, err := yandex.GetOrdersFbo(yandexCampaignID, m.token, m.DaysAgo)
 	if err != nil {
 		return postingsWithCountALL, err
 	}

@@ -2,14 +2,16 @@ package bot
 
 import (
 	"context"
-	botlib "github.com/go-telegram/bot"
 	"log"
+
 	"tradebot/pkg/db"
+
+	botlib "github.com/go-telegram/bot"
 )
 
 type Config struct {
 	Token    string
-	MyChatId string
+	MyChatID string
 }
 
 type Service struct {
@@ -17,10 +19,10 @@ type Service struct {
 	manager *Manager
 }
 
-func NewBotService(cfg Config, dbc db.DB) *Service {
+func NewService(cfg Config, dbc db.DB) *Service {
 	return &Service{
 		cfg:     cfg,
-		manager: NewManager(dbc, cfg.MyChatId),
+		manager: NewManager(dbc, cfg),
 	}
 }
 
@@ -39,7 +41,6 @@ func (s *Service) Start() {
 	go func() {
 		log.Printf("Бот запущен\n")
 		newBot.Start(context.Background())
-
 	}()
 	s.manager.RegisterBotHandlers()
 }

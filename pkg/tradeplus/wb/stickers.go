@@ -4,16 +4,18 @@ import (
 	"encoding/base64"
 	"errors"
 	"fmt"
-	"github.com/fogleman/gg"
-	"github.com/jung-kurt/gofpdf"
 	"log"
 	"os"
 	"os/exec"
 	"strconv"
 	"time"
+
 	"tradebot/pkg/client/googlesheet"
 	api2 "tradebot/pkg/client/wb"
 	"tradebot/pkg/tradeplus"
+
+	"github.com/fogleman/gg"
+	"github.com/jung-kurt/gofpdf"
 )
 
 type StickerManager struct {
@@ -28,10 +30,10 @@ func NewStickerManager(token string) StickerManager {
 	}
 }
 
-func (m StickerManager) GetReadyFile(supplyId string, progressChan chan tradeplus.Progress) ([]string, error) {
+func (m StickerManager) GetReadyFile(supplyID string, progressChan chan tradeplus.Progress) ([]string, error) {
 	tradeplus.CreateDirectories()
 
-	orders, err := api2.GetOrdersFbs(m.token, supplyId)
+	orders, err := api2.GetOrdersFbs(m.token, supplyID)
 	if err != nil {
 		return nil, err
 	}
@@ -45,14 +47,14 @@ func (m StickerManager) GetReadyFile(supplyId string, progressChan chan tradeplu
 		stickers, err := api2.GetStickersFbs(m.token, order.ID)
 		if err != nil {
 			fmt.Println("Ошибка GetStickersFbs")
-			return nil, err
+			return nil, fmt.Errorf("ошибка получения стикеров: %w", err)
 		}
 
 		if len(stickers.Stickers) == 0 {
 			continue
 		}
 
-		err = decodeToPDF(stickers.Stickers[0].File, stickers.Stickers[0].OrderId, order)
+		err = decodeToPDF(stickers.Stickers[0].File, stickers.Stickers[0].OrderID, order)
 		if err != nil {
 			return nil, err
 		}
@@ -67,10 +69,10 @@ func (m StickerManager) GetReadyFile(supplyId string, progressChan chan tradeplu
 			}
 
 			// Создаем PDF для текущего батча
-			batchFilePath := fmt.Sprintf("%s%s_%d.pdf", tradeplus.DirectoryPath, supplyId, batchCount)
+			batchFilePath := fmt.Sprintf("%s%s_%d.pdf", tradeplus.DirectoryPath, supplyID, batchCount)
 			err = mergePDFsInDirectory(ordersSlice, batchFilePath)
 			if err != nil {
-				return nil, fmt.Errorf("ошибка объединения PDF для батча %d: %v", batchCount, err)
+				return nil, fmt.Errorf("ошибка объединения PDF для батча %d: %w", batchCount, err)
 			}
 
 			if !fileExists(batchFilePath) {
@@ -89,71 +91,71 @@ func (m StickerManager) GetReadyFile(supplyId string, progressChan chan tradeplu
 	}
 
 	if len(resultFiles) == 0 {
-		return nil, fmt.Errorf("не было создано ни одного PDF файла")
+		return nil, errors.New("не было создано ни одного PDF файла")
 	}
 
 	return resultFiles, nil
 }
 
-func decodeToPNG(base64String string, orderId int) (string, error) {
+func decodeToPNG(base64String string, orderID int) (string, error) {
 	base64Data := base64String
 
 	data, err := base64.StdEncoding.DecodeString(base64Data)
 	if err != nil {
-		return "", errors.New(fmt.Sprintf("ошибка при декодировании base64:%v", err))
+		return "", fmt.Errorf("ошибка при декодировании base64:%w", err)
 	}
 
-	filePath := tradeplus.CodesPath + strconv.Itoa(orderId) + ".png" // Замените на желаемое имя файла и расширение
+	filePath := tradeplus.CodesPath + strconv.Itoa(orderID) + ".png" // Замените на желаемое имя файла и расширение
 
 	file, err := os.Create(filePath)
 	if err != nil {
-		return "", errors.New(fmt.Sprintf("ошибка при создании файла:%v", err))
+		return "", fmt.Errorf("ошибка при создании файла:%w", err)
 	}
 	defer file.Close()
 
 	_, err = file.Write(data)
 	if err != nil {
-		return "", errors.New(fmt.Sprintf("ошибка при записи в файл:%v", err))
+		return "", fmt.Errorf("ошибка при записи в файл:%w", err)
 	}
 
 	return filePath, nil
 }
 
-func decodeToPDF(base64String string, orderId int, order api2.OrderWB) error {
+func decodeToPDF(base64String string, orderID int, order api2.OrderWB) error {
 	pageWidthMM := 75.0
 	pageHeightMM := 120.0
 	// Создание нового PDF-документа
 	pdf := gofpdf.New("P", "mm", "", "")
 	// Добавление страницы с заданными размерами
 	pdf.AddPageFormat("P", gofpdf.SizeType{Wd: pageWidthMM, Ht: pageHeightMM})
-	imgPath1, err := decodeToPNG(base64String, orderId)
+	imgPath1, err := decodeToPNG(base64String, orderID)
 	if err != nil {
 		return err
 	}
 	// Добавление первого изображения в PDF (без изменения размера изображения)
 	pdf.ImageOptions(imgPath1, (75-58)/2, 13, 58, 40, false, gofpdf.ImageOptions{ImageType: "PNG"}, 0, "")
 
-	var skuImageUrl string
+	var skuImageURL string
 
-	skuImageUrl = tradeplus.BarcodesPath + order.Article + ".png"
+	skuImageURL = tradeplus.BarcodesPath + order.Article + ".png"
 
-	if !fileExists(skuImageUrl) {
-		skuImageUrl = ""
+	if !fileExists(skuImageURL) {
+		skuImageURL = ""
 	}
 
-	if skuImageUrl == "" {
+	if skuImageURL == "" {
 		// Путь к пустому баркоду с артикулом
-		skuImageUrl = tradeplus.GeneratedPath + order.Article + "_generated.png"
-		err := createBarcodeWithSKU(order.Article, skuImageUrl, 40)
+		skuImageURL = tradeplus.GeneratedPath + order.Article + "_generated.png"
+		err = createBarcodeWithSKU(order.Article, skuImageURL, 40)
 		if err != nil {
 			log.Printf("Ошибка при создании изображения с артикулом: %v", err)
-			skuImageUrl = tradeplus.BarcodesPath + "0.png" // Резервный пустой баркод
+			skuImageURL = tradeplus.BarcodesPath + "0.png" // Резервный пустой баркод
 		}
 	}
 
-	pdf.ImageOptions(skuImageUrl, (75-58)/2, 67, 58, 40, false, gofpdf.ImageOptions{ImageType: "PNG"}, 0, "")
+	pdf.ImageOptions(skuImageURL, (75-58)/2, 67, 58, 40, false, gofpdf.ImageOptions{ImageType: "PNG"}, 0, "")
 	// Сохранение PDF-документа
-	err = pdf.OutputFileAndClose(tradeplus.ReadyPath + strconv.Itoa(orderId) + ".pdf")
+	err = pdf.OutputFileAndClose(tradeplus.ReadyPath + strconv.Itoa(orderID) + ".pdf")
 	if err != nil {
 		return err
 	}
@@ -169,10 +171,9 @@ func fileExists(filename string) bool {
 }
 
 func mergePDFsInDirectory(orderSlice []string, outputFile string) error {
-
 	// Проверяем, есть ли PDF-файлы для объединения
 	if len(orderSlice) == 0 {
-		return fmt.Errorf("нет PDF-файлов в директории")
+		return errors.New("нет PDF-файлов в директории")
 	}
 
 	// Формируем команду для выполнения merge PDF через pdfcpu
@@ -182,7 +183,7 @@ func mergePDFsInDirectory(orderSlice []string, outputFile string) error {
 	// Запуск команды
 	output, err := cmd.CombinedOutput()
 	if err != nil {
-		return fmt.Errorf("ошибка выполнения pdfcpu: %v, %s", err, string(output))
+		return fmt.Errorf("ошибка выполнения pdfcpu: %w, %s", err, string(output))
 	}
 	return nil
 }

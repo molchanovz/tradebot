@@ -4,18 +4,20 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	botlib "github.com/go-telegram/bot"
-	"github.com/go-telegram/bot/models"
-	"github.com/xuri/excelize/v2"
 	"log"
 	"os"
 	"strconv"
 	"strings"
 	"time"
+
 	ozonClient "tradebot/pkg/client/ozon"
 	"tradebot/pkg/db"
 	"tradebot/pkg/tradeplus"
 	"tradebot/pkg/tradeplus/ozon"
+
+	botlib "github.com/go-telegram/bot"
+	"github.com/go-telegram/bot/models"
+	"github.com/xuri/excelize/v2"
 )
 
 const (
@@ -29,8 +31,8 @@ const (
 )
 
 func (m *Manager) ozonHandler(ctx context.Context, bot *botlib.Bot, update *models.Update) {
-	chatId := update.CallbackQuery.From.ID
-	messageId := update.CallbackQuery.Message.Message.ID
+	chatID := update.CallbackQuery.From.ID
+	messageID := update.CallbackQuery.Message.Message.ID
 
 	cabinets, err := m.bl.GetCabinetsByMp(ctx, db.MarketOzon)
 	if err != nil {
@@ -46,46 +48,41 @@ func (m *Manager) ozonHandler(ctx context.Context, bot *botlib.Bot, update *mode
 	}
 	markup := createCabinetsMarkup(cabinets, callbacks, 0, false)
 
-	_, err = bot.EditMessageText(ctx, &botlib.EditMessageTextParams{ChatID: chatId, MessageID: messageId, Text: text, ReplyMarkup: markup})
+	_, err = bot.EditMessageText(ctx, &botlib.EditMessageTextParams{ChatID: chatID, MessageID: messageID, Text: text, ReplyMarkup: markup})
 	if err != nil {
 		log.Printf("%v", err)
 		return
 	}
-
 }
 
 func (m *Manager) ozonCabinetHandler(ctx context.Context, bot *botlib.Bot, update *models.Update) {
-	chatId := update.CallbackQuery.From.ID
-	messageId := update.CallbackQuery.Message.Message.ID
+	chatID := update.CallbackQuery.From.ID
+	messageID := update.CallbackQuery.Message.Message.ID
 
 	parts := strings.Split(update.CallbackQuery.Data, "_")
-	cabinetId := parts[1]
+	cabinetID := parts[1]
 
 	text := "Кабинет Озон"
 
 	var buttonsRow, buttonBack []models.InlineKeyboardButton
-	buttonsRow = append(buttonsRow, models.InlineKeyboardButton{Text: "Вчерашние заказы", CallbackData: fmt.Sprintf("%v%v", CallbackOzonOrdersHandler, cabinetId)})
-	buttonsRow = append(buttonsRow, models.InlineKeyboardButton{Text: "Анализ", CallbackData: fmt.Sprintf("%v%v", CallbackOzonStocksHandler, cabinetId)})
-	buttonsRow = append(buttonsRow, models.InlineKeyboardButton{Text: "Этикетки FBS", CallbackData: fmt.Sprintf("%v%v", CallbackOzonStickersHandler, cabinetId)})
+	buttonsRow = append(buttonsRow, models.InlineKeyboardButton{Text: "Вчерашние заказы", CallbackData: fmt.Sprintf("%v%v", CallbackOzonOrdersHandler, cabinetID)})
+	buttonsRow = append(buttonsRow, models.InlineKeyboardButton{Text: "Анализ", CallbackData: fmt.Sprintf("%v%v", CallbackOzonStocksHandler, cabinetID)})
+	buttonsRow = append(buttonsRow, models.InlineKeyboardButton{Text: "Этикетки FBS", CallbackData: fmt.Sprintf("%v%v", CallbackOzonStickersHandler, cabinetID)})
 
 	buttonBack = append(buttonBack, models.InlineKeyboardButton{Text: "Назад", CallbackData: CallbackOzonHandler})
 
 	allButtons := [][]models.InlineKeyboardButton{buttonsRow, buttonBack}
 	markup := models.InlineKeyboardMarkup{InlineKeyboard: allButtons}
 
-	_, err := bot.EditMessageText(ctx, &botlib.EditMessageTextParams{ChatID: chatId, MessageID: messageId, Text: text, ReplyMarkup: markup})
+	_, err := bot.EditMessageText(ctx, &botlib.EditMessageTextParams{ChatID: chatID, MessageID: messageID, Text: text, ReplyMarkup: markup})
 	if err != nil {
 		log.Printf("%v", err)
 		return
 	}
-
 }
 
 func (m *Manager) ozonOrdersHandler(ctx context.Context, bot *botlib.Bot, update *models.Update) {
-	chatId := update.CallbackQuery.From.ID
-
-	//parts := strings.Split(update.CallbackQuery.Data, "_")
-	//cabinetId := parts[1]
+	chatID := update.CallbackQuery.From.ID
 
 	cabinets, err := m.bl.GetCabinetsByMp(ctx, db.MarketOzon)
 	if err != nil {
@@ -100,7 +97,7 @@ func (m *Manager) ozonOrdersHandler(ctx context.Context, bot *botlib.Bot, update
 
 	maxValuesCount, err := ozon.NewService(cabinets[0]).GetOrdersAndReturnsManager().WriteToGoogleSheets(titleRange, fbsRange, fboRange, returnsRange)
 	if err != nil {
-		_, err = SendTextMessage(ctx, bot, chatId, err.Error())
+		_, err = SendTextMessage(ctx, bot, chatID, err.Error())
 		if err != nil {
 			log.Printf("%v", err)
 			return
@@ -118,7 +115,7 @@ func (m *Manager) ozonOrdersHandler(ctx context.Context, bot *botlib.Bot, update
 
 	_, err = ozon.NewService(cabinets[1]).GetOrdersAndReturnsManager().WriteToGoogleSheets(titleRange, fbsRange, fboRange, returnsRange)
 	if err != nil {
-		_, err = SendTextMessage(ctx, bot, chatId, err.Error())
+		_, err = SendTextMessage(ctx, bot, chatID, err.Error())
 		if err != nil {
 			log.Printf("%v", err)
 			return
@@ -126,27 +123,24 @@ func (m *Manager) ozonOrdersHandler(ctx context.Context, bot *botlib.Bot, update
 		return
 	}
 
-	_, err = SendTextMessage(ctx, bot, chatId, "Заказы озон за вчерашний день были внесены")
+	_, err = SendTextMessage(ctx, bot, chatID, "Заказы озон за вчерашний день были внесены")
 	if err != nil {
 		log.Printf("%v", err)
 		return
 	}
-
 }
+
 func (m *Manager) ozonStocksHandler(ctx context.Context, bot *botlib.Bot, update *models.Update) {
-
-	K := 1.5
-
-	chatId := update.CallbackQuery.From.ID
+	chatID := update.CallbackQuery.From.ID
 
 	parts := strings.Split(update.CallbackQuery.Data, "_")
-	cabinetId, err := strconv.Atoi(parts[1])
+	cabinetID, err := strconv.Atoi(parts[1])
 	if err != nil {
 		log.Println("Ошибка конвертации:", err)
 		return
 	}
 
-	cabinet, err := m.bl.GetCabinetById(ctx, cabinetId)
+	cabinet, err := m.bl.GetCabinetByID(ctx, cabinetID)
 	if err != nil {
 		log.Println("Ошибка получения кабинета:", err)
 		return
@@ -156,41 +150,40 @@ func (m *Manager) ozonStocksHandler(ctx context.Context, bot *botlib.Bot, update
 
 	stocks := ozon.NewService(cabinet).GetStocksManager().GetStocks()
 
-	filePath, err := generateExcelozon(postings, stocks, K, CallbackOzonHandler)
+	filePath, err := generateExcelOzon(postings, stocks, CallbackOzonHandler)
 	if err != nil {
 		log.Println("Ошибка при создании Excel:", err)
 		return
 	}
 
-	err = SendMediaMessage(ctx, bot, chatId, filePath)
+	err = SendMediaMessage(ctx, bot, chatID, filePath)
 	if err != nil {
 		return
 	}
 
 	os.Remove(filePath)
-
 }
 
 // ozonStickersHandler создает клавиатуру кнопок для печати FBS стикеров
 func (m *Manager) ozonStickersHandler(ctx context.Context, bot *botlib.Bot, update *models.Update) {
-	chatId := update.CallbackQuery.From.ID
+	chatID := update.CallbackQuery.From.ID
 
-	messageId := update.CallbackQuery.Message.Message.ID
+	messageID := update.CallbackQuery.Message.Message.ID
 
 	parts := strings.Split(update.CallbackQuery.Data, "_")
-	cabinetId := parts[1]
+	cabinetID := parts[1]
 
 	text := "Печать FBS стикеров. Выберите, какие стикеры распечатать"
 
 	var buttonsRow, buttonBack []models.InlineKeyboardButton
-	buttonsRow = append(buttonsRow, models.InlineKeyboardButton{Text: "Новые", CallbackData: fmt.Sprintf("%v%v_%v", CallbackOzonPrintStickersHandler, cabinetId, ozon.NewLabels)})
-	buttonsRow = append(buttonsRow, models.InlineKeyboardButton{Text: "Все из сборки", CallbackData: fmt.Sprintf("%v%v_%v", CallbackOzonPrintStickersHandler, cabinetId, ozon.AllLabels)})
-	buttonBack = append(buttonBack, models.InlineKeyboardButton{Text: "Назад", CallbackData: fmt.Sprintf("%v%v", CallbackSelectOzonCabinetHandler, cabinetId)})
+	buttonsRow = append(buttonsRow, models.InlineKeyboardButton{Text: "Новые", CallbackData: fmt.Sprintf("%v%v_%v", CallbackOzonPrintStickersHandler, cabinetID, ozon.NewLabels)})
+	buttonsRow = append(buttonsRow, models.InlineKeyboardButton{Text: "Все из сборки", CallbackData: fmt.Sprintf("%v%v_%v", CallbackOzonPrintStickersHandler, cabinetID, ozon.AllLabels)})
+	buttonBack = append(buttonBack, models.InlineKeyboardButton{Text: "Назад", CallbackData: fmt.Sprintf("%v%v", CallbackSelectOzonCabinetHandler, cabinetID)})
 
 	allButtons := [][]models.InlineKeyboardButton{buttonsRow, buttonBack}
 	markup := models.InlineKeyboardMarkup{InlineKeyboard: allButtons}
 
-	_, err := bot.EditMessageText(ctx, &botlib.EditMessageTextParams{ChatID: chatId, MessageID: messageId, Text: text, ReplyMarkup: markup})
+	_, err := bot.EditMessageText(ctx, &botlib.EditMessageTextParams{ChatID: chatID, MessageID: messageID, Text: text, ReplyMarkup: markup})
 	if err != nil {
 		log.Printf("%v", err)
 		return
@@ -199,10 +192,10 @@ func (m *Manager) ozonStickersHandler(ctx context.Context, bot *botlib.Bot, upda
 
 // ozonPrintStickers точка входа для печати FBS стикеров
 func (m *Manager) ozonPrintStickers(ctx context.Context, bot *botlib.Bot, update *models.Update) {
-	chatId := update.CallbackQuery.From.ID
+	chatID := update.CallbackQuery.From.ID
 
 	parts := strings.Split(update.CallbackQuery.Data, "_")
-	cabinetId, err := strconv.Atoi(parts[1])
+	cabinetID, err := strconv.Atoi(parts[1])
 	if err != nil {
 		log.Println("Ошибка конвертации:", err)
 		return
@@ -210,7 +203,7 @@ func (m *Manager) ozonPrintStickers(ctx context.Context, bot *botlib.Bot, update
 
 	flag := parts[2]
 
-	cabinet, err := m.bl.GetCabinetById(ctx, cabinetId)
+	cabinet, err := m.bl.GetCabinetByID(ctx, cabinetID)
 	if err != nil {
 		log.Println("Ошибка получения кабинета:", err)
 		return
@@ -253,7 +246,6 @@ func (m *Manager) ozonPrintStickers(ctx context.Context, bot *botlib.Bot, update
 
 				done <- filePaths
 			}()
-
 		}
 
 	case ozon.NewLabels:
@@ -280,7 +272,7 @@ func (m *Manager) ozonPrintStickers(ctx context.Context, bot *botlib.Bot, update
 	default:
 		err = errors.New("неопознанный флаг для печати")
 		if err != nil {
-			_, err = SendTextMessage(ctx, bot, chatId, err.Error())
+			_, err = SendTextMessage(ctx, bot, chatID, err.Error())
 			if err != nil {
 				log.Println(err)
 				return
@@ -289,9 +281,9 @@ func (m *Manager) ozonPrintStickers(ctx context.Context, bot *botlib.Bot, update
 		}
 	}
 
-	err = WaitReadyFile(ctx, bot, chatId, progressChan, done, errChan)
+	err = WaitReadyFile(ctx, bot, chatID, progressChan, done, errChan)
 	if err != nil {
-		_, err = SendTextMessage(ctx, bot, chatId, err.Error())
+		_, err = SendTextMessage(ctx, bot, chatID, err.Error())
 		if err != nil {
 			log.Println(err)
 			return
@@ -300,9 +292,9 @@ func (m *Manager) ozonPrintStickers(ctx context.Context, bot *botlib.Bot, update
 	}
 
 	if flag == ozon.NewLabels && len(newOrders.Result.PostingsFBS) > 0 {
-		err = m.bl.CreateOrders(ctx, cabinetId, newOrders)
+		err = m.bl.CreateOrders(ctx, cabinetID, newOrders)
 		if err != nil {
-			_, err = SendTextMessage(ctx, bot, chatId, fmt.Sprintf("ошибка добавления заказов: %v", err))
+			_, err = SendTextMessage(ctx, bot, chatID, fmt.Sprintf("ошибка добавления заказов: %v", err))
 			if err != nil {
 				log.Println(err)
 				return
@@ -314,7 +306,7 @@ func (m *Manager) ozonPrintStickers(ctx context.Context, bot *botlib.Bot, update
 	tradeplus.CleanFiles()
 }
 
-func generateExcelozon(postings map[string]map[string]map[string]int, stocks map[string]map[string]ozon.CustomStocks, K float64, mp string) (string, error) {
+func generateExcelOzon(postings map[string]map[string]map[string]int, stocks map[string]map[string]ozon.CustomStocks, mp string) (string, error) {
 	file := excelize.NewFile()
 
 	err := createFullStatistic(postings, stocks, file)
@@ -322,7 +314,7 @@ func generateExcelozon(postings map[string]map[string]map[string]int, stocks map
 		return "", err
 	}
 
-	for cluster, _ := range postings {
+	for cluster := range postings {
 		err = createStatisticByCluster(cluster, postings, stocks, file)
 		if err != nil {
 			return "", err
@@ -338,7 +330,10 @@ func generateExcelozon(postings map[string]map[string]map[string]int, stocks map
 
 func createFullStatistic(postings map[string]map[string]map[string]int, stocks map[string]map[string]ozon.CustomStocks, file *excelize.File) error {
 	sheetName := "Общая статистика"
-	file.SetSheetName("Sheet1", sheetName)
+	err := file.SetSheetName("Sheet1", sheetName)
+	if err != nil {
+		return err
+	}
 
 	dates := make([]string, 0, 14)
 	for i := 14; i > 0; i-- {
@@ -349,7 +344,10 @@ func createFullStatistic(postings map[string]map[string]map[string]int, stocks m
 	headers := []string{"Кластер", "Артикул", "Заказано", "Доступно, шт", "В пути, шт", "Спрос (прогноз)"}
 	for i, h := range headers {
 		cell := string(rune('A'+i)) + "1"
-		file.SetCellValue(sheetName, cell, h)
+		err = file.SetCellValue(sheetName, cell, h)
+		if err != nil {
+			return err
+		}
 		err := file.SetColWidth(sheetName, string(rune('A'+i)), string(rune('A'+i)), float64(len(h)))
 		if err != nil {
 			return fmt.Errorf("ошибка настройки ширины колонки %s: %v", string(rune('A'+i)), err)
@@ -395,19 +393,42 @@ func createFullStatistic(postings map[string]map[string]map[string]int, stocks m
 				}
 			}
 
-			file.SetCellValue(sheetName, "A"+strconv.Itoa(row), cluster)
-			file.SetCellValue(sheetName, "B"+strconv.Itoa(row), article)
-			file.SetCellValue(sheetName, "C"+strconv.Itoa(row), totalOrdered)
-			file.SetCellValue(sheetName, "D"+strconv.Itoa(row), availableStockCount)
-			file.SetCellValue(sheetName, "E"+strconv.Itoa(row), inWayStockCount)
-			file.SetCellValue(sheetName, "F"+strconv.Itoa(row), forecast)
+			err = file.SetCellValue(sheetName, "A"+strconv.Itoa(row), cluster)
+			if err != nil {
+				return err
+			}
+
+			err = file.SetCellValue(sheetName, "B"+strconv.Itoa(row), article)
+			if err != nil {
+				return err
+			}
+
+			err = file.SetCellValue(sheetName, "C"+strconv.Itoa(row), totalOrdered)
+			if err != nil {
+				return err
+			}
+
+			err = file.SetCellValue(sheetName, "D"+strconv.Itoa(row), availableStockCount)
+			if err != nil {
+				return err
+			}
+
+			err = file.SetCellValue(sheetName, "E"+strconv.Itoa(row), inWayStockCount)
+			if err != nil {
+				return err
+			}
+
+			err = file.SetCellValue(sheetName, "F"+strconv.Itoa(row), forecast)
+			if err != nil {
+				return err
+			}
 
 			row++
 		}
 	}
 
 	rangeRef := fmt.Sprintf("A1:F%d", row-1)
-	err := file.AutoFilter(sheetName, rangeRef, nil)
+	err = file.AutoFilter(sheetName, rangeRef, nil)
 	if err != nil {
 		return err
 	}
@@ -416,12 +437,18 @@ func createFullStatistic(postings map[string]map[string]map[string]int, stocks m
 
 func createStatisticByCluster(cluster string, postings map[string]map[string]map[string]int, stocks map[string]map[string]ozon.CustomStocks, file *excelize.File) error {
 	sheetName := cluster
-	file.NewSheet(sheetName)
+	_, err := file.NewSheet(sheetName)
+	if err != nil {
+		return err
+	}
 
 	headers := []string{"артикул", "имя (необязательно)", "количество"}
 	for i, h := range headers {
 		cell := string(rune('A'+i)) + "1"
-		file.SetCellValue(sheetName, cell, h)
+		err = file.SetCellValue(sheetName, cell, h)
+		if err != nil {
+			return err
+		}
 	}
 
 	// все уникальные артикулы
@@ -470,17 +497,25 @@ func createStatisticByCluster(cluster string, postings map[string]map[string]map
 		forecast := calculateSmartDemandForecast(salesData)
 
 		if forecast > float64(availableStockCount+inWayStockCount) && forecast != 0 {
-			file.SetCellValue(sheetName, "A"+strconv.Itoa(row), article)
-			file.SetCellValue(sheetName, "B"+strconv.Itoa(row), "")
-			file.SetCellValue(sheetName, "C"+strconv.Itoa(row), forecast-float64(availableStockCount+inWayStockCount))
+			err = file.SetCellValue(sheetName, "A"+strconv.Itoa(row), article)
+			if err != nil {
+				return err
+			}
+			err = file.SetCellValue(sheetName, "B"+strconv.Itoa(row), "")
+			if err != nil {
+				return err
+			}
+			err = file.SetCellValue(sheetName, "C"+strconv.Itoa(row), forecast-float64(availableStockCount+inWayStockCount))
+			if err != nil {
+				return err
+			}
 
 			row++
 		}
-
 	}
 
-	if err := autoFitColumns(file, sheetName, []string{"A", "B", "C"}); err != nil {
-		return fmt.Errorf("ошибка автоподбора ширины: %v", err)
+	if err = autoFitColumns(file, sheetName, []string{"A", "B", "C"}); err != nil {
+		return fmt.Errorf("ошибка автоподбора ширины: %w", err)
 	}
 	return nil
 }

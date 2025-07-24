@@ -9,16 +9,15 @@ type GoogleSheetWriter interface {
 }
 
 type OrderManager struct {
-	manager       GoogleSheetWriter
 	DaysAgo       int
-	SpreadsheetId string
+	SpreadsheetID string
 	GoogleService googlesheet.SheetsService
 }
 
-func NewOrdersManager(spreadsheetId string, daysAgo int) OrderManager {
+func NewOrdersManager(spreadsheetID string, daysAgo int) OrderManager {
 	ordersManager := OrderManager{
 		DaysAgo:       daysAgo,
-		SpreadsheetId: spreadsheetId,
+		SpreadsheetID: spreadsheetID,
 		GoogleService: googlesheet.NewSheetsService("pkg/client/googlesheet/token.json", "pkg/client/googlesheet/credentials.json"),
 	}
 

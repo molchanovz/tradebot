@@ -1,8 +1,9 @@
 package ozon
 
 import (
-	"fmt"
+	"strconv"
 	"time"
+
 	"tradebot/pkg/client/ozon"
 )
 
@@ -13,13 +14,13 @@ type Period struct {
 
 type AnalyzeManager struct {
 	daysAgo         int
-	clientId, token string
+	clientID, token string
 	//googleService   google.SheetsService
 }
 
-func NewAnalyzeManager(clientId, token string, daysAgo int) AnalyzeManager {
+func NewAnalyzeManager(clientID, token string, daysAgo int) AnalyzeManager {
 	return AnalyzeManager{
-		clientId: clientId,
+		clientID: clientID,
 		token:    token,
 		daysAgo:  daysAgo,
 		//googleService: google.NewSheetsService("token.json", "credentials.json"),
@@ -44,27 +45,24 @@ func (m AnalyzeManager) GetPostings() map[string]map[string]map[string]int {
 	}
 
 	for date, period := range dates {
-
 		// Обработка FBS заказов
 		offset := 0
 		limit := 1000
 		for {
-			postingsListFbs, _ := ozon.PostingsListFbs(m.clientId, m.token, period.since, period.to, offset, "")
+			postingsListFbs, _ := ozon.PostingsListFbs(m.clientID, m.token, period.since, period.to, offset, "")
 
 			for _, order := range postingsListFbs.Result.PostingsFBS {
-
 				cluster := order.FinancialData.ClusterTo
 				if _, exists := postingsMap[cluster]; !exists {
 					postingsMap[cluster] = make(map[string]map[string]int)
 				}
 
 				for _, product := range order.Products {
-
-					if _, exists := postingsMap[cluster][product.OfferId]; !exists {
-						postingsMap[cluster][product.OfferId] = make(map[string]int)
+					if _, exists := postingsMap[cluster][product.OfferID]; !exists {
+						postingsMap[cluster][product.OfferID] = make(map[string]int)
 					}
 
-					postingsMap[cluster][product.OfferId][date] += product.Quantity
+					postingsMap[cluster][product.OfferID][date] += product.Quantity
 				}
 			}
 
@@ -77,22 +75,20 @@ func (m AnalyzeManager) GetPostings() map[string]map[string]map[string]int {
 		// Обработка FBO заказов
 		offset = 0
 		for {
-			postingsListFbo := ozon.PostingsListFbo(m.clientId, m.token, period.since, period.to, offset)
+			postingsListFbo := ozon.PostingsListFbo(m.clientID, m.token, period.since, period.to, offset)
 
 			for _, order := range postingsListFbo.Result {
-
 				cluster := order.FinancialData.ClusterTo
 				if _, exists := postingsMap[cluster]; !exists {
 					postingsMap[cluster] = make(map[string]map[string]int)
 				}
 
 				for _, product := range order.Products {
-
-					if _, exists := postingsMap[cluster][product.OfferId]; !exists {
-						postingsMap[cluster][product.OfferId] = make(map[string]int)
+					if _, exists := postingsMap[cluster][product.OfferID]; !exists {
+						postingsMap[cluster][product.OfferID] = make(map[string]int)
 					}
 
-					postingsMap[cluster][product.OfferId][date] += product.Quantity
+					postingsMap[cluster][product.OfferID][date] += product.Quantity
 				}
 			}
 
@@ -113,13 +109,12 @@ type CustomStocks struct {
 }
 
 func (m AnalyzeManager) GetStocks() map[string]map[string]CustomStocks {
-
-	products := ozon.ProductsWithAttributes(m.clientId, m.token)
+	products := ozon.ProductsWithAttributes(m.clientID, m.token)
 
 	skus := make([]string, 0, len(products.Result))
 
 	for _, item := range products.Result {
-		skus = append(skus, fmt.Sprintf("%v", item.Sku))
+		skus = append(skus, strconv.Itoa(item.Sku))
 	}
 
 	maxSkus := 100
@@ -132,23 +127,23 @@ func (m AnalyzeManager) GetStocks() map[string]map[string]CustomStocks {
 		}
 		chunk := skus[i:end]
 
-		stocksList := ozon.StocksAnalytics(m.clientId, m.token, chunk)
+		stocksList := ozon.StocksAnalytics(m.clientID, m.token, chunk)
 
 		for _, item := range stocksList.Items {
 			if _, exists := stocksMap[item.ClusterName]; !exists {
 				stocksMap[item.ClusterName] = make(map[string]CustomStocks)
 			}
-			if stock, exists := stocksMap[item.ClusterName][item.OfferId]; exists {
+			if stock, exists := stocksMap[item.ClusterName][item.OfferID]; exists {
 				//TODO Добавить все остатки
 				stock.AvailableStockCount += item.AvailableStockCount
 				stock.RequestedStockCount += item.RequestedStockCount
 				stock.TransitStockCount += item.TransitStockCount
-				stocksMap[item.ClusterName][item.OfferId] = stock
+				stocksMap[item.ClusterName][item.OfferID] = stock
 			} else {
 				stock.AvailableStockCount = item.AvailableStockCount
 				stock.RequestedStockCount = item.RequestedStockCount
 				stock.TransitStockCount = item.TransitStockCount
-				stocksMap[item.ClusterName][item.OfferId] = stock
+				stocksMap[item.ClusterName][item.OfferID] = stock
 			}
 		}
 	}
@@ -157,5 +152,5 @@ func (m AnalyzeManager) GetStocks() map[string]map[string]CustomStocks {
 }
 
 func (m AnalyzeManager) GetClusters() ozon.ClustersList {
-	return ozon.Clusters(m.clientId, m.token)
+	return ozon.Clusters(m.clientID, m.token)
 }

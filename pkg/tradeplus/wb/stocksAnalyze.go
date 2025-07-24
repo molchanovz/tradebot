@@ -42,8 +42,8 @@ func GetOrders(apiKey string, daysAgo int) map[string]map[string]int {
 			ordersMap[cluster] = make(map[string]int)
 		}
 		ordersMap[cluster][order.SupplierArticle] += 1
-
 	}
+
 	return ordersMap
 }
 

@@ -1,11 +1,11 @@
 package tradeplus
 
 import (
-	"fmt"
+	"log"
 	"os"
 )
 
-//const (
+// const (
 //	DirectoryPath = "/app/pkg/fbsPrinter/"
 //	CodesPath     = DirectoryPath + "codes/"
 //	ReadyPath     = DirectoryPath + "ready/"
@@ -13,7 +13,7 @@ import (
 //	BatchesPath   = DirectoryPath + "batches/"
 //	BarcodesPath  = "/assets/barcodes/"
 //	FontPath      = "/assets/font.ttf"
-//)
+// )
 
 const (
 	DirectoryPath = "pkg/tradeplus/printer/"
@@ -33,57 +33,56 @@ type Progress struct {
 func CleanFiles() {
 	err := os.RemoveAll(CodesPath)
 	if err != nil {
-		fmt.Println(err)
+		log.Println(err)
 	}
 	err = os.Mkdir(CodesPath, 0755)
 	if err != nil {
-		fmt.Println(err)
+		log.Println(err)
 	}
 
 	err = os.RemoveAll(BatchesPath)
 	if err != nil {
-		fmt.Println(err)
+		log.Println(err)
 	}
 	err = os.Mkdir(BatchesPath, 0755)
 	if err != nil {
-		fmt.Println(err)
+		log.Println(err)
 	}
 
 	err = os.RemoveAll(ReadyPath)
 	if err != nil {
-		fmt.Println(err)
+		log.Println(err)
 	}
 	err = os.Mkdir(ReadyPath, 0755)
 	if err != nil {
-		fmt.Println(err)
+		log.Println(err)
 	}
 
 	err = os.RemoveAll(GeneratedPath)
 	if err != nil {
-		fmt.Println(err)
+		log.Println(err)
 	}
 	err = os.Mkdir(GeneratedPath, 0755)
 	if err != nil {
-		fmt.Println(err)
+		log.Println(err)
 	}
-
 }
 
 func CreateDirectories() {
 	err := os.MkdirAll(GeneratedPath, 0755)
 	if err != nil {
-		fmt.Println(err)
+		log.Println(err)
 	}
 	err = os.MkdirAll(ReadyPath, 0755)
 	if err != nil {
-		fmt.Println(err)
+		log.Println(err)
 	}
 	err = os.MkdirAll(CodesPath, 0755)
 	if err != nil {
-		fmt.Println(err)
+		log.Println(err)
 	}
 	err = os.Mkdir(BatchesPath, 0755)
 	if err != nil {
-		fmt.Println(err)
+		log.Println(err)
 	}
 }

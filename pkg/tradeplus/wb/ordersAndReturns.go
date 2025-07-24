@@ -5,6 +5,7 @@ import (
 	"strconv"
 	"strings"
 	"time"
+
 	"tradebot/pkg/client/wb"
 	"tradebot/pkg/tradeplus"
 )
@@ -14,8 +15,8 @@ type OrdersManager struct {
 	token string
 }
 
-func NewOrdersManager(token, spreadsheetId string, daysAgo int) OrdersManager {
-	manager := OrdersManager{tradeplus.NewOrdersManager(spreadsheetId, daysAgo), token}
+func NewOrdersManager(token, spreadsheetID string, daysAgo int) OrdersManager {
+	manager := OrdersManager{tradeplus.NewOrdersManager(spreadsheetID, daysAgo), token}
 	return manager
 }
 
@@ -29,12 +30,12 @@ func (m OrdersManager) Write() error {
 
 	writeRange := sheetsName + "!A1"
 
-	err := m.GoogleService.Write(m.SpreadsheetId, writeRange, values)
+	err := m.GoogleService.Write(m.SpreadsheetID, writeRange, values)
 	if err != nil {
 		return err
 	}
 
-	//Запись ALL заказов
+	// Запись ALL заказов
 	postingsWithCountFBO, postingsWithCountFBS, err := m.getPostingsMap()
 	if err != nil {
 		return err
@@ -46,12 +47,12 @@ func (m OrdersManager) Write() error {
 	for article, count := range postingsWithCountFBO {
 		values = append(values, []interface{}{article, count})
 	}
-	err = m.GoogleService.Write(m.SpreadsheetId, writeRange, values)
+	err = m.GoogleService.Write(m.SpreadsheetID, writeRange, values)
 	if err != nil {
 		return err
 	}
 
-	//Запись FBS заказов
+	// Запись FBS заказов
 	writeRange = sheetsName + "!D2:E100"
 	colName = "Заказы FBS"
 	values = [][]interface{}{}
@@ -59,12 +60,12 @@ func (m OrdersManager) Write() error {
 	for article, count := range postingsWithCountFBS {
 		values = append(values, []interface{}{article, count})
 	}
-	err = m.GoogleService.Write(m.SpreadsheetId, writeRange, values)
+	err = m.GoogleService.Write(m.SpreadsheetID, writeRange, values)
 	if err != nil {
 		return err
 	}
 
-	//Запись возвратов
+	// Запись возвратов
 	returnsWithCount := m.getReturnsMap()
 	writeRange = sheetsName + "!G2:H100"
 	colName = "Возвраты"
@@ -73,41 +74,12 @@ func (m OrdersManager) Write() error {
 	for article, count := range returnsWithCount {
 		values = append(values, []interface{}{article, count})
 	}
-	err = m.GoogleService.Write(m.SpreadsheetId, writeRange, values)
+	err = m.GoogleService.Write(m.SpreadsheetID, writeRange, values)
 	if err != nil {
 		return err
 	}
 
 	return nil
-}
-
-func (m OrdersManager) ordersMapFBS() map[string]int {
-	postingsWithCountFBS := make(map[string]int)
-
-	postingsList := wb.GetOrdersFBS(m.token, m.DaysAgo)
-
-	isOrderCanceled := func(status string) bool {
-
-		var statuses = map[string]struct{}{
-			"canceled":           {},
-			"canceled_by_client": {},
-			"declined_by_client": {},
-		}
-
-		if _, isCancel := statuses[status]; isCancel {
-			return true
-		}
-		return false
-	}
-
-	for _, posting := range postingsList.OrdersFBS {
-		status := wb.GetPostingStatus(m.token, posting.Id)
-		if !isOrderCanceled(status) {
-			postingsWithCountFBS[posting.Article] += 1
-		}
-	}
-
-	return postingsWithCountFBS
 }
 
 func (m OrdersManager) getPostingsMap() (map[string]int, map[string]int, error) {
@@ -117,17 +89,15 @@ func (m OrdersManager) getPostingsMap() (map[string]int, map[string]int, error) 
 	postingsList := wb.GetAllOrders(m.token, m.DaysAgo, 1)
 
 	for _, posting := range postingsList {
-		if posting.IsCancel == false {
-			if posting.WarehouseType == "Склад WB" {
+		if !posting.IsCancel {
+			switch posting.WarehouseType {
+			case "Склад WB":
 				postingsWithCountFBO[posting.SupplierArticle]++
-			} else if posting.WarehouseType == "Склад продавца" {
+			case "Склад продавца":
 				postingsWithCountFBS[posting.SupplierArticle]++
-			} else {
+			default:
 				return postingsWithCountFBO, postingsWithCountFBS, fmt.Errorf("неопознанный тип склада: %v", posting.WarehouseType)
 			}
-
-		} else {
-			fmt.Println("Пропавший заказ ", posting.SupplierArticle, " ", posting.IsCancel)
 		}
 	}
 
