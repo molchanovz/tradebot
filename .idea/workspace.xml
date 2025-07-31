@@ -4,53 +4,7 @@
     <option name="autoReloadType" value="ALL" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="640077d7-ce81-4039-9739-8ad3e3a8d41a" name="Changes" comment="Edit Dockerfile&#10;&#10;change main.go path&#10;change COPY paths">
-      <change afterPath="$PROJECT_DIR$/docs/patches/2025-07-30.sql" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/pkg/app/cron.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/pkg/client/wb/common.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/pkg/db/common_ext_test.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/pkg/tradeplus/schedule/schedule.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/dataSources.local.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources.local.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/dataSources/1b64e527-6db9-43cd-b9c3-7934f9a53ece.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources/1b64e527-6db9-43cd-b9c3-7934f9a53ece.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/dataSources/1b64e527-6db9-43cd-b9c3-7934f9a53ece/storage_v2/_src_/database/tradebot.42HFSw/schema/public.abK9xQ.meta" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources/1b64e527-6db9-43cd-b9c3-7934f9a53ece/storage_v2/_src_/database/tradebot.42HFSw/schema/public.abK9xQ.meta" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/dataSources/a29fc1c7-214c-4de3-8bd4-3b5d017fac9b.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources/a29fc1c7-214c-4de3-8bd4-3b5d017fac9b.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/dataSources/a29fc1c7-214c-4de3-8bd4-3b5d017fac9b/storage_v2/_src_/database/tradebot.42HFSw/schema/public.abK9xQ.meta" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources/a29fc1c7-214c-4de3-8bd4-3b5d017fac9b/storage_v2/_src_/database/tradebot.42HFSw/schema/public.abK9xQ.meta" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/dataSources/e46cf114-1a39-4b3b-9d06-1e7a6450c36b.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources/e46cf114-1a39-4b3b-9d06-1e7a6450c36b.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/dataSources/e46cf114-1a39-4b3b-9d06-1e7a6450c36b/storage_v2/_src_/database/migration.zjM2zQ/schema/public.abK9xQ.meta" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources/e46cf114-1a39-4b3b-9d06-1e7a6450c36b/storage_v2/_src_/database/migration.zjM2zQ/schema/public.abK9xQ.meta" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/dataSources/e46cf114-1a39-4b3b-9d06-1e7a6450c36b/storage_v2/_src_/database/tradebot.42HFSw/schema/public.abK9xQ.meta" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources/e46cf114-1a39-4b3b-9d06-1e7a6450c36b/storage_v2/_src_/database/tradebot.42HFSw/schema/public.abK9xQ.meta" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/sqldialects.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/sqldialects.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmd/tradebot/main.go" beforeDir="false" afterPath="$PROJECT_DIR$/cmd/tradebot/main.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/model/tradebot.xml" beforeDir="false" afterPath="$PROJECT_DIR$/docs/model/tradebot.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/tradebot.pdd" beforeDir="false" afterPath="$PROJECT_DIR$/docs/tradebot.pdd" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/tradebot.sql" beforeDir="false" afterPath="$PROJECT_DIR$/docs/tradebot.sql" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pkg/app/app.go" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/app/app.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pkg/app/handlers.go" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/app/handlers.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pkg/app/vfs.go" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/app/vfs.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pkg/bot/handlers_default.go" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/bot/handlers_default.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pkg/bot/handlers_ozon.go" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/bot/handlers_ozon.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pkg/bot/handlers_wb.go" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/bot/handlers_wb.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pkg/bot/handlers_yandex.go" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/bot/handlers_yandex.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pkg/client/googlesheet/sheets.go" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/client/googlesheet/sheets.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pkg/client/ozon/models_converter.go" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/pkg/client/ozon/ozon.go" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/client/ozon/api.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pkg/client/wb/api.go" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/client/wb/api.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pkg/client/wb/model_converter.go" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/client/wb/model_converter.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pkg/client/yandex/models_converter.go" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/client/yandex/models_converter.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pkg/db/common_ext.go" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/db/common_ext.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pkg/db/model.go" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/db/model.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pkg/db/model_search.go" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/db/model_search.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pkg/db/model_validate.go" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/db/model_validate.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pkg/db/tradebot.go" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/db/tradebot.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pkg/tradeplus/manager.go" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/tradeplus/manager.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pkg/tradeplus/ozon/ordersAndReturns.go" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/tradeplus/ozon/ordersAndReturns.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pkg/tradeplus/ozon/stickers.go" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/tradeplus/ozon/stickers.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pkg/tradeplus/ozon/stocksAnalyze.go" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/tradeplus/ozon/stocksAnalyze.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pkg/tradeplus/scheduler/scheduler.go" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/pkg/tradeplus/wb/ordersAndReturns.go" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/tradeplus/wb/ordersAndReturns.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pkg/tradeplus/wb/stocksAnalyze.go" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/tradeplus/wb/stocksAnalyze.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pkg/tradeplus/yandex/ordersAndReturns.go" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/tradeplus/yandex/ordersAndReturns.go" afterDir="false" />
-    </list>
+    <list default="true" id="640077d7-ce81-4039-9739-8ad3e3a8d41a" name="Changes" comment="Fix wb sticker handler" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -119,6 +73,7 @@
     "Go Test.TestReturnsList in tradebot/pkg/marketplaces/OZON/api.executor": "Run",
     "Go Test.TestTradebotRepo_CountCabinets in tradebot/pkg/db.executor": "Run",
     "Go Test.TestTradebotRepo_DeleteOrdersByFilter in tradebot/pkg/db.executor": "Run",
+    "Go Test.TestTradebotRepo_SelectOrdersByFilter in tradebot/pkg/db.executor": "Run",
     "Makefile Target.mfd-model.executor": "Run",
     "Makefile Target.mfd-repo.executor": "Run",
     "Makefile Target.mfd-xml.executor": "Run",
@@ -163,15 +118,6 @@
     </key>
   </component>
   <component name="RunManager" selected="Go Test.TestTradebotRepo_DeleteOrdersByFilter in tradebot/pkg/db">
-    <configuration name="go build tradebot/cmd/tradebot" type="GoApplicationRunConfiguration" factoryName="Go Application" temporary="true" nameIsGenerated="true">
-      <module name="tradebot" />
-      <working_directory value="$PROJECT_DIR$" />
-      <kind value="PACKAGE" />
-      <package value="tradebot/cmd/tradebot" />
-      <directory value="$PROJECT_DIR$" />
-      <filePath value="$PROJECT_DIR$/cmd/tradebot/main.go" />
-      <method v="2" />
-    </configuration>
     <configuration name="TestTradebotRepo_DeleteOrdersByFilter in tradebot/pkg/db" type="GoTestRunConfiguration" factoryName="Go Test" temporary="true" nameIsGenerated="true">
       <module name="tradebot" />
       <working_directory value="$PROJECT_DIR$/pkg/db" />
@@ -182,6 +128,18 @@
       <filePath value="$PROJECT_DIR$" />
       <framework value="gotest" />
       <pattern value="^\QTestTradebotRepo_DeleteOrdersByFilter\E$" />
+      <method v="2" />
+    </configuration>
+    <configuration name="TestTradebotRepo_SelectOrdersByFilter in tradebot/pkg/db" type="GoTestRunConfiguration" factoryName="Go Test" temporary="true" nameIsGenerated="true">
+      <module name="tradebot" />
+      <working_directory value="$PROJECT_DIR$/pkg/db" />
+      <root_directory value="$PROJECT_DIR$" />
+      <kind value="PACKAGE" />
+      <package value="tradebot/pkg/db" />
+      <directory value="$PROJECT_DIR$" />
+      <filePath value="$PROJECT_DIR$" />
+      <framework value="gotest" />
+      <pattern value="^\QTestTradebotRepo_SelectOrdersByFilter\E$" />
       <method v="2" />
     </configuration>
     <configuration name="mfd-model" type="MAKEFILE_TARGET_RUN_CONFIGURATION" factoryName="Makefile" temporary="true">
@@ -205,10 +163,10 @@
     <recent_temporary>
       <list>
         <item itemvalue="Go Test.TestTradebotRepo_DeleteOrdersByFilter in tradebot/pkg/db" />
+        <item itemvalue="Go Test.TestTradebotRepo_SelectOrdersByFilter in tradebot/pkg/db" />
         <item itemvalue="Makefile Target.mfd-repo" />
         <item itemvalue="Makefile Target.mfd-model" />
         <item itemvalue="Makefile Target.mfd-xml" />
-        <item itemvalue="Go Build.go build tradebot/cmd/tradebot" />
       </list>
     </recent_temporary>
   </component>
@@ -232,8 +190,6 @@
   </component>
   <component name="VcsManagerConfiguration">
     <option name="CHECK_CODE_SMELLS_BEFORE_PROJECT_COMMIT" value="false" />
-    <MESSAGE value="fix ozon/wb fbs: add batches" />
-    <MESSAGE value="add ozon CreateDirectories" />
     <MESSAGE value="fix comment" />
     <MESSAGE value="extract methods" />
     <MESSAGE value="add errChan" />
@@ -257,7 +213,9 @@
     <MESSAGE value="Change cron package to vmkteam/cron" />
     <MESSAGE value="Add .env in .gitignore" />
     <MESSAGE value="Edit Dockerfile&#10;&#10;change main.go path&#10;change COPY paths" />
-    <option name="LAST_COMMIT_MESSAGE" value="Edit Dockerfile&#10;&#10;change main.go path&#10;change COPY paths" />
+    <MESSAGE value="add cron" />
+    <MESSAGE value="Fix wb sticker handler" />
+    <option name="LAST_COMMIT_MESSAGE" value="Fix wb sticker handler" />
   </component>
   <component name="VgoProject">
     <settings-migrated>true</settings-migrated>

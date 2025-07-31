@@ -138,6 +138,8 @@ func (m *Manager) getYandexFbs(ctx context.Context, bot *botlib.Bot, chatID int6
 	errChan := make(chan error)
 	var filePaths []string
 
+	defer tradeplus.CleanFiles()
+
 	cabinets, err := m.bl.GetCabinetsByMp(ctx, db.MarketYandex)
 	if err != nil {
 		log.Println(err)

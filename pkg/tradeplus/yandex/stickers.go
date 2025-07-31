@@ -25,16 +25,6 @@ import (
 //	}
 //}
 
-const (
-	YaDirectoryPath = "/app/pkg/YANDEX/yandex_stickers_fbs/"
-
-	codesPath     = YaDirectoryPath + "codes/"
-	readyPath     = YaDirectoryPath + "ready/"
-	generatedPath = YaDirectoryPath + "generated/"
-	barcodesPath  = "/app/pkg/barcodes/"
-	fontPath      = "/app/assets/font.ttf"
-)
-
 type StickersManager struct {
 	CampaignID, Token string
 }
@@ -75,7 +65,7 @@ func (m StickersManager) GetOrdersInfo(supplyID string, progressChan chan tradep
 		}
 
 		// Создаем файл для записи данных
-		file, err := os.Create(fmt.Sprintf("%v.pdf", codesPath+strconv.Itoa(int(order.Order.ID))))
+		file, err := os.Create(fmt.Sprintf("%v.pdf", tradeplus.CodesPath+strconv.Itoa(int(order.Order.ID))))
 		if err != nil {
 			return "", err
 		}
@@ -88,24 +78,24 @@ func (m StickersManager) GetOrdersInfo(supplyID string, progressChan chan tradep
 
 		file.Close()
 
-		pdf, err := CreateLabel(fmt.Sprintf("%v.pdf", codesPath+strconv.Itoa(int(order.Order.ID))), order.Order.Items)
+		pdf, err := CreateLabel(fmt.Sprintf("%v.pdf", tradeplus.CodesPath+strconv.Itoa(int(order.Order.ID))), order.Order.Items)
 		if err != nil {
 			return "", fmt.Errorf("ошибка в CreateLabel: %w", err)
 		}
 
 		// Сохраняем итоговый PDF
-		err = pdf.OutputFileAndClose(fmt.Sprintf("%v.pdf", readyPath+strconv.Itoa(int(order.Order.ID))))
+		err = pdf.OutputFileAndClose(fmt.Sprintf("%v.pdf", tradeplus.ReadyPath+strconv.Itoa(int(order.Order.ID))))
 		if err != nil {
 			return "", fmt.Errorf("ошибка при сохранении PDF: %w", err)
 		}
-		ordersSlice = append(ordersSlice, fmt.Sprintf("%v.pdf", readyPath+strconv.Itoa(int(order.Order.ID))))
+		ordersSlice = append(ordersSlice, fmt.Sprintf("%v.pdf", tradeplus.ReadyPath+strconv.Itoa(int(order.Order.ID))))
 
 		if i%5 == 0 {
 			progressChan <- tradeplus.Progress{Current: i, Total: totalOrders}
 		}
 	}
 
-	readyFilePath := YaDirectoryPath + supplyID + ".pdf"
+	readyFilePath := tradeplus.ReadyPath + supplyID + ".pdf"
 
 	err = mergePDFsInDirectory(ordersSlice, readyFilePath)
 	if err != nil {
@@ -156,7 +146,7 @@ func CreateLabel(codePath string, items api2.Items) (*gofpdf.Fpdf, error) {
 		pdf.Image(pageImagePath, (75-58)/2, 10, 58, 40, false, "", 0, "") // Центрируем по горизонтали
 
 		// Размещаем изображение из PNG-файла ниже страницы (58 x 40 мм)
-		skuImageURL := fmt.Sprintf("%v.png", barcodesPath+stringItems[i])
+		skuImageURL := fmt.Sprintf("%v.png", tradeplus.BarcodesPath+stringItems[i])
 		isExist := fileExists(skuImageURL)
 
 		if !isExist {
@@ -165,11 +155,11 @@ func CreateLabel(codePath string, items api2.Items) (*gofpdf.Fpdf, error) {
 
 		if skuImageURL == "" {
 			// Путь к пустому баркоду с артикулом
-			skuImageURL = generatedPath + stringItems[i] + "_generated.png"
+			skuImageURL = tradeplus.GeneratedPath + stringItems[i] + "_generated.png"
 			err = createBarcodeWithSKU(stringItems[i], skuImageURL, 40)
 			if err != nil {
 				log.Printf("Ошибка при создании изображения с артикулом: %v", err)
-				skuImageURL = barcodesPath + "0.png" // Резервный пустой баркод
+				skuImageURL = tradeplus.BarcodesPath + "0.png" // Резервный пустой баркод
 			}
 		}
 
@@ -232,15 +222,15 @@ func fileExists(filename string) bool {
 }
 
 func CreateDirectories() {
-	err := os.MkdirAll(generatedPath, 0755) // 0755 - это права доступа к директории (чтение, запись, выполнение)
+	err := os.MkdirAll(tradeplus.GeneratedPath, 0755) // 0755 - это права доступа к директории (чтение, запись, выполнение)
 	if err != nil {
 		log.Println(err)
 	}
-	err = os.MkdirAll(readyPath, 0755) // 0755 - это права доступа к директории (чтение, запись, выполнение)
+	err = os.MkdirAll(tradeplus.ReadyPath, 0755) // 0755 - это права доступа к директории (чтение, запись, выполнение)
 	if err != nil {
 		log.Println(err)
 	}
-	err = os.MkdirAll(codesPath, 0755) // 0755 - это права доступа к директории (чтение, запись, выполнение)
+	err = os.MkdirAll(tradeplus.CodesPath, 0755) // 0755 - это права доступа к директории (чтение, запись, выполнение)
 	if err != nil {
 		log.Println(err)
 	}
@@ -276,7 +266,7 @@ func createBarcodeWithSKU(sku string, outputPath string, fontSize float64) error
 	dc.Clear()
 
 	// Загрузка шрифта и установка его размера
-	if err := dc.LoadFontFace(fontPath, fontSize); err != nil {
+	if err := dc.LoadFontFace(tradeplus.FontPath, fontSize); err != nil {
 		return err
 	}
 
