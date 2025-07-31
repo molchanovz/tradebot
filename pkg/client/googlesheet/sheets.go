@@ -27,34 +27,41 @@ func NewSheetsService(tokenPath, credentialsPath string) SheetsService {
 }
 
 // Retrieve a token, saves the token, then returns the generated client.
-func (gs SheetsService) getClient(config *oauth2.Config) *http.Client {
+func (gs SheetsService) getClient(config *oauth2.Config) (*http.Client, error) {
 	// The file token.json stores the user's access and refresh tokens, and is
 	// created automatically when the authorization flow completes for the first
 	// time.
 	tok, err := gs.tokenFromFile(gs.tokenPath)
 	if err != nil {
-		tok = gs.getTokenFromWeb(config)
-		gs.saveToken(gs.tokenPath, tok)
+		tok, err = gs.getTokenFromWeb(config)
+		if err != nil {
+			return nil, err
+		}
+
+		err = gs.saveToken(gs.tokenPath, tok)
+		if err != nil {
+			return nil, err
+		}
 	}
-	return config.Client(context.Background(), tok)
+	return config.Client(context.Background(), tok), nil
 }
 
 // Request a token from the web, then returns the retrieved token.
-func (SheetsService) getTokenFromWeb(config *oauth2.Config) *oauth2.Token {
+func (SheetsService) getTokenFromWeb(config *oauth2.Config) (*oauth2.Token, error) {
 	authURL := config.AuthCodeURL("state-token", oauth2.AccessTypeOffline)
 	log.Printf("Go to the following link in your browser then type the "+
 		"authorization code: \n%v\n", authURL)
 
 	var authCode string
 	if _, err := fmt.Scan(&authCode); err != nil {
-		log.Fatalf("Unable to read authorization code: %v", err)
+		return nil, fmt.Errorf("unable to read authorization code: %w", err)
 	}
 
 	tok, err := config.Exchange(context.TODO(), authCode)
 	if err != nil {
-		log.Fatalf("Unable to retrieve token from web: %v", err)
+		fmt.Errorf("unable to retrieve token from web: %w", err)
 	}
-	return tok
+	return tok, err
 }
 
 // Retrieves a token from a local file.
@@ -69,18 +76,20 @@ func (SheetsService) tokenFromFile(file string) (*oauth2.Token, error) {
 	return tok, err
 }
 
-func (SheetsService) saveToken(path string, token *oauth2.Token) {
+func (SheetsService) saveToken(path string, token *oauth2.Token) error {
 	log.Printf("Saving credential file to: %s\n", path)
 	f, err := os.OpenFile(path, os.O_RDWR|os.O_CREATE|os.O_TRUNC, 0600)
 	if err != nil {
-		log.Fatalf("Unable to cache oauth token: %v", err)
+		return fmt.Errorf("unable to cache oauth token: %v", err)
 	}
 	defer f.Close()
+
 	err = json.NewEncoder(f).Encode(token)
 	if err != nil {
-		log.Println(err)
-		return
+		return fmt.Errorf("encode token failed: %v", err)
 	}
+
+	return nil
 }
 
 // func (gs SheetsService) read(spreadsheetId, readRange string) [][]interface{} {
@@ -134,7 +143,7 @@ func (gs SheetsService) Write(spreadsheetID, writeRange string, values [][]inter
 	}
 
 	// Получение клиента OAuth 2.0
-	client := gs.getClient(config)
+	client, _ := gs.getClient(config)
 
 	// Создание сервиса для работы с Google Sheets
 	srv, err := sheets.NewService(ctx, option.WithHTTPClient(client))

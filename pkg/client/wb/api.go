@@ -37,7 +37,7 @@ func request(reqType, url string, headers map[string]string, params map[string]s
 	defer resp.Body.Close()
 
 	if resp.StatusCode != http.StatusOK {
-		return "", fmt.Errorf("получен статус %v", resp.Status)
+		return "", fmt.Errorf("get status: %v", resp.Status)
 	}
 
 	jsonString, err := io.ReadAll(resp.Body)

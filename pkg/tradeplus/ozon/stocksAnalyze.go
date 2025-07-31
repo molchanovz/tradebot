@@ -49,7 +49,7 @@ func (m AnalyzeManager) GetPostings() map[string]map[string]map[string]int {
 		offset := 0
 		limit := 1000
 		for {
-			postingsListFbs, _ := ozon.PostingsListFbs(m.clientID, m.token, period.since, period.to, offset, "")
+			postingsListFbs, _ := ozon.NewClient(m.clientID, m.token).PostingsListFbs(period.since, period.to, offset, "")
 
 			for _, order := range postingsListFbs.Result.PostingsFBS {
 				cluster := order.FinancialData.ClusterTo
@@ -75,7 +75,7 @@ func (m AnalyzeManager) GetPostings() map[string]map[string]map[string]int {
 		// Обработка FBO заказов
 		offset = 0
 		for {
-			postingsListFbo := ozon.PostingsListFbo(m.clientID, m.token, period.since, period.to, offset)
+			postingsListFbo, _ := ozon.NewClient(m.clientID, m.token).PostingsListFbo(period.since, period.to, offset)
 
 			for _, order := range postingsListFbo.Result {
 				cluster := order.FinancialData.ClusterTo
@@ -108,8 +108,11 @@ type CustomStocks struct {
 	RequestedStockCount int
 }
 
-func (m AnalyzeManager) GetStocks() map[string]map[string]CustomStocks {
-	products := ozon.ProductsWithAttributes(m.clientID, m.token)
+func (m AnalyzeManager) GetStocks() (map[string]map[string]CustomStocks, error) {
+	products, err := ozon.NewClient(m.clientID, m.token).ProductsWithAttributes()
+	if err != nil {
+		return nil, err
+	}
 
 	skus := make([]string, 0, len(products.Result))
 
@@ -127,7 +130,7 @@ func (m AnalyzeManager) GetStocks() map[string]map[string]CustomStocks {
 		}
 		chunk := skus[i:end]
 
-		stocksList := ozon.StocksAnalytics(m.clientID, m.token, chunk)
+		stocksList, _ := ozon.NewClient(m.clientID, m.token).StocksAnalytics(chunk)
 
 		for _, item := range stocksList.Items {
 			if _, exists := stocksMap[item.ClusterName]; !exists {
@@ -148,9 +151,9 @@ func (m AnalyzeManager) GetStocks() map[string]map[string]CustomStocks {
 		}
 	}
 
-	return stocksMap
+	return stocksMap, nil
 }
 
-func (m AnalyzeManager) GetClusters() ozon.ClustersList {
-	return ozon.Clusters(m.clientID, m.token)
+func (m AnalyzeManager) GetClusters() (ozon.ClustersList, error) {
+	return ozon.NewClient(m.clientID, m.token).Clusters()
 }

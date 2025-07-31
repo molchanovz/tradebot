@@ -106,6 +106,7 @@ func (m Manager) CreateOrders(ctx context.Context, cabinetID int, newOrders ozon
 			CabinetID:     cabinetID,
 			Article:       order.Products[0].OfferID,
 			CreatedAt:     time.Now(),
+			StatusID:      db.StatusEnabled,
 		}
 		_, err := m.repo.AddOrder(ctx, &dbOrder)
 		if err != nil {
@@ -113,6 +114,11 @@ func (m Manager) CreateOrders(ctx context.Context, cabinetID int, newOrders ozon
 		}
 	}
 	return nil
+}
+
+func (m Manager) DeleteOrders(ctx context.Context) error {
+	_, err := m.repo.DeleteOrdersLastWeek(ctx)
+	return err
 }
 
 func (m Manager) UpdateCabinet(ctx context.Context, cabinet Cabinet) error {

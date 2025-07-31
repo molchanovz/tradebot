@@ -41,7 +41,7 @@ func (m OrdersManager) WriteToGoogleSheets(titleRange, fbsRange, fboRange, retur
 	}
 
 	//Заполнение заказов FBS в writeRange
-	postingsWithCountFBS := m.getPostingsMapFBS(m.clientID, m.token)
+	postingsWithCountFBS, _ := m.getPostingsMapFBS(m.clientID, m.token)
 	values = [][]interface{}{}
 	values = append(values, []interface{}{"Заказы FBS"})
 	for article, count := range postingsWithCountFBS {
@@ -58,7 +58,7 @@ func (m OrdersManager) WriteToGoogleSheets(titleRange, fbsRange, fboRange, retur
 		return 0, err
 	}
 
-	postingsWithCountFBO := m.getPostingsMapFBO(m.clientID, m.token)
+	postingsWithCountFBO, _ := m.getPostingsMapFBO(m.clientID, m.token)
 	values = [][]interface{}{}
 	values = append(values, []interface{}{"Заказы FBO"})
 	for article, count := range postingsWithCountFBO {
@@ -102,25 +102,37 @@ func (m OrdersManager) WriteToGoogleSheets(titleRange, fbsRange, fboRange, retur
 	return maxValuesCount, nil
 }
 
-func (m OrdersManager) getPostingsMapFBS(clientID, token string) map[string]int {
+func (m OrdersManager) getPostingsMapFBS(clientID, token string) (map[string]int, error) {
 	postingsWithCountFBS := make(map[string]int)
+
 	since := time.Now().AddDate(0, 0, m.DaysAgo*(-1)-1).Format("2006-01-02") + "T21:00:00.000Z"
 	to := time.Now().AddDate(0, 0, m.DaysAgo*(-1)).Format("2006-01-02") + "T21:00:00.000Z"
-	potingsListFbs, _ := ozon.PostingsListFbs(clientID, token, since, to, 0, "")
-	for _, posting := range potingsListFbs.Result.PostingsFBS {
+
+	postingsListFbs, err := ozon.NewClient(clientID, token).PostingsListFbs(since, to, 0, "")
+	if err != nil {
+		return nil, err
+	}
+
+	for _, posting := range postingsListFbs.Result.PostingsFBS {
 		if posting.Status != "cancelled" {
 			for _, product := range posting.Products {
 				postingsWithCountFBS[product.OfferID] += product.Quantity
 			}
 		}
 	}
-	return postingsWithCountFBS
+	return postingsWithCountFBS, nil
 }
-func (m OrdersManager) getPostingsMapFBO(clientID, token string) map[string]int {
+func (m OrdersManager) getPostingsMapFBO(clientID, token string) (map[string]int, error) {
 	postingsWithCountFBO := make(map[string]int)
+
 	since := time.Now().AddDate(0, 0, m.DaysAgo*(-1)-1).Format("2006-01-02") + "T21:00:00.000Z"
 	to := time.Now().AddDate(0, 0, m.DaysAgo*(-1)).Format("2006-01-02") + "T21:00:00.000Z"
-	postingsListFbo := ozon.PostingsListFbo(clientID, token, since, to, 0)
+
+	postingsListFbo, err := ozon.NewClient(clientID, token).PostingsListFbo(since, to, 0)
+	if err != nil {
+		return nil, err
+	}
+
 	for _, posting := range postingsListFbo.Result {
 		if posting.Status != "cancelled" {
 			for _, product := range posting.Products {
@@ -128,7 +140,7 @@ func (m OrdersManager) getPostingsMapFBO(clientID, token string) map[string]int 
 			}
 		}
 	}
-	return postingsWithCountFBO
+	return postingsWithCountFBO, nil
 }
 func (m OrdersManager) GetReturnsMap(clientID, token, since, to string) (map[string]int, error) {
 	var lastID int
@@ -139,7 +151,7 @@ func (m OrdersManager) GetReturnsMap(clientID, token, since, to string) (map[str
 		поэтому делаем цикл с lastID и добавляем в срез returnsFBO
 	*/
 	for hasNext {
-		returns, err := ozon.ReturnsList(clientID, token, lastID, since, to)
+		returns, err := ozon.NewClient(clientID, token).ReturnsList(lastID, since, to)
 		if err != nil {
 			return returnsWithCount, err
 		}

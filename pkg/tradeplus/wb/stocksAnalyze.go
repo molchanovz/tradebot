@@ -1,6 +1,7 @@
 package wb
 
 import (
+	"fmt"
 	"tradebot/pkg/client/wb"
 )
 
@@ -28,8 +29,11 @@ var warehousesMap = map[string]string{
 	"Рязань (Тюшевское)":             "Центральный федеральный округ",
 }
 
-func GetOrders(apiKey string, daysAgo int) map[string]map[string]int {
-	orders := wb.GetAllOrders(apiKey, daysAgo, 0)
+func GetOrders(apiKey string, daysAgo int) (map[string]map[string]int, error) {
+	orders, err := wb.GetAllOrders(apiKey, daysAgo, 0)
+	if err != nil {
+		return nil, fmt.Errorf("wb GetAllorders failed: %w", err)
+	}
 
 	ordersMap := make(map[string]map[string]int)
 
@@ -44,7 +48,7 @@ func GetOrders(apiKey string, daysAgo int) map[string]map[string]int {
 		ordersMap[cluster][order.SupplierArticle] += 1
 	}
 
-	return ordersMap
+	return ordersMap, nil
 }
 
 func GetStocks(apiKey string) (map[string]map[string]int, map[string]int, error) {

@@ -18,9 +18,9 @@ func GetOrdersFbo(campaignID, apiKey string, daysAgo int) (OrdersFbo, error) {
 	return orders, nil
 }
 
-// func ordersFBS(ApiKey string, daysAgo int) OrdersListFBS {
+// func ordersFBS(apiKey string, daysAgo int) OrdersListFBS {
 //	var posting OrdersListFBS
-//	jsonString := API.OrdersFBS(ApiKey, daysAgo)
+//	jsonString := API.OrdersFBS(apiKey, daysAgo)
 //	err := json.Unmarshal([]byte(jsonString), &posting)
 //	if err != nil {
 //		log.Fatalf("Error decoding JSON: %v", err)
@@ -28,9 +28,9 @@ func GetOrdersFbo(campaignID, apiKey string, daysAgo int) (OrdersFbo, error) {
 //	return posting
 // }
 //
-// func salesAndReturns(ApiKey string, daysAgo int) SalesAndReturns {
+// func salesAndReturns(apiKey string, daysAgo int) SalesAndReturns {
 //	var sales SalesAndReturns
-//	jsonString := API.ApiSalesAndReturns(ApiKey, daysAgo)
+//	jsonString := API.ApiSalesAndReturns(apiKey, daysAgo)
 //	err := json.Unmarshal([]byte(jsonString), &sales)
 //	if err != nil {
 //		log.Fatalf("Error decoding JSON: %v", err)
@@ -38,9 +38,9 @@ func GetOrdersFbo(campaignID, apiKey string, daysAgo int) (OrdersFbo, error) {
 //	return sales
 // }
 
-// func postingStatus(ApiKey string, postingId int) string {
+// func postingStatus(apiKey string, postingId int) string {
 //	var postingStatuses OrdersWithStatuses
-//	jsonString := API.OrdersFBS_status(ApiKey, postingId)
+//	jsonString := API.OrdersFBS_status(apiKey, postingId)
 //	err := json.Unmarshal([]byte(jsonString), &postingStatuses)
 //	if err != nil {
 //		log.Fatalf("Error decoding JSON: %v", err)

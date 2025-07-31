@@ -20,13 +20,15 @@ func NewTradebotRepo(db orm.DB) TradebotRepo {
 	return TradebotRepo{
 		db: db,
 		filters: map[string][]Filter{
-			Tables.User.Name: {StatusUserFilter},
+			Tables.Cabinet.Name: {StatusFilter},
+			Tables.Order.Name:   {StatusFilter},
+			Tables.User.Name:    {StatusUserFilter},
 		},
 		sort: map[string][]SortField{
 			Tables.Cabinet.Name: {{Column: Columns.Cabinet.ID, Direction: SortDesc}},
 			Tables.Order.Name:   {{Column: Columns.Order.CreatedAt, Direction: SortDesc}},
 			Tables.Stock.Name:   {{Column: Columns.Stock.ID, Direction: SortDesc}},
-			Tables.User.Name:    {{Column: Columns.User.ID, Direction: SortDesc}},
+			Tables.User.Name:    {{Column: Columns.User.CreatedAt, Direction: SortDesc}},
 		},
 		join: map[string][]string{
 			Tables.Cabinet.Name: {TableColumns},
@@ -122,16 +124,11 @@ func (tr TradebotRepo) UpdateCabinet(ctx context.Context, cabinet *Cabinet, ops 
 	return res.RowsAffected() > 0, err
 }
 
-// DeleteCabinet deletes Cabinet from DB.
+// DeleteCabinet set statusId to deleted in DB.
 func (tr TradebotRepo) DeleteCabinet(ctx context.Context, id int) (deleted bool, err error) {
-	cabinet := &Cabinet{ID: id}
+	cabinet := &Cabinet{ID: id, StatusID: StatusDeleted}
 
-	res, err := tr.db.ModelContext(ctx, cabinet).WherePK().Delete()
-	if err != nil {
-		return false, err
-	}
-
-	return res.RowsAffected() > 0, err
+	return tr.UpdateCabinet(ctx, cabinet, WithColumns(Columns.Cabinet.StatusID))
 }
 
 /*** Order ***/
@@ -203,16 +200,11 @@ func (tr TradebotRepo) UpdateOrder(ctx context.Context, order *Order, ops ...OpF
 	return res.RowsAffected() > 0, err
 }
 
-// DeleteOrder deletes Order from DB.
+// DeleteOrder set statusId to deleted in DB.
 func (tr TradebotRepo) DeleteOrder(ctx context.Context, id int) (deleted bool, err error) {
-	order := &Order{ID: id}
+	order := &Order{ID: id, StatusID: StatusDeleted}
 
-	res, err := tr.db.ModelContext(ctx, order).WherePK().Delete()
-	if err != nil {
-		return false, err
-	}
-
-	return res.RowsAffected() > 0, err
+	return tr.UpdateOrder(ctx, order, WithColumns(Columns.Order.StatusID))
 }
 
 /*** Stock ***/
@@ -338,6 +330,9 @@ func (tr TradebotRepo) CountUsers(ctx context.Context, search *UserSearch, ops .
 // AddUser adds User to DB.
 func (tr TradebotRepo) AddUser(ctx context.Context, user *User, ops ...OpFunc) (*User, error) {
 	q := tr.db.ModelContext(ctx, user)
+	if len(ops) == 0 {
+		q = q.ExcludeColumn(Columns.User.CreatedAt)
+	}
 	applyOps(q, ops...)
 	_, err := q.Insert()
 
@@ -348,7 +343,7 @@ func (tr TradebotRepo) AddUser(ctx context.Context, user *User, ops ...OpFunc) (
 func (tr TradebotRepo) UpdateUser(ctx context.Context, user *User, ops ...OpFunc) (bool, error) {
 	q := tr.db.ModelContext(ctx, user).WherePK()
 	if len(ops) == 0 {
-		q = q.ExcludeColumn(Columns.User.ID)
+		q = q.ExcludeColumn(Columns.User.ID, Columns.User.CreatedAt)
 	}
 	applyOps(q, ops...)
 	res, err := q.Update()

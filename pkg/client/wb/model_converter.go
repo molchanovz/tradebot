@@ -2,21 +2,20 @@ package wb
 
 import (
 	"encoding/json"
-	"fmt"
-	"log"
-	"sort"
 )
 
 func GetOrdersFbs(wildberriesKey, supplyID string) ([]OrderWB, error) {
+	var orders Orders
 	jsonString, err := getOrdersBySupplyID(wildberriesKey, supplyID)
+	if err != nil || jsonString == "" {
+		return nil, err
+	}
+
+	err = json.Unmarshal([]byte(jsonString), &orders)
 	if err != nil {
 		return nil, err
 	}
-	var orders Orders
-	err = json.Unmarshal([]byte(jsonString), &orders)
-	if err != nil {
-		return nil, fmt.Errorf("ошибка декодирования JSON: %w", err)
-	}
+
 	sortOrdersByArticle(orders.Orders)
 	return orders.Orders, nil
 }
@@ -24,72 +23,69 @@ func GetOrdersFbs(wildberriesKey, supplyID string) ([]OrderWB, error) {
 func GetStickersFbs(wildberriesKey string, orderID int) (StickerWB, error) {
 	var stickers StickerWB
 	jsonString, err := getCodesByOrderID(wildberriesKey, orderID)
-	if err != nil {
+	if err != nil || jsonString == "" {
 		return stickers, err
 	}
 
 	err = json.Unmarshal([]byte(jsonString), &stickers)
-	if err != nil {
-		return stickers, fmt.Errorf("error decoding JSON: %w", err)
-	}
-	return stickers, nil
+	return stickers, err
 }
 
-func sortOrdersByArticle(orders []OrderWB) {
-	sort.SliceStable(orders, func(i, j int) bool {
-		return orders[i].Article < orders[j].Article
-	})
-}
-
-func GetAllOrders(apiKey string, daysAgo, flag int) OrdersListALL {
+func GetAllOrders(apiKey string, daysAgo, flag int) (OrdersListALL, error) {
 	var posting OrdersListALL
-	jsonString, _ := apiOrdersALL(apiKey, daysAgo, flag)
-	err := json.Unmarshal([]byte(jsonString), &posting)
-	if err != nil {
-		log.Fatalf("Error decoding JSON: %v", err)
+	jsonString, err := apiOrdersALL(apiKey, daysAgo, flag)
+	if err != nil || jsonString == "" {
+		return nil, err
 	}
-	return posting
+
+	err = json.Unmarshal([]byte(jsonString), &posting)
+	return posting, err
 }
 
-func GetOrdersFBS(apiKey string, daysAgo int) OrdersListFBS {
+func GetOrdersFBS(apiKey string, daysAgo int) (*OrdersListFBS, error) {
 	var posting OrdersListFBS
-	jsonString, _ := ordersFBS(apiKey, daysAgo)
-	err := json.Unmarshal([]byte(jsonString), &posting)
-	if err != nil {
-		log.Fatalf("Error decoding JSON: %v", err)
+	jsonString, err := ordersFBS(apiKey, daysAgo)
+	if err != nil || jsonString == "" {
+		return nil, err
 	}
-	return posting
+
+	err = json.Unmarshal([]byte(jsonString), &posting)
+	return &posting, err
 }
 
-func GetSalesAndReturns(apiKey string, daysAgo int) SalesReturns {
+func GetSalesAndReturns(apiKey string, daysAgo int) (SalesReturns, error) {
 	var sales SalesReturns
-	jsonString, _ := apiSalesAndReturns(apiKey, daysAgo)
-	err := json.Unmarshal([]byte(jsonString), &sales)
-	if err != nil {
-		log.Fatalf("Error decoding JSON: %v", err)
+	jsonString, err := apiSalesAndReturns(apiKey, daysAgo)
+	if err != nil || jsonString == "" {
+		return nil, err
 	}
-	return sales
+
+	err = json.Unmarshal([]byte(jsonString), &sales)
+	return sales, err
 }
 
-func GetPostingStatus(apiKey string, postingID int) string {
+func GetPostingStatus(apiKey string, postingID int) (string, error) {
 	var postingStatuses OrdersWithStatuses
-	jsonString, _ := ordersFBSStatus(apiKey, postingID)
-	err := json.Unmarshal([]byte(jsonString), &postingStatuses)
-	if err != nil {
-		log.Fatalf("Error decoding JSON: %v", err)
+	jsonString, err := ordersFBSStatus(apiKey, postingID)
+	if err != nil || jsonString == "" {
+		return "", err
 	}
-	return postingStatuses.Orders[0].WbStatus
+
+	err = json.Unmarshal([]byte(jsonString), &postingStatuses)
+	if err != nil {
+		return "", err
+	}
+
+	return postingStatuses.Orders[0].WbStatus, nil
 }
 
 func GetStockFbo(apiKey string) ([]Stock, error) {
 	var stocks []Stock
-	stocksString, err := stocksFbo(apiKey)
-	if err != nil {
+	jsonString, err := stocksFbo(apiKey)
+	if err != nil || jsonString == "" {
 		return nil, err
 	}
-	err = json.Unmarshal([]byte(stocksString), &stocks)
-	if err != nil {
-		return nil, fmt.Errorf("Error decoding JSON: %w", err)
-	}
+
+	err = json.Unmarshal([]byte(jsonString), &stocks)
 	return stocks, nil
 }

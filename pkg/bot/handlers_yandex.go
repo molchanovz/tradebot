@@ -56,13 +56,16 @@ func (m *Manager) yandexCabinetHandler(ctx context.Context, bot *botlib.Bot, upd
 
 	text := "Кабинет Яндекс"
 
-	var buttonsRow, buttonBack []models.InlineKeyboardButton
-	buttonsRow = append(buttonsRow, models.InlineKeyboardButton{Text: "Этикетки FBS", CallbackData: fmt.Sprintf("%v+%v", CallbackYandexStickersHandler, cabinetID)})
-	buttonsRow = append(buttonsRow, models.InlineKeyboardButton{Text: "Вчерашние заказы", CallbackData: fmt.Sprintf("%v+%v", CallbackYandexOrdersHandler, cabinetID)})
+	var buttonsRow []models.InlineKeyboardButton
+	var allButtons [][]models.InlineKeyboardButton
 
-	buttonBack = append(buttonBack, models.InlineKeyboardButton{Text: "Назад", CallbackData: CallbackStartHandler})
+	buttonsRow = append(buttonsRow, models.InlineKeyboardButton{Text: "Этикетки FBS", CallbackData: fmt.Sprintf("%v%v", CallbackYandexStickersHandler, cabinetID)})
+	allButtons = append(allButtons, buttonsRow)
+	buttonsRow = []models.InlineKeyboardButton{}
 
-	allButtons := [][]models.InlineKeyboardButton{buttonsRow, buttonBack}
+	buttonsRow = append(buttonsRow, models.InlineKeyboardButton{Text: "Назад", CallbackData: CallbackYandexHandler})
+	allButtons = append(allButtons, buttonsRow)
+
 	markup := models.InlineKeyboardMarkup{InlineKeyboard: allButtons}
 
 	_, err := bot.EditMessageText(ctx, &botlib.EditMessageTextParams{ChatID: chatID, MessageID: messageID, Text: text, ReplyMarkup: markup})

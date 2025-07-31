@@ -22,7 +22,6 @@ import (
 
 const (
 	CallbackOzonHandler              = "OZON"
-	CallbackOzonOrdersHandler        = "OZON-ORDERS_"
 	CallbackOzonStocksHandler        = "OZON-STOCKS_"
 	CallbackOzonStickersHandler      = "OZON-STICKERS_"
 	CallbackOzonPrintStickersHandler = "OZON-PRINT-STICKERS_"
@@ -64,14 +63,20 @@ func (m *Manager) ozonCabinetHandler(ctx context.Context, bot *botlib.Bot, updat
 
 	text := "Кабинет Озон"
 
-	var buttonsRow, buttonBack []models.InlineKeyboardButton
-	buttonsRow = append(buttonsRow, models.InlineKeyboardButton{Text: "Вчерашние заказы", CallbackData: fmt.Sprintf("%v%v", CallbackOzonOrdersHandler, cabinetID)})
-	buttonsRow = append(buttonsRow, models.InlineKeyboardButton{Text: "Анализ", CallbackData: fmt.Sprintf("%v%v", CallbackOzonStocksHandler, cabinetID)})
+	var buttonsRow []models.InlineKeyboardButton
+	var allButtons [][]models.InlineKeyboardButton
+
 	buttonsRow = append(buttonsRow, models.InlineKeyboardButton{Text: "Этикетки FBS", CallbackData: fmt.Sprintf("%v%v", CallbackOzonStickersHandler, cabinetID)})
+	allButtons = append(allButtons, buttonsRow)
+	buttonsRow = []models.InlineKeyboardButton{}
 
-	buttonBack = append(buttonBack, models.InlineKeyboardButton{Text: "Назад", CallbackData: CallbackOzonHandler})
+	buttonsRow = append(buttonsRow, models.InlineKeyboardButton{Text: "Анализ заказов", CallbackData: fmt.Sprintf("%v%v", CallbackOzonStocksHandler, cabinetID)})
+	allButtons = append(allButtons, buttonsRow)
+	buttonsRow = []models.InlineKeyboardButton{}
 
-	allButtons := [][]models.InlineKeyboardButton{buttonsRow, buttonBack}
+	buttonsRow = append(buttonsRow, models.InlineKeyboardButton{Text: "Назад", CallbackData: CallbackOzonHandler})
+	allButtons = append(allButtons, buttonsRow)
+
 	markup := models.InlineKeyboardMarkup{InlineKeyboard: allButtons}
 
 	_, err := bot.EditMessageText(ctx, &botlib.EditMessageTextParams{ChatID: chatID, MessageID: messageID, Text: text, ReplyMarkup: markup})
@@ -148,7 +153,7 @@ func (m *Manager) ozonStocksHandler(ctx context.Context, bot *botlib.Bot, update
 
 	postings := ozon.NewService(cabinet).GetStocksManager().GetPostings()
 
-	stocks := ozon.NewService(cabinet).GetStocksManager().GetStocks()
+	stocks, _ := ozon.NewService(cabinet).GetStocksManager().GetStocks()
 
 	filePath, err := generateExcelOzon(postings, stocks, CallbackOzonHandler)
 	if err != nil {

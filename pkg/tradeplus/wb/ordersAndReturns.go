@@ -86,7 +86,10 @@ func (m OrdersManager) getPostingsMap() (map[string]int, map[string]int, error) 
 	postingsWithCountFBO := make(map[string]int)
 	postingsWithCountFBS := make(map[string]int)
 
-	postingsList := wb.GetAllOrders(m.token, m.DaysAgo, 1)
+	postingsList, err := wb.GetAllOrders(m.token, m.DaysAgo, 1)
+	if err != nil {
+		return nil, nil, fmt.Errorf("wb getAllOrders failed: %w", err)
+	}
 
 	for _, posting := range postingsList {
 		if !posting.IsCancel {
@@ -107,7 +110,7 @@ func (m OrdersManager) getPostingsMap() (map[string]int, map[string]int, error) 
 func (m OrdersManager) getReturnsMap() map[string]int {
 	returnsWithCount := make(map[string]int)
 
-	returnsList := wb.GetSalesAndReturns(m.token, m.DaysAgo)
+	returnsList, _ := wb.GetSalesAndReturns(m.token, m.DaysAgo)
 	for _, someReturn := range returnsList {
 		if strings.HasPrefix(someReturn.SaleID, "R") {
 			returnsWithCount[someReturn.SupplierArticle]++

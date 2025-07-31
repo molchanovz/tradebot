@@ -66,7 +66,7 @@ func (m OrdersManager) Write() error {
 	}
 
 	////Запись возвратов
-	//returnsWithCount := returnsMap(ApiKey)
+	//returnsWithCount := returnsMap(apiKey)
 	//writeRange = sheetsName + "!G2:H100"
 	//colName = "Возвраты"
 	//err = writeData(writeRange, colName, returnsWithCount)
@@ -77,9 +77,9 @@ func (m OrdersManager) Write() error {
 	return nil
 }
 
-//func ordersMapFBS(ApiKey string) map[string]int {
+//func ordersMapFBS(apiKey string) map[string]int {
 //	postingsWithCountFBS := make(map[string]int)
-//	postingsList := ordersFBS(ApiKey, DaysAgo)
+//	postingsList := ordersFBS(apiKey, DaysAgo)
 //
 //	isOrderCanceled := func(status string) bool {
 //
@@ -96,7 +96,7 @@ func (m OrdersManager) Write() error {
 //	}
 //
 //	for _, posting := range postingsList.OrdersFBS {
-//		status := postingStatus(ApiKey, posting.Id)
+//		status := postingStatus(apiKey, posting.Id)
 //		if !isOrderCanceled(status) {
 //			postingsWithCountFBS[posting.Article] += 1
 //		}

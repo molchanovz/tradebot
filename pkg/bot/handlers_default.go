@@ -2,13 +2,14 @@ package bot
 
 import (
 	"context"
-	"errors"
 	"fmt"
+	"github.com/vmkteam/embedlog"
 	"log"
 	"math"
 	"os"
 	"strconv"
 	"sync"
+	"tradebot/pkg/tradeplus/ozon"
 
 	"tradebot/pkg/db"
 	"tradebot/pkg/tradeplus"
@@ -25,6 +26,7 @@ const (
 )
 
 type Manager struct {
+	sl       embedlog.Logger
 	b        *botlib.Bot
 	bl       *tradeplus.Manager
 	myChatID string
@@ -66,7 +68,6 @@ func (m *Manager) RegisterBotHandlers() {
 	m.b.RegisterHandler(botlib.HandlerTypeCallbackQueryData, CallbackYandexStickersHandler, botlib.MatchTypePrefix, m.yandexFbsHandler)
 	m.b.RegisterHandler(botlib.HandlerTypeCallbackQueryData, CallbackWbOrdersHandler, botlib.MatchTypePrefix, m.wbOrdersHandler)
 	m.b.RegisterHandler(botlib.HandlerTypeCallbackQueryData, CallbackYandexOrdersHandler, botlib.MatchTypePrefix, m.yandexOrdersHandler)
-	m.b.RegisterHandler(botlib.HandlerTypeCallbackQueryData, CallbackOzonOrdersHandler, botlib.MatchTypePrefix, m.ozonOrdersHandler)
 	m.b.RegisterHandler(botlib.HandlerTypeCallbackQueryData, CallbackOzonStocksHandler, botlib.MatchTypePrefix, m.ozonStocksHandler)
 	m.b.RegisterHandler(botlib.HandlerTypeCallbackQueryData, CallbackWbStocksHandler, botlib.MatchTypePrefix, m.wbStocksHandler)
 	m.b.RegisterHandler(botlib.HandlerTypeCallbackQueryData, CallbackOzonStickersHandler, botlib.MatchTypePrefix, m.ozonStickersHandler)
@@ -237,7 +238,7 @@ func WaitReadyFile(ctx context.Context, bot *botlib.Bot, chatID int64, progressC
 		case filePath := <-done:
 			err = sendFiles(ctx, bot, chatID, filePath, progressMsgID)
 			if err != nil {
-				return err
+				errChan <- err
 			}
 			return nil
 
@@ -258,7 +259,7 @@ func sendFiles(ctx context.Context, bot *botlib.Bot, chatID int64, filePath []st
 	}
 
 	if len(filePath) == 0 {
-		return errors.New("новых заказов нет")
+		return ozon.ErrNoRows
 	}
 
 	for _, batchPath := range filePath {

@@ -2,12 +2,13 @@ package app
 
 import (
 	"context"
+	"fmt"
+	"github.com/vmkteam/cron"
 	"net"
 	"time"
-	"tradebot/pkg/tradeplus/scheduler"
-
 	"tradebot/pkg/bot"
 	"tradebot/pkg/db"
+	"tradebot/pkg/tradeplus/schedule"
 
 	"github.com/go-pg/pg/v10"
 	monitor "github.com/hypnoglow/go-pg-monitor"
@@ -29,6 +30,12 @@ type Config struct {
 		Environment string
 		DSN         string
 	}
+	Cron struct {
+		OzonWriter   cron.Schedule
+		YandexWriter cron.Schedule
+		WBWriter     cron.Schedule
+		OrderCleaner cron.Schedule
+	}
 	VFS vfs.Config
 }
 
@@ -41,8 +48,9 @@ type App struct {
 	mon     *monitor.Monitor
 	echo    *echo.Echo
 	//vtsrv   zenrpc.Server
-	bs *bot.Service
-	cs scheduler.Service
+	bs              *bot.Service
+	scheduleManager schedule.Manager
+	c               *cron.Manager
 }
 
 func New(appName string, sl embedlog.Logger, cfg Config, db db.DB, dbc *pg.DB) *App {
@@ -55,9 +63,11 @@ func New(appName string, sl embedlog.Logger, cfg Config, db db.DB, dbc *pg.DB) *
 		Logger:  sl,
 	}
 
-	a.bs = bot.NewService(cfg.Bot, db)
+	a.scheduleManager = schedule.NewManager(db, a.Logger)
 
-	a.cs = scheduler.NewService(db)
+	a.c = a.newCron()
+
+	a.bs = bot.NewService(cfg.Bot, db)
 
 	// setup echo
 	a.echo.HideBanner = true
@@ -67,7 +77,6 @@ func New(appName string, sl embedlog.Logger, cfg Config, db db.DB, dbc *pg.DB) *
 
 	// add services
 	//a.vtsrv = vt.New(a.db, a.Logger, a.cfg.Server.IsDevel)
-
 	return a
 }
 
@@ -79,7 +88,14 @@ func (a *App) Run(ctx context.Context) error {
 	//a.registerAPIHandlers()
 	//a.registerVTApiHandlers()
 	a.bs.Start()
-	a.cs.Start(ctx)
+
+	// run cron
+	if err := a.c.Run(ctx); err != nil {
+		return err
+	} else {
+		a.Logger.Print(ctx, "open this url for cron ui", "url", fmt.Sprintf("http://%v:%v/debug/cron", a.cfg.Server.Host, a.cfg.Server.Port))
+		a.Logger.Print(ctx, "open this url for metrics", "url", fmt.Sprintf("http://%v:%v/metrics", a.cfg.Server.Host, a.cfg.Server.Port))
+	}
 
 	return a.runHTTPServer(ctx, a.cfg.Server.Host, a.cfg.Server.Port)
 }

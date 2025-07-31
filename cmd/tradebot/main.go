@@ -23,8 +23,8 @@ const appName = "tradebot"
 
 var (
 	fs           = flag.NewFlagSetWithEnvPrefix(os.Args[0], "tradebot", 0)
-	flConfigPath = fs.String("config", "config.toml", "Path to config file")
-	flVerbose    = fs.Bool("verbose", false, "enable debug output")
+	flConfigPath = fs.String("config", "./cfg/local.toml", "Path to config file")
+	flVerbose    = fs.Bool("verbose", true, "enable debug output")
 	flJSONLogs   = fs.Bool("json", false, "enable json output")
 	flDev        = fs.Bool("dev", false, "enable dev mode")
 	//flGenerateTSClient = fs.Bool("ts_client", false, "generate TypeScript vt rpc client and exit")

@@ -3,7 +3,7 @@
   <database-model serializer="dbm" dbms="POSTGRES" family-id="POSTGRES" format-version="4.53">
     <root id="1">
       <DateStyle>mdy</DateStyle>
-      <IntrospectionStateNumber>9244</IntrospectionStateNumber>
+      <IntrospectionStateNumber>9554</IntrospectionStateNumber>
       <ServerVersion>15.13</ServerVersion>
       <StartupTime>1752149814</StartupTime>
       <TimeZones>true ACDT
@@ -1406,7 +1406,7 @@ true posixrules
 13209||10|C|G
 13209||-9223372036854775808|U|G
 13209||10|U|G</Grants>
-      <IntrospectionStateNumber>9244</IntrospectionStateNumber>
+      <IntrospectionStateNumber>9554</IntrospectionStateNumber>
       <ObjectId>16384</ObjectId>
       <OwnerName>sergey</OwnerName>
     </database>
@@ -4819,8 +4819,8 @@ true posixrules
     <schema id="262" parent="3" name="public">
       <Comment>standard public schema</Comment>
       <Current>1</Current>
-      <IntrospectionStateNumber>9244</IntrospectionStateNumber>
-      <LastIntrospectionLocalTimestamp>2025-07-18.11:50:51</LastIntrospectionLocalTimestamp>
+      <IntrospectionStateNumber>9554</IntrospectionStateNumber>
+      <LastIntrospectionLocalTimestamp>2025-07-31.06:15:31</LastIntrospectionLocalTimestamp>
       <ObjectId>2200</ObjectId>
       <StateNumber>518</StateNumber>
       <OwnerName>pg_database_owner</OwnerName>
@@ -4861,7 +4861,15 @@ all</Labels>
       <StoredType>integer|0s</StoredType>
       <OwnerName>sergey</OwnerName>
     </sequence>
-    <sequence id="267" parent="262" name="stocks_stockId_seq">
+    <sequence id="267" parent="262" name="statuses_statusId_seq">
+      <ObjectId>16524</ObjectId>
+      <SequenceIdentity>1</SequenceIdentity>
+      <StartValue>1</StartValue>
+      <StateNumber>9514</StateNumber>
+      <StoredType>integer|0s</StoredType>
+      <OwnerName>sergey</OwnerName>
+    </sequence>
+    <sequence id="268" parent="262" name="stocks_stockId_seq">
       <ObjectId>16405</ObjectId>
       <SequenceIdentity>1</SequenceIdentity>
       <StartValue>1</StartValue>
@@ -4869,7 +4877,7 @@ all</Labels>
       <StoredType>integer|0s</StoredType>
       <OwnerName>sergey</OwnerName>
     </sequence>
-    <sequence id="268" parent="262" name="users_userId_seq">
+    <sequence id="269" parent="262" name="users_userId_seq">
       <ObjectId>16413</ObjectId>
       <SequenceIdentity>1</SequenceIdentity>
       <StartValue>1</StartValue>
@@ -4877,31 +4885,71 @@ all</Labels>
       <StoredType>integer|0s</StoredType>
       <OwnerName>sergey</OwnerName>
     </sequence>
-    <table id="269" parent="262" name="cabinets">
+    <sequence id="270" parent="262" name="vfsFiles_fileId_seq">
+      <ObjectId>16562</ObjectId>
+      <SequenceIdentity>1</SequenceIdentity>
+      <StartValue>1</StartValue>
+      <StateNumber>9521</StateNumber>
+      <StoredType>integer|0s</StoredType>
+      <OwnerName>sergey</OwnerName>
+    </sequence>
+    <sequence id="271" parent="262" name="vfsFolders_folderId_seq">
+      <ObjectId>16541</ObjectId>
+      <SequenceIdentity>1</SequenceIdentity>
+      <StartValue>1</StartValue>
+      <StateNumber>9517</StateNumber>
+      <StoredType>integer|0s</StoredType>
+      <OwnerName>sergey</OwnerName>
+    </sequence>
+    <table id="272" parent="262" name="cabinets">
       <ObjectId>16424</ObjectId>
-      <StateNumber>8998</StateNumber>
+      <StateNumber>9515</StateNumber>
       <AccessMethodId>2</AccessMethodId>
       <OwnerName>sergey</OwnerName>
     </table>
-    <table id="270" parent="262" name="orders">
+    <table id="273" parent="262" name="orders">
       <ObjectId>16431</ObjectId>
-      <StateNumber>8979</StateNumber>
+      <StateNumber>9516</StateNumber>
       <AccessMethodId>2</AccessMethodId>
       <OwnerName>sergey</OwnerName>
     </table>
-    <table id="271" parent="262" name="stocks">
+    <table id="274" parent="262" name="statuses">
+      <ObjectId>16525</ObjectId>
+      <StateNumber>9515</StateNumber>
+      <AccessMethodId>2</AccessMethodId>
+      <OwnerName>sergey</OwnerName>
+    </table>
+    <table id="275" parent="262" name="stocks">
       <ObjectId>16406</ObjectId>
       <StateNumber>8963</StateNumber>
       <AccessMethodId>2</AccessMethodId>
       <OwnerName>sergey</OwnerName>
     </table>
-    <table id="272" parent="262" name="users">
+    <table id="276" parent="262" name="users">
       <ObjectId>16414</ObjectId>
-      <StateNumber>8981</StateNumber>
+      <StateNumber>9528</StateNumber>
       <AccessMethodId>2</AccessMethodId>
       <OwnerName>sergey</OwnerName>
     </table>
-    <column id="273" parent="269" name="cabinetsId">
+    <table id="277" parent="262" name="vfsFiles">
+      <ObjectId>16563</ObjectId>
+      <StateNumber>9521</StateNumber>
+      <AccessMethodId>2</AccessMethodId>
+      <OwnerName>sergey</OwnerName>
+    </table>
+    <table id="278" parent="262" name="vfsFolders">
+      <ObjectId>16542</ObjectId>
+      <StateNumber>9517</StateNumber>
+      <AccessMethodId>2</AccessMethodId>
+      <OwnerName>sergey</OwnerName>
+    </table>
+    <table id="279" parent="262" name="vfsHashes">
+      <ObjectId>16510</ObjectId>
+      <StateNumber>9506</StateNumber>
+      <AccessMethodId>2</AccessMethodId>
+      <OwnerName>sergey</OwnerName>
+    </table>
+    <column id="280" parent="272" name="cabinetsId">
       <DefaultExpression>nextval(&apos;&quot;cabinets_cabinetsId_seq&quot;&apos;::regclass)</DefaultExpression>
       <NotNull>1</NotNull>
       <Position>1</Position>
@@ -4910,47 +4958,61 @@ all</Labels>
       <SequenceId>16423</SequenceId>
       <TypeId>23</TypeId>
     </column>
-    <column id="274" parent="269" name="name">
+    <column id="281" parent="272" name="name">
       <NotNull>1</NotNull>
       <Position>2</Position>
       <StateNumber>743</StateNumber>
       <StoredType>varchar(64)|0s</StoredType>
       <TypeId>1043</TypeId>
     </column>
-    <column id="275" parent="269" name="clientId">
+    <column id="282" parent="272" name="clientId">
       <Position>3</Position>
       <StateNumber>743</StateNumber>
       <StoredType>varchar(64)|0s</StoredType>
       <TypeId>1043</TypeId>
     </column>
-    <column id="276" parent="269" name="key">
+    <column id="283" parent="272" name="key">
       <NotNull>1</NotNull>
       <Position>4</Position>
       <StateNumber>8965</StateNumber>
       <StoredType>varchar(1024)|0s</StoredType>
       <TypeId>1043</TypeId>
     </column>
-    <column id="277" parent="269" name="type">
+    <column id="284" parent="272" name="type">
       <NotNull>1</NotNull>
       <Position>6</Position>
       <StateNumber>743</StateNumber>
       <StoredType>types|0s</StoredType>
       <TypeId>16398</TypeId>
     </column>
-    <column id="278" parent="269" name="sheetLink">
+    <column id="285" parent="272" name="sheetLink">
       <Position>8</Position>
       <StateNumber>8968</StateNumber>
       <StoredType>varchar(1024)|0s</StoredType>
       <TypeId>1043</TypeId>
     </column>
-    <column id="279" parent="269" name="marketplace">
+    <column id="286" parent="272" name="marketplace">
       <NotNull>1</NotNull>
       <Position>9</Position>
       <StateNumber>9008</StateNumber>
       <StoredType>marketplaces|0s</StoredType>
       <TypeId>16479</TypeId>
     </column>
-    <index id="280" parent="269" name="cabinets_pkey">
+    <column id="287" parent="272" name="statusId">
+      <NotNull>1</NotNull>
+      <Position>10</Position>
+      <StateNumber>9537</StateNumber>
+      <StoredType>integer|0s</StoredType>
+      <TypeId>23</TypeId>
+    </column>
+    <foreign-key id="288" parent="272" name="Ref_cabinets_to_statuses">
+      <ColNames>statusId</ColNames>
+      <ObjectId>16531</ObjectId>
+      <StateNumber>9515</StateNumber>
+      <RefKeyColPositions>1</RefKeyColPositions>
+      <RefTableId>16525</RefTableId>
+    </foreign-key>
+    <index id="289" parent="272" name="cabinets_pkey">
       <ColNames>cabinetsId</ColNames>
       <NameSurrogate>1</NameSurrogate>
       <ObjectId>16428</ObjectId>
@@ -4959,14 +5021,14 @@ all</Labels>
       <Unique>1</Unique>
       <AccessMethodId>403</AccessMethodId>
     </index>
-    <key id="281" parent="269" name="cabinets_pkey">
+    <key id="290" parent="272" name="cabinets_pkey">
       <NameSurrogate>1</NameSurrogate>
       <ObjectId>16429</ObjectId>
       <Primary>1</Primary>
       <StateNumber>743</StateNumber>
       <UnderlyingIndexId>16428</UnderlyingIndexId>
     </key>
-    <column id="282" parent="270" name="orderId">
+    <column id="291" parent="273" name="orderId">
       <DefaultExpression>nextval(&apos;&quot;orders_orderId_seq&quot;&apos;::regclass)</DefaultExpression>
       <NotNull>1</NotNull>
       <Position>1</Position>
@@ -4975,28 +5037,28 @@ all</Labels>
       <SequenceId>16430</SequenceId>
       <TypeId>23</TypeId>
     </column>
-    <column id="283" parent="270" name="postingNumber">
+    <column id="292" parent="273" name="postingNumber">
       <NotNull>1</NotNull>
       <Position>2</Position>
       <StateNumber>744</StateNumber>
       <StoredType>varchar(32)|0s</StoredType>
       <TypeId>1043</TypeId>
     </column>
-    <column id="284" parent="270" name="article">
+    <column id="293" parent="273" name="article">
       <NotNull>1</NotNull>
       <Position>4</Position>
       <StateNumber>9016</StateNumber>
       <StoredType>varchar(128)|0s</StoredType>
       <TypeId>1043</TypeId>
     </column>
-    <column id="285" parent="270" name="count">
+    <column id="294" parent="273" name="count">
       <NotNull>1</NotNull>
       <Position>5</Position>
       <StateNumber>9020</StateNumber>
       <StoredType>integer|0s</StoredType>
       <TypeId>23</TypeId>
     </column>
-    <column id="286" parent="270" name="createdAt">
+    <column id="295" parent="273" name="createdAt">
       <DefaultExpression>now()</DefaultExpression>
       <NotNull>1</NotNull>
       <Position>6</Position>
@@ -5004,21 +5066,35 @@ all</Labels>
       <StoredType>timestamp with time zone|0s</StoredType>
       <TypeId>1184</TypeId>
     </column>
-    <column id="287" parent="270" name="cabinetId">
+    <column id="296" parent="273" name="cabinetId">
       <NotNull>1</NotNull>
       <Position>7</Position>
       <StateNumber>9023</StateNumber>
       <StoredType>integer|0s</StoredType>
       <TypeId>23</TypeId>
     </column>
-    <foreign-key id="288" parent="270" name="Ref_orders_to_cabinets">
+    <column id="297" parent="273" name="statusId">
+      <NotNull>1</NotNull>
+      <Position>8</Position>
+      <StateNumber>9540</StateNumber>
+      <StoredType>integer|0s</StoredType>
+      <TypeId>23</TypeId>
+    </column>
+    <foreign-key id="298" parent="273" name="Ref_orders_to_cabinets">
       <ColNames>cabinetId</ColNames>
       <ObjectId>16471</ObjectId>
       <StateNumber>8979</StateNumber>
       <RefKeyColPositions>1</RefKeyColPositions>
       <RefTableId>16424</RefTableId>
     </foreign-key>
-    <index id="289" parent="270" name="orders_pkey">
+    <foreign-key id="299" parent="273" name="Ref_orders_to_statuses">
+      <ColNames>statusId</ColNames>
+      <ObjectId>16536</ObjectId>
+      <StateNumber>9516</StateNumber>
+      <RefKeyColPositions>1</RefKeyColPositions>
+      <RefTableId>16525</RefTableId>
+    </foreign-key>
+    <index id="300" parent="273" name="orders_pkey">
       <ColNames>orderId</ColNames>
       <NameSurrogate>1</NameSurrogate>
       <ObjectId>16435</ObjectId>
@@ -5027,14 +5103,53 @@ all</Labels>
       <Unique>1</Unique>
       <AccessMethodId>403</AccessMethodId>
     </index>
-    <key id="290" parent="270" name="orders_pkey">
+    <key id="301" parent="273" name="orders_pkey">
       <NameSurrogate>1</NameSurrogate>
       <ObjectId>16436</ObjectId>
       <Primary>1</Primary>
       <StateNumber>744</StateNumber>
       <UnderlyingIndexId>16435</UnderlyingIndexId>
     </key>
-    <column id="291" parent="271" name="stockId">
+    <column id="302" parent="274" name="statusId">
+      <DefaultExpression>nextval(&apos;&quot;statuses_statusId_seq&quot;&apos;::regclass)</DefaultExpression>
+      <NotNull>1</NotNull>
+      <Position>1</Position>
+      <StateNumber>9514</StateNumber>
+      <StoredType>integer|0s</StoredType>
+      <SequenceId>16524</SequenceId>
+      <TypeId>23</TypeId>
+    </column>
+    <column id="303" parent="274" name="title">
+      <NotNull>1</NotNull>
+      <Position>2</Position>
+      <StateNumber>9514</StateNumber>
+      <StoredType>varchar(255)|0s</StoredType>
+      <TypeId>1043</TypeId>
+    </column>
+    <column id="304" parent="274" name="alias">
+      <NotNull>1</NotNull>
+      <Position>3</Position>
+      <StateNumber>9514</StateNumber>
+      <StoredType>varchar(64)|0s</StoredType>
+      <TypeId>1043</TypeId>
+    </column>
+    <index id="305" parent="274" name="statuses_pkey">
+      <ColNames>statusId</ColNames>
+      <NameSurrogate>1</NameSurrogate>
+      <ObjectId>16529</ObjectId>
+      <Primary>1</Primary>
+      <StateNumber>9514</StateNumber>
+      <Unique>1</Unique>
+      <AccessMethodId>403</AccessMethodId>
+    </index>
+    <key id="306" parent="274" name="statuses_pkey">
+      <NameSurrogate>1</NameSurrogate>
+      <ObjectId>16530</ObjectId>
+      <Primary>1</Primary>
+      <StateNumber>9514</StateNumber>
+      <UnderlyingIndexId>16529</UnderlyingIndexId>
+    </key>
+    <column id="307" parent="275" name="stockId">
       <DefaultExpression>nextval(&apos;&quot;stocks_stockId_seq&quot;&apos;::regclass)</DefaultExpression>
       <NotNull>1</NotNull>
       <Position>1</Position>
@@ -5043,14 +5158,14 @@ all</Labels>
       <SequenceId>16405</SequenceId>
       <TypeId>23</TypeId>
     </column>
-    <column id="292" parent="271" name="article">
+    <column id="308" parent="275" name="article">
       <NotNull>1</NotNull>
       <Position>2</Position>
       <StateNumber>740</StateNumber>
       <StoredType>varchar(64)|0s</StoredType>
       <TypeId>1043</TypeId>
     </column>
-    <column id="293" parent="271" name="updatedAt">
+    <column id="309" parent="275" name="updatedAt">
       <DefaultExpression>now()</DefaultExpression>
       <NotNull>1</NotNull>
       <Position>3</Position>
@@ -5058,33 +5173,33 @@ all</Labels>
       <StoredType>timestamp with time zone|0s</StoredType>
       <TypeId>1184</TypeId>
     </column>
-    <column id="294" parent="271" name="countFbo">
+    <column id="310" parent="275" name="countFbo">
       <Position>7</Position>
       <StateNumber>8960</StateNumber>
       <StoredType>integer|0s</StoredType>
       <TypeId>23</TypeId>
     </column>
-    <column id="295" parent="271" name="countFbs">
+    <column id="311" parent="275" name="countFbs">
       <Position>8</Position>
       <StateNumber>8961</StateNumber>
       <StoredType>integer|0s</StoredType>
       <TypeId>23</TypeId>
     </column>
-    <column id="296" parent="271" name="cabinetId">
+    <column id="312" parent="275" name="cabinetId">
       <NotNull>1</NotNull>
       <Position>9</Position>
       <StateNumber>9011</StateNumber>
       <StoredType>integer|0s</StoredType>
       <TypeId>23</TypeId>
     </column>
-    <foreign-key id="297" parent="271" name="Ref_stocks_to_cabinets">
+    <foreign-key id="313" parent="275" name="Ref_stocks_to_cabinets">
       <ColNames>cabinetId</ColNames>
       <ObjectId>16463</ObjectId>
       <StateNumber>8963</StateNumber>
       <RefKeyColPositions>1</RefKeyColPositions>
       <RefTableId>16424</RefTableId>
     </foreign-key>
-    <index id="298" parent="271" name="stocks_pkey">
+    <index id="314" parent="275" name="stocks_pkey">
       <ColNames>stockId</ColNames>
       <NameSurrogate>1</NameSurrogate>
       <ObjectId>16411</ObjectId>
@@ -5093,14 +5208,14 @@ all</Labels>
       <Unique>1</Unique>
       <AccessMethodId>403</AccessMethodId>
     </index>
-    <key id="299" parent="271" name="stocks_pkey">
+    <key id="315" parent="275" name="stocks_pkey">
       <NameSurrogate>1</NameSurrogate>
       <ObjectId>16412</ObjectId>
       <Primary>1</Primary>
       <StateNumber>740</StateNumber>
       <UnderlyingIndexId>16411</UnderlyingIndexId>
     </key>
-    <column id="300" parent="272" name="userId">
+    <column id="316" parent="276" name="userId">
       <DefaultExpression>nextval(&apos;&quot;users_userId_seq&quot;&apos;::regclass)</DefaultExpression>
       <NotNull>1</NotNull>
       <Position>1</Position>
@@ -5109,22 +5224,21 @@ all</Labels>
       <SequenceId>16413</SequenceId>
       <TypeId>23</TypeId>
     </column>
-    <column id="301" parent="272" name="tgId">
+    <column id="317" parent="276" name="tgId">
       <NotNull>1</NotNull>
       <Position>2</Position>
       <StateNumber>741</StateNumber>
       <StoredType>bigint|0s</StoredType>
       <TypeId>20</TypeId>
     </column>
-    <column id="302" parent="272" name="statusId">
-      <DefaultExpression>1</DefaultExpression>
+    <column id="318" parent="276" name="statusId">
       <NotNull>1</NotNull>
       <Position>3</Position>
-      <StateNumber>741</StateNumber>
-      <StoredType>smallint|0s</StoredType>
-      <TypeId>21</TypeId>
+      <StateNumber>9505</StateNumber>
+      <StoredType>integer|0s</StoredType>
+      <TypeId>23</TypeId>
     </column>
-    <column id="303" parent="272" name="isAdmin">
+    <column id="319" parent="276" name="isAdmin">
       <DefaultExpression>false</DefaultExpression>
       <NotNull>1</NotNull>
       <Position>4</Position>
@@ -5132,34 +5246,387 @@ all</Labels>
       <StoredType>boolean|0s</StoredType>
       <TypeId>16</TypeId>
     </column>
-    <column id="304" parent="272" name="cabinetIds">
+    <column id="320" parent="276" name="cabinetIds">
       <Position>5</Position>
       <StateNumber>8981</StateNumber>
       <StoredType>integer[]|0s</StoredType>
       <TypeId>1007</TypeId>
     </column>
-    <index id="305" parent="272" name="users_pkey">
+    <column id="321" parent="276" name="login">
+      <Position>6</Position>
+      <StateNumber>9508</StateNumber>
+      <StoredType>varchar(64)|0s</StoredType>
+      <TypeId>1043</TypeId>
+    </column>
+    <column id="322" parent="276" name="password">
+      <Position>7</Position>
+      <StateNumber>9509</StateNumber>
+      <StoredType>varchar(64)|0s</StoredType>
+      <TypeId>1043</TypeId>
+    </column>
+    <column id="323" parent="276" name="authKey">
+      <Position>8</Position>
+      <StateNumber>9510</StateNumber>
+      <StoredType>varchar(32)|0s</StoredType>
+      <TypeId>1043</TypeId>
+    </column>
+    <column id="324" parent="276" name="createdAt">
+      <DefaultExpression>now()</DefaultExpression>
+      <NotNull>1</NotNull>
+      <Position>9</Position>
+      <StateNumber>9511</StateNumber>
+      <StoredType>timestamp with time zone|0s</StoredType>
+      <TypeId>1184</TypeId>
+    </column>
+    <column id="325" parent="276" name="lastActivityAt">
+      <Position>10</Position>
+      <StateNumber>9512</StateNumber>
+      <StoredType>timestamp with time zone|0s</StoredType>
+      <TypeId>1184</TypeId>
+    </column>
+    <foreign-key id="326" parent="276" name="Ref_users_to_statuses">
+      <ColNames>statusId</ColNames>
+      <ObjectId>16592</ObjectId>
+      <StateNumber>9528</StateNumber>
+      <RefKeyColPositions>1</RefKeyColPositions>
+      <RefTableId>16525</RefTableId>
+    </foreign-key>
+    <index id="327" parent="276" name="users_pkey">
       <ColNames>userId</ColNames>
       <NameSurrogate>1</NameSurrogate>
       <ObjectId>16420</ObjectId>
       <Primary>1</Primary>
-      <StateNumber>741</StateNumber>
+      <StateNumber>9504</StateNumber>
       <Unique>1</Unique>
       <AccessMethodId>403</AccessMethodId>
     </index>
-    <index id="306" parent="272" name="IX_tgId_unique">
+    <index id="328" parent="276" name="IX_tgId_unique">
       <ColNames>tgId</ColNames>
       <ObjectId>16422</ObjectId>
-      <StateNumber>742</StateNumber>
+      <StateNumber>9504</StateNumber>
       <Unique>1</Unique>
       <AccessMethodId>403</AccessMethodId>
     </index>
-    <key id="307" parent="272" name="users_pkey">
+    <index id="329" parent="276" name="IX_FK_users_statusId_users">
+      <ColNames>statusId</ColNames>
+      <ObjectId>16523</ObjectId>
+      <StateNumber>9513</StateNumber>
+      <AccessMethodId>403</AccessMethodId>
+    </index>
+    <key id="330" parent="276" name="users_pkey">
       <NameSurrogate>1</NameSurrogate>
       <ObjectId>16421</ObjectId>
       <Primary>1</Primary>
       <StateNumber>741</StateNumber>
       <UnderlyingIndexId>16420</UnderlyingIndexId>
+    </key>
+    <column id="331" parent="277" name="fileId">
+      <DefaultExpression>nextval(&apos;&quot;vfsFiles_fileId_seq&quot;&apos;::regclass)</DefaultExpression>
+      <NotNull>1</NotNull>
+      <Position>1</Position>
+      <StateNumber>9521</StateNumber>
+      <StoredType>integer|0s</StoredType>
+      <SequenceId>16562</SequenceId>
+      <TypeId>23</TypeId>
+    </column>
+    <column id="332" parent="277" name="folderId">
+      <NotNull>1</NotNull>
+      <Position>2</Position>
+      <StateNumber>9521</StateNumber>
+      <StoredType>integer|0s</StoredType>
+      <TypeId>23</TypeId>
+    </column>
+    <column id="333" parent="277" name="title">
+      <NotNull>1</NotNull>
+      <Position>3</Position>
+      <StateNumber>9521</StateNumber>
+      <StoredType>varchar(255)|0s</StoredType>
+      <TypeId>1043</TypeId>
+    </column>
+    <column id="334" parent="277" name="path">
+      <NotNull>1</NotNull>
+      <Position>4</Position>
+      <StateNumber>9521</StateNumber>
+      <StoredType>varchar(255)|0s</StoredType>
+      <TypeId>1043</TypeId>
+    </column>
+    <column id="335" parent="277" name="params">
+      <Position>5</Position>
+      <StateNumber>9521</StateNumber>
+      <StoredType>text|0s</StoredType>
+      <TypeId>25</TypeId>
+    </column>
+    <column id="336" parent="277" name="isFavorite">
+      <DefaultExpression>false</DefaultExpression>
+      <Position>6</Position>
+      <StateNumber>9521</StateNumber>
+      <StoredType>boolean|0s</StoredType>
+      <TypeId>16</TypeId>
+    </column>
+    <column id="337" parent="277" name="mimeType">
+      <NotNull>1</NotNull>
+      <Position>7</Position>
+      <StateNumber>9521</StateNumber>
+      <StoredType>varchar(255)|0s</StoredType>
+      <TypeId>1043</TypeId>
+    </column>
+    <column id="338" parent="277" name="fileSize">
+      <DefaultExpression>0</DefaultExpression>
+      <Position>8</Position>
+      <StateNumber>9521</StateNumber>
+      <StoredType>integer|0s</StoredType>
+      <TypeId>23</TypeId>
+    </column>
+    <column id="339" parent="277" name="fileExists">
+      <DefaultExpression>true</DefaultExpression>
+      <NotNull>1</NotNull>
+      <Position>9</Position>
+      <StateNumber>9521</StateNumber>
+      <StoredType>boolean|0s</StoredType>
+      <TypeId>16</TypeId>
+    </column>
+    <column id="340" parent="277" name="createdAt">
+      <DefaultExpression>now()</DefaultExpression>
+      <NotNull>1</NotNull>
+      <Position>10</Position>
+      <StateNumber>9521</StateNumber>
+      <StoredType>timestamp|0s</StoredType>
+      <TypeId>1114</TypeId>
+    </column>
+    <column id="341" parent="277" name="statusId">
+      <NotNull>1</NotNull>
+      <Position>11</Position>
+      <StateNumber>9521</StateNumber>
+      <StoredType>integer|0s</StoredType>
+      <TypeId>23</TypeId>
+    </column>
+    <foreign-key id="342" parent="277" name="Ref_vfsFiles_to_vfsFolders">
+      <ColNames>folderId</ColNames>
+      <ObjectId>16575</ObjectId>
+      <StateNumber>9521</StateNumber>
+      <RefKeyColPositions>1</RefKeyColPositions>
+      <RefTableId>16542</RefTableId>
+    </foreign-key>
+    <foreign-key id="343" parent="277" name="Ref_vfsFiles_to_statuses">
+      <ColNames>statusId</ColNames>
+      <ObjectId>16580</ObjectId>
+      <StateNumber>9521</StateNumber>
+      <RefKeyColPositions>1</RefKeyColPositions>
+      <RefTableId>16525</RefTableId>
+    </foreign-key>
+    <index id="344" parent="277" name="vfsFiles_pkey">
+      <ColNames>fileId</ColNames>
+      <NameSurrogate>1</NameSurrogate>
+      <ObjectId>16573</ObjectId>
+      <Primary>1</Primary>
+      <StateNumber>9521</StateNumber>
+      <Unique>1</Unique>
+      <AccessMethodId>403</AccessMethodId>
+    </index>
+    <index id="345" parent="277" name="IX_FK_vfsFiles_folderId_vfsFiles">
+      <ColNames>folderId</ColNames>
+      <ObjectId>16585</ObjectId>
+      <StateNumber>9523</StateNumber>
+      <AccessMethodId>403</AccessMethodId>
+    </index>
+    <index id="346" parent="277" name="IX_FK_vfsFiles_statusId_vfsFiles">
+      <ColNames>statusId</ColNames>
+      <ObjectId>16586</ObjectId>
+      <StateNumber>9524</StateNumber>
+      <AccessMethodId>403</AccessMethodId>
+    </index>
+    <key id="347" parent="277" name="vfsFiles_pkey">
+      <NameSurrogate>1</NameSurrogate>
+      <ObjectId>16574</ObjectId>
+      <Primary>1</Primary>
+      <StateNumber>9521</StateNumber>
+      <UnderlyingIndexId>16573</UnderlyingIndexId>
+    </key>
+    <column id="348" parent="278" name="folderId">
+      <DefaultExpression>nextval(&apos;&quot;vfsFolders_folderId_seq&quot;&apos;::regclass)</DefaultExpression>
+      <NotNull>1</NotNull>
+      <Position>1</Position>
+      <StateNumber>9517</StateNumber>
+      <StoredType>integer|0s</StoredType>
+      <SequenceId>16541</SequenceId>
+      <TypeId>23</TypeId>
+    </column>
+    <column id="349" parent="278" name="parentFolderId">
+      <Position>2</Position>
+      <StateNumber>9517</StateNumber>
+      <StoredType>integer|0s</StoredType>
+      <TypeId>23</TypeId>
+    </column>
+    <column id="350" parent="278" name="title">
+      <NotNull>1</NotNull>
+      <Position>3</Position>
+      <StateNumber>9517</StateNumber>
+      <StoredType>varchar(255)|0s</StoredType>
+      <TypeId>1043</TypeId>
+    </column>
+    <column id="351" parent="278" name="isFavorite">
+      <DefaultExpression>false</DefaultExpression>
+      <Position>4</Position>
+      <StateNumber>9517</StateNumber>
+      <StoredType>boolean|0s</StoredType>
+      <TypeId>16</TypeId>
+    </column>
+    <column id="352" parent="278" name="createdAt">
+      <DefaultExpression>now()</DefaultExpression>
+      <NotNull>1</NotNull>
+      <Position>5</Position>
+      <StateNumber>9517</StateNumber>
+      <StoredType>timestamp|0s</StoredType>
+      <TypeId>1114</TypeId>
+    </column>
+    <column id="353" parent="278" name="statusId">
+      <NotNull>1</NotNull>
+      <Position>6</Position>
+      <StateNumber>9517</StateNumber>
+      <StoredType>integer|0s</StoredType>
+      <TypeId>23</TypeId>
+    </column>
+    <foreign-key id="354" parent="278" name="Ref_vfsFolders_to_vfsFolders">
+      <ColNames>parentFolderId</ColNames>
+      <ObjectId>16550</ObjectId>
+      <StateNumber>9517</StateNumber>
+      <RefKeyColPositions>1</RefKeyColPositions>
+      <RefTableId>16542</RefTableId>
+    </foreign-key>
+    <foreign-key id="355" parent="278" name="Ref_vfsFolders_to_statuses">
+      <ColNames>statusId</ColNames>
+      <ObjectId>16555</ObjectId>
+      <StateNumber>9517</StateNumber>
+      <RefKeyColPositions>1</RefKeyColPositions>
+      <RefTableId>16525</RefTableId>
+    </foreign-key>
+    <index id="356" parent="278" name="vfsFolders_pkey">
+      <ColNames>folderId</ColNames>
+      <NameSurrogate>1</NameSurrogate>
+      <ObjectId>16548</ObjectId>
+      <Primary>1</Primary>
+      <StateNumber>9517</StateNumber>
+      <Unique>1</Unique>
+      <AccessMethodId>403</AccessMethodId>
+    </index>
+    <index id="357" parent="278" name="IX_FK_vfsFolders_folderId_vfsFolders">
+      <ColNames>parentFolderId</ColNames>
+      <ObjectId>16560</ObjectId>
+      <StateNumber>9519</StateNumber>
+      <AccessMethodId>403</AccessMethodId>
+    </index>
+    <index id="358" parent="278" name="IX_FK_vfsFolders_statusId_vfsFolders">
+      <ColNames>statusId</ColNames>
+      <ObjectId>16561</ObjectId>
+      <StateNumber>9520</StateNumber>
+      <AccessMethodId>403</AccessMethodId>
+    </index>
+    <key id="359" parent="278" name="vfsFolders_pkey">
+      <NameSurrogate>1</NameSurrogate>
+      <ObjectId>16549</ObjectId>
+      <Primary>1</Primary>
+      <StateNumber>9517</StateNumber>
+      <UnderlyingIndexId>16548</UnderlyingIndexId>
+    </key>
+    <column id="360" parent="279" name="hash">
+      <NotNull>1</NotNull>
+      <Position>1</Position>
+      <StateNumber>9506</StateNumber>
+      <StoredType>varchar(40)|0s</StoredType>
+      <TypeId>1043</TypeId>
+    </column>
+    <column id="361" parent="279" name="namespace">
+      <NotNull>1</NotNull>
+      <Position>2</Position>
+      <StateNumber>9506</StateNumber>
+      <StoredType>varchar(32)|0s</StoredType>
+      <TypeId>1043</TypeId>
+    </column>
+    <column id="362" parent="279" name="extension">
+      <NotNull>1</NotNull>
+      <Position>3</Position>
+      <StateNumber>9506</StateNumber>
+      <StoredType>varchar(4)|0s</StoredType>
+      <TypeId>1043</TypeId>
+    </column>
+    <column id="363" parent="279" name="fileSize">
+      <DefaultExpression>0</DefaultExpression>
+      <NotNull>1</NotNull>
+      <Position>4</Position>
+      <StateNumber>9506</StateNumber>
+      <StoredType>integer|0s</StoredType>
+      <TypeId>23</TypeId>
+    </column>
+    <column id="364" parent="279" name="width">
+      <DefaultExpression>0</DefaultExpression>
+      <NotNull>1</NotNull>
+      <Position>5</Position>
+      <StateNumber>9506</StateNumber>
+      <StoredType>integer|0s</StoredType>
+      <TypeId>23</TypeId>
+    </column>
+    <column id="365" parent="279" name="height">
+      <DefaultExpression>0</DefaultExpression>
+      <NotNull>1</NotNull>
+      <Position>6</Position>
+      <StateNumber>9506</StateNumber>
+      <StoredType>integer|0s</StoredType>
+      <TypeId>23</TypeId>
+    </column>
+    <column id="366" parent="279" name="blurhash">
+      <Position>7</Position>
+      <StateNumber>9506</StateNumber>
+      <StoredType>text|0s</StoredType>
+      <TypeId>25</TypeId>
+    </column>
+    <column id="367" parent="279" name="error">
+      <Position>8</Position>
+      <StateNumber>9506</StateNumber>
+      <StoredType>text|0s</StoredType>
+      <TypeId>25</TypeId>
+    </column>
+    <column id="368" parent="279" name="createdAt">
+      <DefaultExpression>now()</DefaultExpression>
+      <NotNull>1</NotNull>
+      <Position>9</Position>
+      <StateNumber>9506</StateNumber>
+      <StoredType>timestamp with time zone|0s</StoredType>
+      <TypeId>1184</TypeId>
+    </column>
+    <column id="369" parent="279" name="indexedAt">
+      <Position>10</Position>
+      <StateNumber>9506</StateNumber>
+      <StoredType>timestamp with time zone|0s</StoredType>
+      <TypeId>1184</TypeId>
+    </column>
+    <index id="370" parent="279" name="vfsHashes_pkey">
+      <ColNames>hash
+namespace</ColNames>
+      <NameSurrogate>1</NameSurrogate>
+      <ObjectId>16519</ObjectId>
+      <Primary>1</Primary>
+      <StateNumber>9506</StateNumber>
+      <Unique>1</Unique>
+      <AccessMethodId>403</AccessMethodId>
+      <CollationIds>100
+100</CollationIds>
+      <CollationNames>default
+default</CollationNames>
+      <CollationParentNames>pg_catalog
+pg_catalog</CollationParentNames>
+    </index>
+    <index id="371" parent="279" name="IX_vfsHashes_indexedAt">
+      <ColNames>indexedAt</ColNames>
+      <ObjectId>16521</ObjectId>
+      <StateNumber>9507</StateNumber>
+      <AccessMethodId>403</AccessMethodId>
+    </index>
+    <key id="372" parent="279" name="vfsHashes_pkey">
+      <NameSurrogate>1</NameSurrogate>
+      <ObjectId>16520</ObjectId>
+      <Primary>1</Primary>
+      <StateNumber>9506</StateNumber>
+      <UnderlyingIndexId>16519</UnderlyingIndexId>
     </key>
   </database-model>
 </dataSource>

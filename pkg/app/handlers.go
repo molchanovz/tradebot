@@ -15,10 +15,10 @@ import (
 )
 
 // runHTTPServer is a function that starts http listener using labstack/echo.
-func (a *App) runHTTPServer(_ context.Context, host string, port int) error {
+func (a *App) runHTTPServer(ctx context.Context, host string, port int) error {
 	listenAddress := fmt.Sprintf("%s:%d", host, port)
-	//addr := "http://" + listenAddress
-	//a.Print(ctx, "starting http listener", "url", addr, "smdbox", addr+"/v1/rpc/doc/")
+	addr := "http://" + listenAddress
+	a.Print(ctx, "starting http listener", "url", addr)
 
 	return a.echo.Start(listenAddress)
 }
@@ -43,6 +43,8 @@ func (a *App) registerHandlers() {
 // registerDebugHandlers adds /debug/pprof handlers into a.echo instance.
 func (a *App) registerDebugHandlers() {
 	dbg := a.echo.Group("/debug")
+
+	dbg.Any("/cron", echo.WrapHandler(http.HandlerFunc(a.c.Handler)))
 
 	// add pprof integration
 	dbg.Any("/pprof/*", func(c echo.Context) error {

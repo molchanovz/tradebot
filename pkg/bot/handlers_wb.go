@@ -32,14 +32,20 @@ func wbHandler(ctx context.Context, bot *botlib.Bot, update *models.Update) {
 
 	text := "Кабинет ВБ"
 
-	var buttonsRow, buttonBack []models.InlineKeyboardButton
-	buttonsRow = append(buttonsRow, models.InlineKeyboardButton{Text: "Этикетки FBS", CallbackData: CallbackWbFbsHandler})
-	buttonsRow = append(buttonsRow, models.InlineKeyboardButton{Text: "Вчерашние заказы", CallbackData: CallbackWbOrdersHandler})
-	buttonsRow = append(buttonsRow, models.InlineKeyboardButton{Text: "Остатки", CallbackData: CallbackWbStocksHandler})
+	var buttonsRow []models.InlineKeyboardButton
+	var allButtons [][]models.InlineKeyboardButton
 
-	buttonBack = append(buttonBack, models.InlineKeyboardButton{Text: "Назад", CallbackData: CallbackStartHandler})
+	buttonsRow = append(buttonsRow, models.InlineKeyboardButton{Text: "Этикетки FBS", CallbackData: fmt.Sprintf("%v%v", CallbackWbFbsHandler)})
+	allButtons = append(allButtons, buttonsRow)
+	buttonsRow = []models.InlineKeyboardButton{}
 
-	allButtons := [][]models.InlineKeyboardButton{buttonsRow, buttonBack}
+	buttonsRow = append(buttonsRow, models.InlineKeyboardButton{Text: "Анализ заказов", CallbackData: fmt.Sprintf("%v%v", CallbackWbStocksHandler)})
+	allButtons = append(allButtons, buttonsRow)
+	buttonsRow = []models.InlineKeyboardButton{}
+
+	buttonsRow = append(buttonsRow, models.InlineKeyboardButton{Text: "Назад", CallbackData: CallbackStartHandler})
+	allButtons = append(allButtons, buttonsRow)
+
 	markup := models.InlineKeyboardMarkup{InlineKeyboard: allButtons}
 
 	_, err := bot.EditMessageText(ctx, &botlib.EditMessageTextParams{ChatID: chatID, MessageID: messageID, Text: text, ReplyMarkup: markup})
@@ -142,17 +148,21 @@ func (m *Manager) wbStocksHandler(ctx context.Context, bot *botlib.Bot, update *
 
 	cabinets, err := m.bl.GetCabinetsByMp(ctx, db.MarketWB)
 	if err != nil {
-		log.Println(err)
+		m.sl.Errorf("%v", err)
 		return
 	}
 
-	orders := wb.GetOrders(cabinets[0].Key, daysAgo)
+	orders, err := wb.GetOrders(cabinets[0].Key, daysAgo)
+	if err != nil {
+		m.sl.Errorf("%v", err)
+		return
+	}
 
 	stocks, lostWarehouses, err := wb.GetStocks(cabinets[0].Key)
 	if err != nil {
 		_, err = SendTextMessage(ctx, bot, chatID, fmt.Sprintf("Ошибка при анализе остатков: %w", err))
 		if err != nil {
-			log.Println("Ошибка отправки сообщения:", err)
+			m.sl.Errorf("send msg failed: %v", err)
 			return
 		}
 		return
@@ -162,7 +172,7 @@ func (m *Manager) wbStocksHandler(ctx context.Context, bot *botlib.Bot, update *
 	if err != nil {
 		_, err = SendTextMessage(ctx, bot, chatID, fmt.Sprintf("Ошибка при генерации экселя: %w", err))
 		if err != nil {
-			log.Println("Ошибка отправки сообщения:", err)
+			m.sl.Errorf("send msg failed: %v", err)
 			return
 		}
 		return
@@ -170,7 +180,7 @@ func (m *Manager) wbStocksHandler(ctx context.Context, bot *botlib.Bot, update *
 
 	err = SendMediaMessage(ctx, bot, chatID, filePath)
 	if err != nil {
-		log.Println("Ошибка отправки сообщения:", err)
+		m.sl.Errorf("send media failed: %v", err)
 		return
 	}
 	os.Remove(filePath)

@@ -93,26 +93,29 @@ func (m StickerManager) getReadyPdf(orderIds ozon.PostingslistFbs, progressChan 
 
 	for i, order := range orderIds.Result.PostingsFBS {
 		// 1. Скачиваем этикетку Ozon
-		labelPDF := ozon.V2PostingFbsPackageLabel(m.clientID, m.token, order.PostingNumber)
+		labelPDF, err := ozon.NewClient(m.clientID, m.token).Labels(order.PostingNumber)
+		if err != nil {
+			return nil, fmt.Errorf("get labels failed: %w", err)
+		}
 
 		if labelPDF == "" {
-			return nil, fmt.Errorf("пустой labelPDF для заказа %s", order.PostingNumber)
+			return nil, fmt.Errorf("label %s is nil", order.PostingNumber)
 		}
 
 		// 2. Сохраняем во временный файл
 		orderPDF := fmt.Sprintf("%v.pdf", tradeplus.CodesPath+order.PostingNumber)
-		if err := os.WriteFile(orderPDF, []byte(labelPDF), 0644); err != nil {
+		if err = os.WriteFile(orderPDF, []byte(labelPDF), 0644); err != nil {
 			return nil, fmt.Errorf("ошибка записи PDF: %w", err)
 		}
 
 		// 3. Извлекаем первую страницу
-		if err := extractFirstPage(orderPDF); err != nil {
+		if err = extractFirstPage(orderPDF); err != nil {
 			return nil, fmt.Errorf("ошибка извлечения страницы: %w", err)
 		}
 
 		// 4. Объединяем с баркодом
 		finalPDF := fmt.Sprintf("%v.pdf", tradeplus.ReadyPath+order.PostingNumber)
-		if err := combineLabelWithBarcode(orderPDF, finalPDF, order.Products[0].OfferID); err != nil {
+		if err = combineLabelWithBarcode(orderPDF, finalPDF, order.Products[0].OfferID); err != nil {
 			return nil, fmt.Errorf("ошибка объединения PDF с баркодом: %w", err)
 		}
 
@@ -130,8 +133,8 @@ func (m StickerManager) getReadyPdf(orderIds ozon.PostingslistFbs, progressChan 
 			}
 
 			// 6. Объединяем PDF текущего батча
-			readyPdfPath := fmt.Sprintf("%s/ozon_%d.pdf", tradeplus.DirectoryPath, batchCount)
-			if err := mergePDFsInDirectory(combinedPDFs, readyPdfPath); err != nil {
+			readyPdfPath := fmt.Sprintf("%s/ozon_%d.pdf", tradeplus.BatchesPath, batchCount)
+			if err = mergePDFsInDirectory(combinedPDFs, readyPdfPath); err != nil {
 				return nil, fmt.Errorf("ошибка объединения PDF для батча %d: %v", batchCount, err)
 			}
 
@@ -165,7 +168,7 @@ func (m StickerManager) getSortedFbsOrders() (ozon.PostingslistFbs, error) {
 	offset := 0
 	limit := 1000
 	for {
-		postingsListFbs, err := ozon.PostingsListFbs(m.clientID, m.token, since, to, offset, "awaiting_deliver")
+		postingsListFbs, err := ozon.NewClient(m.clientID, m.token).PostingsListFbs(since, to, offset, "awaiting_deliver")
 		if err != nil {
 			return postingsListFbs, err
 		}

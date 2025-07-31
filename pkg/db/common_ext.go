@@ -1,6 +1,11 @@
 //nolint:gocritic
 package db
 
+import (
+	"context"
+	"github.com/go-pg/pg/v10/orm"
+)
+
 //
 //import (
 //	"context"
@@ -11,8 +16,19 @@ package db
 //var (
 //	ErrNoFound = errors.New("not found")
 //)
+
+func (tr TradebotRepo) DeleteOrdersLastWeek(ctx context.Context) (orm.Result, error) {
+	return tr.db.ModelContext(ctx, &Order{}).Where(`"createdAt" < NOW() - INTERVAL '7 days'`).Delete()
+}
+
+func (tr TradebotRepo) SelectOrdersByFilter(ctx context.Context) ([]Order, error) {
+	var orders []Order
+	err := tr.db.ModelContext(ctx, &orders).Select()
+	return orders, err
+}
+
 //
-//// AuthenticateUser update authKey and last activity while user login/logout
+// AuthenticateUser update authKey and last activity while user login/logout
 //func (tr TradebotRepo) AuthenticateUser(ctx context.Context, dbu *User, authKey string) (bool, error) {
 //	dbu.AuthKey = authKey
 //	now := time.Now()

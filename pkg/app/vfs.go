@@ -23,7 +23,7 @@ package app
 //	vfsRepo := vfsdb.NewVfsRepo(a.db)
 //	a.echo.Any("/v1/vfs/upload/file", zm.EchoHandler(vt.HTTPAuthMiddleware(cr, vf.UploadHandler(vfsRepo))))
 //	a.echo.Any("/v1/vfs/upload/hash", echo.WrapHandler(vt.HTTPAuthMiddleware(cr, vf.HashUploadHandler(&vfsRepo))))
-//	a.echo.GET(a.cfg.VFS.WebPath, echo.WrapHandler(http.StripPrefix(a.cfg.VFS.WebPath, http.FileServer(http.Dir(a.cfg.VFS.Path)))))
+//	a.echo.get(a.cfg.VFS.WebPath, echo.WrapHandler(http.StripPrefix(a.cfg.VFS.WebPath, http.FileServer(http.Dir(a.cfg.VFS.Path)))))
 //	vt.WebPath = a.cfg.VFS.WebPath
 //
 //	a.vtsrv.Register(NSVFS, vfs.NewService(vfsRepo, vf, a.dbc))
