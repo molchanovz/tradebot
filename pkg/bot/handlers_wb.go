@@ -35,11 +35,11 @@ func wbHandler(ctx context.Context, bot *botlib.Bot, update *models.Update) {
 	var buttonsRow []models.InlineKeyboardButton
 	var allButtons [][]models.InlineKeyboardButton
 
-	buttonsRow = append(buttonsRow, models.InlineKeyboardButton{Text: "Этикетки FBS", CallbackData: fmt.Sprintf("%v%v", CallbackWbFbsHandler)})
+	buttonsRow = append(buttonsRow, models.InlineKeyboardButton{Text: "Этикетки FBS", CallbackData: fmt.Sprintf("%v", CallbackWbFbsHandler)})
 	allButtons = append(allButtons, buttonsRow)
 	buttonsRow = []models.InlineKeyboardButton{}
 
-	buttonsRow = append(buttonsRow, models.InlineKeyboardButton{Text: "Анализ заказов", CallbackData: fmt.Sprintf("%v%v", CallbackWbStocksHandler)})
+	buttonsRow = append(buttonsRow, models.InlineKeyboardButton{Text: "Анализ заказов", CallbackData: fmt.Sprintf("%v", CallbackWbStocksHandler)})
 	allButtons = append(allButtons, buttonsRow)
 	buttonsRow = []models.InlineKeyboardButton{}
 
