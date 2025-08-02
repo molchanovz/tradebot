@@ -4,7 +4,12 @@
     <option name="autoReloadType" value="ALL" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="640077d7-ce81-4039-9739-8ad3e3a8d41a" name="Changes" comment="Fix wb sticker handler" />
+    <list default="true" id="640077d7-ce81-4039-9739-8ad3e3a8d41a" name="Changes" comment="Fix yandex sticker paths">
+      <change beforePath="$PROJECT_DIR$/.idea/dataSources/1b64e527-6db9-43cd-b9c3-7934f9a53ece.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources/1b64e527-6db9-43cd-b9c3-7934f9a53ece.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/dataSources/1b64e527-6db9-43cd-b9c3-7934f9a53ece/storage_v2/_src_/database/tradebot.42HFSw/schema/public.abK9xQ.meta" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources/1b64e527-6db9-43cd-b9c3-7934f9a53ece/storage_v2/_src_/database/tradebot.42HFSw/schema/public.abK9xQ.meta" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pkg/bot/handlers_settings.go" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/bot/handlers_settings.go" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -62,7 +67,7 @@
     "Go Build.go build WildberriesGo_bot.executor": "Run",
     "Go Build.go build WildberriesGo_bot/cmd.executor": "Run",
     "Go Build.go build tradebot/cmd.executor": "Run",
-    "Go Build.go build tradebot/cmd/tradebot.executor": "Run",
+    "Go Build.go build tradebot/cmd/tradebot.executor": "Debug",
     "Go Test.TestGetCabinets in tradebot/pkg/db.executor": "Run",
     "Go Test.TestOrdersManager_GetReturnsMap in tradebot/pkg/marketplaces/OZON.executor": "Run",
     "Go Test.TestOrdersManager_GetReturnsMap in tradebot/pkg/tradeplus/ozon.executor": "Debug",
@@ -117,7 +122,16 @@
       <recent name="$PROJECT_DIR$/pkg/tradeplus/yandex" />
     </key>
   </component>
-  <component name="RunManager" selected="Go Test.TestTradebotRepo_DeleteOrdersByFilter in tradebot/pkg/db">
+  <component name="RunManager" selected="Go Build.go build tradebot/cmd/tradebot">
+    <configuration name="go build tradebot/cmd/tradebot" type="GoApplicationRunConfiguration" factoryName="Go Application" temporary="true" nameIsGenerated="true">
+      <module name="tradebot" />
+      <working_directory value="$PROJECT_DIR$" />
+      <kind value="PACKAGE" />
+      <package value="tradebot/cmd/tradebot" />
+      <directory value="$PROJECT_DIR$" />
+      <filePath value="$PROJECT_DIR$/cmd/tradebot/main.go" />
+      <method v="2" />
+    </configuration>
     <configuration name="TestTradebotRepo_DeleteOrdersByFilter in tradebot/pkg/db" type="GoTestRunConfiguration" factoryName="Go Test" temporary="true" nameIsGenerated="true">
       <module name="tradebot" />
       <working_directory value="$PROJECT_DIR$/pkg/db" />
@@ -154,19 +168,13 @@
       </makefile>
       <method v="2" />
     </configuration>
-    <configuration name="mfd-xml" type="MAKEFILE_TARGET_RUN_CONFIGURATION" factoryName="Makefile" temporary="true">
-      <makefile filename="$PROJECT_DIR$/Makefile" target="mfd-xml" workingDirectory="" arguments="">
-        <envs />
-      </makefile>
-      <method v="2" />
-    </configuration>
     <recent_temporary>
       <list>
+        <item itemvalue="Go Build.go build tradebot/cmd/tradebot" />
         <item itemvalue="Go Test.TestTradebotRepo_DeleteOrdersByFilter in tradebot/pkg/db" />
         <item itemvalue="Go Test.TestTradebotRepo_SelectOrdersByFilter in tradebot/pkg/db" />
         <item itemvalue="Makefile Target.mfd-repo" />
         <item itemvalue="Makefile Target.mfd-model" />
-        <item itemvalue="Makefile Target.mfd-xml" />
       </list>
     </recent_temporary>
   </component>
@@ -190,7 +198,6 @@
   </component>
   <component name="VcsManagerConfiguration">
     <option name="CHECK_CODE_SMELLS_BEFORE_PROJECT_COMMIT" value="false" />
-    <MESSAGE value="fix comment" />
     <MESSAGE value="extract methods" />
     <MESSAGE value="add errChan" />
     <MESSAGE value="fix wb fbs timeout" />
@@ -215,7 +222,8 @@
     <MESSAGE value="Edit Dockerfile&#10;&#10;change main.go path&#10;change COPY paths" />
     <MESSAGE value="add cron" />
     <MESSAGE value="Fix wb sticker handler" />
-    <option name="LAST_COMMIT_MESSAGE" value="Fix wb sticker handler" />
+    <MESSAGE value="Fix yandex sticker paths" />
+    <option name="LAST_COMMIT_MESSAGE" value="Fix yandex sticker paths" />
   </component>
   <component name="VgoProject">
     <settings-migrated>true</settings-migrated>

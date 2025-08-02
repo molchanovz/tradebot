@@ -148,11 +148,11 @@ func createSettingsMPMarkup(cabinetID int) (string, models.InlineKeyboardMarkup)
 	var buttonsRow []models.InlineKeyboardButton
 	var allButtons [][]models.InlineKeyboardButton
 
-	buttonsRow = append(buttonsRow, models.InlineKeyboardButton{Text: "Изменить ключ API", CallbackData: fmt.Sprintf("%v+%v", CallbackChangeAPIHandler, cabinetID)})
+	buttonsRow = append(buttonsRow, models.InlineKeyboardButton{Text: "Изменить ключ API", CallbackData: fmt.Sprintf("%v%v", CallbackChangeAPIHandler, cabinetID)})
 	allButtons = append(allButtons, buttonsRow)
 	buttonsRow = []models.InlineKeyboardButton{}
 
-	buttonsRow = append(buttonsRow, models.InlineKeyboardButton{Text: "Изменить таблицу для заказов", CallbackData: fmt.Sprintf("%v+%v", CallbackChangeSheetHandler, cabinetID)})
+	buttonsRow = append(buttonsRow, models.InlineKeyboardButton{Text: "Изменить таблицу для заказов", CallbackData: fmt.Sprintf("%v%v", CallbackChangeSheetHandler, cabinetID)})
 	allButtons = append(allButtons, buttonsRow)
 	buttonsRow = []models.InlineKeyboardButton{}
 
@@ -191,7 +191,13 @@ func (m *Manager) ChangeApiHandler(ctx context.Context, bot *botlib.Bot, update 
 		return
 	}
 
-	m.APIMap.Store(chatID, cabinetID)
+	id, err := strconv.Atoi(cabinetID)
+	if err != nil {
+		log.Println("Ошибка парсинга cabinetId")
+		return
+	}
+
+	m.APIMap.Store(chatID, id)
 
 	_, err = bot.EditMessageText(ctx, &botlib.EditMessageTextParams{
 		MessageID: update.CallbackQuery.Message.Message.ID,
@@ -233,7 +239,13 @@ func (m *Manager) ChangeSheetHandler(ctx context.Context, bot *botlib.Bot, updat
 		return
 	}
 
-	m.SheetMap.Store(chatID, cabinetID)
+	id, err := strconv.Atoi(cabinetID)
+	if err != nil {
+		log.Println("Ошибка парсинга cabinetId")
+		return
+	}
+
+	m.SheetMap.Store(chatID, id)
 
 	_, err = bot.EditMessageText(ctx, &botlib.EditMessageTextParams{
 		MessageID: update.CallbackQuery.Message.Message.ID,
