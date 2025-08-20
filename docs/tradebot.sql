@@ -113,8 +113,8 @@ CREATE INDEX "IX_FK_vfsFiles_statusId_vfsFiles" ON "vfsFiles" USING BTREE (
 CREATE TABLE "users" (
 	"userId" SERIAL NOT NULL,
 	"tgId" int8 NOT NULL,
-	"login" varchar(64) NOT NULL,
-	"password" varchar(64) NOT NULL,
+	"login" varchar(64),
+	"password" varchar(64),
 	"authKey" varchar(32),
 	"createdAt" timestamp with time zone NOT NULL DEFAULT now(),
 	"lastActivityAt" timestamp with time zone,
