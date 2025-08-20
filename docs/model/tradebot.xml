@@ -1,0 +1,75 @@
+<Package xmlns:xsi="" xmlns:xsd="">
+    <Name>tradebot</Name>
+    <Entities>
+        <Entity Name="Cabinet" Namespace="tradebot" Table="cabinets">
+            <Attributes>
+                <Attribute Name="ID" DBName="cabinetsId" DBType="int4" GoType="int" PK="true" Nullable="Yes" Addable="true" Updatable="false" Min="0" Max="0"></Attribute>
+                <Attribute Name="Name" DBName="name" DBType="varchar" GoType="string" PK="false" Nullable="No" Addable="true" Updatable="true" Min="0" Max="64"></Attribute>
+                <Attribute Name="ClientID" DBName="clientId" DBType="varchar" GoType="*string" PK="false" Nullable="Yes" Addable="true" Updatable="true" Min="0" Max="64"></Attribute>
+                <Attribute Name="Key" DBName="key" DBType="varchar" GoType="string" PK="false" Nullable="No" Addable="true" Updatable="true" Min="0" Max="1024"></Attribute>
+                <Attribute Name="Marketplace" DBName="marketplace" DBType="varchar" GoType="string" PK="false" Nullable="No" Addable="true" Updatable="true" Min="0" Max="0"></Attribute>
+                <Attribute Name="Type" DBName="type" DBType="varchar" GoType="string" PK="false" Nullable="No" Addable="true" Updatable="true" Min="0" Max="0"></Attribute>
+                <Attribute Name="SheetLink" DBName="sheetLink" DBType="varchar" GoType="*string" PK="false" Nullable="Yes" Addable="true" Updatable="true" Min="0" Max="1024"></Attribute>
+                <Attribute Name="StatusID" DBName="statusId" DBType="int4" GoType="int" PK="false" Nullable="No" Addable="true" Updatable="true" Min="0" Max="0"></Attribute>
+            </Attributes>
+            <Searches>
+                <Search Name="IDs" AttrName="ID" SearchType="SEARCHTYPE_ARRAY"></Search>
+                <Search Name="NameILike" AttrName="Name" SearchType="SEARCHTYPE_ILIKE"></Search>
+                <Search Name="ClientIDILike" AttrName="ClientID" SearchType="SEARCHTYPE_ILIKE"></Search>
+                <Search Name="KeyILike" AttrName="Key" SearchType="SEARCHTYPE_ILIKE"></Search>
+                <Search Name="MarketplaceILike" AttrName="Marketplace" SearchType="SEARCHTYPE_ILIKE"></Search>
+                <Search Name="TypeILike" AttrName="Type" SearchType="SEARCHTYPE_ILIKE"></Search>
+                <Search Name="SheetLinkILike" AttrName="SheetLink" SearchType="SEARCHTYPE_ILIKE"></Search>
+            </Searches>
+        </Entity>
+        <Entity Name="Order" Namespace="tradebot" Table="orders">
+            <Attributes>
+                <Attribute Name="ID" DBName="orderId" DBType="int4" GoType="int" PK="true" Nullable="Yes" Addable="true" Updatable="false" Min="0" Max="0"></Attribute>
+                <Attribute Name="PostingNumber" DBName="postingNumber" DBType="varchar" GoType="string" PK="false" Nullable="No" Addable="true" Updatable="true" Min="0" Max="32"></Attribute>
+                <Attribute Name="Article" DBName="article" DBType="varchar" GoType="string" PK="false" Nullable="No" Addable="true" Updatable="true" Min="0" Max="128"></Attribute>
+                <Attribute Name="Count" DBName="count" DBType="int4" GoType="int" PK="false" Nullable="No" Addable="true" Updatable="true" Min="0" Max="0"></Attribute>
+                <Attribute Name="CabinetID" DBName="cabinetId" DBType="int4" GoType="int" PK="false" FK="Cabinet" Nullable="No" Addable="true" Updatable="true" Min="0" Max="0"></Attribute>
+                <Attribute Name="CreatedAt" DBName="createdAt" DBType="timestamptz" GoType="time.Time" PK="false" Nullable="No" Addable="false" Updatable="false" Min="0" Max="0"></Attribute>
+                <Attribute Name="StatusID" DBName="statusId" DBType="int4" GoType="int" PK="false" Nullable="No" Addable="true" Updatable="true" Min="0" Max="0"></Attribute>
+            </Attributes>
+            <Searches>
+                <Search Name="IDs" AttrName="ID" SearchType="SEARCHTYPE_ARRAY"></Search>
+                <Search Name="PostingNumberILike" AttrName="PostingNumber" SearchType="SEARCHTYPE_ILIKE"></Search>
+                <Search Name="ArticleILike" AttrName="Article" SearchType="SEARCHTYPE_ILIKE"></Search>
+            </Searches>
+        </Entity>
+        <Entity Name="Stock" Namespace="tradebot" Table="stocks">
+            <Attributes>
+                <Attribute Name="ID" DBName="stockId" DBType="int4" GoType="int" PK="true" Nullable="Yes" Addable="true" Updatable="false" Min="0" Max="0"></Attribute>
+                <Attribute Name="Article" DBName="article" DBType="varchar" GoType="string" PK="false" Nullable="No" Addable="true" Updatable="true" Min="0" Max="64"></Attribute>
+                <Attribute Name="UpdatedAt" DBName="updatedAt" DBType="timestamptz" GoType="time.Time" PK="false" Nullable="No" Addable="true" Updatable="true" Min="0" Max="0"></Attribute>
+                <Attribute Name="CountFbo" DBName="countFbo" DBType="int4" GoType="*int" PK="false" Nullable="Yes" Addable="true" Updatable="true" Min="0" Max="0"></Attribute>
+                <Attribute Name="CountFbs" DBName="countFbs" DBType="int4" GoType="*int" PK="false" Nullable="Yes" Addable="true" Updatable="true" Min="0" Max="0"></Attribute>
+                <Attribute Name="CabinetID" DBName="cabinetId" DBType="int4" GoType="int" PK="false" FK="Cabinet" Nullable="No" Addable="true" Updatable="true" Min="0" Max="0"></Attribute>
+            </Attributes>
+            <Searches>
+                <Search Name="IDs" AttrName="ID" SearchType="SEARCHTYPE_ARRAY"></Search>
+                <Search Name="ArticleILike" AttrName="Article" SearchType="SEARCHTYPE_ILIKE"></Search>
+            </Searches>
+        </Entity>
+        <Entity Name="User" Namespace="tradebot" Table="users">
+            <Attributes>
+                <Attribute Name="ID" DBName="userId" DBType="int4" GoType="int" PK="true" Nullable="Yes" Addable="true" Updatable="false" Min="0" Max="0"></Attribute>
+                <Attribute Name="TgID" DBName="tgId" DBType="int8" GoType="int64" PK="false" Nullable="No" Addable="true" Updatable="true" Min="0" Max="0"></Attribute>
+                <Attribute Name="IsAdmin" DBName="isAdmin" DBType="bool" GoType="bool" PK="false" Nullable="No" Addable="true" Updatable="true" Min="0" Max="0"></Attribute>
+                <Attribute Name="CabinetIDs" DBName="cabinetIds" IsArray="true" DBType="int4" GoType="[]int" PK="false" FK="Cabinet" Nullable="Yes" Addable="true" Updatable="true" Min="0" Max="0"></Attribute>
+                <Attribute Name="StatusID" DBName="statusId" DBType="int4" GoType="int" PK="false" Nullable="No" Addable="true" Updatable="true" Min="0" Max="0"></Attribute>
+                <Attribute Name="Login" DBName="login" DBType="varchar" GoType="*string" PK="false" Nullable="Yes" Addable="true" Updatable="true" Min="0" Max="64"></Attribute>
+                <Attribute Name="Password" DBName="password" DBType="varchar" GoType="*string" PK="false" Nullable="Yes" Addable="true" Updatable="true" Min="0" Max="64"></Attribute>
+                <Attribute Name="AuthKey" DBName="authKey" DBType="varchar" GoType="*string" PK="false" Nullable="Yes" Addable="true" Updatable="true" Min="0" Max="32"></Attribute>
+                <Attribute Name="CreatedAt" DBName="createdAt" DBType="timestamptz" GoType="time.Time" PK="false" Nullable="No" Addable="false" Updatable="false" Min="0" Max="0"></Attribute>
+                <Attribute Name="LastActivityAt" DBName="lastActivityAt" DBType="timestamptz" GoType="*time.Time" PK="false" Nullable="Yes" Addable="true" Updatable="true" Min="0" Max="0"></Attribute>
+            </Attributes>
+            <Searches>
+                <Search Name="IDs" AttrName="ID" SearchType="SEARCHTYPE_ARRAY"></Search>
+                <Search Name="LoginILike" AttrName="Login" SearchType="SEARCHTYPE_ILIKE"></Search>
+                <Search Name="AuthKeyILike" AttrName="AuthKey" SearchType="SEARCHTYPE_ILIKE"></Search>
+            </Searches>
+        </Entity>
+    </Entities>
+</Package>

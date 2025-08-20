@@ -1,50 +1,84 @@
+//lint:file-ignore U1000 ignore unused code, it's generated
+//nolint:structcheck,unused
 package db
 
 import (
-	"errors"
-	"fmt"
-	"gorm.io/driver/postgres"
-	"gorm.io/gorm"
-	"log"
+	"context"
+	"hash/crc64"
+	"reflect"
+
+	"github.com/go-pg/pg/v10"
+	"github.com/go-pg/pg/v10/orm"
 )
 
-const (
-	EnabledStatus = iota + 1
-	DisabledStatus
-	DeletedStatus
-	WaitingWbState
-	WaitingYaState
-)
+// DB stores db connection
+type DB struct {
+	*pg.DB
 
-type Service struct {
-	dsn string
+	crcTable *crc64.Table
 }
 
-func NewService(dsn string) Service {
-	return Service{dsn: dsn}
+// New is a function that returns DB as wrapper on postgres connection.
+func New(db *pg.DB) DB {
+	d := DB{DB: db, crcTable: crc64.MakeTable(crc64.ECMA)}
+
+	return d
 }
 
-func (dbs Service) InitDB() (*gorm.DB, error) {
-	log.Println("Инициализация базы данных")
-	Database, err := gorm.Open(postgres.Open(dbs.dsn), &gorm.Config{})
-	if err != nil {
-		return nil, errors.New(fmt.Sprintf("Failed to connect to database: %v", err))
+// Version is a function that returns Postgres version.
+func (db *DB) Version() (string, error) {
+	var v string
+	if _, err := db.QueryOne(pg.Scan(&v), "select version()"); err != nil {
+		return "", err
 	}
-	return Database, nil
+
+	return v, nil
 }
 
-func (Stock) TableName() string {
-	return "public.stocks"
+// runInTransaction runs chain of functions in transaction until first error
+func (db *DB) runInTransaction(ctx context.Context, fns ...func(*pg.Tx) error) error {
+	return db.RunInTransaction(ctx, func(tx *pg.Tx) error {
+		for _, fn := range fns {
+			if err := fn(tx); err != nil {
+				return err
+			}
+		}
+		return nil
+	})
 }
 
-func (User) TableName() string {
-	return "public.users"
+// RunInLock runs chain of functions in transaction with lock until first error
+func (db *DB) RunInLock(ctx context.Context, lockName string, fns ...func(*pg.Tx) error) error {
+	lock := int64(crc64.Checksum([]byte(lockName), db.crcTable))
+
+	return db.RunInTransaction(ctx, func(tx *pg.Tx) (err error) {
+		if _, err = tx.Exec("select pg_advisory_xact_lock(?) -- ?", lock, lockName); err != nil {
+			return
+		}
+
+		for _, fn := range fns {
+			if err = fn(tx); err != nil {
+				return
+			}
+		}
+
+		return
+	})
 }
 
-func (Cabinet) TableName() string {
-	return "public.cabinets"
-}
+// buildQuery applies all functions to orm query.
+func buildQuery(ctx context.Context, db orm.DB, model interface{}, search Searcher, filters []Filter, pager Pager, ops ...OpFunc) *orm.Query {
+	q := db.ModelContext(ctx, model)
+	for _, filter := range filters {
+		filter.Apply(q)
+	}
 
-func (Order) TableName() string {
-	return "public.orders"
+	if reflect.ValueOf(search).IsValid() && !reflect.ValueOf(search).IsNil() { // is it good?
+		search.Apply(q)
+	}
+
+	q = pager.Apply(q)
+	applyOps(q, ops...)
+
+	return q
 }

@@ -1,118 +1,119 @@
 package app
 
 import (
+	"context"
 	"fmt"
-	"github.com/joho/godotenv"
-	"gorm.io/gorm"
-	"log"
-	"os"
-	"os/signal"
-	"syscall"
+	"github.com/vmkteam/cron"
+	"net"
+	"time"
 	"tradebot/pkg/bot"
 	"tradebot/pkg/db"
-	"tradebot/pkg/marketplaces/WB"
-	"tradebot/pkg/marketplaces/YANDEX"
-	"tradebot/pkg/scheduler"
+	"tradebot/pkg/tradeplus/schedule"
+
+	"github.com/go-pg/pg/v10"
+	monitor "github.com/hypnoglow/go-pg-monitor"
+	"github.com/labstack/echo/v4"
+	"github.com/vmkteam/embedlog"
+	"github.com/vmkteam/vfs"
 )
 
-type Application struct {
-	envPath string
+type Config struct {
+	Database *pg.Options
+	Server   struct {
+		Host      string
+		Port      int
+		IsDevel   bool
+		EnableVFS bool
+	}
+	Bot    bot.Config
+	Sentry struct {
+		Environment string
+		DSN         string
+	}
+	Cron struct {
+		OzonWriter   cron.Schedule
+		YandexWriter cron.Schedule
+		WBWriter     cron.Schedule
+		OrderCleaner cron.Schedule
+	}
+	VFS vfs.Config
 }
 
-func New(envPath string) Application {
-	return Application{envPath: envPath}
+type App struct {
+	embedlog.Logger
+	appName string
+	cfg     Config
+	db      db.DB
+	dbc     *pg.DB
+	mon     *monitor.Monitor
+	echo    *echo.Echo
+	//vtsrv   zenrpc.Server
+	bs              *bot.Service
+	scheduleManager schedule.Manager
+	c               *cron.Manager
 }
 
-func (a Application) Start() {
-	myChatId, err := initEnv(a.envPath, "myChatId")
-	if err != nil {
-		fmt.Printf("%v", err)
+func New(appName string, sl embedlog.Logger, cfg Config, db db.DB, dbc *pg.DB) *App {
+	a := &App{
+		appName: appName,
+		cfg:     cfg,
+		db:      db,
+		dbc:     dbc,
+		echo:    echo.New(),
+		Logger:  sl,
 	}
 
-	dsn, err := initEnv(a.envPath, "DSN")
-	if err != nil {
-		fmt.Printf("%v", err)
-	}
-	dataBaseService := db.NewService(dsn)
-	sqlDB, err := dataBaseService.InitDB()
-	if err != nil {
-		fmt.Printf("%v", err)
-		return
-	}
+	a.scheduleManager = schedule.NewManager(db, a.Logger)
 
-	if sqlDB == nil {
-		return
-	}
+	a.c = a.newCron()
 
-	wbToken, err := initEnv(a.envPath, "API_KEY_WB")
-	if err != nil {
-		fmt.Printf("%v", err)
-	}
-	wbService := WB.NewService(wbToken)
+	a.bs = bot.NewService(cfg.Bot, db)
 
-	yandexCampaignIdFBO, err := initEnv(a.envPath, "yandexCampaignIdFBO")
-	if err != nil {
-		fmt.Printf("%v", err)
-	}
-	yandexCampaignIdFBS, err := initEnv(a.envPath, "yandexCampaignIdFBS")
-	if err != nil {
-		fmt.Printf("%v", err)
-	}
-	yandexToken, err := initEnv(a.envPath, "yandexToken")
-	if err != nil {
-		fmt.Printf("%v", err)
-	}
-	yandexService := YANDEX.NewService(yandexCampaignIdFBO, yandexCampaignIdFBS, yandexToken)
+	// setup echo
+	a.echo.HideBanner = true
+	a.echo.HidePort = true
+	_, mask, _ := net.ParseCIDR("0.0.0.0/0")
+	a.echo.IPExtractor = echo.ExtractIPFromRealIPHeader(echo.TrustIPRange(mask))
 
-	botToken, err := initEnv(a.envPath, "token")
-	if err != nil {
-		fmt.Printf("%v", err)
-	}
-	botService := bot.NewBotService(*wbService, *yandexService, botToken, sqlDB, myChatId)
-	botService.Start()
-
-	schedulerService := scheduler.NewService(botService.Manager(), wbToken)
-	err = schedulerService.Start()
-	if err != nil {
-		log.Println(err)
-		return
-	}
-
-	defer func(sqlDB *gorm.DB) {
-
-		database, err := sqlDB.DB()
-		if err != nil {
-			log.Println(err)
-			return
-		}
-
-		err = database.Close()
-		if err != nil {
-			log.Println(err)
-			return
-		}
-
-		log.Println("Соединение закрыто")
-	}(sqlDB)
-
-	stopChan := make(chan os.Signal, 1)
-	signal.Notify(stopChan, os.Interrupt, syscall.SIGTERM)
-
-	<-stopChan
-	log.Println("Завершение программы...")
+	// add services
+	//a.vtsrv = vt.New(a.db, a.Logger, a.cfg.Server.IsDevel)
+	return a
 }
 
-func initEnv(path, name string) (string, error) {
-	err := godotenv.Load(path)
-	if err != nil {
-		log.Printf("Ошибка загрузки файла %s: %v\n", path, err)
-		return "", fmt.Errorf("ошибка загрузки файла " + path)
-	}
-	// Получаем значения переменных среды
-	env := os.Getenv(name)
+// Run is a function that runs application.
+func (a *App) Run(ctx context.Context) error {
+	a.registerMetrics()
+	a.registerHandlers()
+	a.registerDebugHandlers()
+	//a.registerAPIHandlers()
+	//a.registerVTApiHandlers()
+	a.bs.Start()
 
-	if env == "" {
-		return "", fmt.Errorf("переменная среды " + name + " не установлена")
+	// run cron
+	if err := a.c.Run(ctx); err != nil {
+		return err
+	} else {
+		a.Logger.Print(ctx, "open this url for cron ui", "url", fmt.Sprintf("http://%v:%v/debug/cron", a.cfg.Server.Host, a.cfg.Server.Port))
+		a.Logger.Print(ctx, "open this url for metrics", "url", fmt.Sprintf("http://%v:%v/metrics", a.cfg.Server.Host, a.cfg.Server.Port))
 	}
-	return env, err
+
+	return a.runHTTPServer(ctx, a.cfg.Server.Host, a.cfg.Server.Port)
+}
+
+// VTTypeScriptClient returns TypeScript client for VT.
+//func (a *App) VTTypeScriptClient() ([]byte, error) {
+//	gen := rpcgen.FromSMD(a.vtsrv.SMD())
+//	tsSettings := typescript.Settings{ExcludedNamespace: []string{NSVFS}, WithClasses: true}
+//	return gen.TSCustomClient(tsSettings).Generate()
+//}
+
+// Shutdown is a function that gracefully stops HTTP server.
+func (a *App) Shutdown(timeout time.Duration) {
+	ctx, cancel := context.WithTimeout(context.Background(), timeout)
+	defer cancel()
+	a.mon.Close()
+
+	if err := a.echo.Shutdown(ctx); err != nil {
+		a.Error(ctx, "shutting down server", "err", err)
+	}
 }
