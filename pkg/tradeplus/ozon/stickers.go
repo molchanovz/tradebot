@@ -237,7 +237,7 @@ func combineLabelWithBarcode(ozonPdfPath, outputPath, article string) error {
 	// Вставка и поворот изображения
 	pdf.TransformBegin()
 	pdf.TransformRotate(90, centerX, centerY)
-	pdf.ImageOptions(tmpImg, centerX-origHeight/2+2, 8, origHeight+10, origWidth+10, false,
+	pdf.ImageOptions(tmpImg, centerX-origHeight/2+2, 8, origHeight+10, origWidth+18, false,
 		gofpdf.ImageOptions{ImageType: "JPG"}, 0, "")
 	pdf.TransformEnd()
 
