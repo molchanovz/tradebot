@@ -162,3 +162,67 @@ type Stock struct {
 	IsRealization   bool   `json:"isRealization"`
 	SCCode          string `json:"SCCode"`
 }
+
+type ReturnList struct {
+	Report []struct {
+		Barcode          string `json:"barcode"`
+		Brand            string `json:"brand"`
+		CompletedDt      string `json:"completedDt"`
+		DstOfficeAddress string `json:"dstOfficeAddress"`
+		DstOfficeId      int    `json:"dstOfficeId"`
+		ExpiredDt        string `json:"expiredDt"`
+		IsStatusActive   int    `json:"isStatusActive"`
+		NmId             int    `json:"nmId"`
+		OrderDt          string `json:"orderDt"`
+		OrderId          int    `json:"orderId"`
+		ReadyToReturnDt  string `json:"readyToReturnDt"`
+		Reason           string `json:"reason"`
+		ReturnType       string `json:"returnType"`
+		ShkId            int64  `json:"shkId"`
+		Srid             string `json:"srid"`
+		Status           string `json:"status"`
+		StickerId        string `json:"stickerId"`
+		SubjectName      string `json:"subjectName"`
+		TechSize         string `json:"techSize"`
+	} `json:"report"`
+}
+
+type CardList struct {
+	Cards []struct {
+		NmID        int    `json:"nmID"`
+		ImtID       int    `json:"imtID"`
+		NmUUID      string `json:"nmUUID"`
+		SubjectID   int    `json:"subjectID"`
+		SubjectName string `json:"subjectName"`
+		VendorCode  string `json:"vendorCode"`
+		Brand       string `json:"brand"`
+		Title       string `json:"title"`
+		Description string `json:"description"`
+		NeedKiz     bool   `json:"needKiz"`
+		Dimensions  struct {
+			Width        int     `json:"width"`
+			Height       int     `json:"height"`
+			Length       int     `json:"length"`
+			WeightBrutto float64 `json:"weightBrutto"`
+			IsValid      bool    `json:"isValid"`
+		} `json:"dimensions"`
+		Characteristics []struct {
+			Id    int         `json:"id"`
+			Name  string      `json:"name"`
+			Value interface{} `json:"value"`
+		} `json:"characteristics"`
+		Sizes []struct {
+			ChrtID   int      `json:"chrtID"`
+			TechSize string   `json:"techSize"`
+			WbSize   string   `json:"wbSize"`
+			Skus     []string `json:"skus"`
+		} `json:"sizes"`
+		CreatedAt time.Time `json:"createdAt"`
+		UpdatedAt time.Time `json:"updatedAt"`
+	} `json:"cards"`
+	Cursor struct {
+		UpdatedAt time.Time `json:"updatedAt"`
+		NmID      int       `json:"nmID"`
+		Total     int       `json:"total"`
+	} `json:"cursor"`
+}

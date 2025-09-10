@@ -20,10 +20,11 @@ import (
 )
 
 const (
-	CallbackWbHandler       = "WB"
-	CallbackWbFbsHandler    = "WB-FBS"
-	CallbackWbOrdersHandler = "WB-ORDERS"
-	CallbackWbStocksHandler = "WB-STOCKS"
+	CallbackWbHandler        = "WB"
+	CallbackWbFbsHandler     = "WB-FBS"
+	CallbackWbOrdersHandler  = "WB-ORDERS"
+	CallbackWbStocksHandler  = "WB-STOCKS"
+	CallbackWbReturnsHandler = "WB-RETURNS"
 )
 
 func wbHandler(ctx context.Context, bot *botlib.Bot, update *models.Update) {
@@ -40,6 +41,10 @@ func wbHandler(ctx context.Context, bot *botlib.Bot, update *models.Update) {
 	buttonsRow = []models.InlineKeyboardButton{}
 
 	buttonsRow = append(buttonsRow, models.InlineKeyboardButton{Text: "Анализ заказов", CallbackData: fmt.Sprintf("%v", CallbackWbStocksHandler)})
+	allButtons = append(allButtons, buttonsRow)
+	buttonsRow = []models.InlineKeyboardButton{}
+
+	buttonsRow = append(buttonsRow, models.InlineKeyboardButton{Text: "Возвраты в ПВЗ", CallbackData: fmt.Sprintf("%v", CallbackWbReturnsHandler)})
 	allButtons = append(allButtons, buttonsRow)
 	buttonsRow = []models.InlineKeyboardButton{}
 
@@ -195,6 +200,34 @@ func (m *Manager) wbStocksHandler(ctx context.Context, bot *botlib.Bot, update *
 		if err != nil {
 			return
 		}
+	}
+}
+
+func (m *Manager) returnsHandler(ctx context.Context, bot *botlib.Bot, update *models.Update) {
+	chatID := update.CallbackQuery.From.ID
+
+	cabinets, err := m.bl.GetCabinetsByMp(ctx, db.MarketWB)
+	if err != nil {
+		m.sl.Errorf("%v", err)
+		return
+	}
+
+	filePath, err := wb.NewReturnsManager(cabinets[0].Key).WriteReturns()
+	if err != nil {
+		_, err = SendTextMessage(ctx, bot, chatID, fmt.Sprintf("Ошибка при анализе остатков: %w", err))
+		if err != nil {
+			m.sl.Errorf("send msg failed: %v", err)
+			return
+		}
+		return
+	}
+
+	defer os.Remove(filePath)
+
+	err = SendMediaMessage(ctx, bot, chatID, filePath)
+	if err != nil {
+		m.sl.Errorf("send media failed: %v", err)
+		return
 	}
 }
 

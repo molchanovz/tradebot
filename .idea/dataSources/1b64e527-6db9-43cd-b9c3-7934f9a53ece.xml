@@ -3,17 +3,9 @@
   <database-model serializer="dbm" dbms="POSTGRES" family-id="POSTGRES" format-version="4.53">
     <root id="1">
       <DateStyle>mdy</DateStyle>
-      <Grants>1||-9223372036854775808|c|G
-1||10|c|G
-1||10|C|G
-1||10|T|G
-4||-9223372036854775808|c|G
-4||10|c|G
-4||10|C|G
-4||10|T|G</Grants>
-      <IntrospectionStateNumber>9894</IntrospectionStateNumber>
+      <IntrospectionStateNumber>13257</IntrospectionStateNumber>
       <ServerVersion>15.13</ServerVersion>
-      <StartupTime>1753945606</StartupTime>
+      <StartupTime>1757408024</StartupTime>
       <TimeZones>true ACDT
 true ACSST
 false ACST
@@ -239,7 +231,7 @@ false America/Rio_Branco
 false America/Rosario
 true America/Santa_Isabel
 false America/Santarem
-false America/Santiago
+true America/Santiago
 false America/Santo_Domingo
 false America/Sao_Paulo
 true America/Scoresbysund
@@ -437,7 +429,7 @@ false CHAST
 false CHUT
 false CKT
 true CLST
-false CLT
+true CLT
 false COT
 false CST
 true CST6CDT
@@ -450,13 +442,13 @@ true Canada/Newfoundland
 true Canada/Pacific
 false Canada/Saskatchewan
 false Canada/Yukon
-false Chile/Continental
-false Chile/EasterIsland
+true Chile/Continental
+true Chile/EasterIsland
 true Cuba
 false DAVT
 false DDUT
-false EASST
-false EAST
+true EASST
+true EAST
 false EAT
 true EDT
 true EEST
@@ -692,7 +684,7 @@ false Pacific/Auckland
 false Pacific/Bougainville
 false Pacific/Chatham
 false Pacific/Chuuk
-false Pacific/Easter
+true Pacific/Easter
 false Pacific/Efate
 false Pacific/Enderbury
 false Pacific/Fakaofo
@@ -995,7 +987,7 @@ false posix/America/Rio_Branco
 false posix/America/Rosario
 true posix/America/Santa_Isabel
 false posix/America/Santarem
-false posix/America/Santiago
+true posix/America/Santiago
 false posix/America/Santo_Domingo
 false posix/America/Sao_Paulo
 true posix/America/Scoresbysund
@@ -1181,8 +1173,8 @@ true posix/Canada/Newfoundland
 true posix/Canada/Pacific
 false posix/Canada/Saskatchewan
 false posix/Canada/Yukon
-false posix/Chile/Continental
-false posix/Chile/EasterIsland
+true posix/Chile/Continental
+true posix/Chile/EasterIsland
 true posix/Cuba
 true posix/EET
 false posix/EST
@@ -1332,7 +1324,7 @@ false posix/Pacific/Auckland
 false posix/Pacific/Bougainville
 false posix/Pacific/Chatham
 false posix/Pacific/Chuuk
-false posix/Pacific/Easter
+true posix/Pacific/Easter
 false posix/Pacific/Efate
 false posix/Pacific/Enderbury
 false posix/Pacific/Fakaofo
@@ -1414,7 +1406,7 @@ true posixrules
 13209||10|C|G
 13209||-9223372036854775808|U|G
 13209||10|U|G</Grants>
-      <IntrospectionStateNumber>9894</IntrospectionStateNumber>
+      <IntrospectionStateNumber>13257</IntrospectionStateNumber>
       <ObjectId>16384</ObjectId>
       <OwnerName>sergey</OwnerName>
     </database>
@@ -4827,8 +4819,8 @@ true posixrules
     <schema id="262" parent="3" name="public">
       <Comment>standard public schema</Comment>
       <Current>1</Current>
-      <IntrospectionStateNumber>9894</IntrospectionStateNumber>
-      <LastIntrospectionLocalTimestamp>2025-07-31.07:50:39</LastIntrospectionLocalTimestamp>
+      <IntrospectionStateNumber>13257</IntrospectionStateNumber>
+      <LastIntrospectionLocalTimestamp>2025-09-09.09:41:44</LastIntrospectionLocalTimestamp>
       <ObjectId>2200</ObjectId>
       <StateNumber>518</StateNumber>
       <OwnerName>pg_database_owner</OwnerName>

@@ -36,15 +36,16 @@ func request(reqType, url string, headers map[string]string, params map[string]s
 	}
 	defer resp.Body.Close()
 
-	if resp.StatusCode != http.StatusOK {
-		return "", fmt.Errorf("get status: %v", resp.Status)
-	}
-
-	jsonString, err := io.ReadAll(resp.Body)
+	response, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return "", err
 	}
-	return string(jsonString), nil
+
+	if resp.StatusCode != http.StatusOK {
+		return "", fmt.Errorf("get status: %v, %v", resp.Status, string(response))
+	}
+
+	return string(response), nil
 }
 
 func GET(url string, headers map[string]string, params map[string]string, body []byte) (string, error) {
@@ -94,6 +95,32 @@ func getOrdersBySupplyID(token, supplyID string) (string, error) {
 	}
 
 	response, err := GET(baseURL, headers, make(map[string]string), body)
+	if err != nil {
+		return "", err
+	}
+
+	return response, nil
+}
+
+func getReturns(token, dateFrom, dateTo string) (string, error) {
+
+	params := url.Values{}
+	params.Add("dateFrom", dateFrom)
+	params.Add("dateTo", dateTo)
+
+	// Основной URL
+	baseURL := "https://seller-analytics-api.wildberries.ru/api/v1/analytics/goods-return"
+
+	// Добавление параметров к URL
+	fullURL := fmt.Sprintf("%s?%s", baseURL, params.Encode())
+
+	body := []byte(``)
+
+	headers := map[string]string{
+		"Authorization": token,
+	}
+
+	response, err := GET(fullURL, headers, make(map[string]string), body)
 	if err != nil {
 		return "", err
 	}
@@ -182,6 +209,54 @@ func ordersFBSStatus(token string, orderID int) (string, error) {
 
 	headers := map[string]string{
 		"Content-Type":  "application/json",
+		"Authorization": token,
+	}
+
+	response, err := POST(baseURL, headers, make(map[string]string), body)
+	if err != nil {
+		return "", err
+	}
+
+	return response, nil
+}
+func getCards(token string, nmID *int, updatedAt *time.Time, limit *int) (string, error) {
+	baseURL := "https://content-api.wildberries.ru/content/v2/get/cards/list"
+
+	type RequestBody struct {
+		Settings struct {
+			Sort struct {
+				Ascending bool `json:"ascending"`
+			} `json:"sort"`
+			Cursor struct {
+				UpdatedAt *time.Time `json:"updatedAt"`
+				NmId      *int       `json:"nmID"`
+				Limit     *int       `json:"limit"`
+			} `json:"cursor"`
+			Filter struct {
+				WithPhoto int `json:"withPhoto"`
+			} `json:"filter"`
+		} `json:"settings"`
+	}
+
+	var data RequestBody
+	data.Settings.Cursor.Limit = limit
+	data.Settings.Cursor.NmId = nmID
+	data.Settings.Cursor.UpdatedAt = updatedAt
+
+	data.Settings.Sort.Ascending = true
+	data.Settings.Filter.WithPhoto = -1
+
+	if limit != nil {
+		data.Settings.Cursor.Limit = limit
+	}
+
+	// Преобразование данных в JSON
+	body, err := json.Marshal(data)
+	if err != nil {
+		return "", fmt.Errorf("ошибка при преобразовании данных в JSON: %w", err)
+	}
+
+	headers := map[string]string{
 		"Authorization": token,
 	}
 

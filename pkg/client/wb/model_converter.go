@@ -2,6 +2,7 @@ package wb
 
 import (
 	"encoding/json"
+	"time"
 )
 
 func GetOrdersFbs(wildberriesKey, supplyID string) ([]OrderWB, error) {
@@ -18,6 +19,35 @@ func GetOrdersFbs(wildberriesKey, supplyID string) ([]OrderWB, error) {
 
 	sortOrdersByArticle(orders.Orders)
 	return orders.Orders, nil
+}
+func GetCards(wildberriesKey string, nmID *int, updatedAt *time.Time, limit *int) (*CardList, error) {
+	var cards CardList
+	jsonString, err := getCards(wildberriesKey, nmID, updatedAt, limit)
+	if err != nil || jsonString == "" {
+		return nil, err
+	}
+
+	err = json.Unmarshal([]byte(jsonString), &cards)
+	if err != nil {
+		return nil, err
+	}
+
+	return &cards, nil
+}
+
+func GetReturns(wildberriesKey, dateFrom, dateTo string) (*ReturnList, error) {
+	var returns ReturnList
+	jsonString, err := getReturns(wildberriesKey, dateFrom, dateTo)
+	if err != nil || jsonString == "" {
+		return nil, err
+	}
+
+	err = json.Unmarshal([]byte(jsonString), &returns)
+	if err != nil {
+		return nil, err
+	}
+
+	return &returns, nil
 }
 
 func GetStickersFbs(wildberriesKey string, orderID int) (StickerWB, error) {

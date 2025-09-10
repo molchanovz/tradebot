@@ -4,11 +4,28 @@
     <option name="autoReloadType" value="ALL" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="640077d7-ce81-4039-9739-8ad3e3a8d41a" name="Changes" comment="Fix yandex sticker paths">
+    <list default="true" id="640077d7-ce81-4039-9739-8ad3e3a8d41a" name="Changes" comment="Fix ozon stickers width">
+      <change afterPath="$PROJECT_DIR$/.idea/golinter.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pkg/tradeplus/wb/collection.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pkg/tradeplus/wb/model.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pkg/tradeplus/wb/returns.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pkg/tradeplus/wb/returns_test.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/dataSources.local.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources.local.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/dataSources/1b64e527-6db9-43cd-b9c3-7934f9a53ece.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources/1b64e527-6db9-43cd-b9c3-7934f9a53ece.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/dataSources/1b64e527-6db9-43cd-b9c3-7934f9a53ece/storage_v2/_src_/database/tradebot.42HFSw/schema/public.abK9xQ.meta" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources/1b64e527-6db9-43cd-b9c3-7934f9a53ece/storage_v2/_src_/database/tradebot.42HFSw/schema/public.abK9xQ.meta" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/dataSources/a29fc1c7-214c-4de3-8bd4-3b5d017fac9b.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources/a29fc1c7-214c-4de3-8bd4-3b5d017fac9b.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/dataSources/a29fc1c7-214c-4de3-8bd4-3b5d017fac9b/storage_v2/_src_/database/tradebot.42HFSw/schema/public.abK9xQ.meta" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources/a29fc1c7-214c-4de3-8bd4-3b5d017fac9b/storage_v2/_src_/database/tradebot.42HFSw/schema/public.abK9xQ.meta" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/dataSources/e46cf114-1a39-4b3b-9d06-1e7a6450c36b.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources/e46cf114-1a39-4b3b-9d06-1e7a6450c36b.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/dataSources/e46cf114-1a39-4b3b-9d06-1e7a6450c36b/storage_v2/_src_/database/migration.zjM2zQ.meta" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/dataSources/e46cf114-1a39-4b3b-9d06-1e7a6450c36b/storage_v2/_src_/database/migration.zjM2zQ/schema/information_schema.FNRwLQ.meta" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/dataSources/e46cf114-1a39-4b3b-9d06-1e7a6450c36b/storage_v2/_src_/database/migration.zjM2zQ/schema/pg_catalog.0S1ZNQ.meta" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/dataSources/e46cf114-1a39-4b3b-9d06-1e7a6450c36b/storage_v2/_src_/database/migration.zjM2zQ/schema/public.abK9xQ.meta" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/dataSources/e46cf114-1a39-4b3b-9d06-1e7a6450c36b/storage_v2/_src_/database/tradebot.42HFSw/schema/public.abK9xQ.meta" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources/e46cf114-1a39-4b3b-9d06-1e7a6450c36b/storage_v2/_src_/database/tradebot.42HFSw/schema/public.abK9xQ.meta" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/sqldialects.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/sqldialects.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pkg/bot/handlers_settings.go" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/bot/handlers_settings.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pkg/client/wb/api.go" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/client/wb/api.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pkg/client/wb/model.go" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/client/wb/model.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pkg/client/wb/model_converter.go" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/client/wb/model_converter.go" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -23,11 +40,11 @@
       </list>
     </option>
   </component>
-  <component name="GOROOT" url="file://$USER_HOME$/go/pkg/mod/golang.org/toolchain@v0.0.1-go1.24.4.darwin-arm64" />
+  <component name="GOROOT" url="file:///opt/homebrew/opt/go/libexec" />
   <component name="Git.Settings">
     <option name="RECENT_BRANCH_BY_REPOSITORY">
       <map>
-        <entry key="$PROJECT_DIR$" value="yandex-stickers" />
+        <entry key="$PROJECT_DIR$" value="refactoring" />
       </map>
     </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
@@ -41,7 +58,7 @@
   <component name="GithubPullRequestsUISettings">{
   &quot;selectedUrlAndAccountId&quot;: {
     &quot;url&quot;: &quot;https://github.com/molchanovz/tradebot&quot;,
-    &quot;accountId&quot;: &quot;61a9d8c1-3ce4-4719-aca3-2fc3d354d079&quot;
+    &quot;accountId&quot;: &quot;3a63e534-3d15-4e2d-847c-44b44407851a&quot;
   }
 }</component>
   <component name="KubernetesApiPersistence">{}</component>
@@ -60,69 +77,84 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "ASKED_MARK_IGNORED_FILES_AS_EXCLUDED": "true",
-    "DefaultGoTemplateProperty": "Go File",
-    "Go Build.go build WildberriesGo_bot.executor": "Run",
-    "Go Build.go build WildberriesGo_bot/cmd.executor": "Run",
-    "Go Build.go build tradebot/cmd.executor": "Run",
-    "Go Build.go build tradebot/cmd/tradebot.executor": "Debug",
-    "Go Test.TestGetCabinets in tradebot/pkg/db.executor": "Run",
-    "Go Test.TestOrdersManager_GetReturnsMap in tradebot/pkg/marketplaces/OZON.executor": "Run",
-    "Go Test.TestOrdersManager_GetReturnsMap in tradebot/pkg/tradeplus/ozon.executor": "Debug",
-    "Go Test.TestRepo_GetCabinetById in tradebot/pkg/db.executor": "Run",
-    "Go Test.TestRepo_GetCabinets in tradebot/pkg/db.executor": "Run",
-    "Go Test.TestRepo_GetUserByTgId in tradebot/pkg/db.executor": "Run",
-    "Go Test.TestReturnsList in tradebot/pkg/client/ozon.executor": "Run",
-    "Go Test.TestReturnsList in tradebot/pkg/marketplaces/OZON/api.executor": "Run",
-    "Go Test.TestTradebotRepo_CountCabinets in tradebot/pkg/db.executor": "Run",
-    "Go Test.TestTradebotRepo_DeleteOrdersByFilter in tradebot/pkg/db.executor": "Run",
-    "Go Test.TestTradebotRepo_SelectOrdersByFilter in tradebot/pkg/db.executor": "Run",
-    "Makefile Target.mfd-model.executor": "Run",
-    "Makefile Target.mfd-repo.executor": "Run",
-    "Makefile Target.mfd-xml.executor": "Run",
-    "Makefile Target.run.executor": "Run",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "RunOnceActivity.git.unshallow": "true",
-    "RunOnceActivity.go.formatter.settings.were.checked": "true",
-    "RunOnceActivity.go.migrated.go.modules.settings": "true",
-    "RunOnceActivity.go.modules.go.list.on.any.changes.was.set": "true",
-    "configurable..is.expanded": "true",
-    "configurable.GoLibrariesConfigurable.is.expanded": "true",
-    "git-widget-placeholder": "refactoring",
-    "go.import.settings.migrated": "true",
-    "go.sdk.automatically.set": "true",
-    "last_opened_file_path": "/Users/sergey/GolandProjects/tradebot",
-    "node.js.detected.package.eslint": "true",
-    "node.js.selected.package.eslint": "(autodetect)",
-    "nodejs_package_manager_path": "npm",
-    "settings.editor.selected.configurable": "preferences.pluginManager",
-    "vue.rearranger.settings.migration": "true"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;DefaultGoTemplateProperty&quot;: &quot;Go File&quot;,
+    &quot;Go Build.go build WildberriesGo_bot.executor&quot;: &quot;Run&quot;,
+    &quot;Go Build.go build WildberriesGo_bot/cmd.executor&quot;: &quot;Run&quot;,
+    &quot;Go Build.go build tradebot/cmd.executor&quot;: &quot;Run&quot;,
+    &quot;Go Build.go build tradebot/cmd/tradebot.executor&quot;: &quot;Run&quot;,
+    &quot;Go Test.TestReturnsManager_WriteReturns in tradebot/pkg/tradeplus/wb.executor&quot;: &quot;Debug&quot;,
+    &quot;Makefile Target.run.executor&quot;: &quot;Run&quot;,
+    &quot;RunOnceActivity.GoLinterPluginOnboarding&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.GoLinterPluginStorageMigration&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.go.formatter.settings.were.checked&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.go.migrated.go.modules.settings&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.go.modules.go.list.on.any.changes.was.set&quot;: &quot;true&quot;,
+    &quot;SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
+    &quot;configurable.GoLibrariesConfigurable.is.expanded&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;master&quot;,
+    &quot;go.import.settings.migrated&quot;: &quot;true&quot;,
+    &quot;go.sdk.automatically.set&quot;: &quot;true&quot;,
+    &quot;last_opened_file_path&quot;: &quot;/Users/sergey/GolandProjects/tradebot/assets/barcodes&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;run.configurations.included.in.services&quot;: &quot;true&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;com.goide.configuration.GoLibrariesConfigurableProvider&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   },
-  "keyToStringList": {
-    "DatabaseDriversLRU": [
-      "postgresql"
+  &quot;keyToStringList&quot;: {
+    &quot;DatabaseDriversLRU&quot;: [
+      &quot;postgresql&quot;
     ]
   }
-}]]></component>
+}</component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/assets/barcodes" />
       <recent name="$PROJECT_DIR$" />
-      <recent name="$PROJECT_DIR$/pkg/db" />
-      <recent name="$PROJECT_DIR$/pkg" />
-      <recent name="$PROJECT_DIR$/pkg/app" />
-      <recent name="$PROJECT_DIR$/pkg/marketplaces/OZON" />
+      <recent name="$PROJECT_DIR$/pkg/barcodes" />
+      <recent name="$PROJECT_DIR$/pkg/OZON" />
+      <recent name="$PROJECT_DIR$/pkg/WB" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
-      <recent name="$PROJECT_DIR$/pkg/tradeplus/schedule" />
-      <recent name="$PROJECT_DIR$/pkg/tradeplus" />
+      <recent name="$PROJECT_DIR$/assets/barcodes" />
       <recent name="$PROJECT_DIR$" />
-      <recent name="$PROJECT_DIR$/assets" />
-      <recent name="$PROJECT_DIR$/pkg/tradeplus/yandex" />
+      <recent name="$PROJECT_DIR$/deployments" />
+      <recent name="$PROJECT_DIR$/pkg/google/utils" />
+      <recent name="$PROJECT_DIR$/config" />
     </key>
   </component>
+  <component name="RunDashboard">
+    <option name="configurationTypes">
+      <set>
+        <option value="GoApplicationRunConfiguration" />
+      </set>
+    </option>
+  </component>
   <component name="RunManager" selected="Go Build.go build tradebot/cmd/tradebot">
+    <configuration name="go build WildberriesGo_bot/cmd" type="GoApplicationRunConfiguration" factoryName="Go Application" temporary="true" nameIsGenerated="true">
+      <module name="tradebot" />
+      <working_directory value="$PROJECT_DIR$" />
+      <kind value="PACKAGE" />
+      <package value="WildberriesGo_bot/cmd" />
+      <directory value="$PROJECT_DIR$" />
+      <filePath value="$PROJECT_DIR$/cmd/main.go" />
+      <method v="2" />
+    </configuration>
+    <configuration name="go build tradebot/cmd" type="GoApplicationRunConfiguration" factoryName="Go Application" temporary="true" nameIsGenerated="true">
+      <module name="tradebot" />
+      <working_directory value="$PROJECT_DIR$" />
+      <kind value="PACKAGE" />
+      <package value="tradebot/cmd" />
+      <directory value="$PROJECT_DIR$" />
+      <filePath value="$PROJECT_DIR$/cmd/main.go" />
+      <method v="2" />
+    </configuration>
     <configuration name="go build tradebot/cmd/tradebot" type="GoApplicationRunConfiguration" factoryName="Go Application" temporary="true" nameIsGenerated="true">
       <module name="tradebot" />
       <working_directory value="$PROJECT_DIR$" />
@@ -132,38 +164,20 @@
       <filePath value="$PROJECT_DIR$/cmd/tradebot/main.go" />
       <method v="2" />
     </configuration>
-    <configuration name="TestTradebotRepo_DeleteOrdersByFilter in tradebot/pkg/db" type="GoTestRunConfiguration" factoryName="Go Test" temporary="true" nameIsGenerated="true">
+    <configuration name="TestReturnsManager_WriteReturns in tradebot/pkg/tradeplus/wb" type="GoTestRunConfiguration" factoryName="Go Test" temporary="true" nameIsGenerated="true">
       <module name="tradebot" />
-      <working_directory value="$PROJECT_DIR$/pkg/db" />
+      <working_directory value="$PROJECT_DIR$/pkg/tradeplus/wb" />
       <root_directory value="$PROJECT_DIR$" />
       <kind value="PACKAGE" />
-      <package value="tradebot/pkg/db" />
+      <package value="tradebot/pkg/tradeplus/wb" />
       <directory value="$PROJECT_DIR$" />
       <filePath value="$PROJECT_DIR$" />
       <framework value="gotest" />
-      <pattern value="^\QTestTradebotRepo_DeleteOrdersByFilter\E$" />
+      <pattern value="^\QTestReturnsManager_WriteReturns\E$" />
       <method v="2" />
     </configuration>
-    <configuration name="TestTradebotRepo_SelectOrdersByFilter in tradebot/pkg/db" type="GoTestRunConfiguration" factoryName="Go Test" temporary="true" nameIsGenerated="true">
-      <module name="tradebot" />
-      <working_directory value="$PROJECT_DIR$/pkg/db" />
-      <root_directory value="$PROJECT_DIR$" />
-      <kind value="PACKAGE" />
-      <package value="tradebot/pkg/db" />
-      <directory value="$PROJECT_DIR$" />
-      <filePath value="$PROJECT_DIR$" />
-      <framework value="gotest" />
-      <pattern value="^\QTestTradebotRepo_SelectOrdersByFilter\E$" />
-      <method v="2" />
-    </configuration>
-    <configuration name="mfd-model" type="MAKEFILE_TARGET_RUN_CONFIGURATION" factoryName="Makefile" temporary="true">
-      <makefile filename="$PROJECT_DIR$/Makefile" target="mfd-model" workingDirectory="" arguments="">
-        <envs />
-      </makefile>
-      <method v="2" />
-    </configuration>
-    <configuration name="mfd-repo" type="MAKEFILE_TARGET_RUN_CONFIGURATION" factoryName="Makefile" temporary="true">
-      <makefile filename="$PROJECT_DIR$/Makefile" target="mfd-repo" workingDirectory="" arguments="">
+    <configuration name="run" type="MAKEFILE_TARGET_RUN_CONFIGURATION" factoryName="Makefile" temporary="true">
+      <makefile filename="$PROJECT_DIR$/Makefile" target="run" workingDirectory="" arguments="">
         <envs />
       </makefile>
       <method v="2" />
@@ -171,19 +185,26 @@
     <recent_temporary>
       <list>
         <item itemvalue="Go Build.go build tradebot/cmd/tradebot" />
-        <item itemvalue="Go Test.TestTradebotRepo_DeleteOrdersByFilter in tradebot/pkg/db" />
-        <item itemvalue="Go Test.TestTradebotRepo_SelectOrdersByFilter in tradebot/pkg/db" />
-        <item itemvalue="Makefile Target.mfd-repo" />
-        <item itemvalue="Makefile Target.mfd-model" />
+        <item itemvalue="Go Test.TestReturnsManager_WriteReturns in tradebot/pkg/tradeplus/wb" />
+        <item itemvalue="Makefile Target.run" />
+        <item itemvalue="Go Build.go build WildberriesGo_bot/cmd" />
+        <item itemvalue="Go Build.go build tradebot/cmd" />
       </list>
     </recent_temporary>
   </component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="640077d7-ce81-4039-9739-8ad3e3a8d41a" name="Changes" comment="Delete .env.local" />
+      <created>1755769550367</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1755769550367</updated>
+    </task>
+    <servers />
+  </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="3" />
-  </component>
-  <component name="UnknownFeatures">
-    <option featureType="com.intellij.fileTypeFactory" implementationName=".env" />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
     <option name="TAB_STATES">
@@ -198,6 +219,17 @@
   </component>
   <component name="VcsManagerConfiguration">
     <option name="CHECK_CODE_SMELLS_BEFORE_PROJECT_COMMIT" value="false" />
+    <MESSAGE value="edit logic: all/new ozon fbs orders" />
+    <MESSAGE value="fix paths" />
+    <MESSAGE value="fix barcodes path" />
+    <MESSAGE value="update spreadsheetId" />
+    <MESSAGE value="fix mupdf" />
+    <MESSAGE value="fix alpine ver" />
+    <MESSAGE value="fix Returns model: int to float64" />
+    <MESSAGE value="fix yandex fbs: update stickers service" />
+    <MESSAGE value="fix ozon/wb fbs: add batches" />
+    <MESSAGE value="add ozon CreateDirectories" />
+    <MESSAGE value="fix comment" />
     <MESSAGE value="extract methods" />
     <MESSAGE value="add errChan" />
     <MESSAGE value="fix wb fbs timeout" />
@@ -207,25 +239,30 @@
     <MESSAGE value="fix ozon fbs i%5" />
     <MESSAGE value="fix ozon fbs: add return" />
     <MESSAGE value="edit google sheets" />
-    <MESSAGE value="add barcodes" />
-    <MESSAGE value="add wb cabinets" />
-    <MESSAGE value="add api/sheet editing" />
-    <MESSAGE value="add .xml" />
-    <MESSAGE value="delete comment" />
-    <MESSAGE value="fix ReturnedToOzon" />
-    <MESSAGE value="add AnswerCallbackQuery" />
-    <MESSAGE value="refactoring 21.07" />
-    <MESSAGE value="add db by mfd generator" />
-    <MESSAGE value="Refactoring 24.07" />
-    <MESSAGE value="Change cron package to vmkteam/cron" />
-    <MESSAGE value="Add .env in .gitignore" />
-    <MESSAGE value="Edit Dockerfile&#10;&#10;change main.go path&#10;change COPY paths" />
-    <MESSAGE value="add cron" />
-    <MESSAGE value="Fix wb sticker handler" />
-    <MESSAGE value="Fix yandex sticker paths" />
-    <option name="LAST_COMMIT_MESSAGE" value="Fix yandex sticker paths" />
+    <MESSAGE value="fix yandex cancelled stickers" />
+    <MESSAGE value="Fix ozon sticker width" />
+    <MESSAGE value="Delete .env.local" />
+    <MESSAGE value="Add barcode VM-Sachok-Economy-Orange" />
+    <MESSAGE value="Fix ozon stickers width" />
+    <option name="LAST_COMMIT_MESSAGE" value="Fix ozon stickers width" />
   </component>
   <component name="VgoProject">
     <settings-migrated>true</settings-migrated>
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" type="DlvLineBreakpoint">
+          <url>file://$PROJECT_DIR$/pkg/bot/handlers/handlers_ozon.go</url>
+          <line>294</line>
+          <option name="timeStamp" value="3" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="DlvLineBreakpoint">
+          <url>file://$PROJECT_DIR$/pkg/client/wb/api.go</url>
+          <line>262</line>
+          <option name="timeStamp" value="4" />
+        </line-breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
   </component>
 </project>
