@@ -3,9 +3,9 @@
   <database-model serializer="dbm" dbms="POSTGRES" family-id="POSTGRES" format-version="4.53">
     <root id="1">
       <DateStyle>mdy</DateStyle>
-      <IntrospectionStateNumber>13257</IntrospectionStateNumber>
+      <IntrospectionStateNumber>13786</IntrospectionStateNumber>
       <ServerVersion>15.13</ServerVersion>
-      <StartupTime>1757408024</StartupTime>
+      <StartupTime>1757538488</StartupTime>
       <TimeZones>true ACDT
 true ACSST
 false ACST
@@ -261,10 +261,10 @@ false Antarctica/Davis
 false Antarctica/DumontDUrville
 false Antarctica/Macquarie
 false Antarctica/Mawson
-false Antarctica/McMurdo
+true Antarctica/McMurdo
 false Antarctica/Palmer
 false Antarctica/Rothera
-false Antarctica/South_Pole
+true Antarctica/South_Pole
 false Antarctica/Syowa
 true Antarctica/Troll
 false Antarctica/Vostok
@@ -654,8 +654,8 @@ false NOVT
 false NPT
 false NST
 false NUT
-false NZ
-false NZ-CHAT
+true NZ
+true NZ-CHAT
 true NZDT
 false NZST
 false NZT
@@ -680,9 +680,9 @@ false PWT
 true PYST
 false PYT
 false Pacific/Apia
-false Pacific/Auckland
+true Pacific/Auckland
 false Pacific/Bougainville
-false Pacific/Chatham
+true Pacific/Chatham
 false Pacific/Chuuk
 true Pacific/Easter
 false Pacific/Efate
@@ -1017,10 +1017,10 @@ false posix/Antarctica/Davis
 false posix/Antarctica/DumontDUrville
 false posix/Antarctica/Macquarie
 false posix/Antarctica/Mawson
-false posix/Antarctica/McMurdo
+true posix/Antarctica/McMurdo
 false posix/Antarctica/Palmer
 false posix/Antarctica/Rothera
-false posix/Antarctica/South_Pole
+true posix/Antarctica/South_Pole
 false posix/Antarctica/Syowa
 true posix/Antarctica/Troll
 false posix/Antarctica/Vostok
@@ -1314,15 +1314,15 @@ true posix/MST7MDT
 true posix/Mexico/BajaNorte
 false posix/Mexico/BajaSur
 false posix/Mexico/General
-false posix/NZ
-false posix/NZ-CHAT
+true posix/NZ
+true posix/NZ-CHAT
 true posix/Navajo
 false posix/PRC
 true posix/PST8PDT
 false posix/Pacific/Apia
-false posix/Pacific/Auckland
+true posix/Pacific/Auckland
 false posix/Pacific/Bougainville
-false posix/Pacific/Chatham
+true posix/Pacific/Chatham
 false posix/Pacific/Chuuk
 true posix/Pacific/Easter
 false posix/Pacific/Efate
@@ -1406,7 +1406,7 @@ true posixrules
 13209||10|C|G
 13209||-9223372036854775808|U|G
 13209||10|U|G</Grants>
-      <IntrospectionStateNumber>13257</IntrospectionStateNumber>
+      <IntrospectionStateNumber>13786</IntrospectionStateNumber>
       <ObjectId>16384</ObjectId>
       <OwnerName>sergey</OwnerName>
     </database>
@@ -4819,8 +4819,8 @@ true posixrules
     <schema id="262" parent="3" name="public">
       <Comment>standard public schema</Comment>
       <Current>1</Current>
-      <IntrospectionStateNumber>13257</IntrospectionStateNumber>
-      <LastIntrospectionLocalTimestamp>2025-09-09.09:41:44</LastIntrospectionLocalTimestamp>
+      <IntrospectionStateNumber>13786</IntrospectionStateNumber>
+      <LastIntrospectionLocalTimestamp>2025-10-02.08:14:56</LastIntrospectionLocalTimestamp>
       <ObjectId>2200</ObjectId>
       <StateNumber>518</StateNumber>
       <OwnerName>pg_database_owner</OwnerName>

@@ -99,7 +99,11 @@ func (m OrdersManager) getPostingsMap() (map[string]int, map[string]int, error) 
 			case "Склад продавца":
 				postingsWithCountFBS[posting.SupplierArticle]++
 			default:
-				return postingsWithCountFBO, postingsWithCountFBS, fmt.Errorf("неопознанный тип склада: %v", posting.WarehouseType)
+				if strings.Contains(posting.WarehouseName, "мп") {
+					postingsWithCountFBS[posting.SupplierArticle]++
+				} else {
+					postingsWithCountFBO[posting.SupplierArticle]++
+				}
 			}
 		}
 	}
