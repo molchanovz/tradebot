@@ -10,8 +10,8 @@ import (
 	"strconv"
 	"time"
 
-	"tradebot/pkg/client/google"
-	"tradebot/pkg/client/wb"
+	"tradebot/pkg/client/googlesheet"
+	api2 "tradebot/pkg/client/wb"
 	"tradebot/pkg/tradeplus"
 
 	"github.com/fogleman/gg"
@@ -19,21 +19,21 @@ import (
 )
 
 type StickerManager struct {
-	client       wb.Client
-	googleSheets google.SheetsService
+	token        string
+	googleSheets googlesheet.SheetsService
 }
 
 func NewStickerManager(token string) StickerManager {
 	return StickerManager{
-		client:       wb.NewClient(token),
-		googleSheets: google.NewSheetsService("token.json", "credentials.json"),
+		token:        token,
+		googleSheets: googlesheet.NewSheetsService("token.json", "credentials.json"),
 	}
 }
 
 func (m StickerManager) GetReadyFile(supplyID string, progressChan chan tradeplus.Progress) ([]string, error) {
 	tradeplus.CreateDirectories()
 
-	orders, err := m.client.GetOrdersFbs(supplyID)
+	orders, err := api2.GetOrdersFbs(m.token, supplyID)
 	if err != nil {
 		return nil, err
 	}
@@ -44,7 +44,7 @@ func (m StickerManager) GetReadyFile(supplyID string, progressChan chan tradeplu
 	batchCount := 0
 
 	for i, order := range orders {
-		stickers, err := m.client.GetStickersFbs(order.ID)
+		stickers, err := api2.GetStickersFbs(m.token, order.ID)
 		if err != nil {
 			fmt.Println("Ошибка GetStickersFbs")
 			return nil, fmt.Errorf("ошибка получения стикеров: %w", err)
@@ -121,7 +121,7 @@ func decodeToPNG(base64String string, orderID int) (string, error) {
 	return filePath, nil
 }
 
-func decodeToPDF(base64String string, orderID int, order wb.OrderWB) error {
+func decodeToPDF(base64String string, orderID int, order api2.OrderWB) error {
 	pageWidthMM := 75.0
 	pageHeightMM := 120.0
 	// Создание нового PDF-документа

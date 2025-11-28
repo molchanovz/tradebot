@@ -8,6 +8,7 @@ import (
 
 const (
 	StocksDaysAgo = 14
+	OrdersDaysAgo = 1
 )
 
 var ErrNoRows = errors.New("no rows in result set")
@@ -36,7 +37,7 @@ func NewService(cabinet tradeplus.Cabinet) Service {
 }
 
 func (s Service) GetOrdersAndReturnsManager() OrdersManager {
-	return NewOrdersManager(s.ClientID, s.Token, s.spreadsheetID)
+	return NewOrdersManager(s.ClientID, s.Token, s.spreadsheetID, OrdersDaysAgo)
 }
 
 func (s Service) GetStocksManager() AnalyzeManager {

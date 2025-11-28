@@ -12,11 +12,11 @@ import (
 const StatusReadyForPickup = "Готов к выдаче"
 
 type ReturnsManager struct {
-	client wb.Client
+	Token string
 }
 
 func NewReturnsManager(token string) *ReturnsManager {
-	return &ReturnsManager{client: wb.NewClient(token)}
+	return &ReturnsManager{Token: token}
 }
 
 type customCardData struct {
@@ -30,26 +30,26 @@ func (m ReturnsManager) WriteReturns() (string, error) {
 	dateTo := time.Now()
 	dateFrom.Format("2006-01-02")
 	dateTo.Format("2006-01-02")
-	r, err := m.client.GetReturns(dateFrom.String(), dateTo.String())
+	r, err := wb.GetReturns(m.Token, dateFrom.String(), dateTo.String())
 	if err != nil {
 		fmt.Println(err)
 		return "", err
 	}
 
-	returns := tradeplus.NewReturns(r)
+	returns := NewReturns(r)
 
 	if len(returns) == 0 {
 		return "", nil
 	}
 
 	limit := 100
-	allCards := make(tradeplus.Cards, 0, limit)
+	allCards := make(Cards, 0, limit)
 
 	var nmID *int
 	var updatedAt *time.Time
 
 	for {
-		c, err := m.client.GetCards(nmID, updatedAt, tradeplus.Pointer(limit))
+		c, err := wb.GetCards(m.Token, nmID, updatedAt, tradeplus.Pointer(limit))
 		if err != nil {
 			return "", err
 		}
@@ -57,7 +57,7 @@ func (m ReturnsManager) WriteReturns() (string, error) {
 		nmID = &c.Cursor.NmID
 		updatedAt = &c.Cursor.UpdatedAt
 
-		newCards := tradeplus.NewCardList(c)
+		newCards := NewCardList(c)
 		allCards = append(allCards, newCards...)
 
 		if len(c.Cards) < limit {

@@ -29,15 +29,11 @@ const (
 	StatusWaitingYaState
 	StatusWaitingAPI
 	StatusWaitingSheet
-	StatusWaitingReview
-
-	ReviewStatusCreated   = 1
-	ReviewStatusCompleted = 2
 )
 
 var (
 	StatusFilter        = Filter{Field: "statusId", Value: []int{StatusEnabled, StatusDisabled}, SearchType: SearchTypeArray}
-	StatusUserFilter    = Filter{Field: "statusId", Value: []int{StatusEnabled, StatusDisabled, StatusWaitingWbState, StatusWaitingYaState, StatusWaitingAPI, StatusWaitingSheet, StatusWaitingReview}, SearchType: SearchTypeArray}
+	StatusUserFilter    = Filter{Field: "statusId", Value: []int{StatusEnabled, StatusDisabled, StatusWaitingWbState, StatusWaitingYaState, StatusWaitingAPI, StatusWaitingSheet}, SearchType: SearchTypeArray}
 	StatusEnabledFilter = Filter{Field: "statusId", Value: []int{StatusEnabled}, SearchType: SearchTypeArray}
 )
 

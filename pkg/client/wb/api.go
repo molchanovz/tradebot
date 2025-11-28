@@ -3,7 +3,6 @@ package wb
 import (
 	"bytes"
 	"encoding/json"
-	"errors"
 	"fmt"
 	"io"
 	"net/http"
@@ -12,25 +11,11 @@ import (
 	"time"
 )
 
-type Client struct {
-	hc    *http.Client
-	token string
-}
-
-func NewClient(token string) Client {
-	return Client{
-		hc: &http.Client{
-			Timeout: time.Second * 10,
-		},
-		token: token,
-	}
-}
-
-func (c Client) request(reqType, baseURL string, headers, params map[string]string, body []byte) (int, string, error) {
-	req, err := http.NewRequest(reqType, baseURL, bytes.NewBuffer(body))
+func request(reqType, url string, headers map[string]string, params map[string]string, body []byte) (string, error) {
+	req, err := http.NewRequest(reqType, url, bytes.NewBuffer(body))
 
 	if err != nil {
-		return http.StatusInternalServerError, "", fmt.Errorf("ошибка создания запроса: %w", err)
+		return "", fmt.Errorf("ошибка создания запроса: %w", err)
 	}
 
 	for s := range headers {
@@ -44,41 +29,56 @@ func (c Client) request(reqType, baseURL string, headers, params map[string]stri
 
 	req.URL.RawQuery = q.Encode()
 
-	resp, err := c.hc.Do(req)
+	client := &http.Client{}
+	resp, err := client.Do(req)
 	if err != nil {
-		return http.StatusInternalServerError, "", fmt.Errorf("ошибка выполнения запроса: %w", err)
+		return "", fmt.Errorf("ошибка выполнения запроса: %w", err)
 	}
 	defer resp.Body.Close()
 
-	jsonString, err := io.ReadAll(resp.Body)
+	response, err := io.ReadAll(resp.Body)
 	if err != nil {
-		return http.StatusInternalServerError, "", err
+		return "", err
 	}
-	return resp.StatusCode, string(jsonString), nil
+
+	if resp.StatusCode != http.StatusOK {
+		return "", fmt.Errorf("get status: %v, %v", resp.Status, string(response))
+	}
+
+	return string(response), nil
 }
 
-func (c Client) get(baseURL string, headers map[string]string, params map[string]string, body []byte) (int, string, error) {
-	return c.request(http.MethodGet, baseURL, headers, params, body)
+func GET(url string, headers map[string]string, params map[string]string, body []byte) (string, error) {
+	response, err := request(http.MethodGet, url, headers, params, body)
+	if err != nil {
+		return "", err
+	}
+
+	return response, nil
 }
 
-func (c Client) post(baseURL string, headers map[string]string, params map[string]string, body []byte) (int, string, error) {
-	return c.request(http.MethodPost, baseURL, headers, params, body)
+func POST(url string, headers map[string]string, params map[string]string, body []byte) (string, error) {
+	response, err := request(http.MethodPost, url, headers, params, body)
+	if err != nil {
+		return "", err
+	}
+	return response, nil
 }
 
-func (c Client) stocksFbo() (string, error) {
+func stocksFbo(token string) (string, error) {
 	baseURL := "https://statistics-api.wildberries.ru/api/v1/supplier/stocks"
 
 	body := []byte(``)
 
 	headers := map[string]string{
-		"Authorization": c.token,
+		"Authorization": token,
 	}
 
 	params := map[string]string{
 		"dateFrom": "2019-06-20",
 	}
 
-	_, response, err := c.get(baseURL, headers, params, body)
+	response, err := GET(baseURL, headers, params, body)
 	if err != nil {
 		return "", err
 	}
@@ -86,15 +86,15 @@ func (c Client) stocksFbo() (string, error) {
 	return response, nil
 }
 
-func (c Client) getOrdersBySupplyID(supplyID string) (string, error) {
+func getOrdersBySupplyID(token, supplyID string) (string, error) {
 	baseURL := "https://marketplace-api.wildberries.ru/api/v3/supplies/" + supplyID + "/orders"
 	body := []byte(``)
 
 	headers := map[string]string{
-		"Authorization": c.token,
+		"Authorization": token,
 	}
 
-	_, response, err := c.get(baseURL, headers, make(map[string]string), body)
+	response, err := GET(baseURL, headers, make(map[string]string), body)
 	if err != nil {
 		return "", err
 	}
@@ -102,7 +102,7 @@ func (c Client) getOrdersBySupplyID(supplyID string) (string, error) {
 	return response, nil
 }
 
-func (c Client) getReturns(dateFrom, dateTo string) (string, error) {
+func getReturns(token, dateFrom, dateTo string) (string, error) {
 
 	params := url.Values{}
 	params.Add("dateFrom", dateFrom)
@@ -117,10 +117,10 @@ func (c Client) getReturns(dateFrom, dateTo string) (string, error) {
 	body := []byte(``)
 
 	headers := map[string]string{
-		"Authorization": c.token,
+		"Authorization": token,
 	}
 
-	_, response, err := c.get(fullURL, headers, make(map[string]string), body)
+	response, err := GET(fullURL, headers, make(map[string]string), body)
 	if err != nil {
 		return "", err
 	}
@@ -128,7 +128,7 @@ func (c Client) getReturns(dateFrom, dateTo string) (string, error) {
 	return response, nil
 }
 
-func (c Client) getCodesByOrderID(orderID int) (string, error) {
+func getCodesByOrderID(token string, orderID int) (string, error) {
 	params := url.Values{}
 	params.Add("type", "png")
 	params.Add("width", "58")
@@ -155,10 +155,10 @@ func (c Client) getCodesByOrderID(orderID int) (string, error) {
 
 	headers := map[string]string{
 		"Content-Type":  "application/json",
-		"Authorization": c.token,
+		"Authorization": token,
 	}
 
-	_, response, err := c.post(fullURL, headers, make(map[string]string), body)
+	response, err := POST(fullURL, headers, make(map[string]string), body)
 	if err != nil {
 		return "", err
 	}
@@ -167,12 +167,12 @@ func (c Client) getCodesByOrderID(orderID int) (string, error) {
 }
 
 // Получения фбс заказов
-func (c Client) ordersFBS(daysAgo int) (string, error) {
+func ordersFBS(token string, daysAgo int) (string, error) {
 	baseURL := "https://marketplace-api.wildberries.ru/api/v3/orders"
 	body := []byte(``)
 
 	headers := map[string]string{
-		"Authorization": c.token,
+		"Authorization": token,
 	}
 
 	params := map[string]string{
@@ -182,7 +182,7 @@ func (c Client) ordersFBS(daysAgo int) (string, error) {
 		"dateTo":   strconv.Itoa(int(getUnix(time.Now().AddDate(0, 0, -daysAgo)))),
 	}
 
-	_, response, err := c.get(baseURL, headers, params, body)
+	response, err := GET(baseURL, headers, params, body)
 	if err != nil {
 		return "", err
 	}
@@ -190,7 +190,7 @@ func (c Client) ordersFBS(daysAgo int) (string, error) {
 	return response, nil
 }
 
-func (c Client) ordersFBSStatus(orderID int) (string, error) {
+func ordersFBSStatus(token string, orderID int) (string, error) {
 	baseURL := "https://marketplace-api.wildberries.ru/api/v3/orders/status"
 
 	type RequestBody struct {
@@ -209,17 +209,17 @@ func (c Client) ordersFBSStatus(orderID int) (string, error) {
 
 	headers := map[string]string{
 		"Content-Type":  "application/json",
-		"Authorization": c.token,
+		"Authorization": token,
 	}
 
-	_, response, err := c.post(baseURL, headers, make(map[string]string), body)
+	response, err := POST(baseURL, headers, make(map[string]string), body)
 	if err != nil {
 		return "", err
 	}
 
 	return response, nil
 }
-func (c Client) getCards(nmID *int, updatedAt *time.Time, limit *int) (string, error) {
+func getCards(token string, nmID *int, updatedAt *time.Time, limit *int) (string, error) {
 	baseURL := "https://content-api.wildberries.ru/content/v2/get/cards/list"
 
 	type RequestBody struct {
@@ -257,10 +257,10 @@ func (c Client) getCards(nmID *int, updatedAt *time.Time, limit *int) (string, e
 	}
 
 	headers := map[string]string{
-		"Authorization": c.token,
+		"Authorization": token,
 	}
 
-	_, response, err := c.post(baseURL, headers, make(map[string]string), body)
+	response, err := POST(baseURL, headers, make(map[string]string), body)
 	if err != nil {
 		return "", err
 	}
@@ -271,7 +271,7 @@ func (c Client) getCards(nmID *int, updatedAt *time.Time, limit *int) (string, e
 /*
 API метод для получения всех заказов за дату, равную (now() - daysAgo). Максимум 1 запрос в минуту
 */
-func (c Client) apiOrdersALL(daysAgo, flag int) (string, error) {
+func apiOrdersALL(token string, daysAgo, flag int) (string, error) {
 	date := time.Now().AddDate(0, 0, -daysAgo)
 
 	baseURL := "https://statistics-api.wildberries.ru/api/v1/supplier/orders"
@@ -279,7 +279,7 @@ func (c Client) apiOrdersALL(daysAgo, flag int) (string, error) {
 	body := []byte(``)
 
 	headers := map[string]string{
-		"Authorization": c.token,
+		"Authorization": token,
 	}
 
 	params := map[string]string{
@@ -287,7 +287,7 @@ func (c Client) apiOrdersALL(daysAgo, flag int) (string, error) {
 		"flag":     strconv.Itoa(flag),
 	}
 
-	_, response, err := c.get(baseURL, headers, params, body)
+	response, err := GET(baseURL, headers, params, body)
 	if err != nil {
 		return "", err
 	}
@@ -295,7 +295,7 @@ func (c Client) apiOrdersALL(daysAgo, flag int) (string, error) {
 	return response, nil
 }
 
-func (c Client) apiSalesAndReturns(daysAgo int) (string, error) {
+func apiSalesAndReturns(token string, daysAgo int) (string, error) {
 	date := time.Now().AddDate(0, 0, -daysAgo)
 
 	baseURL := "https://statistics-api.wildberries.ru/api/v1/supplier/sales"
@@ -303,7 +303,7 @@ func (c Client) apiSalesAndReturns(daysAgo int) (string, error) {
 	body := []byte(``)
 
 	headers := map[string]string{
-		"Authorization": c.token,
+		"Authorization": token,
 	}
 
 	params := map[string]string{
@@ -311,80 +311,12 @@ func (c Client) apiSalesAndReturns(daysAgo int) (string, error) {
 		"flag":     "1",
 	}
 
-	_, response, err := c.get(baseURL, headers, params, body)
+	response, err := GET(baseURL, headers, params, body)
 	if err != nil {
 		return "", err
 	}
 
 	return response, nil
-}
-func (c Client) Reviews() (*Review, error) {
-	baseURL := "https://feedbacks-api.wildberries.ru/api/v1/feedbacks"
-
-	body := []byte(``)
-
-	headers := map[string]string{
-		"Authorization": c.token,
-	}
-
-	params := map[string]string{
-		"isAnswered": "false",
-		"take":       "100",
-		"skip":       "0",
-	}
-
-	_, response, err := c.get(baseURL, headers, params, body)
-	if err != nil {
-		return nil, err
-	}
-
-	var review *Review
-
-	err = json.Unmarshal([]byte(response), &review)
-	if err != nil {
-		return nil, err
-	} else if review.Error {
-		return nil, errors.New(response)
-	}
-
-	return review, nil
-}
-
-func (c Client) AnswerReview(id, answer string) error {
-	baseURL := "https://feedbacks-api.wildberries.ru/api/v1/feedbacks/answer"
-
-	type RequestBody struct {
-		Id   string `json:"id"`
-		Text string `json:"text"`
-	}
-
-	var data = RequestBody{
-		Id:   id,
-		Text: answer,
-	}
-
-	body, err := json.Marshal(data)
-	if err != nil {
-		return fmt.Errorf("ошибка при преобразовании данных в JSON: %w", err)
-	}
-
-	headers := map[string]string{
-		//"Content-Type":  "application/json",
-		"Authorization": c.token,
-	}
-
-	params := map[string]string{}
-
-	status, response, err := c.post(baseURL, headers, params, body)
-	if err != nil {
-		return err
-	}
-
-	if status != http.StatusOK {
-		return errors.New(response)
-	}
-
-	return nil
 }
 
 func getUnix(date time.Time) int64 {

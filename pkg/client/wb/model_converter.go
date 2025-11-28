@@ -5,9 +5,9 @@ import (
 	"time"
 )
 
-func (c Client) GetOrdersFbs(supplyID string) ([]OrderWB, error) {
+func GetOrdersFbs(wildberriesKey, supplyID string) ([]OrderWB, error) {
 	var orders Orders
-	jsonString, err := c.getOrdersBySupplyID(supplyID)
+	jsonString, err := getOrdersBySupplyID(wildberriesKey, supplyID)
 	if err != nil || jsonString == "" {
 		return nil, err
 	}
@@ -20,9 +20,9 @@ func (c Client) GetOrdersFbs(supplyID string) ([]OrderWB, error) {
 	sortOrdersByArticle(orders.Orders)
 	return orders.Orders, nil
 }
-func (c Client) GetCards(nmID *int, updatedAt *time.Time, limit *int) (*CardList, error) {
+func GetCards(wildberriesKey string, nmID *int, updatedAt *time.Time, limit *int) (*CardList, error) {
 	var cards CardList
-	jsonString, err := c.getCards(nmID, updatedAt, limit)
+	jsonString, err := getCards(wildberriesKey, nmID, updatedAt, limit)
 	if err != nil || jsonString == "" {
 		return nil, err
 	}
@@ -35,9 +35,9 @@ func (c Client) GetCards(nmID *int, updatedAt *time.Time, limit *int) (*CardList
 	return &cards, nil
 }
 
-func (c Client) GetReturns(dateFrom, dateTo string) (*ReturnList, error) {
+func GetReturns(wildberriesKey, dateFrom, dateTo string) (*ReturnList, error) {
 	var returns ReturnList
-	jsonString, err := c.getReturns(dateFrom, dateTo)
+	jsonString, err := getReturns(wildberriesKey, dateFrom, dateTo)
 	if err != nil || jsonString == "" {
 		return nil, err
 	}
@@ -50,9 +50,9 @@ func (c Client) GetReturns(dateFrom, dateTo string) (*ReturnList, error) {
 	return &returns, nil
 }
 
-func (c Client) GetStickersFbs(orderID int) (StickerWB, error) {
+func GetStickersFbs(wildberriesKey string, orderID int) (StickerWB, error) {
 	var stickers StickerWB
-	jsonString, err := c.getCodesByOrderID(orderID)
+	jsonString, err := getCodesByOrderID(wildberriesKey, orderID)
 	if err != nil || jsonString == "" {
 		return stickers, err
 	}
@@ -61,9 +61,9 @@ func (c Client) GetStickersFbs(orderID int) (StickerWB, error) {
 	return stickers, err
 }
 
-func (c Client) GetAllOrders(daysAgo, flag int) (OrdersListALL, error) {
+func GetAllOrders(apiKey string, daysAgo, flag int) (OrdersListALL, error) {
 	var posting OrdersListALL
-	jsonString, err := c.apiOrdersALL(daysAgo, flag)
+	jsonString, err := apiOrdersALL(apiKey, daysAgo, flag)
 	if err != nil || jsonString == "" {
 		return nil, err
 	}
@@ -72,9 +72,9 @@ func (c Client) GetAllOrders(daysAgo, flag int) (OrdersListALL, error) {
 	return posting, err
 }
 
-func (c Client) GetOrdersFBS(daysAgo int) (*OrdersListFBS, error) {
+func GetOrdersFBS(apiKey string, daysAgo int) (*OrdersListFBS, error) {
 	var posting OrdersListFBS
-	jsonString, err := c.ordersFBS(daysAgo)
+	jsonString, err := ordersFBS(apiKey, daysAgo)
 	if err != nil || jsonString == "" {
 		return nil, err
 	}
@@ -83,9 +83,9 @@ func (c Client) GetOrdersFBS(daysAgo int) (*OrdersListFBS, error) {
 	return &posting, err
 }
 
-func (c Client) GetSalesAndReturns(daysAgo int) (SalesReturns, error) {
+func GetSalesAndReturns(apiKey string, daysAgo int) (SalesReturns, error) {
 	var sales SalesReturns
-	jsonString, err := c.apiSalesAndReturns(daysAgo)
+	jsonString, err := apiSalesAndReturns(apiKey, daysAgo)
 	if err != nil || jsonString == "" {
 		return nil, err
 	}
@@ -94,9 +94,9 @@ func (c Client) GetSalesAndReturns(daysAgo int) (SalesReturns, error) {
 	return sales, err
 }
 
-func (c Client) GetPostingStatus(postingID int) (string, error) {
+func GetPostingStatus(apiKey string, postingID int) (string, error) {
 	var postingStatuses OrdersWithStatuses
-	jsonString, err := c.ordersFBSStatus(postingID)
+	jsonString, err := ordersFBSStatus(apiKey, postingID)
 	if err != nil || jsonString == "" {
 		return "", err
 	}
@@ -109,9 +109,9 @@ func (c Client) GetPostingStatus(postingID int) (string, error) {
 	return postingStatuses.Orders[0].WbStatus, nil
 }
 
-func (c Client) GetStockFbo() ([]Stock, error) {
+func GetStockFbo(apiKey string) ([]Stock, error) {
 	var stocks []Stock
-	jsonString, err := c.stocksFbo()
+	jsonString, err := stocksFbo(apiKey)
 	if err != nil || jsonString == "" {
 		return nil, err
 	}
