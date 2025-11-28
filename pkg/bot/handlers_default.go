@@ -9,6 +9,7 @@ import (
 	"os"
 	"strconv"
 	"sync"
+	"tradebot/pkg/client/openAI"
 	"tradebot/pkg/tradeplus/ozon"
 
 	"tradebot/pkg/db"
@@ -26,20 +27,27 @@ const (
 )
 
 type Manager struct {
-	sl       embedlog.Logger
-	b        *botlib.Bot
-	bl       *tradeplus.Manager
-	myChatID string
-	SheetMap *sync.Map
-	APIMap   *sync.Map
+	dbc       db.DB
+	sl        embedlog.Logger
+	b         *botlib.Bot
+	tm        *tradeplus.Manager
+	oam       *openAI.Manager
+	myChatID  int
+	SheetMap  *sync.Map
+	APIMap    *sync.Map
+	ReviewMap *sync.Map
 }
 
-func NewManager(dbc db.DB, cfg Config) *Manager {
+func NewManager(dbc db.DB, cfg Config, oam *openAI.Manager, logger embedlog.Logger) *Manager {
 	return &Manager{
-		bl:       tradeplus.NewManager(dbc),
-		myChatID: cfg.MyChatID,
-		SheetMap: new(sync.Map),
-		APIMap:   new(sync.Map),
+		dbc:       dbc,
+		tm:        tradeplus.NewManager(dbc),
+		oam:       oam,
+		myChatID:  cfg.MyChatID,
+		SheetMap:  new(sync.Map),
+		APIMap:    new(sync.Map),
+		ReviewMap: new(sync.Map),
+		sl:        logger,
 	}
 }
 
@@ -65,6 +73,9 @@ func (m *Manager) RegisterBotHandlers() {
 	m.b.RegisterHandler(botlib.HandlerTypeCallbackQueryData, CallbackOzonHandler, botlib.MatchTypeExact, m.ozonHandler)
 
 	m.b.RegisterHandler(botlib.HandlerTypeCallbackQueryData, CallbackWbFbsHandler, botlib.MatchTypeExact, m.stickersHandler)
+	m.b.RegisterHandler(botlib.HandlerTypeCallbackQueryData, CallbackWbAnswerReview, botlib.MatchTypePrefix, m.wbAnswerReview)
+	m.b.RegisterHandler(botlib.HandlerTypeCallbackQueryData, CallbackWbEditReview, botlib.MatchTypePrefix, m.wbEditReview)
+	m.b.RegisterHandler(botlib.HandlerTypeCallbackQueryData, CallbackWbDeleteReview, botlib.MatchTypePrefix, m.wbDeleteReview)
 	m.b.RegisterHandler(botlib.HandlerTypeCallbackQueryData, CallbackYandexStickersHandler, botlib.MatchTypePrefix, m.yandexFbsHandler)
 	m.b.RegisterHandler(botlib.HandlerTypeCallbackQueryData, CallbackWbOrdersHandler, botlib.MatchTypePrefix, m.wbOrdersHandler)
 	m.b.RegisterHandler(botlib.HandlerTypeCallbackQueryData, CallbackYandexOrdersHandler, botlib.MatchTypePrefix, m.yandexOrdersHandler)
@@ -85,7 +96,7 @@ func (m *Manager) DefaultHandler(ctx context.Context, bot *botlib.Bot, update *m
 	chatID := update.Message.From.ID
 	message := update.Message.Text
 
-	user, err := m.bl.UserByChatID(ctx, chatID)
+	user, err := m.tm.UserByChatID(ctx, chatID)
 	if err != nil {
 		log.Println(err)
 		return
@@ -122,11 +133,15 @@ func (m *Manager) DefaultHandler(ctx context.Context, bot *botlib.Bot, update *m
 		{
 			m.changeSheet(ctx, bot, chatID, update.Message)
 		}
+	case db.StatusWaitingReview:
+		{
+			m.updateReview(ctx, bot, chatID, update.Message)
+		}
 	default:
 		log.Println("Такого статуса пользователя нет")
 	}
 
-	_, err = m.bl.SetUserStatus(ctx, user, db.StatusEnabled)
+	_, err = m.tm.SetUserStatus(ctx, user, db.StatusEnabled)
 	if err != nil {
 		log.Println("Ошибка обновления статуса пользователя: ", err)
 		return
@@ -189,7 +204,7 @@ func (m *Manager) startHandler(ctx context.Context, bot *botlib.Bot, update *mod
 		return
 	}
 
-	user, err := m.bl.CreateUser(ctx, chatID)
+	user, err := m.tm.CreateUser(ctx, chatID)
 	if err != nil {
 		log.Println("Ошибка создания меню: ", err)
 		return

@@ -1,0 +1,51 @@
+package test
+
+import (
+	"github.com/BurntSushi/toml"
+	"github.com/go-pg/pg/v10"
+	"github.com/vmkteam/cron"
+	"github.com/vmkteam/vfs"
+	"tradebot/pkg/db"
+)
+
+var (
+	Repo db.TradebotRepo
+	err  error
+	Cfg  *Config
+)
+
+type Config struct {
+	Database *pg.Options
+	Server   struct {
+		Host      string
+		Port      int
+		IsDevel   bool
+		EnableVFS bool
+	}
+	Sentry struct {
+		Environment string
+		DSN         string
+	}
+	Cron struct {
+		OzonWriter     cron.Schedule
+		YandexWriter   cron.Schedule
+		WBWriter       cron.Schedule
+		OrderCleaner   cron.Schedule
+		SendNewReviews cron.Schedule
+	}
+	OpenAI struct {
+		Token string
+	}
+	VFS vfs.Config
+}
+
+func Setup() (*db.DB, error) {
+	if _, err = toml.DecodeFile("/Users/sergey/GolandProjects/tradebot/Cfg/local.toml", &Cfg); err != nil {
+		return nil, err
+	}
+
+	pgdb := pg.Connect(Cfg.Database)
+	dbc := db.New(pgdb)
+
+	return &dbc, nil
+}

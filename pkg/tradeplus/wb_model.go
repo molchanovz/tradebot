@@ -1,11 +1,102 @@
-package wb
+package tradeplus
 
 import (
+	"strings"
+	"text/template"
 	"time"
 	"tradebot/pkg/client/wb"
+	"tradebot/pkg/db"
 )
 
-//go:generate colgen
+type Review struct {
+	db.Review
+}
+
+func NewReview(in *db.Review) *Review {
+	if in == nil {
+		return nil
+	}
+
+	return &Review{
+		Review: *in,
+	}
+}
+
+func (r Review) IsEmpty() bool {
+	return (r.Cons == "") && (r.Pros == "") && (r.Text == "")
+}
+
+var reviewTemplate = `Отзыв на {{.Article}} на {{.Valuation}} звезд.
+{{if .Pros}}Достоинства: {{.Pros}}
+{{end}}{{if .CustomerName}}Покупатель: {{.CustomerName}}
+{{end}}{{if .Cons}}Недостатки: {{.Cons}}
+{{end}}{{if .Text}}Отзыв: {{.Text}}
+{{end}}{{if .Answer}}Ответ: {{.Answer}}{{end}}`
+
+func (r Review) ToMessage() string {
+	tmpl := template.Must(template.New("review").Parse(reviewTemplate))
+
+	var sb strings.Builder
+	err := tmpl.Execute(&sb, r)
+	if err != nil {
+		return "Ошибка формирования отзыва"
+	}
+
+	result := sb.String()
+	return strings.TrimSpace(result)
+}
+
+func (r Review) ToDB() *db.Review {
+	return &db.Review{
+		CabinetID:    r.CabinetID,
+		ExternalID:   r.ExternalID,
+		CustomerName: r.CustomerName,
+		Text:         r.Text,
+		Pros:         r.Pros,
+		Cons:         r.Cons,
+		Valuation:    r.Valuation,
+		Answer:       r.Answer,
+		Article:      r.Article,
+		CreatedAt:    r.CreatedAt,
+		StatusID:     r.StatusID,
+	}
+}
+
+func NewReviewFromWB(in wb.Feedback) Review {
+	r := db.Review{
+		ExternalID:   in.Id,
+		Article:      in.ProductDetails.SupplierArticle,
+		CustomerName: in.UserName,
+		Text:         in.Text,
+		Pros:         in.Pros,
+		Cons:         in.Cons,
+		Valuation:    in.ProductValuation,
+	}
+
+	if in.Bables != nil {
+		r.Text += "\nПокупатель отметил: " + strings.Join(in.Bables, ", ")
+	}
+
+	return Review{r}
+}
+
+func NewReviewsFromWB(in *wb.Review) Reviews {
+	if in == nil {
+		return nil
+	}
+
+	var reviews = make(Reviews, 0, len(in.Data.Feedbacks))
+	for i := range in.Data.Feedbacks {
+		review := NewReviewFromWB(in.Data.Feedbacks[i])
+		review.StatusID = db.ReviewStatusCompleted
+		reviews = append(reviews, review)
+	}
+	return reviews
+}
+
+type ReviewWB struct {
+	wb.Review
+}
 
 type Card struct {
 	NmID        int

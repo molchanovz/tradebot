@@ -26,7 +26,7 @@ func (m *Manager) yandexHandler(ctx context.Context, bot *botlib.Bot, update *mo
 	chatID := update.CallbackQuery.From.ID
 	messageID := update.CallbackQuery.Message.Message.ID
 
-	cabinets, err := m.bl.GetCabinetsByMp(ctx, db.MarketYandex)
+	cabinets, err := m.tm.GetCabinetsByMp(ctx, db.MarketYandex)
 	if err != nil {
 		log.Println(err)
 		return
@@ -78,13 +78,13 @@ func (m *Manager) yandexCabinetHandler(ctx context.Context, bot *botlib.Bot, upd
 func (m *Manager) yandexFbsHandler(ctx context.Context, bot *botlib.Bot, update *models.Update) {
 	chatID := update.CallbackQuery.From.ID
 
-	user, err := m.bl.UserByChatID(ctx, chatID)
+	user, err := m.tm.UserByChatID(ctx, chatID)
 	if err != nil {
 		log.Println("Ошибка получения пользователя: ", err)
 		return
 	}
 
-	_, err = m.bl.SetUserStatus(ctx, user, db.StatusWaitingYaState)
+	_, err = m.tm.SetUserStatus(ctx, user, db.StatusWaitingYaState)
 	if err != nil {
 		log.Println("Ошибка обновления StatusWaitingYaState пользователя: ", err)
 		return
@@ -108,7 +108,7 @@ func (m *Manager) yandexFbsHandler(ctx context.Context, bot *botlib.Bot, update 
 func (m *Manager) yandexOrdersHandler(ctx context.Context, bot *botlib.Bot, update *models.Update) {
 	chatID := update.CallbackQuery.From.ID
 
-	cabinets, err := m.bl.GetCabinetsByMp(ctx, db.MarketYandex)
+	cabinets, err := m.tm.GetCabinetsByMp(ctx, db.MarketYandex)
 	if err != nil {
 		log.Println(err)
 		return
@@ -140,7 +140,7 @@ func (m *Manager) getYandexFbs(ctx context.Context, bot *botlib.Bot, chatID int6
 
 	defer tradeplus.CleanFiles()
 
-	cabinets, err := m.bl.GetCabinetsByMp(ctx, db.MarketYandex)
+	cabinets, err := m.tm.GetCabinetsByMp(ctx, db.MarketYandex)
 	if err != nil {
 		log.Println(err)
 		return

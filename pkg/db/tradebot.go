@@ -23,18 +23,21 @@ func NewTradebotRepo(db orm.DB) TradebotRepo {
 			Tables.Cabinet.Name: {StatusFilter},
 			Tables.Order.Name:   {StatusFilter},
 			Tables.User.Name:    {StatusUserFilter},
+			Tables.Review.Name:  {StatusFilter},
 		},
 		sort: map[string][]SortField{
 			Tables.Cabinet.Name: {{Column: Columns.Cabinet.ID, Direction: SortDesc}},
 			Tables.Order.Name:   {{Column: Columns.Order.CreatedAt, Direction: SortDesc}},
 			Tables.Stock.Name:   {{Column: Columns.Stock.ID, Direction: SortDesc}},
 			Tables.User.Name:    {{Column: Columns.User.CreatedAt, Direction: SortDesc}},
+			Tables.Review.Name:  {{Column: Columns.Review.CreatedAt, Direction: SortDesc}},
 		},
 		join: map[string][]string{
 			Tables.Cabinet.Name: {TableColumns},
 			Tables.Order.Name:   {TableColumns, Columns.Order.Cabinet},
 			Tables.Stock.Name:   {TableColumns, Columns.Stock.Cabinet},
 			Tables.User.Name:    {TableColumns},
+			Tables.Review.Name:  {TableColumns, Columns.Review.Cabinet},
 		},
 	}
 }
@@ -359,4 +362,80 @@ func (tr TradebotRepo) DeleteUser(ctx context.Context, id int) (deleted bool, er
 	user := &User{ID: id, StatusID: StatusDeleted}
 
 	return tr.UpdateUser(ctx, user, WithColumns(Columns.User.StatusID))
+}
+
+/*** Review ***/
+
+// FullReview returns full joins with all columns
+func (tr TradebotRepo) FullReview() OpFunc {
+	return WithColumns(tr.join[Tables.Review.Name]...)
+}
+
+// DefaultReviewSort returns default sort.
+func (tr TradebotRepo) DefaultReviewSort() OpFunc {
+	return WithSort(tr.sort[Tables.Review.Name]...)
+}
+
+// ReviewByID is a function that returns Review by ID(s) or nil.
+func (tr TradebotRepo) ReviewByID(ctx context.Context, id int, ops ...OpFunc) (*Review, error) {
+	return tr.OneReview(ctx, &ReviewSearch{ID: &id}, ops...)
+}
+
+// OneReview is a function that returns one Review by filters. It could return pg.ErrMultiRows.
+func (tr TradebotRepo) OneReview(ctx context.Context, search *ReviewSearch, ops ...OpFunc) (*Review, error) {
+	obj := &Review{}
+	err := buildQuery(ctx, tr.db, obj, search, tr.filters[Tables.Review.Name], PagerTwo, ops...).Select()
+
+	if errors.Is(err, pg.ErrMultiRows) {
+		return nil, err
+	} else if errors.Is(err, pg.ErrNoRows) {
+		return nil, nil
+	}
+
+	return obj, err
+}
+
+// ReviewsByFilters returns Review list.
+func (tr TradebotRepo) ReviewsByFilters(ctx context.Context, search *ReviewSearch, pager Pager, ops ...OpFunc) (reviews []Review, err error) {
+	err = buildQuery(ctx, tr.db, &reviews, search, tr.filters[Tables.Review.Name], pager, ops...).Select()
+	return
+}
+
+// CountReviews returns count
+func (tr TradebotRepo) CountReviews(ctx context.Context, search *ReviewSearch, ops ...OpFunc) (int, error) {
+	return buildQuery(ctx, tr.db, &Review{}, search, tr.filters[Tables.Review.Name], PagerOne, ops...).Count()
+}
+
+// AddReview adds Review to DB.
+func (tr TradebotRepo) AddReview(ctx context.Context, review *Review, ops ...OpFunc) (*Review, error) {
+	q := tr.db.ModelContext(ctx, review)
+	if len(ops) == 0 {
+		q = q.ExcludeColumn(Columns.Review.CreatedAt)
+	}
+	applyOps(q, ops...)
+	_, err := q.Insert()
+
+	return review, err
+}
+
+// UpdateReview updates Review in DB.
+func (tr TradebotRepo) UpdateReview(ctx context.Context, review *Review, ops ...OpFunc) (bool, error) {
+	q := tr.db.ModelContext(ctx, review).WherePK()
+	if len(ops) == 0 {
+		q = q.ExcludeColumn(Columns.Review.ID, Columns.Review.CreatedAt)
+	}
+	applyOps(q, ops...)
+	res, err := q.Update()
+	if err != nil {
+		return false, err
+	}
+
+	return res.RowsAffected() > 0, err
+}
+
+// DeleteReview set statusId to deleted in DB.
+func (tr TradebotRepo) DeleteReview(ctx context.Context, id int) (deleted bool, err error) {
+	review := &Review{ID: id, StatusID: StatusDeleted}
+
+	return tr.UpdateReview(ctx, review, WithColumns(Columns.Review.StatusID))
 }

@@ -5,9 +5,9 @@ import (
 	"time"
 )
 
-func GetOrdersFbs(wildberriesKey, supplyID string) ([]OrderWB, error) {
+func (c Client) GetOrdersFbs(supplyID string) ([]OrderWB, error) {
 	var orders Orders
-	jsonString, err := getOrdersBySupplyID(wildberriesKey, supplyID)
+	jsonString, err := c.getOrdersBySupplyID(supplyID)
 	if err != nil || jsonString == "" {
 		return nil, err
 	}
@@ -20,9 +20,9 @@ func GetOrdersFbs(wildberriesKey, supplyID string) ([]OrderWB, error) {
 	sortOrdersByArticle(orders.Orders)
 	return orders.Orders, nil
 }
-func GetCards(wildberriesKey string, nmID *int, updatedAt *time.Time, limit *int) (*CardList, error) {
+func (c Client) GetCards(nmID *int, updatedAt *time.Time, limit *int) (*CardList, error) {
 	var cards CardList
-	jsonString, err := getCards(wildberriesKey, nmID, updatedAt, limit)
+	jsonString, err := c.getCards(nmID, updatedAt, limit)
 	if err != nil || jsonString == "" {
 		return nil, err
 	}
@@ -35,9 +35,9 @@ func GetCards(wildberriesKey string, nmID *int, updatedAt *time.Time, limit *int
 	return &cards, nil
 }
 
-func GetReturns(wildberriesKey, dateFrom, dateTo string) (*ReturnList, error) {
+func (c Client) GetReturns(dateFrom, dateTo string) (*ReturnList, error) {
 	var returns ReturnList
-	jsonString, err := getReturns(wildberriesKey, dateFrom, dateTo)
+	jsonString, err := c.getReturns(dateFrom, dateTo)
 	if err != nil || jsonString == "" {
 		return nil, err
 	}
@@ -50,9 +50,9 @@ func GetReturns(wildberriesKey, dateFrom, dateTo string) (*ReturnList, error) {
 	return &returns, nil
 }
 
-func GetStickersFbs(wildberriesKey string, orderID int) (StickerWB, error) {
+func (c Client) GetStickersFbs(orderID int) (StickerWB, error) {
 	var stickers StickerWB
-	jsonString, err := getCodesByOrderID(wildberriesKey, orderID)
+	jsonString, err := c.getCodesByOrderID(orderID)
 	if err != nil || jsonString == "" {
 		return stickers, err
 	}
@@ -61,9 +61,9 @@ func GetStickersFbs(wildberriesKey string, orderID int) (StickerWB, error) {
 	return stickers, err
 }
 
-func GetAllOrders(apiKey string, daysAgo, flag int) (OrdersListALL, error) {
+func (c Client) GetAllOrders(daysAgo, flag int) (OrdersListALL, error) {
 	var posting OrdersListALL
-	jsonString, err := apiOrdersALL(apiKey, daysAgo, flag)
+	jsonString, err := c.apiOrdersALL(daysAgo, flag)
 	if err != nil || jsonString == "" {
 		return nil, err
 	}
@@ -72,9 +72,9 @@ func GetAllOrders(apiKey string, daysAgo, flag int) (OrdersListALL, error) {
 	return posting, err
 }
 
-func GetOrdersFBS(apiKey string, daysAgo int) (*OrdersListFBS, error) {
+func (c Client) GetOrdersFBS(daysAgo int) (*OrdersListFBS, error) {
 	var posting OrdersListFBS
-	jsonString, err := ordersFBS(apiKey, daysAgo)
+	jsonString, err := c.ordersFBS(daysAgo)
 	if err != nil || jsonString == "" {
 		return nil, err
 	}
@@ -83,9 +83,9 @@ func GetOrdersFBS(apiKey string, daysAgo int) (*OrdersListFBS, error) {
 	return &posting, err
 }
 
-func GetSalesAndReturns(apiKey string, daysAgo int) (SalesReturns, error) {
+func (c Client) GetSalesAndReturns(daysAgo int) (SalesReturns, error) {
 	var sales SalesReturns
-	jsonString, err := apiSalesAndReturns(apiKey, daysAgo)
+	jsonString, err := c.apiSalesAndReturns(daysAgo)
 	if err != nil || jsonString == "" {
 		return nil, err
 	}
@@ -94,9 +94,9 @@ func GetSalesAndReturns(apiKey string, daysAgo int) (SalesReturns, error) {
 	return sales, err
 }
 
-func GetPostingStatus(apiKey string, postingID int) (string, error) {
+func (c Client) GetPostingStatus(postingID int) (string, error) {
 	var postingStatuses OrdersWithStatuses
-	jsonString, err := ordersFBSStatus(apiKey, postingID)
+	jsonString, err := c.ordersFBSStatus(postingID)
 	if err != nil || jsonString == "" {
 		return "", err
 	}
@@ -109,9 +109,9 @@ func GetPostingStatus(apiKey string, postingID int) (string, error) {
 	return postingStatuses.Orders[0].WbStatus, nil
 }
 
-func GetStockFbo(apiKey string) ([]Stock, error) {
+func (c Client) GetStockFbo() ([]Stock, error) {
 	var stocks []Stock
-	jsonString, err := stocksFbo(apiKey)
+	jsonString, err := c.stocksFbo()
 	if err != nil || jsonString == "" {
 		return nil, err
 	}

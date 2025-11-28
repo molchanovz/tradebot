@@ -1,8 +1,10 @@
 package tradeplus
 
 import (
-	"tradebot/pkg/client/googlesheet"
+	"tradebot/pkg/client/google"
 )
+
+const OrdersDaysAgo = 1
 
 type GoogleSheetWriter interface {
 	Write() error
@@ -11,14 +13,14 @@ type GoogleSheetWriter interface {
 type OrderManager struct {
 	DaysAgo       int
 	SpreadsheetID string
-	GoogleService googlesheet.SheetsService
+	GoogleService google.SheetsService
 }
 
-func NewOrdersManager(spreadsheetID string, daysAgo int) OrderManager {
+func NewOrdersManager(spreadsheetID string) OrderManager {
 	ordersManager := OrderManager{
-		DaysAgo:       daysAgo,
+		DaysAgo:       OrdersDaysAgo,
 		SpreadsheetID: spreadsheetID,
-		GoogleService: googlesheet.NewSheetsService("pkg/client/googlesheet/token.json", "pkg/client/googlesheet/credentials.json"),
+		GoogleService: google.NewSheetsService("pkg/client/google/token.json", "pkg/client/google/credentials.json"),
 	}
 
 	return ordersManager

@@ -12,11 +12,11 @@ import (
 
 type OrdersManager struct {
 	tradeplus.OrderManager
-	token string
+	client wb.Client
 }
 
-func NewOrdersManager(token, spreadsheetID string, daysAgo int) OrdersManager {
-	manager := OrdersManager{tradeplus.NewOrdersManager(spreadsheetID, daysAgo), token}
+func NewOrdersManager(token, spreadsheetID string) OrdersManager {
+	manager := OrdersManager{tradeplus.NewOrdersManager(spreadsheetID), wb.NewClient(token)}
 	return manager
 }
 
@@ -86,7 +86,7 @@ func (m OrdersManager) getPostingsMap() (map[string]int, map[string]int, error) 
 	postingsWithCountFBO := make(map[string]int)
 	postingsWithCountFBS := make(map[string]int)
 
-	postingsList, err := wb.GetAllOrders(m.token, m.DaysAgo, 1)
+	postingsList, err := m.client.GetAllOrders(m.DaysAgo, 1)
 	if err != nil {
 		return nil, nil, fmt.Errorf("wb getAllOrders failed: %w", err)
 	}
@@ -114,7 +114,7 @@ func (m OrdersManager) getPostingsMap() (map[string]int, map[string]int, error) 
 func (m OrdersManager) getReturnsMap() map[string]int {
 	returnsWithCount := make(map[string]int)
 
-	returnsList, _ := wb.GetSalesAndReturns(m.token, m.DaysAgo)
+	returnsList, _ := m.client.GetSalesAndReturns(m.DaysAgo)
 	for _, someReturn := range returnsList {
 		if strings.HasPrefix(someReturn.SaleID, "R") {
 			returnsWithCount[someReturn.SupplierArticle]++

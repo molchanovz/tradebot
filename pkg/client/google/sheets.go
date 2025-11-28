@@ -1,4 +1,4 @@
-package googlesheet
+package google
 
 import (
 	"context"

@@ -57,3 +57,17 @@ func NewCabinets(in []db.Cabinet) Cabinets {
 	}
 	return newCabinets
 }
+
+// Ptr is a generic to create pointer from value
+func Ptr[T any](v T) *T {
+	return &v
+}
+
+// Deref is a generic to dereference pointer with fallback to "def" value
+func Deref[T any](v *T, def T) T {
+	if v == nil {
+		return def
+	}
+
+	return *v
+}
