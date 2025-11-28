@@ -57,7 +57,7 @@ db:
 
 NS := ""
 
-MAPPING := "tradebot:cabinets,orders,stocks,users"
+MAPPING := "tradebot:cabinets,orders,stocks,users,reviews"
 
 mfd-xml:
 	@mfd-generator xml -c "postgres://sergey:1719@localhost:5432/tradebot?sslmode=disable" -m ./docs/model/tradebot.mfd -n $(MAPPING)
@@ -65,6 +65,8 @@ mfd-model:
 	@mfd-generator model -m ./docs/model/tradebot.mfd -p db -o ./pkg/db
 mfd-repo: --check-ns
 	@mfd-generator repo -m ./docs/model/tradebot.mfd -p db -o ./pkg/db -n $(NS)
+mfd-db-test:
+	@mfd-generator dbtest -m docs/model/$(NAME).mfd -o ./pkg/db/test -x $(NAME)/pkg/db
 mfd-vt-xml:
 	@mfd-generator xml-vt -m ./docs/model/tradebot.mfd
 mfd-vt-rpc: --check-ns

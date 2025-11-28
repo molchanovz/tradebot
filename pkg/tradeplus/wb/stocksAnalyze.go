@@ -2,6 +2,7 @@ package wb
 
 import (
 	"fmt"
+	"tradebot/pkg/client/google"
 	"tradebot/pkg/client/wb"
 )
 
@@ -29,8 +30,20 @@ var warehousesMap = map[string]string{
 	"Рязань (Тюшевское)":             "Центральный федеральный округ",
 }
 
-func GetOrders(apiKey string, daysAgo int) (map[string]map[string]int, error) {
-	orders, err := wb.GetAllOrders(apiKey, daysAgo, 0)
+type StockManager struct {
+	client       wb.Client
+	googleSheets google.SheetsService
+}
+
+func NewStockManager(token string) StockManager {
+	return StockManager{
+		client:       wb.NewClient(token),
+		googleSheets: google.NewSheetsService("token.json", "credentials.json"),
+	}
+}
+
+func (m StockManager) GetOrders(daysAgo int) (map[string]map[string]int, error) {
+	orders, err := m.client.GetAllOrders(daysAgo, 0)
 	if err != nil {
 		return nil, fmt.Errorf("wb GetAllorders failed: %w", err)
 	}
@@ -51,8 +64,8 @@ func GetOrders(apiKey string, daysAgo int) (map[string]map[string]int, error) {
 	return ordersMap, nil
 }
 
-func GetStocks(apiKey string) (map[string]map[string]int, map[string]int, error) {
-	stocks, err := wb.GetStockFbo(apiKey)
+func (m StockManager) GetStocks() (map[string]map[string]int, map[string]int, error) {
+	stocks, err := m.client.GetStockFbo()
 	if err != nil {
 		return nil, nil, err
 	}

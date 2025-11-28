@@ -19,6 +19,7 @@ func (a *App) newCron() *cron.Manager {
 	cm.AddFunc("ozonOrders", a.cfg.Cron.OzonWriter, a.scheduleManager.WriteOzon)
 	cm.AddFunc("yandexOrders", a.cfg.Cron.YandexWriter, a.scheduleManager.WriteYandex)
 	cm.AddFunc("cleanOrders", a.cfg.Cron.OrderCleaner, a.scheduleManager.ClearOrders)
+	cm.AddFunc("sendNewReviews", a.cfg.Cron.SendNewReviews, a.scheduleManager.SendNewReviews)
 
 	return cm
 }

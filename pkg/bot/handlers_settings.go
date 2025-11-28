@@ -86,7 +86,7 @@ func (m *Manager) selectMpSettingsHandler(ctx context.Context, bot *botlib.Bot, 
 
 	mp := parts[1]
 
-	cabinets, err := m.bl.GetCabinetsByMp(ctx, mp)
+	cabinets, err := m.tm.GetCabinetsByMp(ctx, mp)
 	if err != nil {
 		log.Println(err)
 		return
@@ -174,7 +174,7 @@ func (m *Manager) ChangeApiHandler(ctx context.Context, bot *botlib.Bot, update 
 
 	cabinetID := parts[1]
 
-	user, err := m.bl.UserByChatID(ctx, chatID)
+	user, err := m.tm.UserByChatID(ctx, chatID)
 	if err != nil {
 		log.Println("Ошибка получения User")
 		return
@@ -185,7 +185,7 @@ func (m *Manager) ChangeApiHandler(ctx context.Context, bot *botlib.Bot, update 
 		return
 	}
 
-	_, err = m.bl.SetUserStatus(ctx, user, db.StatusWaitingAPI)
+	_, err = m.tm.SetUserStatus(ctx, user, db.StatusWaitingAPI)
 	if err != nil {
 		log.Println("Ошибка обновления статуса User")
 		return
@@ -222,7 +222,7 @@ func (m *Manager) ChangeSheetHandler(ctx context.Context, bot *botlib.Bot, updat
 
 	cabinetID := parts[1]
 
-	user, err := m.bl.UserByChatID(ctx, chatID)
+	user, err := m.tm.UserByChatID(ctx, chatID)
 	if err != nil {
 		log.Println("Ошибка получения User")
 		return
@@ -233,7 +233,7 @@ func (m *Manager) ChangeSheetHandler(ctx context.Context, bot *botlib.Bot, updat
 		return
 	}
 
-	_, err = m.bl.SetUserStatus(ctx, user, db.StatusWaitingSheet)
+	_, err = m.tm.SetUserStatus(ctx, user, db.StatusWaitingSheet)
 	if err != nil {
 		log.Println("Ошибка обновления User")
 		return
@@ -265,7 +265,7 @@ func (m *Manager) changeSheet(ctx context.Context, bot *botlib.Bot, chatID int64
 
 	if value, ok := m.SheetMap.Load(chatID); ok {
 		var err error
-		cabinet, err = m.bl.GetCabinetByID(ctx, value.(int))
+		cabinet, err = m.tm.GetCabinetByID(ctx, value.(int))
 		if err != nil {
 			log.Println("Ошибка получения кабинета")
 			return
@@ -273,7 +273,7 @@ func (m *Manager) changeSheet(ctx context.Context, bot *botlib.Bot, chatID int64
 
 		cabinet.SheetLink = &message.Text
 
-		err = m.bl.UpdateCabinet(ctx, cabinet)
+		err = m.tm.UpdateCabinet(ctx, cabinet)
 		if err != nil {
 			log.Println("Ошибка обновления кабинета")
 			return
@@ -312,7 +312,7 @@ func (m *Manager) changeAPI(ctx context.Context, bot *botlib.Bot, chatID int64, 
 	var cabinet tradeplus.Cabinet
 	if value, ok := m.APIMap.Load(chatID); ok {
 		var err error
-		cabinet, err = m.bl.GetCabinetByID(ctx, value.(int))
+		cabinet, err = m.tm.GetCabinetByID(ctx, value.(int))
 		if err != nil {
 			log.Println("Ошибка получения кабинета")
 			return
@@ -320,7 +320,7 @@ func (m *Manager) changeAPI(ctx context.Context, bot *botlib.Bot, chatID int64, 
 
 		cabinet.Key = message.Text
 
-		err = m.bl.UpdateCabinet(ctx, cabinet)
+		err = m.tm.UpdateCabinet(ctx, cabinet)
 		if err != nil {
 			log.Println("Ошибка обновления кабинета")
 			return

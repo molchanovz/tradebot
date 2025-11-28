@@ -2,8 +2,9 @@ package bot
 
 import (
 	"context"
+	"github.com/vmkteam/embedlog"
 	"log"
-
+	"tradebot/pkg/client/openAI"
 	"tradebot/pkg/db"
 
 	botlib "github.com/go-telegram/bot"
@@ -11,7 +12,7 @@ import (
 
 type Config struct {
 	Token    string
-	MyChatID string
+	MyChatID int
 }
 
 type Service struct {
@@ -19,10 +20,10 @@ type Service struct {
 	manager *Manager
 }
 
-func NewService(cfg Config, dbc db.DB) *Service {
+func NewService(cfg Config, dbc db.DB, oam *openAI.Manager, logger embedlog.Logger) *Service {
 	return &Service{
 		cfg:     cfg,
-		manager: NewManager(dbc, cfg),
+		manager: NewManager(dbc, cfg, oam, logger),
 	}
 }
 

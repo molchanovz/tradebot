@@ -13,8 +13,8 @@ type OrdersManager struct {
 	yandexCampaignIDFBO, yandexCampaignIDFBS, token string
 }
 
-func NewOrdersManager(yandexCampaignIDFBO, yandexCampaignIDFBS, token, spreadsheetID string, daysAgo int) OrdersManager {
-	manager := OrdersManager{tradeplus.NewOrdersManager(spreadsheetID, daysAgo), yandexCampaignIDFBO, yandexCampaignIDFBS, token}
+func NewOrdersManager(yandexCampaignIDFBO, yandexCampaignIDFBS, token, spreadsheetID string) OrdersManager {
+	manager := OrdersManager{tradeplus.NewOrdersManager(spreadsheetID), yandexCampaignIDFBO, yandexCampaignIDFBS, token}
 	return manager
 }
 

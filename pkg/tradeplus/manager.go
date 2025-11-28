@@ -125,6 +125,25 @@ func (m Manager) UpdateCabinet(ctx context.Context, cabinet Cabinet) error {
 	_, err := m.repo.UpdateCabinet(ctx, &cabinet.Cabinet)
 	return err
 }
+func (m Manager) GetReviewByID(ctx context.Context, reviewID string) (*Review, error) {
+	review, err := m.repo.OneReview(ctx, &db.ReviewSearch{ExternalID: &reviewID})
+	return NewReview(review), err
+}
+
+func (m Manager) UpdateReviewAnswer(ctx context.Context, reviewID, newAnswer string) (*Review, error) {
+	review, err := m.repo.OneReview(ctx, &db.ReviewSearch{ExternalID: &reviewID})
+	if err != nil {
+		return nil, err
+	}
+
+	review.Answer = newAnswer
+
+	_, err = m.repo.UpdateReview(ctx, review, db.WithColumns(db.Columns.Review.Answer))
+	if err != nil {
+		return nil, err
+	}
+	return NewReview(review), nil
+}
 
 func Pointer[T any](in T) *T {
 	return &in

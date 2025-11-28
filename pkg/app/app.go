@@ -7,6 +7,7 @@ import (
 	"net"
 	"time"
 	"tradebot/pkg/bot"
+	"tradebot/pkg/client/openAI"
 	"tradebot/pkg/db"
 	"tradebot/pkg/tradeplus/schedule"
 
@@ -31,10 +32,14 @@ type Config struct {
 		DSN         string
 	}
 	Cron struct {
-		OzonWriter   cron.Schedule
-		YandexWriter cron.Schedule
-		WBWriter     cron.Schedule
-		OrderCleaner cron.Schedule
+		OzonWriter     cron.Schedule
+		YandexWriter   cron.Schedule
+		WBWriter       cron.Schedule
+		OrderCleaner   cron.Schedule
+		SendNewReviews cron.Schedule
+	}
+	OpenAI struct {
+		Token string
 	}
 	VFS vfs.Config
 }
@@ -63,11 +68,11 @@ func New(appName string, sl embedlog.Logger, cfg Config, db db.DB, dbc *pg.DB) *
 		Logger:  sl,
 	}
 
-	a.scheduleManager = schedule.NewManager(db, a.Logger)
-
 	a.c = a.newCron()
 
-	a.bs = bot.NewService(cfg.Bot, db)
+	a.bs = bot.NewService(cfg.Bot, db, openAI.NewManager(cfg.OpenAI.Token), a.Logger)
+
+	a.scheduleManager = schedule.NewManager(db, a.Logger, a.bs)
 
 	// setup echo
 	a.echo.HideBanner = true

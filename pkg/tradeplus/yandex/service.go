@@ -2,11 +2,6 @@ package yandex
 
 import (
 	"tradebot/pkg/tradeplus"
-	"tradebot/pkg/tradeplus/ozon"
-)
-
-const (
-	daysAgo = ozon.OrdersDaysAgo
 )
 
 type Service struct {
@@ -50,7 +45,7 @@ func (s Service) GetOrdersAndReturnsManager() OrdersManager {
 		}
 	}
 
-	return NewOrdersManager(yandexCampaignIDFBO, yandexCampaignIDFBS, s.Authorizations[0].Token, s.SheetLink, daysAgo)
+	return NewOrdersManager(yandexCampaignIDFBO, yandexCampaignIDFBS, s.Authorizations[0].Token, s.SheetLink)
 }
 
 func (s Service) GetStickersFbsManager() *StickersManager {

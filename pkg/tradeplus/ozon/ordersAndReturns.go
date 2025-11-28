@@ -14,8 +14,8 @@ type OrdersManager struct {
 	clientID, token string
 }
 
-func NewOrdersManager(clientID, token, spreadsheetID string, daysAgo int) OrdersManager {
-	manager := OrdersManager{tradeplus.NewOrdersManager(spreadsheetID, daysAgo), clientID, token}
+func NewOrdersManager(clientID, token, spreadsheetID string) OrdersManager {
+	manager := OrdersManager{tradeplus.NewOrdersManager(spreadsheetID), clientID, token}
 	return manager
 }
 

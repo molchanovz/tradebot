@@ -33,7 +33,7 @@ func (m *Manager) ozonHandler(ctx context.Context, bot *botlib.Bot, update *mode
 	chatID := update.CallbackQuery.From.ID
 	messageID := update.CallbackQuery.Message.Message.ID
 
-	cabinets, err := m.bl.GetCabinetsByMp(ctx, db.MarketOzon)
+	cabinets, err := m.tm.GetCabinetsByMp(ctx, db.MarketOzon)
 	if err != nil {
 		log.Println(err)
 		return
@@ -89,7 +89,7 @@ func (m *Manager) ozonCabinetHandler(ctx context.Context, bot *botlib.Bot, updat
 func (m *Manager) ozonOrdersHandler(ctx context.Context, bot *botlib.Bot, update *models.Update) {
 	chatID := update.CallbackQuery.From.ID
 
-	cabinets, err := m.bl.GetCabinetsByMp(ctx, db.MarketOzon)
+	cabinets, err := m.tm.GetCabinetsByMp(ctx, db.MarketOzon)
 	if err != nil {
 		log.Println(err)
 		return
@@ -145,7 +145,7 @@ func (m *Manager) ozonStocksHandler(ctx context.Context, bot *botlib.Bot, update
 		return
 	}
 
-	cabinet, err := m.bl.GetCabinetByID(ctx, cabinetID)
+	cabinet, err := m.tm.GetCabinetByID(ctx, cabinetID)
 	if err != nil {
 		log.Println("Ошибка получения кабинета:", err)
 		return
@@ -208,7 +208,7 @@ func (m *Manager) ozonPrintStickers(ctx context.Context, bot *botlib.Bot, update
 
 	flag := parts[2]
 
-	cabinet, err := m.bl.GetCabinetByID(ctx, cabinetID)
+	cabinet, err := m.tm.GetCabinetByID(ctx, cabinetID)
 	if err != nil {
 		log.Println("Ошибка получения кабинета:", err)
 		return
@@ -216,7 +216,7 @@ func (m *Manager) ozonPrintStickers(ctx context.Context, bot *botlib.Bot, update
 
 	newOrders := ozonClient.PostingslistFbs{}
 
-	printedOrdersMap, err := m.bl.GetPrintedOrders(ctx, cabinet.ID)
+	printedOrdersMap, err := m.tm.GetPrintedOrders(ctx, cabinet.ID)
 
 	manager := ozon.NewService(cabinet).GetStickersFBSManager(printedOrdersMap)
 
@@ -297,7 +297,7 @@ func (m *Manager) ozonPrintStickers(ctx context.Context, bot *botlib.Bot, update
 	}
 
 	if flag == ozon.NewLabels && len(newOrders.Result.PostingsFBS) > 0 {
-		err = m.bl.CreateOrders(ctx, cabinetID, newOrders)
+		err = m.tm.CreateOrders(ctx, cabinetID, newOrders)
 		if err != nil {
 			_, err = SendTextMessage(ctx, bot, chatID, fmt.Sprintf("ошибка добавления заказов: %v", err))
 			if err != nil {

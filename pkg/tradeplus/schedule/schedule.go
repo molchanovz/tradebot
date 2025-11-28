@@ -2,8 +2,10 @@ package schedule
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"github.com/vmkteam/embedlog"
+	"tradebot/pkg/bot"
 	"tradebot/pkg/db"
 	"tradebot/pkg/tradeplus"
 	"tradebot/pkg/tradeplus/ozon"
@@ -14,10 +16,11 @@ import (
 type Manager struct {
 	embedlog.Logger
 	tm *tradeplus.Manager
+	bs *bot.Service
 }
 
-func NewManager(dbc db.DB, logger embedlog.Logger) Manager {
-	return Manager{tm: tradeplus.NewManager(dbc), Logger: logger}
+func NewManager(dbc db.DB, logger embedlog.Logger, bs *bot.Service) Manager {
+	return Manager{tm: tradeplus.NewManager(dbc), Logger: logger, bs: bs}
 }
 
 func (s *Manager) WriteWB(ctx context.Context) error {
@@ -26,7 +29,13 @@ func (s *Manager) WriteWB(ctx context.Context) error {
 		return fmt.Errorf("fetch cabinet failed: %w", err)
 	}
 
-	err = wb.NewService(cabinets[0]).GetOrdersManager().Write()
+	if cabinets[0].SheetLink == nil {
+		return errors.New("sheet link is null")
+	}
+
+	manager := wb.NewOrdersManager(cabinets[0].Key, *cabinets[0].SheetLink)
+
+	err = manager.Write()
 	if err != nil {
 		return fmt.Errorf("write orders failed: %w", err)
 	}
@@ -82,4 +91,8 @@ func (s *Manager) WriteYandex(ctx context.Context) error {
 
 func (s *Manager) ClearOrders(ctx context.Context) error {
 	return s.tm.DeleteOrders(ctx)
+}
+
+func (s *Manager) SendNewReviews(ctx context.Context) error {
+	return s.bs.Manager().SendNewReviews(ctx)
 }

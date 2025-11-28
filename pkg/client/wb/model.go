@@ -226,3 +226,66 @@ type CardList struct {
 		Total     int       `json:"total"`
 	} `json:"cursor"`
 }
+
+type Feedback struct {
+	Id               string    `json:"id"`
+	Text             string    `json:"text"`
+	Pros             string    `json:"pros"`
+	Cons             string    `json:"cons"`
+	ProductValuation int       `json:"productValuation"`
+	CreatedDate      time.Time `json:"createdDate"`
+	Answer           struct {
+		Text     string `json:"text"`
+		State    string `json:"state"`
+		Editable bool   `json:"editable"`
+	} `json:"answer"`
+	State          string `json:"state"`
+	ProductDetails struct {
+		ImtId           int    `json:"imtId"`
+		NmId            int    `json:"nmId"`
+		ProductName     string `json:"productName"`
+		SupplierArticle string `json:"supplierArticle"`
+		SupplierName    string `json:"supplierName"`
+		BrandName       string `json:"brandName"`
+		Size            string `json:"size"`
+	} `json:"productDetails"`
+	Video struct {
+		PreviewImage string `json:"previewImage"`
+		Link         string `json:"link"`
+		DurationSec  int    `json:"durationSec"`
+	} `json:"video"`
+	WasViewed  bool `json:"wasViewed"`
+	PhotoLinks []struct {
+		FullSize string `json:"fullSize"`
+		MiniSize string `json:"miniSize"`
+	} `json:"photoLinks"`
+	UserName                        string      `json:"userName"`
+	MatchingSize                    string      `json:"matchingSize"`
+	IsAbleSupplierFeedbackValuation bool        `json:"isAbleSupplierFeedbackValuation"`
+	SupplierFeedbackValuation       int         `json:"supplierFeedbackValuation"`
+	IsAbleSupplierProductValuation  bool        `json:"isAbleSupplierProductValuation"`
+	SupplierProductValuation        int         `json:"supplierProductValuation"`
+	IsAbleReturnProductOrders       bool        `json:"isAbleReturnProductOrders"`
+	ReturnProductOrdersDate         time.Time   `json:"returnProductOrdersDate"`
+	Bables                          []string    `json:"bables"`
+	LastOrderShkId                  int         `json:"lastOrderShkId"`
+	LastOrderCreatedAt              time.Time   `json:"lastOrderCreatedAt"`
+	Color                           string      `json:"color"`
+	SubjectId                       int         `json:"subjectId"`
+	SubjectName                     string      `json:"subjectName"`
+	ParentFeedbackId                interface{} `json:"parentFeedbackId"`
+	ChildFeedbackId                 string      `json:"childFeedbackId"`
+}
+
+type Data struct {
+	CountUnanswered int        `json:"countUnanswered"`
+	CountArchive    int        `json:"countArchive"`
+	Feedbacks       []Feedback `json:"feedbacks"`
+}
+
+type Review struct {
+	Data             Data     `json:"data"`
+	Error            bool     `json:"error"`
+	ErrorText        string   `json:"errorText"`
+	AdditionalErrors []string `json:"additionalErrors"`
+}

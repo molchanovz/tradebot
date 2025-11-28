@@ -2,6 +2,7 @@ package bot
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"log"
 	"os"
@@ -11,7 +12,6 @@ import (
 
 	"tradebot/pkg/db"
 	"tradebot/pkg/tradeplus"
-	"tradebot/pkg/tradeplus/ozon"
 	"tradebot/pkg/tradeplus/wb"
 
 	botlib "github.com/go-telegram/bot"
@@ -25,6 +25,10 @@ const (
 	CallbackWbOrdersHandler  = "WB-ORDERS"
 	CallbackWbStocksHandler  = "WB-STOCKS"
 	CallbackWbReturnsHandler = "WB-RETURNS"
+
+	CallbackWbAnswerReview = "WB-ANSWER-REVIEW"
+	CallbackWbEditReview   = "WB-EDIT-REVIEW"
+	CallbackWbDeleteReview = "WB-DELETE-REVIEW"
 )
 
 func wbHandler(ctx context.Context, bot *botlib.Bot, update *models.Update) {
@@ -63,13 +67,13 @@ func wbHandler(ctx context.Context, bot *botlib.Bot, update *models.Update) {
 func (m *Manager) stickersHandler(ctx context.Context, bot *botlib.Bot, update *models.Update) {
 	chatID := update.CallbackQuery.From.ID
 
-	user, err := m.bl.UserByChatID(ctx, chatID)
+	user, err := m.tm.UserByChatID(ctx, chatID)
 	if err != nil {
 		log.Println("Ошибка получения пользователя: ", err)
 		return
 	}
 
-	_, err = m.bl.SetUserStatus(ctx, user, db.StatusWaitingWbState)
+	_, err = m.tm.SetUserStatus(ctx, user, db.StatusWaitingWbState)
 	if err != nil {
 		log.Println("Ошибка обновления WaitingWbState пользователя: ", err)
 		return
@@ -98,13 +102,13 @@ func (m *Manager) getWbStickers(ctx context.Context, bot *botlib.Bot, chatID int
 
 	defer tradeplus.CleanFiles()
 
-	cabinets, err := m.bl.GetCabinetsByMp(ctx, db.MarketWB)
+	cabinets, err := m.tm.GetCabinetsByMp(ctx, db.MarketWB)
 	if err != nil {
 		return err
 	}
 
 	go func() {
-		filePath, err := wb.NewService(cabinets[0]).GetStickersFbsManager().GetReadyFile(supplyID, progressChan)
+		filePath, err := wb.NewStickerManager(cabinets[0].Key).GetReadyFile(supplyID, progressChan)
 		if err != nil {
 			log.Println("Ошибка при получении файла:", err)
 			errChan <- err
@@ -123,13 +127,20 @@ func (m *Manager) getWbStickers(ctx context.Context, bot *botlib.Bot, chatID int
 func (m *Manager) wbOrdersHandler(ctx context.Context, bot *botlib.Bot, update *models.Update) {
 	chatID := update.CallbackQuery.From.ID
 
-	cabinets, err := m.bl.GetCabinetsByMp(ctx, db.MarketWB)
+	cabinets, err := m.tm.GetCabinetsByMp(ctx, db.MarketWB)
 	if err != nil {
 		log.Println(err)
 		return
 	}
 
-	err = wb.NewService(cabinets[0]).GetOrdersManager().Write()
+	if cabinets[0].SheetLink == nil {
+		log.Println(errors.New("sheet link is null"))
+		return
+	}
+
+	manager := wb.NewOrdersManager(cabinets[0].Key, *cabinets[0].SheetLink)
+
+	err = manager.Write()
 	if err != nil {
 		_, err = SendTextMessage(ctx, bot, chatID, err.Error())
 		if err != nil {
@@ -138,7 +149,7 @@ func (m *Manager) wbOrdersHandler(ctx context.Context, bot *botlib.Bot, update *
 		}
 	}
 
-	date := time.Now().AddDate(0, 0, -ozon.OrdersDaysAgo)
+	date := time.Now().AddDate(0, 0, -tradeplus.OrdersDaysAgo)
 	_, err = SendTextMessage(ctx, bot, chatID, fmt.Sprintf("Заказы вб за %v были внесены", date))
 	if err != nil {
 		log.Println(err)
@@ -151,19 +162,21 @@ func (m *Manager) wbStocksHandler(ctx context.Context, bot *botlib.Bot, update *
 
 	chatID := update.CallbackQuery.From.ID
 
-	cabinets, err := m.bl.GetCabinetsByMp(ctx, db.MarketWB)
+	cabinets, err := m.tm.GetCabinetsByMp(ctx, db.MarketWB)
 	if err != nil {
 		m.sl.Errorf("%v", err)
 		return
 	}
 
-	orders, err := wb.GetOrders(cabinets[0].Key, daysAgo)
+	manager := wb.NewStockManager(cabinets[0].Key)
+
+	orders, err := manager.GetOrders(daysAgo)
 	if err != nil {
 		m.sl.Errorf("%v", err)
 		return
 	}
 
-	stocks, lostWarehouses, err := wb.GetStocks(cabinets[0].Key)
+	stocks, lostWarehouses, err := manager.GetStocks()
 	if err != nil {
 		_, err = SendTextMessage(ctx, bot, chatID, fmt.Sprintf("Ошибка при анализе остатков: %w", err))
 		if err != nil {
@@ -206,7 +219,7 @@ func (m *Manager) wbStocksHandler(ctx context.Context, bot *botlib.Bot, update *
 func (m *Manager) returnsHandler(ctx context.Context, bot *botlib.Bot, update *models.Update) {
 	chatID := update.CallbackQuery.From.ID
 
-	cabinets, err := m.bl.GetCabinetsByMp(ctx, db.MarketWB)
+	cabinets, err := m.tm.GetCabinetsByMp(ctx, db.MarketWB)
 	if err != nil {
 		m.sl.Errorf("%v", err)
 		return
@@ -227,6 +240,165 @@ func (m *Manager) returnsHandler(ctx context.Context, bot *botlib.Bot, update *m
 	err = SendMediaMessage(ctx, bot, chatID, filePath)
 	if err != nil {
 		m.sl.Errorf("send media failed: %v", err)
+		return
+	}
+}
+
+func (m *Manager) SendNewReviews(ctx context.Context) error {
+	cabinets, err := m.tm.GetCabinetsByMp(ctx, db.MarketWB)
+	if err != nil {
+		return fmt.Errorf("%w", err)
+	}
+
+	manager := wb.NewReviewManager(m.dbc, &cabinets[0], m.oam)
+
+	newReviews, err := manager.Reviews(ctx)
+	if err != nil {
+		return err
+	}
+	for i := range newReviews {
+		err = m.sendReview(ctx, newReviews[i])
+		if err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func (m *Manager) sendReview(ctx context.Context, review tradeplus.Review) error {
+	reviewID := review.ExternalID
+
+	text := review.ToMessage()
+
+	var buttonsRow []models.InlineKeyboardButton
+	var allButtons [][]models.InlineKeyboardButton
+
+	buttonsRow = append(buttonsRow, models.InlineKeyboardButton{Text: "Ответить", CallbackData: fmt.Sprintf("%v_%v", CallbackWbAnswerReview, reviewID)})
+	buttonsRow = append(buttonsRow, models.InlineKeyboardButton{Text: "Редактировать", CallbackData: fmt.Sprintf("%v_%v", CallbackWbEditReview, reviewID)})
+	allButtons = append(allButtons, buttonsRow)
+	buttonsRow = []models.InlineKeyboardButton{}
+
+	buttonsRow = append(buttonsRow, models.InlineKeyboardButton{Text: "Удалить", CallbackData: CallbackWbDeleteReview})
+	allButtons = append(allButtons, buttonsRow)
+
+	markup := models.InlineKeyboardMarkup{InlineKeyboard: allButtons}
+
+	_, err := m.b.SendMessage(ctx, &botlib.SendMessageParams{ChatID: int64(m.myChatID), Text: text, ReplyMarkup: markup})
+	if err != nil {
+		return fmt.Errorf("review#%w send failed: %w", review.ID, err)
+	}
+	return nil
+}
+
+func (m *Manager) wbAnswerReview(ctx context.Context, bot *botlib.Bot, update *models.Update) {
+	parts := strings.Split(update.CallbackQuery.Data, "_")
+
+	if len(parts) != 2 {
+		log.Println("wbAnswerReview неверное кол-во parts")
+		return
+	}
+
+	reviewId := parts[1]
+
+	cabinets, err := m.tm.GetCabinetsByMp(ctx, db.MarketWB)
+	if err != nil {
+		m.sl.Errorf("%v", err)
+		return
+	}
+
+	manager := wb.NewReviewManager(m.dbc, &cabinets[0], m.oam)
+
+	err = manager.AnswerReview(ctx, reviewId)
+	if err != nil {
+		m.sl.Errorf("%v", err)
+		return
+	}
+}
+
+func (m *Manager) wbEditReview(ctx context.Context, bot *botlib.Bot, update *models.Update) {
+	chatID := update.CallbackQuery.From.ID
+
+	parts := strings.Split(update.CallbackQuery.Data, "_")
+
+	if len(parts) != 2 {
+		log.Println("wbAnswerReview неверное кол-во parts")
+		return
+	}
+
+	reviewId := parts[1]
+
+	m.ReviewMap.Store(chatID, reviewId)
+
+	user, err := m.tm.UserByChatID(ctx, chatID)
+	if err != nil {
+		log.Println("Ошибка получения User")
+		return
+	}
+
+	if user == nil {
+		log.Println("Ошибка получения User")
+		return
+	}
+
+	_, err = m.tm.SetUserStatus(ctx, user, db.StatusWaitingReview)
+	if err != nil {
+		m.sl.Errorf("Ошибка обновления статуса:%v", err)
+		return
+	}
+
+	_, err = bot.EditMessageText(ctx, &botlib.EditMessageTextParams{
+		MessageID: update.CallbackQuery.Message.Message.ID,
+		ChatID:    chatID,
+		Text:      "Отправь новый ответ",
+		ParseMode: models.ParseModeHTML,
+	})
+	if err != nil {
+		log.Println("Ошибка отправки сообщения")
+		return
+	}
+}
+
+func (m *Manager) wbDeleteReview(ctx context.Context, bot *botlib.Bot, update *models.Update) {
+	_, err := bot.DeleteMessage(ctx,
+		&botlib.DeleteMessageParams{
+			ChatID:    update.CallbackQuery.Message.Message.Chat.ID,
+			MessageID: update.CallbackQuery.Message.Message.ID,
+		})
+	if err != nil {
+		log.Println(err)
+		return
+	}
+}
+
+func (m *Manager) updateReview(ctx context.Context, bot *botlib.Bot, chatID int64, message *models.Message) {
+	var review *tradeplus.Review
+	var err error
+	if reviewID, ok := m.ReviewMap.Load(chatID); ok {
+		review, err = m.tm.UpdateReviewAnswer(ctx, reviewID.(string), message.Text)
+		if err != nil {
+			log.Println("Ошибка получения кабинета")
+			return
+		}
+	}
+
+	defer m.ReviewMap.Delete(chatID)
+
+	_, err = bot.DeleteMessage(ctx, &botlib.DeleteMessageParams{
+		ChatID:    chatID,
+		MessageID: message.ID,
+	})
+	if err != nil {
+		log.Println("Ошибка удаления сообщения с API: ", err)
+		return
+	}
+
+	if review == nil {
+		m.sl.Error(ctx, "review is null")
+		return
+	}
+
+	err = m.sendReview(ctx, *review)
+	if err != nil {
 		return
 	}
 }
