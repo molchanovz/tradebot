@@ -38,8 +38,8 @@ RUN wget https://github.com/pdfcpu/pdfcpu/releases/download/v0.11.0/pdfcpu_0.11.
 
 COPY --from=builder /app/main .
 COPY cfg/local.toml cfg/local.toml
-COPY pkg/client/googlesheet/credentials.json pkg/client/googlesheet/credentials.json
-COPY pkg/client/googlesheet/token.json pkg/client/googlesheet/token.json
+COPY pkg/client/google/credentials.json pkg/client/google/credentials.json
+COPY pkg/client/google/token.json pkg/client/google/token.json
 COPY assets/font.ttf assets/font.ttf
 COPY assets/barcodes assets/barcodes
 
