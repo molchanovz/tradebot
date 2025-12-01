@@ -1,7 +1,7 @@
 #google service
+.idea
 pkg/client/google/token.json
 pkg/client/google/credentials.json
 #invaroments
 cfg/local.toml
-vendor
 .env
