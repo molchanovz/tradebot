@@ -1,4 +1,5 @@
 #google service
+.idea
 pkg/client/googlesheet/token.json
 pkg/client/googlesheet/credentials.json
 #invaroments
