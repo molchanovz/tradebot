@@ -4,16 +4,18 @@ import (
 	"github.com/BurntSushi/toml"
 	"github.com/openai/openai-go/v3"
 	"github.com/stretchr/testify/require"
+	"net/http"
 	"testing"
-	"tradebot/pkg/client/openAI"
+	"time"
+	"tradebot/pkg/client/chatgptsrv"
 	"tradebot/pkg/db"
 	"tradebot/pkg/tradeplus"
 	"tradebot/pkg/tradeplus/test"
 )
 
 var (
-	cfg  test.Config
-	oaim = openAI.NewManager(cfg.OpenAI.Token)
+	cfg    test.Config
+	gptSrv = chatgptsrv.NewClient(cfg.Service.ChatGPTSrvURL, &http.Client{Timeout: time.Second * 30})
 )
 
 func TestMain(m *testing.M) {
@@ -32,7 +34,7 @@ func TestReviewManager_Reviews(t *testing.T) {
 	cabinet, err := repo.OneCabinet(t.Context(), &db.CabinetSearch{Marketplace: openai.Ptr("WB")})
 	require.NoError(t, err)
 
-	m := NewReviewManager(*dbc, tradeplus.NewCabinet(cabinet), oaim)
+	m := NewReviewManager(*dbc, tradeplus.NewCabinet(cabinet), gptSrv)
 	reviews, err := m.Reviews(t.Context())
 	require.NoError(t, err)
 	t.Log(reviews)

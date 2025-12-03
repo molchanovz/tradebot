@@ -1,14 +1,16 @@
 module tradebot
 
-go 1.24.4
+go 1.24.5
+
+toolchain go1.24.6
 
 require (
 	github.com/BurntSushi/toml v0.3.1
 	github.com/brianvoe/gofakeit/v7 v7.9.0
 	github.com/fogleman/gg v1.3.0
 	github.com/gen2brain/go-fitz v1.24.15
-	github.com/getsentry/sentry-go v0.34.1
-	github.com/getsentry/sentry-go/echo v0.34.1
+	github.com/getsentry/sentry-go v0.35.3
+	github.com/getsentry/sentry-go/echo v0.35.3
 	github.com/go-pg/pg/v10 v10.14.0
 	github.com/go-pg/urlstruct v1.0.1
 	github.com/go-telegram/bot v1.15.0
@@ -19,9 +21,10 @@ require (
 	github.com/namsral/flag v1.7.4-pre
 	github.com/openai/openai-go/v3 v3.1.0
 	github.com/pdfcpu/pdfcpu v0.11.0
-	github.com/prometheus/client_golang v1.22.0
+	github.com/prometheus/client_golang v1.23.2
 	github.com/smartystreets/goconvey v1.8.1
-	github.com/stretchr/testify v1.10.0
+	github.com/stretchr/testify v1.11.1
+	github.com/vmkteam/appkit v0.1.2
 	github.com/vmkteam/cron v0.1.3
 	github.com/vmkteam/embedlog v0.1.2
 	github.com/vmkteam/vfs v1.3.5
@@ -70,8 +73,8 @@ require (
 	github.com/pkg/errors v0.9.1 // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect
 	github.com/prometheus/client_model v0.6.2 // indirect
-	github.com/prometheus/common v0.63.0 // indirect
-	github.com/prometheus/procfs v0.16.1 // indirect
+	github.com/prometheus/common v0.66.1 // indirect
+	github.com/prometheus/procfs v0.17.0 // indirect
 	github.com/richardlehane/mscfb v1.0.4 // indirect
 	github.com/richardlehane/msoleps v1.0.4 // indirect
 	github.com/rivo/uniseg v0.4.7 // indirect
@@ -97,15 +100,16 @@ require (
 	go.opentelemetry.io/otel/metric v1.36.0 // indirect
 	go.opentelemetry.io/otel/trace v1.36.0 // indirect
 	go.uber.org/atomic v1.11.0 // indirect
-	golang.org/x/crypto v0.39.0 // indirect
+	go.yaml.in/yaml/v2 v2.4.3 // indirect
+	golang.org/x/crypto v0.42.0 // indirect
 	golang.org/x/image v0.28.0 // indirect
-	golang.org/x/net v0.41.0 // indirect
-	golang.org/x/sys v0.33.0 // indirect
-	golang.org/x/text v0.26.0 // indirect
+	golang.org/x/net v0.44.0 // indirect
+	golang.org/x/sys v0.36.0 // indirect
+	golang.org/x/text v0.29.0 // indirect
 	golang.org/x/time v0.12.0 // indirect
 	google.golang.org/genproto/googleapis/rpc v0.0.0-20250603155806-513f23925822 // indirect
 	google.golang.org/grpc v1.73.0 // indirect
-	google.golang.org/protobuf v1.36.6 // indirect
+	google.golang.org/protobuf v1.36.9 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 	mellium.im/sasl v0.3.2 // indirect

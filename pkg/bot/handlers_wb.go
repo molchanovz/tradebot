@@ -250,7 +250,7 @@ func (m *Manager) SendNewReviews(ctx context.Context) error {
 		return fmt.Errorf("%w", err)
 	}
 
-	manager := wb.NewReviewManager(m.dbc, &cabinets[0], m.oam)
+	manager := wb.NewReviewManager(m.dbc, &cabinets[0], m.chatgpt)
 
 	newReviews, err := manager.Reviews(ctx)
 	if err != nil {
@@ -306,7 +306,7 @@ func (m *Manager) wbAnswerReview(ctx context.Context, bot *botlib.Bot, update *m
 		return
 	}
 
-	manager := wb.NewReviewManager(m.dbc, &cabinets[0], m.oam)
+	manager := wb.NewReviewManager(m.dbc, &cabinets[0], m.chatgpt)
 
 	err = manager.AnswerReview(ctx, reviewId)
 	if err != nil {

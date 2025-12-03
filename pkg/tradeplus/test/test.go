@@ -26,15 +26,15 @@ type Config struct {
 		Environment string
 		DSN         string
 	}
+	Service struct {
+		ChatGPTSrvURL string
+	}
 	Cron struct {
 		OzonWriter     cron.Schedule
 		YandexWriter   cron.Schedule
 		WBWriter       cron.Schedule
 		OrderCleaner   cron.Schedule
 		SendNewReviews cron.Schedule
-	}
-	OpenAI struct {
-		Token string
 	}
 	VFS vfs.Config
 }

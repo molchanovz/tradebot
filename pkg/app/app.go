@@ -5,9 +5,10 @@ import (
 	"fmt"
 	"github.com/vmkteam/cron"
 	"net"
+	"net/http"
 	"time"
 	"tradebot/pkg/bot"
-	"tradebot/pkg/client/openAI"
+	"tradebot/pkg/client/chatgptsrv"
 	"tradebot/pkg/db"
 	"tradebot/pkg/tradeplus/schedule"
 
@@ -30,6 +31,9 @@ type Config struct {
 	Sentry struct {
 		Environment string
 		DSN         string
+	}
+	Service struct {
+		ChatGPTSrvURL string
 	}
 	Cron struct {
 		OzonWriter     cron.Schedule
@@ -56,6 +60,7 @@ type App struct {
 	bs              *bot.Service
 	scheduleManager schedule.Manager
 	c               *cron.Manager
+	gptSrv          *chatgptsrv.Client
 }
 
 func New(appName string, sl embedlog.Logger, cfg Config, db db.DB, dbc *pg.DB) *App {
@@ -70,7 +75,9 @@ func New(appName string, sl embedlog.Logger, cfg Config, db db.DB, dbc *pg.DB) *
 
 	a.c = a.newCron()
 
-	a.bs = bot.NewService(cfg.Bot, db, openAI.NewManager(cfg.OpenAI.Token), a.Logger)
+	a.gptSrv = chatgptsrv.NewClient(a.cfg.Service.ChatGPTSrvURL, &http.Client{Timeout: time.Second * 30})
+
+	a.bs = bot.NewService(cfg.Bot, db, a.gptSrv, a.Logger)
 
 	a.scheduleManager = schedule.NewManager(db, a.Logger, a.bs)
 

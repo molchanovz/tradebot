@@ -2,7 +2,7 @@ package wb
 
 import (
 	"context"
-	"tradebot/pkg/client/openAI"
+	"tradebot/pkg/client/chatgptsrv"
 	"tradebot/pkg/client/wb"
 	"tradebot/pkg/db"
 	"tradebot/pkg/tradeplus"
@@ -27,16 +27,16 @@ type ReviewManager struct {
 	dbc     db.DB
 	repo    db.TradebotRepo
 	client  wb.Client
-	oam     *openAI.Manager
+	chatgpt *chatgptsrv.Client
 	cabinet *tradeplus.Cabinet
 }
 
-func NewReviewManager(dbc db.DB, cabinet *tradeplus.Cabinet, oam *openAI.Manager) ReviewManager {
+func NewReviewManager(dbc db.DB, cabinet *tradeplus.Cabinet, chatgpt *chatgptsrv.Client) ReviewManager {
 	return ReviewManager{
 		dbc:     dbc,
 		repo:    db.NewTradebotRepo(dbc),
 		client:  wb.NewClient(cabinet.Key),
-		oam:     oam,
+		chatgpt: chatgpt,
 		cabinet: cabinet,
 	}
 }
@@ -64,8 +64,9 @@ func (m ReviewManager) Reviews(ctx context.Context) ([]tradeplus.Review, error) 
 		}
 		var answer string
 		if !nr.IsEmpty() {
-			request := Prompt + nr.ToMessage()
-			answer, err = m.oam.AnswerReview(ctx, request)
+			// request := Prompt + nr.ToMessage()
+			request := ""
+			answer, err = m.chatgpt.Chatgpt.Send(ctx, request)
 			if err != nil {
 				return nil, err
 			}

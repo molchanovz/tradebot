@@ -9,7 +9,7 @@ import (
 	"os"
 	"strconv"
 	"sync"
-	"tradebot/pkg/client/openAI"
+	"tradebot/pkg/client/chatgptsrv"
 	"tradebot/pkg/tradeplus/ozon"
 
 	"tradebot/pkg/db"
@@ -31,18 +31,18 @@ type Manager struct {
 	sl        embedlog.Logger
 	b         *botlib.Bot
 	tm        *tradeplus.Manager
-	oam       *openAI.Manager
+	chatgpt   *chatgptsrv.Client
 	myChatID  int
 	SheetMap  *sync.Map
 	APIMap    *sync.Map
 	ReviewMap *sync.Map
 }
 
-func NewManager(dbc db.DB, cfg Config, oam *openAI.Manager, logger embedlog.Logger) *Manager {
+func NewManager(dbc db.DB, cfg Config, chatgpt *chatgptsrv.Client, logger embedlog.Logger) *Manager {
 	return &Manager{
 		dbc:       dbc,
 		tm:        tradeplus.NewManager(dbc),
-		oam:       oam,
+		chatgpt:   chatgpt,
 		myChatID:  cfg.MyChatID,
 		SheetMap:  new(sync.Map),
 		APIMap:    new(sync.Map),
