@@ -17,7 +17,7 @@ var (
 	testRepo db.TradebotRepo
 	cabinet  *db.Cabinet
 	err      error
-	cfg      test.Config
+	cfg      = test.Cfg
 	ctx      = context.Background()
 )
 

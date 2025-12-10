@@ -2,6 +2,7 @@ package wb
 
 import (
 	"context"
+	"errors"
 	"tradebot/pkg/client/chatgptsrv"
 	"tradebot/pkg/client/wb"
 	"tradebot/pkg/db"
@@ -87,6 +88,8 @@ func (m ReviewManager) AnswerReview(ctx context.Context, reviewId string) error 
 	review, err := m.repo.OneReview(ctx, &db.ReviewSearch{ExternalID: &reviewId}, db.WithColumns(db.Columns.Review.Answer))
 	if err != nil {
 		return err
+	} else if review == nil {
+		return errors.New("review not found")
 	}
 
 	err = m.client.AnswerReview(reviewId, review.Answer)

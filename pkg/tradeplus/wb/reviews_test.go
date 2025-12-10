@@ -3,6 +3,7 @@ package wb
 import (
 	"github.com/BurntSushi/toml"
 	"github.com/openai/openai-go/v3"
+	. "github.com/smartystreets/goconvey/convey"
 	"github.com/stretchr/testify/require"
 	"net/http"
 	"testing"
@@ -14,7 +15,7 @@ import (
 )
 
 var (
-	cfg    test.Config
+	cfg    = test.Cfg
 	gptSrv *chatgptsrv.Client
 )
 
@@ -41,16 +42,19 @@ func TestReviewManager_Reviews(t *testing.T) {
 	t.Log(reviews)
 }
 
-//func TestReviewManager_AnswerReview(t *testing.T) {
-//	err := test.Setup()
-//	require.NoError(t, err)
-//	require.NotNil(t, test.Cfg)
-//
-//	cabinet, err := test.Repo.OneCabinet(t.Context(), &db.CabinetSearch{Marketplace: tradeplus.Ptr("WB")})
-//	require.NoError(t, err)
-//
-//	m := NewReviewManager(cabinet.Key)
-//
-//	err = m.AnswerReview()
-//	require.NoError(t, err)
-//}
+func TestReviewManager_AnswerReview(t *testing.T) {
+	dbc, err := test.Setup()
+	repo := db.NewTradebotRepo(dbc)
+	require.NoError(t, err)
+	require.NotNil(t, cfg)
+
+	cabinet, err := repo.OneCabinet(t.Context(), &db.CabinetSearch{Marketplace: openai.Ptr("WB")})
+	require.NoError(t, err)
+
+	m := NewReviewManager(*dbc, tradeplus.NewCabinet(cabinet), gptSrv)
+
+	Convey("success answer", t, func() {
+		err = m.AnswerReview(t.Context(), "ftey4CV8ccvlbmQ5Acjh")
+		So(err, ShouldBeNil)
+	})
+}

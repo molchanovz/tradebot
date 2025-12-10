@@ -369,7 +369,7 @@ func (c Client) AnswerReview(id, answer string) error {
 	}
 
 	headers := map[string]string{
-		//"Content-Type":  "application/json",
+		"Content-Type":  "application/json",
 		"Authorization": c.token,
 	}
 
