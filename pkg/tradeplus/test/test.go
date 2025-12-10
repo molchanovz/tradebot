@@ -40,7 +40,7 @@ type Config struct {
 }
 
 func Setup() (*db.DB, error) {
-	if _, err = toml.DecodeFile("/Users/sergey/GolandProjects/tradebot/Cfg/local.toml", &Cfg); err != nil {
+	if _, err = toml.DecodeFile("/Users/sergey/GolandProjects/tradebot/cfg/local.toml", &Cfg); err != nil {
 		return nil, err
 	}
 

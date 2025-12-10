@@ -2,6 +2,7 @@ package wb
 
 import (
 	"context"
+	"fmt"
 	"tradebot/pkg/client/chatgptsrv"
 	"tradebot/pkg/client/wb"
 	"tradebot/pkg/db"
@@ -21,7 +22,14 @@ const Prompt = `
 7. Если рекомендация неуместна — не упоминай её.
 8. Не упоминай артикулы, если их нет в списке рекомендаций.
 9. Запрещено указывать или описывать товар, если покупатель сам его не назвал.
-`
+
+Рекомендации:
+- Коагулянт — 123123
+
+Отзыв на VM-1 на 4 звезд.
+Покупатель: Никита
+Отзыв: Фильтр неплох, но можно было лучше.
+Покупатель отметил:`
 
 type ReviewManager struct {
 	dbc     db.DB
@@ -58,29 +66,34 @@ func (m ReviewManager) Reviews(ctx context.Context) ([]tradeplus.Review, error) 
 
 	externalIDx := tradeplus.NewReviews(existsReviews).IndexByExternalID()
 
+	answer, err := m.chatgpt.Chatgpt.Send(context.Background(), Prompt)
+	if err != nil {
+		return nil, err
+	}
+	fmt.Println("answer: ", answer)
+
 	for _, nr := range unansweredReviews {
 		if _, ok := externalIDx[nr.ExternalID]; ok {
 			continue
 		}
-		var answer string
-		if !nr.IsEmpty() {
-			// request := Prompt + nr.ToMessage()
-			request := ""
-			answer, err = m.chatgpt.Chatgpt.Send(ctx, request)
-			if err != nil {
-				return nil, err
-			}
-		}
-
-		nr.Answer = answer
-		nr.CabinetID = m.cabinet.ID
-
-		_, err = m.repo.AddReview(ctx, nr.ToDB())
-		if err != nil {
-			return nil, err
-		}
-
-		newReviews = append(newReviews, nr)
+		//var answer string
+		//if !nr.IsEmpty() {
+		//	request := Prompt + nr.ToMessage()
+		//	answer, err = m.chatgpt.Chatgpt.Send(ctx, request)
+		//	if err != nil {
+		//		return nil, err
+		//	}
+		//}
+		//
+		//nr.Answer = answer
+		//nr.CabinetID = m.cabinet.ID
+		//
+		//_, err = m.repo.AddReview(ctx, nr.ToDB())
+		//if err != nil {
+		//	return nil, err
+		//}
+		//
+		//newReviews = append(newReviews, nr)
 	}
 
 	return newReviews, nil

@@ -11538,7 +11538,7 @@ all</Labels>
       <DefaultExpression>nextval(&apos;&quot;cabinets_cabinetsId_seq&quot;&apos;::regclass)</DefaultExpression>
       <NotNull>1</NotNull>
       <Position>1</Position>
-      <StateNumber>196374</StateNumber>
+      <StateNumber>241769</StateNumber>
       <StoredType>integer|0s</StoredType>
       <SequenceId>17149</SequenceId>
       <TypeId>23</TypeId>

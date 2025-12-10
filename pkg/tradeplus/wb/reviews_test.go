@@ -15,13 +15,14 @@ import (
 
 var (
 	cfg    test.Config
-	gptSrv = chatgptsrv.NewClient(cfg.Service.ChatGPTSrvURL, &http.Client{Timeout: time.Second * 30})
+	gptSrv *chatgptsrv.Client
 )
 
 func TestMain(m *testing.M) {
 	if _, err := toml.DecodeFile("/Users/sergey/GolandProjects/tradebot/cfg/local.toml", &cfg); err != nil {
 		return
 	}
+	gptSrv = chatgptsrv.NewClient(cfg.Service.ChatGPTSrvURL, &http.Client{Timeout: time.Second * 30})
 	m.Run()
 }
 
