@@ -27,8 +27,8 @@ func (r Review) IsEmpty() bool {
 }
 
 var reviewTemplate = `Отзыв на {{.Article}} на {{.Valuation}} звезд.
-{{if .Pros}}Достоинства: {{.Pros}}
-{{end}}{{if .CustomerName}}Покупатель: {{.CustomerName}}
+{{if .CustomerName}}Покупатель: {{.CustomerName}}
+{{end}}{{if .Pros}}Достоинства: {{.Pros}}
 {{end}}{{if .Cons}}Недостатки: {{.Cons}}
 {{end}}{{if .Text}}Отзыв: {{.Text}}
 {{end}}{{if .Answer}}Ответ: {{.Answer}}{{end}}`
