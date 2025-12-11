@@ -365,7 +365,7 @@ func (c Client) AnswerReview(id, answer string) error {
 
 	body, err := json.Marshal(data)
 	if err != nil {
-		return fmt.Errorf("ошибка при преобразовании данных в JSON: %w", err)
+		return fmt.Errorf("data marshal failed: %w", err)
 	}
 
 	headers := map[string]string{
@@ -375,13 +375,13 @@ func (c Client) AnswerReview(id, answer string) error {
 
 	params := map[string]string{}
 
-	status, response, err := c.post(baseURL, headers, params, body)
+	status, _, err := c.post(baseURL, headers, params, body)
 	if err != nil {
-		return err
+		return fmt.Errorf("response get failed: %w", err)
 	}
 
-	if status != http.StatusOK {
-		return errors.New(response)
+	if status != http.StatusNoContent {
+		return fmt.Errorf("status not OK: %s", status)
 	}
 
 	return nil

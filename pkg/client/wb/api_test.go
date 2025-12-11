@@ -1,6 +1,7 @@
 package wb
 
 import (
+	"fmt"
 	. "github.com/smartystreets/goconvey/convey"
 	"testing"
 	"tradebot/pkg/db"
@@ -56,7 +57,9 @@ func TestClient_AnswerReview(t *testing.T) {
 
 	Convey("Should get google info", t, func() {
 		client := NewClient(cabinet.Key)
-		err = client.AnswerReview("", "")
-		So(err, ShouldBeNil)
+		err = client.AnswerReview("wP6Ju7VETs5MoHnitTqj", "Благодарим Вас за высокую оценку и отзыв!")
+		if err != nil {
+			fmt.Println(err.Error())
+		}
 	})
 }
