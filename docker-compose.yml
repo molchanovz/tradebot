@@ -25,8 +25,8 @@ services:
     ports:
       - "8075:8075"
     volumes:
-      - ./pkg/google/utils/credentials.json:/app/pkg/google/utils/credentials.json
-      - ./pkg/google/utils/token.json:/app/pkg/google/utils/token.json
+      - ./pkg/client/google/credentials.json:/app/pkg/client/google/credentials.json
+      - ./pkg/client/google/token.json:/app/pkg/client/google/token.json
       - ./assets/font.ttf:/assets/font.ttf
       - ./.env:/app/.env
       - ./assets/barcodes:/assets/barcodes
