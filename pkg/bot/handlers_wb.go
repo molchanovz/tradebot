@@ -259,7 +259,8 @@ func (m *Manager) SendNewReviews(ctx context.Context) error {
 	for i := range newReviews {
 		err = m.sendReview(ctx, newReviews[i])
 		if err != nil {
-			return err
+			m.sl.Error(ctx, "message send failed")
+			continue
 		}
 	}
 	return nil
@@ -294,7 +295,7 @@ func (m *Manager) wbAnswerReview(ctx context.Context, bot *botlib.Bot, update *m
 	parts := strings.Split(update.CallbackQuery.Data, "_")
 
 	if len(parts) != 2 {
-		log.Println("wbAnswerReview неверное кол-во parts")
+		m.sl.Error(ctx, "wbAnswerReview неверное кол-во parts")
 		return
 	}
 
@@ -313,6 +314,8 @@ func (m *Manager) wbAnswerReview(ctx context.Context, bot *botlib.Bot, update *m
 		m.sl.Errorf("%v", err)
 		return
 	}
+
+	m.wbDeleteReview(ctx, bot, update)
 }
 
 func (m *Manager) wbEditReview(ctx context.Context, bot *botlib.Bot, update *models.Update) {
