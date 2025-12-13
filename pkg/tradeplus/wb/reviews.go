@@ -63,7 +63,7 @@ func (m ReviewManager) Reviews(ctx context.Context) ([]tradeplus.Review, error) 
 		}
 		var answer string
 		if !nr.IsEmpty() {
-			request := Prompt + nr.ToMessage()
+			request := Prompt + nr.ToPrompt()
 			answer, err = m.chatgpt.Chatgpt.Send(ctx, request)
 			if err != nil {
 				return nil, err

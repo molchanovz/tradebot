@@ -5,3 +5,4 @@ pkg/client/google/credentials.json
 #invaroments
 cfg/local.toml
 .env
+coverage.txt

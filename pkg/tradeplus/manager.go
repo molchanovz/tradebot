@@ -130,19 +130,14 @@ func (m Manager) GetReviewByID(ctx context.Context, reviewID string) (*Review, e
 	return NewReview(review), err
 }
 
-func (m Manager) UpdateReviewAnswer(ctx context.Context, reviewID, newAnswer string) (*Review, error) {
-	review, err := m.repo.OneReview(ctx, &db.ReviewSearch{ExternalID: &reviewID})
-	if err != nil {
-		return nil, err
-	}
-
+func (m Manager) UpdateReviewAnswer(ctx context.Context, review *Review, newAnswer string) (*Review, error) {
 	review.Answer = newAnswer
 
-	_, err = m.repo.UpdateReview(ctx, review, db.WithColumns(db.Columns.Review.Answer))
+	_, err := m.repo.UpdateReview(ctx, review.ToDB(), db.WithColumns(db.Columns.Review.Answer))
 	if err != nil {
 		return nil, err
 	}
-	return NewReview(review), nil
+	return review, nil
 }
 
 func Pointer[T any](in T) *T {
