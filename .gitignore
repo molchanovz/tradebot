@@ -1,8 +1,9 @@
-#google service
 .idea
+.vscode
+cfg/local.toml
+docs/patches/local.toml
+coverage.txt
+coverage.xml
 pkg/client/google/token.json
 pkg/client/google/credentials.json
-#invaroments
-cfg/local.toml
 .env
-coverage.txt
