@@ -96,41 +96,44 @@ func (m *Manager) RegisterBotHandlers() {
 
 // DefaultHandler ловит сообщения без команд, проверяет статус пользователя, после обновляет статус на enabled
 func (m *Manager) DefaultHandler(ctx context.Context, bot *botlib.Bot, update *models.Update) {
-	chatID := update.Message.From.ID
+	chatUserID := update.Message.From.ID
+	chatID := update.Message.Chat.ID
 	message := update.Message.Text
 
-	user, err := m.tm.UserByChatID(ctx, chatID)
+	user, err := m.tm.UserByChatID(ctx, chatUserID)
 	if err != nil {
 		log.Println(err)
 		return
 	} else if user == nil {
-		log.Println("user not found", chatID)
+		log.Println("user not found", chatUserID)
 		return
 	}
 
 	switch user.StatusID {
 	case db.StatusEnabled:
 		{
-
+			if chatUserID != chatID {
+				return
+			}
 		}
 	case db.StatusWaitingWbState:
 		{
-			err = m.getWbStickers(ctx, bot, chatID, message)
+			err = m.getWbStickers(ctx, bot, chatUserID, message)
 			if err != nil {
 				return
 			}
 		}
 	case db.StatusWaitingYaState:
 		{
-			m.getYandexFbs(ctx, bot, chatID, message)
+			m.getYandexFbs(ctx, bot, chatUserID, message)
 		}
 	case db.StatusWaitingAPI:
 		{
-			m.changeAPI(ctx, bot, chatID, update.Message)
+			m.changeAPI(ctx, bot, chatUserID, update.Message)
 		}
 	case db.StatusWaitingSheet:
 		{
-			m.changeSheet(ctx, bot, chatID, update.Message)
+			m.changeSheet(ctx, bot, chatUserID, update.Message)
 		}
 	case db.StatusWaitingReview:
 		{

@@ -376,7 +376,8 @@ func (m *Manager) wbRegenReview(ctx context.Context, bot *botlib.Bot, update *mo
 }
 
 func (m *Manager) wbEditReview(ctx context.Context, bot *botlib.Bot, update *models.Update) {
-	chatID := update.CallbackQuery.From.ID
+	chatUserID := update.CallbackQuery.From.ID
+	chatID := update.CallbackQuery.Message.Message.Chat.ID
 
 	parts := strings.Split(update.CallbackQuery.Data, "_")
 
@@ -389,7 +390,7 @@ func (m *Manager) wbEditReview(ctx context.Context, bot *botlib.Bot, update *mod
 
 	m.ReviewMap.Store(chatID, reviewId)
 
-	user, err := m.tm.UserByChatID(ctx, chatID)
+	user, err := m.tm.UserByChatID(ctx, chatUserID)
 	if err != nil {
 		log.Println("Ошибка получения User")
 		return
