@@ -73,6 +73,15 @@ func (m Manager) GetCabinetsByMp(ctx context.Context, mp string) ([]Cabinet, err
 	return NewCabinets(dbCabinets), nil
 }
 
+// GetCabinets возвращает кабинеты всех маркетплейсов.
+func (m Manager) GetCabinets(ctx context.Context) (Cabinets, error) {
+	dbCabinets, err := m.repo.CabinetsByFilters(ctx, &db.CabinetSearch{}, db.PagerNoLimit)
+	if err != nil {
+		return nil, err
+	}
+	return NewCabinets(dbCabinets), nil
+}
+
 func (m Manager) GetCabinetByID(ctx context.Context, id int) (Cabinet, error) {
 	cabinet, err := m.repo.CabinetByID(ctx, id)
 	if err != nil {
@@ -100,20 +109,22 @@ func (m Manager) GetPrintedOrders(ctx context.Context, id int) (map[string]struc
 }
 
 func (m Manager) CreateOrders(ctx context.Context, cabinetID int, newOrders ozon.PostingslistFbs) error {
-	for _, order := range newOrders.Result.PostingsFBS {
-		dbOrder := db.Order{
-			PostingNumber: order.PostingNumber,
-			CabinetID:     cabinetID,
-			Article:       order.Products[0].OfferID,
-			CreatedAt:     time.Now(),
-			StatusID:      db.StatusEnabled,
+	return m.db.RunInTransaction(ctx, func(tx *pg.Tx) error {
+		repo := m.repo.WithTransaction(tx)
+		for _, order := range newOrders.Result.PostingsFBS {
+			dbOrder := db.Order{
+				PostingNumber: order.PostingNumber,
+				CabinetID:     cabinetID,
+				Article:       order.Products[0].OfferID,
+				CreatedAt:     time.Now(),
+				StatusID:      db.StatusEnabled,
+			}
+			if _, err := repo.AddOrder(ctx, &dbOrder); err != nil {
+				return err
+			}
 		}
-		_, err := m.repo.AddOrder(ctx, &dbOrder)
-		if err != nil {
-			return err
-		}
-	}
-	return nil
+		return nil
+	})
 }
 
 func (m Manager) DeleteOrders(ctx context.Context) error {
@@ -125,14 +136,53 @@ func (m Manager) UpdateCabinet(ctx context.Context, cabinet Cabinet) error {
 	_, err := m.repo.UpdateCabinet(ctx, &cabinet.Cabinet)
 	return err
 }
+
+// SetOrdersSheet делает spreadsheetID таблицей заказов всех кабинетов маркетплейса mp:
+// ежедневный отчёт по заказам у маркетплейса один на все кабинеты.
+func (m Manager) SetOrdersSheet(ctx context.Context, mp, spreadsheetID string) error {
+	return m.db.RunInTransaction(ctx, func(tx *pg.Tx) error {
+		repo := m.repo.WithTransaction(tx)
+		cabinets, err := repo.CabinetsByFilters(ctx, &db.CabinetSearch{Marketplace: &mp}, db.PagerNoLimit)
+		if err != nil {
+			return err
+		}
+		if len(cabinets) == 0 {
+			return fmt.Errorf("нет кабинетов %s", mp)
+		}
+
+		for i := range cabinets {
+			cabinets[i].SheetLink = &spreadsheetID
+			if _, err := repo.UpdateCabinet(ctx, &cabinets[i], db.WithColumns(db.Columns.Cabinet.SheetLink)); err != nil {
+				return err
+			}
+		}
+		return nil
+	})
+}
+
+// SetShipmentsSheet делает spreadsheetID таблицей отгрузок (settings.shipmentsSheetId)
+// всех кабинетов: она одна на все маркетплейсы. Меняется только этот ключ: в settings
+// бывают ключи, о которых CabinetSettings не знает, и запись всей структуры их бы стёрла.
+func (m Manager) SetShipmentsSheet(ctx context.Context, spreadsheetID string) error {
+	res, err := m.db.ModelContext(ctx, (*db.Cabinet)(nil)).
+		Set(`"settings" = jsonb_set("settings", '{shipmentsSheetId}', to_jsonb(?::text))`, spreadsheetID).
+		Where(`"statusId" IN (?)`, pg.In([]int{db.StatusEnabled, db.StatusDisabled})).
+		Update()
+	if err != nil {
+		return err
+	}
+	if res.RowsAffected() == 0 {
+		return errors.New("нет кабинетов")
+	}
+	return nil
+}
+
 func (m Manager) GetReviewByID(ctx context.Context, reviewID string) (*Review, error) {
 	review, err := m.repo.OneReview(ctx, &db.ReviewSearch{ExternalID: &reviewID})
 	return NewReview(review), err
 }
 
-func (m Manager) UpdateReviewAnswer(ctx context.Context, review *Review, newAnswer string) (*Review, error) {
-	review.Answer = newAnswer
-
+func (m Manager) UpdateReview(ctx context.Context, review *Review) (*Review, error) {
 	_, err := m.repo.UpdateReview(ctx, review.ToDB(), db.WithColumns(db.Columns.Review.Answer))
 	if err != nil {
 		return nil, err

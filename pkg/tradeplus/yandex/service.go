@@ -6,16 +6,11 @@ import (
 
 type Service struct {
 	Authorizations []tradeplus.Authorization
-	SheetLink      string
 }
 
 func NewService(cabinets ...tradeplus.Cabinet) Service {
 	service := Service{
 		Authorizations: make([]tradeplus.Authorization, 0),
-	}
-
-	if cabinets[0].SheetLink != nil {
-		service.SheetLink = *cabinets[0].SheetLink
 	}
 
 	for _, c := range cabinets {
@@ -45,7 +40,7 @@ func (s Service) GetOrdersAndReturnsManager() OrdersManager {
 		}
 	}
 
-	return NewOrdersManager(yandexCampaignIDFBO, yandexCampaignIDFBS, s.Authorizations[0].Token, s.SheetLink)
+	return NewOrdersManager(yandexCampaignIDFBO, yandexCampaignIDFBS, s.Authorizations[0].Token)
 }
 
 func (s Service) GetStickersFbsManager() *StickersManager {

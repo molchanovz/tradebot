@@ -1,9 +1,33 @@
 package tradeplus
 
-import "tradebot/pkg/db"
+import (
+	"slices"
+
+	"tradebot/pkg/client/google"
+	"tradebot/pkg/db"
+)
 
 type Authorization struct {
 	ClientID, Token, Type string
+}
+
+//go:generate colgen
+
+type Product struct {
+	db.Product
+	Cabinet         *Cabinet
+	Recommendations Products
+}
+
+func NewProduct(in *db.Product) *Product {
+	if in == nil {
+		return nil
+	}
+
+	return &Product{
+		Product: *in,
+		Cabinet: NewCabinet(in.Cabinet),
+	}
 }
 
 type Cabinet struct {
@@ -56,6 +80,18 @@ func NewCabinets(in []db.Cabinet) Cabinets {
 		newCabinets = append(newCabinets, *NewCabinet(&c))
 	}
 	return newCabinets
+}
+
+// ShipmentsSpreadsheetIDs — разные таблицы отгрузок (settings.shipmentsSheetId),
+// заданные у кабинетов, в порядке кабинетов.
+func (cc Cabinets) ShipmentsSpreadsheetIDs() []string {
+	var ids []string
+	for _, c := range cc {
+		if id, ok := google.ParseSpreadsheetID(c.Settings.ShipmentsSheetID); ok && !slices.Contains(ids, id) {
+			ids = append(ids, id)
+		}
+	}
+	return ids
 }
 
 // Ptr is a generic to create pointer from value

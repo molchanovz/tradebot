@@ -1,147 +1,118 @@
 package ozon
 
 import (
-	"math"
-	"strconv"
+	"context"
+	"errors"
+	"fmt"
 	"time"
 
 	"tradebot/pkg/client/ozon"
 	"tradebot/pkg/tradeplus"
 )
 
+// OrdersSheetPrefix — листы ежедневного отчёта Ozon: «Заказы OZON-<число>».
+const OrdersSheetPrefix = "Заказы OZON-"
+
+// OrdersManager собирает секцию ежедневного отчёта одного кабинета Ozon:
+// заказы FBS, FBO и возвраты.
 type OrdersManager struct {
-	tradeplus.OrderManager
 	clientID, token string
 }
 
-func NewOrdersManager(clientID, token, spreadsheetID string) OrdersManager {
-	manager := OrdersManager{tradeplus.NewOrdersManager(spreadsheetID), clientID, token}
-	return manager
+func NewOrdersManager(clientID, token string) OrdersManager {
+	return OrdersManager{clientID: clientID, token: token}
 }
 
-// WriteToGoogleSheets Заполнение гугл таблицы с id = spreadsheetID
-func (m OrdersManager) WriteToGoogleSheets(titleRange, fbsRange, fboRange, returnsRange string) (int, error) {
-	date := time.Now().AddDate(0, 0, -m.DaysAgo)
-	sheetsName := "Заказы OZON-" + strconv.Itoa(date.Day())
-
-	maxValuesCount := math.MinInt
-
-	var values [][]interface{}
-	values = append(values, []interface{}{"Отчет за " + date.Format("02.01.2006")})
-
-	if maxValuesCount < len(values) {
-		maxValuesCount = len(values)
+// NewOrdersWriter — запись отчётов Ozon в таблицу заказов: секция на каждый
+// кабинет, секции друг под другом на одном листе.
+func NewOrdersWriter(cabinets tradeplus.Cabinets) (tradeplus.OrdersWriter, error) {
+	if len(cabinets) == 0 {
+		return tradeplus.OrdersWriter{}, errors.New("нет кабинетов Ozon")
 	}
 
-	writeRange := sheetsName + titleRange
+	managers := make(cabinetsOrders, 0, len(cabinets))
+	for _, cabinet := range cabinets {
+		managers = append(managers, NewService(cabinet).GetOrdersAndReturnsManager())
+	}
+	return tradeplus.NewOrdersWriter(cabinets.OrdersSpreadsheetID(), OrdersSheetPrefix, 0, managers), nil
+}
 
-	err := m.GoogleService.Write(m.SpreadsheetID, writeRange, values)
+// section — блоки кабинета за сутки day.
+func (m OrdersManager) section(day time.Time) (tradeplus.OrdersSection, error) {
+	// сутки по Москве
+	since := day.AddDate(0, 0, -1).Format("2006-01-02") + "T21:00:00.000Z"
+	to := day.Format("2006-01-02") + "T21:00:00.000Z"
+
+	postingsWithCountFBS, err := m.getPostingsMapFBS(since, to)
 	if err != nil {
-		return 0, err
+		return tradeplus.OrdersSection{}, fmt.Errorf("fbs: %w", err)
 	}
 
-	//Заполнение заказов FBS в writeRange
-	postingsWithCountFBS, _ := m.getPostingsMapFBS(m.clientID, m.token)
-	values = [][]interface{}{}
-	values = append(values, []interface{}{"Заказы FBS"})
-	for article, count := range postingsWithCountFBS {
-		values = append(values, []interface{}{article, count})
-	}
-
-	if maxValuesCount < len(values) {
-		maxValuesCount = len(values)
-	}
-
-	writeRange = sheetsName + fbsRange
-	err = m.GoogleService.Write(m.SpreadsheetID, writeRange, values)
+	postingsWithCountFBO, err := m.getPostingsMapFBO(since, to)
 	if err != nil {
-		return 0, err
+		return tradeplus.OrdersSection{}, fmt.Errorf("fbo: %w", err)
 	}
 
-	postingsWithCountFBO, _ := m.getPostingsMapFBO(m.clientID, m.token)
-	values = [][]interface{}{}
-	values = append(values, []interface{}{"Заказы FBO"})
-	for article, count := range postingsWithCountFBO {
-		values = append(values, []interface{}{article, count})
-	}
-
-	if maxValuesCount < len(values) {
-		maxValuesCount = len(values)
-	}
-
-	writeRange = sheetsName + fboRange
-	err = m.GoogleService.Write(m.SpreadsheetID, writeRange, values)
-	if err != nil {
-		return 0, err
-	}
-
-	since := time.Now().AddDate(0, 0, m.DaysAgo*(-1)-1).Format("2006-01-02") + "T21:00:00.000Z"
-	to := time.Now().AddDate(0, 0, m.DaysAgo*(-1)).Format("2006-01-02") + "T21:00:00.000Z"
-	//Заполнение возвратов
 	returnsWithCount, err := m.GetReturnsMap(m.clientID, m.token, since, to)
 	if err != nil {
-		return 0, err
+		return tradeplus.OrdersSection{}, fmt.Errorf("returns: %w", err)
 	}
 
-	values = [][]interface{}{}
-	values = append(values, []interface{}{"Возвраты"})
-	for article, count := range returnsWithCount {
-		values = append(values, []interface{}{article, count})
-	}
-
-	if maxValuesCount < len(values) {
-		maxValuesCount = len(values)
-	}
-
-	writeRange = sheetsName + returnsRange
-	err = m.GoogleService.Write(m.SpreadsheetID, writeRange, values)
-	if err != nil {
-		return 0, err
-	}
-
-	return maxValuesCount, nil
+	return tradeplus.OrdersSection{Blocks: []tradeplus.OrdersBlock{
+		{Title: "Заказы FBS", Counts: postingsWithCountFBS},
+		{Title: "Заказы FBO", Counts: postingsWithCountFBO},
+		{Title: "Возвраты", Counts: returnsWithCount},
+	}}, nil
 }
 
-func (m OrdersManager) getPostingsMapFBS(clientID, token string) (map[string]int, error) {
+func (m OrdersManager) getPostingsMapFBS(since, to string) (map[string]int, error) {
 	postingsWithCountFBS := make(map[string]int)
 
-	since := time.Now().AddDate(0, 0, m.DaysAgo*(-1)-1).Format("2006-01-02") + "T21:00:00.000Z"
-	to := time.Now().AddDate(0, 0, m.DaysAgo*(-1)).Format("2006-01-02") + "T21:00:00.000Z"
+	client := ozon.NewClient(m.clientID, m.token)
+	for offset := 0; ; offset += ozon.PostingsListLimit {
+		postingsListFbs, err := client.PostingsListFbs(since, to, offset, "")
+		if err != nil {
+			return nil, err
+		}
 
-	postingsListFbs, err := ozon.NewClient(clientID, token).PostingsListFbs(since, to, 0, "")
-	if err != nil {
-		return nil, err
-	}
-
-	for _, posting := range postingsListFbs.Result.PostingsFBS {
-		if posting.Status != "cancelled" {
-			for _, product := range posting.Products {
-				postingsWithCountFBS[product.OfferID] += product.Quantity
+		for _, posting := range postingsListFbs.Result.PostingsFBS {
+			if posting.Status != "cancelled" {
+				for _, product := range posting.Products {
+					postingsWithCountFBS[product.OfferID] += product.Quantity
+				}
 			}
 		}
+
+		if !postingsListFbs.Result.HasNext {
+			return postingsWithCountFBS, nil
+		}
 	}
-	return postingsWithCountFBS, nil
 }
-func (m OrdersManager) getPostingsMapFBO(clientID, token string) (map[string]int, error) {
+
+func (m OrdersManager) getPostingsMapFBO(since, to string) (map[string]int, error) {
 	postingsWithCountFBO := make(map[string]int)
 
-	since := time.Now().AddDate(0, 0, m.DaysAgo*(-1)-1).Format("2006-01-02") + "T21:00:00.000Z"
-	to := time.Now().AddDate(0, 0, m.DaysAgo*(-1)).Format("2006-01-02") + "T21:00:00.000Z"
+	client := ozon.NewClient(m.clientID, m.token)
+	for offset := 0; ; offset += ozon.PostingsListLimit {
+		postingsListFbo, err := client.PostingsListFbo(since, to, offset)
+		if err != nil {
+			return nil, err
+		}
 
-	postingsListFbo, err := ozon.NewClient(clientID, token).PostingsListFbo(since, to, 0)
-	if err != nil {
-		return nil, err
-	}
-
-	for _, posting := range postingsListFbo.Result {
-		if posting.Status != "cancelled" {
-			for _, product := range posting.Products {
-				postingsWithCountFBO[product.OfferID] += product.Quantity
+		for _, posting := range postingsListFbo.Result {
+			if posting.Status != "cancelled" {
+				for _, product := range posting.Products {
+					postingsWithCountFBO[product.OfferID] += product.Quantity
+				}
 			}
 		}
+
+		if len(postingsListFbo.Result) < ozon.PostingsListLimit {
+			return postingsWithCountFBO, nil
+		}
 	}
-	return postingsWithCountFBO, nil
 }
+
 func (m OrdersManager) GetReturnsMap(clientID, token, since, to string) (map[string]int, error) {
 	var lastID int
 	hasNext := true
@@ -162,8 +133,26 @@ func (m OrdersManager) GetReturnsMap(clientID, token, since, to string) (map[str
 			}
 			lastID = value.ID
 		}
-		hasNext = returns.HasNext
+		// пустая страница с has_next зациклила бы запрос с тем же lastID
+		hasNext = returns.HasNext && len(returns.Returns) > 0
 	}
 
 	return returnsWithCount, nil
+}
+
+// cabinetsOrders — отчёт Ozon по всем кабинетам: секции в порядке кабинетов.
+type cabinetsOrders []OrdersManager
+
+// OrdersReport — заказы и возвраты всех кабинетов за сутки day. Если не
+// собрался хотя бы один кабинет, день не пишется: секции идут по порядку.
+func (cc cabinetsOrders) OrdersReport(_ context.Context, day time.Time) (tradeplus.OrdersReport, error) {
+	report := tradeplus.OrdersReport{Day: day}
+	for _, m := range cc {
+		section, err := m.section(day)
+		if err != nil {
+			return tradeplus.OrdersReport{}, fmt.Errorf("ozon %s: %w", m.clientID, err)
+		}
+		report.Sections = append(report.Sections, section)
+	}
+	return report, nil
 }
