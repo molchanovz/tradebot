@@ -2,13 +2,11 @@ package bot
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"log"
 	"os"
 	"strconv"
 	"strings"
-	"time"
 
 	"tradebot/pkg/db"
 	"tradebot/pkg/tradeplus"
@@ -22,7 +20,6 @@ import (
 const (
 	CallbackWbHandler        = "WB"
 	CallbackWbFbsHandler     = "WB-FBS"
-	CallbackWbOrdersHandler  = "WB-ORDERS"
 	CallbackWbStocksHandler  = "WB-STOCKS"
 	CallbackWbReturnsHandler = "WB-RETURNS"
 
@@ -133,39 +130,6 @@ func (m *Manager) getWbStickers(ctx context.Context, bot *botlib.Bot, chatID int
 	return nil
 }
 
-func (m *Manager) wbOrdersHandler(ctx context.Context, bot *botlib.Bot, update *models.Update) {
-	chatID := update.CallbackQuery.From.ID
-
-	cabinets, err := m.tm.GetCabinetsByMp(ctx, db.MarketWB)
-	if err != nil {
-		log.Println(err)
-		return
-	}
-
-	if cabinets[0].SheetLink == nil {
-		log.Println(errors.New("sheet link is null"))
-		return
-	}
-
-	manager := wb.NewOrdersManager(cabinets[0].Key, *cabinets[0].SheetLink)
-
-	err = manager.Write()
-	if err != nil {
-		_, err = SendTextMessage(ctx, bot, chatID, err.Error())
-		if err != nil {
-			log.Println(err)
-			return
-		}
-	}
-
-	date := time.Now().AddDate(0, 0, -tradeplus.OrdersDaysAgo)
-	_, err = SendTextMessage(ctx, bot, chatID, fmt.Sprintf("Заказы вб за %v были внесены", date))
-	if err != nil {
-		log.Println(err)
-		return
-	}
-
-}
 func (m *Manager) wbStocksHandler(ctx context.Context, bot *botlib.Bot, update *models.Update) {
 	daysAgo := 14
 

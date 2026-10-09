@@ -2,7 +2,6 @@ package schedule
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"strings"
 	"time"
@@ -28,55 +27,11 @@ func NewManager(dbc db.DB, logger embedlog.Logger, bs *bot.Service) Manager {
 }
 
 func (s *Manager) WriteWB(ctx context.Context) error {
-	cabinets, err := s.tm.GetCabinetsByMp(ctx, db.MarketWB)
-	if err != nil {
-		return fmt.Errorf("fetch cabinet failed: %w", err)
-	}
-
-	if cabinets[0].SheetLink == nil {
-		return errors.New("sheet link is null")
-	}
-
-	manager := wb.NewOrdersManager(cabinets[0].Key, *cabinets[0].SheetLink)
-
-	err = manager.Write()
-	if err != nil {
-		return fmt.Errorf("write orders failed: %w", err)
-	}
-
-	return nil
+	return s.writeOrders(ctx, db.MarketWB)
 }
 
 func (s *Manager) WriteOzon(ctx context.Context) error {
-	cabinets, err := s.tm.GetCabinetsByMp(ctx, db.MarketOzon)
-	if err != nil {
-		return err
-	}
-
-	titleRange := "!A1"
-	fbsRange := "!A2:B1000"
-	fboRange := "!D2:E1000"
-	returnsRange := "!G2:H1000"
-
-	maxValuesCount, err := ozon.NewService(cabinets[0]).GetOrdersAndReturnsManager().WriteToGoogleSheets(titleRange, fbsRange, fboRange, returnsRange)
-	if err != nil {
-		return err
-	}
-
-	maxValuesCount += 3
-	titleRange = fmt.Sprintf("!A%v", maxValuesCount)
-
-	maxValuesCount++
-	fbsRange = fmt.Sprintf("!A%v:B%v", maxValuesCount, maxValuesCount+1000)
-	fboRange = fmt.Sprintf("!D%v:E%v", maxValuesCount, maxValuesCount+1000)
-	returnsRange = fmt.Sprintf("!G%v:H%v", maxValuesCount, maxValuesCount+1000)
-
-	_, err = ozon.NewService(cabinets[1]).GetOrdersAndReturnsManager().WriteToGoogleSheets(titleRange, fbsRange, fboRange, returnsRange)
-	if err != nil {
-		return err
-	}
-
-	return nil
+	return s.writeOrders(ctx, db.MarketOzon)
 }
 
 func (s *Manager) WriteOzonShipments(ctx context.Context) error {
@@ -236,16 +191,19 @@ func (s *Manager) WriteYandexShipments(ctx context.Context) error {
 }
 
 func (s *Manager) WriteYandex(ctx context.Context) error {
-	cabinets, err := s.tm.GetCabinetsByMp(ctx, db.MarketYandex)
-	if err != nil {
-		return err
-	}
+	return s.writeOrders(ctx, db.MarketYandex)
+}
 
-	err = yandex.NewService(cabinets...).GetOrdersAndReturnsManager().Write()
-	if err != nil {
-		return err
+// writeOrders заносит в таблицу заказов маркетплейса дни этого месяца по вчера,
+// которых в ней ещё нет (см. tradeplus.OrdersDays).
+func (s *Manager) writeOrders(ctx context.Context, mp string) error {
+	written, err := s.bs.Manager().SyncOrders(ctx, mp)
+	if len(written) > 0 {
+		s.Print(ctx, fmt.Sprintf("%s orders written: %s", mp, tradeplus.FormatDays(written)))
 	}
-
+	if err != nil {
+		return fmt.Errorf("write %s orders: %w", mp, err)
+	}
 	return nil
 }
 

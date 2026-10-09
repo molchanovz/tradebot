@@ -10,6 +10,7 @@ import (
 	"sync"
 
 	"tradebot/pkg/client/chatgptsrv"
+	"tradebot/pkg/client/google"
 	"tradebot/pkg/db"
 	"tradebot/pkg/tradeplus"
 	"tradebot/pkg/tradeplus/ozon"
@@ -33,6 +34,7 @@ type Manager struct {
 	tm           *tradeplus.Manager
 	chatgpt      *chatgptsrv.Client
 	reviewChatID int
+	sheets       google.SheetsService
 	SheetMap     *sync.Map
 	APIMap       *sync.Map
 	ReviewMap    *sync.Map
@@ -44,6 +46,7 @@ func NewManager(dbc db.DB, cfg Config, chatgpt *chatgptsrv.Client, logger embedl
 		tm:           tradeplus.NewManager(dbc),
 		chatgpt:      chatgpt,
 		reviewChatID: cfg.ReviewChatID,
+		sheets:       tradeplus.NewSheetsService(),
 		SheetMap:     new(sync.Map),
 		APIMap:       new(sync.Map),
 		ReviewMap:    new(sync.Map),
@@ -67,6 +70,7 @@ func (m *Manager) RegisterBotHandlers() {
 	m.b.RegisterHandler(botlib.HandlerTypeCallbackQueryData, CallbackSettingsSelectCabinetHandler, botlib.MatchTypePrefix, m.settingsMPHandler)
 	m.b.RegisterHandler(botlib.HandlerTypeCallbackQueryData, CallbackChangeAPIHandler, botlib.MatchTypePrefix, m.ChangeApiHandler)
 	m.b.RegisterHandler(botlib.HandlerTypeCallbackQueryData, CallbackChangeSheetHandler, botlib.MatchTypePrefix, m.ChangeSheetHandler)
+	m.b.RegisterHandler(botlib.HandlerTypeCallbackQueryData, CallbackOrdersSyncHandler, botlib.MatchTypePrefix, m.ordersSyncHandler)
 
 	m.b.RegisterHandler(botlib.HandlerTypeCallbackQueryData, CallbackShipmentsAllHandler, botlib.MatchTypeExact, m.shipmentsAllHandler)
 
@@ -82,8 +86,6 @@ func (m *Manager) RegisterBotHandlers() {
 	m.b.RegisterHandler(botlib.HandlerTypeCallbackQueryData, CallbackWbDeleteReview, botlib.MatchTypePrefix, m.wbDeleteReview)
 
 	m.b.RegisterHandler(botlib.HandlerTypeCallbackQueryData, CallbackYandexStickersHandler, botlib.MatchTypePrefix, m.yandexFbsHandler)
-	m.b.RegisterHandler(botlib.HandlerTypeCallbackQueryData, CallbackWbOrdersHandler, botlib.MatchTypePrefix, m.wbOrdersHandler)
-	m.b.RegisterHandler(botlib.HandlerTypeCallbackQueryData, CallbackYandexOrdersHandler, botlib.MatchTypePrefix, m.yandexOrdersHandler)
 	m.b.RegisterHandler(botlib.HandlerTypeCallbackQueryData, CallbackOzonStocksHandler, botlib.MatchTypePrefix, m.ozonStocksHandler)
 	m.b.RegisterHandler(botlib.HandlerTypeCallbackQueryData, CallbackWbStocksHandler, botlib.MatchTypePrefix, m.wbStocksHandler)
 	m.b.RegisterHandler(botlib.HandlerTypeCallbackQueryData, CallbackWbReturnsHandler, botlib.MatchTypePrefix, m.returnsHandler)

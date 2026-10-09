@@ -127,6 +127,30 @@ func (m Manager) UpdateCabinet(ctx context.Context, cabinet Cabinet) error {
 	_, err := m.repo.UpdateCabinet(ctx, &cabinet.Cabinet)
 	return err
 }
+
+// SetOrdersSheet делает spreadsheetID таблицей заказов всех кабинетов маркетплейса mp:
+// ежедневный отчёт по заказам у маркетплейса один на все кабинеты.
+func (m Manager) SetOrdersSheet(ctx context.Context, mp, spreadsheetID string) error {
+	return m.db.RunInTransaction(ctx, func(tx *pg.Tx) error {
+		repo := m.repo.WithTransaction(tx)
+		cabinets, err := repo.CabinetsByFilters(ctx, &db.CabinetSearch{Marketplace: &mp}, db.PagerNoLimit)
+		if err != nil {
+			return err
+		}
+		if len(cabinets) == 0 {
+			return fmt.Errorf("нет кабинетов %s", mp)
+		}
+
+		for i := range cabinets {
+			cabinets[i].SheetLink = &spreadsheetID
+			if _, err := repo.UpdateCabinet(ctx, &cabinets[i], db.WithColumns(db.Columns.Cabinet.SheetLink)); err != nil {
+				return err
+			}
+		}
+		return nil
+	})
+}
+
 func (m Manager) GetReviewByID(ctx context.Context, reviewID string) (*Review, error) {
 	review, err := m.repo.OneReview(ctx, &db.ReviewSearch{ExternalID: &reviewID})
 	return NewReview(review), err

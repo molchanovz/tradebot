@@ -8,6 +8,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"regexp"
 	"sort"
 	"strconv"
 	"strings"
@@ -147,16 +148,28 @@ func (s SheetStat) Cells() int64 { return s.Rows * s.Columns }
 // по всем вкладкам сравнивается с лимитом Google Sheets в 10 000 000 ячеек —
 // пустые ячейки в пределах сетки тоже считаются.
 func (gs SheetsService) GridStats(spreadsheetID string) ([]SheetStat, error) {
+	_, stats, err := gs.Spreadsheet(spreadsheetID)
+	return stats, err
+}
+
+// Spreadsheet возвращает название книги и её вкладки. Заодно проверяет, что
+// у аккаунта бота есть доступ к таблице.
+func (gs SheetsService) Spreadsheet(spreadsheetID string) (string, []SheetStat, error) {
 	ctx := context.Background()
 	srv, err := gs.service(ctx)
 	if err != nil {
-		return nil, err
+		return "", nil, err
 	}
 
 	ss, err := srv.Spreadsheets.Get(spreadsheetID).
-		Fields("sheets.properties(sheetId,title,gridProperties(rowCount,columnCount))").Do()
+		Fields("properties.title,sheets.properties(sheetId,title,gridProperties(rowCount,columnCount))").Do()
 	if err != nil {
-		return nil, fmt.Errorf("get spreadsheet: %w", err)
+		return "", nil, fmt.Errorf("get spreadsheet: %w", err)
+	}
+
+	var title string
+	if ss.Properties != nil {
+		title = ss.Properties.Title
 	}
 
 	out := make([]SheetStat, 0, len(ss.Sheets))
@@ -171,7 +184,7 @@ func (gs SheetsService) GridStats(spreadsheetID string) ([]SheetStat, error) {
 		}
 		out = append(out, st)
 	}
-	return out, nil
+	return title, out, nil
 }
 
 // ResizeTarget описывает лист, который нужно очистить и ужать.
@@ -325,6 +338,132 @@ func (gs SheetsService) Write(spreadsheetID, writeRange string, values [][]inter
 	}
 
 	return nil
+}
+
+// ValueRange — значения для одного диапазона в A1-нотации.
+type ValueRange struct {
+	Range  string
+	Values [][]interface{}
+}
+
+// BatchGet читает несколько диапазонов одним запросом: i-й элемент результата —
+// значения ranges[i] (пустые ячейки в конце строк и столбцов не возвращаются).
+func (gs SheetsService) BatchGet(spreadsheetID string, ranges []string) ([][][]interface{}, error) {
+	if len(ranges) == 0 {
+		return nil, nil
+	}
+	srv, err := gs.service(context.Background())
+	if err != nil {
+		return nil, err
+	}
+
+	resp, err := srv.Spreadsheets.Values.BatchGet(spreadsheetID).Ranges(ranges...).Do()
+	if err != nil {
+		return nil, fmt.Errorf("batch get: %w", err)
+	}
+
+	out := make([][][]interface{}, len(ranges))
+	for i, vr := range resp.ValueRanges {
+		if i < len(out) {
+			out[i] = vr.Values
+		}
+	}
+	return out, nil
+}
+
+// BatchClear стирает значения во всех диапазонах одним запросом. Формат ячеек остаётся.
+func (gs SheetsService) BatchClear(spreadsheetID string, ranges []string) error {
+	if len(ranges) == 0 {
+		return nil
+	}
+	srv, err := gs.service(context.Background())
+	if err != nil {
+		return err
+	}
+
+	_, err = srv.Spreadsheets.Values.BatchClear(spreadsheetID, &sheets.BatchClearValuesRequest{Ranges: ranges}).Do()
+	if err != nil {
+		return fmt.Errorf("batch clear: %w", err)
+	}
+	return nil
+}
+
+// BatchWrite записывает несколько диапазонов одним запросом. Значения пишутся
+// как есть (RAW), как и в Write.
+func (gs SheetsService) BatchWrite(spreadsheetID string, data []ValueRange) error {
+	if len(data) == 0 {
+		return nil
+	}
+	srv, err := gs.service(context.Background())
+	if err != nil {
+		return err
+	}
+
+	vrs := make([]*sheets.ValueRange, 0, len(data))
+	for _, d := range data {
+		vrs = append(vrs, &sheets.ValueRange{Range: d.Range, Values: d.Values})
+	}
+	_, err = srv.Spreadsheets.Values.BatchUpdate(spreadsheetID, &sheets.BatchUpdateValuesRequest{
+		ValueInputOption: "RAW",
+		Data:             vrs,
+	}).Do()
+	if err != nil {
+		return fmt.Errorf("batch write: %w", err)
+	}
+	return nil
+}
+
+// AddSheets создаёт вкладки с заданными названиями одним запросом.
+func (gs SheetsService) AddSheets(spreadsheetID string, titles []string) error {
+	if len(titles) == 0 {
+		return nil
+	}
+	srv, err := gs.service(context.Background())
+	if err != nil {
+		return err
+	}
+
+	reqs := make([]*sheets.Request, 0, len(titles))
+	for _, title := range titles {
+		reqs = append(reqs, &sheets.Request{
+			AddSheet: &sheets.AddSheetRequest{Properties: &sheets.SheetProperties{Title: title}},
+		})
+	}
+	_, err = srv.Spreadsheets.BatchUpdate(spreadsheetID, &sheets.BatchUpdateSpreadsheetRequest{Requests: reqs}).Do()
+	if err != nil {
+		return fmt.Errorf("add sheets %q: %w", titles, err)
+	}
+	return nil
+}
+
+// SheetRange собирает A1-диапазон на листе title, например 'Заказы WB-9'!A2:B.
+// Название листа берётся в кавычки: в нём бывают пробелы.
+func SheetRange(title, cells string) string {
+	return "'" + strings.ReplaceAll(title, "'", "''") + "'!" + cells
+}
+
+var (
+	spreadsheetURLRe = regexp.MustCompile(`/spreadsheets/(?:u/\d+/)?d/([A-Za-z0-9_-]+)`)
+	spreadsheetIDRe  = regexp.MustCompile(`^[A-Za-z0-9_-]{20,}$`)
+)
+
+// ParseSpreadsheetID достаёт ID таблицы из ссылки вида
+// https://docs.google.com/spreadsheets/d/<ID>/edit#gid=0. Строку, которая уже
+// является ID, возвращает как есть. ok=false — это не ссылка на таблицу и не ID.
+func ParseSpreadsheetID(s string) (string, bool) {
+	s = strings.TrimSpace(s)
+	if m := spreadsheetURLRe.FindStringSubmatch(s); m != nil {
+		s = m[1]
+	}
+	if !spreadsheetIDRe.MatchString(s) {
+		return "", false
+	}
+	return s, true
+}
+
+// SpreadsheetURL — ссылка на таблицу по её ID.
+func SpreadsheetURL(spreadsheetID string) string {
+	return "https://docs.google.com/spreadsheets/d/" + spreadsheetID
 }
 
 // EnsureSheet creates a sheet with the given title in the spreadsheet if it does not exist.

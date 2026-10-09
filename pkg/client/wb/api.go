@@ -2,6 +2,7 @@ package wb
 
 import (
 	"bytes"
+	"context"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -311,28 +312,64 @@ func (c Client) apiOrdersALL(daysAgo, flag int) (string, error) {
 	return response, nil
 }
 
-func (c Client) apiSalesAndReturns(daysAgo int) (string, error) {
-	date := time.Now().AddDate(0, 0, -daysAgo)
+const (
+	statisticsURL = "https://statistics-api.wildberries.ru"
+	// statisticsRetries — сколько раз повторяем запрос к статистике после 429.
+	statisticsRetries = 3
+	// statisticsRetryDefault — пауза после 429, если WB не прислал X-Ratelimit-Retry:
+	// методы статистики отдают не больше одного запроса в минуту.
+	statisticsRetryDefault = time.Minute
+	// statisticsTimeout — статистика WB отвечает медленнее остальных методов клиента (у них 10 секунд).
+	statisticsTimeout = time.Minute
+)
 
-	baseURL := "https://statistics-api.wildberries.ru/api/v1/supplier/sales"
+// statisticsOnDate запрашивает метод statistics-api с flag=1 — все записи с датой
+// date (время значения не имеет). На 429 ждёт столько, сколько просит WB, и повторяет.
+func (c Client) statisticsOnDate(ctx context.Context, path string, date time.Time) ([]byte, error) {
+	params := url.Values{}
+	params.Set("dateFrom", date.Format("2006-01-02"))
+	params.Set("flag", "1")
+	u := statisticsURL + path + "?" + params.Encode()
+	hc := &http.Client{Timeout: statisticsTimeout}
 
-	body := []byte(``)
+	for attempt := 0; ; attempt++ {
+		req, err := http.NewRequestWithContext(ctx, http.MethodGet, u, nil)
+		if err != nil {
+			return nil, fmt.Errorf("ошибка создания запроса: %w", err)
+		}
+		req.Header.Set("Authorization", c.token)
 
-	headers := map[string]string{
-		"Authorization": c.token,
+		resp, err := hc.Do(req)
+		if err != nil {
+			return nil, fmt.Errorf("ошибка выполнения запроса: %w", err)
+		}
+		body, err := io.ReadAll(resp.Body)
+		_ = resp.Body.Close()
+		if err != nil {
+			return nil, err
+		}
+
+		switch {
+		case resp.StatusCode == http.StatusOK:
+			return body, nil
+		case resp.StatusCode == http.StatusTooManyRequests && attempt < statisticsRetries:
+			select {
+			case <-ctx.Done():
+				return nil, ctx.Err()
+			case <-time.After(statisticsRetryAfter(resp.Header)):
+			}
+		default:
+			return nil, fmt.Errorf("wb %s: %s: %s", path, resp.Status, body)
+		}
 	}
+}
 
-	params := map[string]string{
-		"dateFrom": date.Format("2006-01-02"),
-		"flag":     "1",
+// statisticsRetryAfter — сколько ждать после 429: WB пишет это в X-Ratelimit-Retry (секунды).
+func statisticsRetryAfter(h http.Header) time.Duration {
+	if s, err := strconv.Atoi(h.Get("X-Ratelimit-Retry")); err == nil && s > 0 {
+		return time.Duration(s)*time.Second + time.Second
 	}
-
-	_, response, err := c.get(baseURL, headers, params, body)
-	if err != nil {
-		return "", err
-	}
-
-	return response, nil
+	return statisticsRetryDefault
 }
 
 // reviewPageSize is the WB feedbacks page size. Reviews() pages through all

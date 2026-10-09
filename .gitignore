@@ -13,3 +13,4 @@ CLAUDE.md
 .DS_Store
 /reviewtest
 cmd/reviewtest/
+docs/FEATURES.md

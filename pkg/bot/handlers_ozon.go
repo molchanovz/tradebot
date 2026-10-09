@@ -87,55 +87,6 @@ func (m *Manager) ozonCabinetHandler(ctx context.Context, bot *botlib.Bot, updat
 	}
 }
 
-func (m *Manager) ozonOrdersHandler(ctx context.Context, bot *botlib.Bot, update *models.Update) {
-	chatID := update.CallbackQuery.From.ID
-
-	cabinets, err := m.tm.GetCabinetsByMp(ctx, db.MarketOzon)
-	if err != nil {
-		log.Println(err)
-		return
-	}
-
-	titleRange := "!A1"
-	fbsRange := "!A2:B1000"
-	fboRange := "!D2:E1000"
-	returnsRange := "!G2:H1000"
-
-	maxValuesCount, err := ozon.NewService(cabinets[0]).GetOrdersAndReturnsManager().WriteToGoogleSheets(titleRange, fbsRange, fboRange, returnsRange)
-	if err != nil {
-		_, err = SendTextMessage(ctx, bot, chatID, err.Error())
-		if err != nil {
-			log.Printf("%v", err)
-			return
-		}
-		return
-	}
-
-	maxValuesCount += 3
-	titleRange = fmt.Sprintf("!A%v", maxValuesCount)
-
-	maxValuesCount++
-	fbsRange = fmt.Sprintf("!A%v:B%v", maxValuesCount, maxValuesCount+1000)
-	fboRange = fmt.Sprintf("!D%v:E%v", maxValuesCount, maxValuesCount+1000)
-	returnsRange = fmt.Sprintf("!G%v:H%v", maxValuesCount, maxValuesCount+1000)
-
-	_, err = ozon.NewService(cabinets[1]).GetOrdersAndReturnsManager().WriteToGoogleSheets(titleRange, fbsRange, fboRange, returnsRange)
-	if err != nil {
-		_, err = SendTextMessage(ctx, bot, chatID, err.Error())
-		if err != nil {
-			log.Printf("%v", err)
-			return
-		}
-		return
-	}
-
-	_, err = SendTextMessage(ctx, bot, chatID, "Заказы озон за вчерашний день были внесены")
-	if err != nil {
-		log.Printf("%v", err)
-		return
-	}
-}
-
 func (m *Manager) ozonStocksHandler(ctx context.Context, bot *botlib.Bot, update *models.Update) {
 	chatID := update.CallbackQuery.From.ID
 

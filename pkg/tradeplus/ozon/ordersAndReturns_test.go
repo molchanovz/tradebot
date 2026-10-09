@@ -38,7 +38,7 @@ func TestMain(m *testing.M) {
 }
 
 func TestOrdersManager_GetReturnsMap(t *testing.T) {
-	m := NewOrdersManager(*cabinet.ClientID, cabinet.Key, *cabinet.SheetLink)
+	m := NewOrdersManager(*cabinet.ClientID, cabinet.Key)
 	since := time.Now().AddDate(0, 0, -2).Format("2006-01-02") + "T21:00:00.000Z"
 	to := time.Now().AddDate(0, 0, -1).Format("2006-01-02") + "T21:00:00.000Z"
 

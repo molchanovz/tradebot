@@ -228,6 +228,10 @@ func (c Client) PostingFbs(postingNumber string) (PostingFBS, error) {
 	return p, err
 }
 
+// PostingsListLimit — сколько отправлений отдают PostingsListFbs и PostingsListFbo
+// за запрос; следующую страницу запрашивают с offset, увеличенным на это число.
+const PostingsListLimit = 1000
+
 // v3PostingFbsList метод получения ФБС заказов
 func (c Client) PostingsListFbs(since, to string, offset int, status string) (PostingslistFbs, error) {
 	baseURL := "https://api-seller.ozon.ru/v3/posting/fbs/list"
@@ -239,7 +243,7 @@ func (c Client) PostingsListFbs(since, to string, offset int, status string) (Po
     "to": "%v",
 	"status": "%v"
 },
-  "limit": 1000,
+  "limit": %v,
   "offset": %v,
   "with": {
     "analytics_data": false,
@@ -247,7 +251,7 @@ func (c Client) PostingsListFbs(since, to string, offset int, status string) (Po
     "financial_data": true,
     "translit": false
   }
-}`, since, to, status, offset))
+}`, since, to, status, PostingsListLimit, offset))
 
 	headers := map[string]string{
 		"Content-Type": "application/json",
@@ -301,14 +305,14 @@ func (c Client) PostingsListFbo(since, to string, offset int) (PostingslistFbo, 
     		"since": "%v",
     		"to": "%v"
   		},
-  		"limit": 1000,
+  		"limit": %v,
   		"offset": %v,
   		"translit": false,
   		"with": {
 			"analytics_data": false,
 			"financial_data": true
   		}
-	}`, since, to, offset))
+	}`, since, to, PostingsListLimit, offset))
 
 	headers := map[string]string{
 		"Content-Type": "application/json",

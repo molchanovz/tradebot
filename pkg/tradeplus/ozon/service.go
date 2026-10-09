@@ -14,7 +14,6 @@ var ErrNoRows = errors.New("no rows in result set")
 
 type Service struct {
 	tradeplus.Authorization
-	spreadsheetID string
 }
 
 func NewService(cabinet tradeplus.Cabinet) Service {
@@ -28,15 +27,11 @@ func NewService(cabinet tradeplus.Cabinet) Service {
 		service.ClientID = *cabinet.ClientID
 	}
 
-	if cabinet.SheetLink != nil {
-		service.spreadsheetID = *cabinet.SheetLink
-	}
-
 	return service
 }
 
 func (s Service) GetOrdersAndReturnsManager() OrdersManager {
-	return NewOrdersManager(s.ClientID, s.Token, s.spreadsheetID)
+	return NewOrdersManager(s.ClientID, s.Token)
 }
 
 func (s Service) GetStocksManager() AnalyzeManager {

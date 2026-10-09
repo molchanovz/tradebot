@@ -17,7 +17,6 @@ import (
 const (
 	CallbackYandexHandler              = "YANDEX"
 	CallbackYandexStickersHandler      = "YANDEX-STICKERS_"
-	CallbackYandexOrdersHandler        = "YANDEX-ORDERS_"
 	CallbackYandexCabinetsHandler      = "YANDEX-CABINETS"
 	CallbackSelectYandexCabinetHandler = "CABINET-YANDEX_"
 )
@@ -99,33 +98,6 @@ func (m *Manager) yandexFbsHandler(ctx context.Context, bot *botlib.Bot, update 
 	markup := models.InlineKeyboardMarkup{InlineKeyboard: allButtons}
 
 	_, err = bot.EditMessageText(ctx, &botlib.EditMessageTextParams{MessageID: update.CallbackQuery.Message.Message.ID, ChatID: chatID, Text: text, ReplyMarkup: markup})
-	if err != nil {
-		log.Printf("%v", err)
-		return
-	}
-}
-
-func (m *Manager) yandexOrdersHandler(ctx context.Context, bot *botlib.Bot, update *models.Update) {
-	chatID := update.CallbackQuery.From.ID
-
-	cabinets, err := m.tm.GetCabinetsByMp(ctx, db.MarketYandex)
-	if err != nil {
-		log.Println(err)
-		return
-	}
-
-	err = yandex.NewService(cabinets...).GetOrdersAndReturnsManager().Write()
-	if err != nil {
-		log.Printf("%v", err)
-		_, err = SendTextMessage(ctx, bot, chatID, err.Error())
-		if err != nil {
-			log.Printf("%v", err)
-			return
-		}
-		return
-	}
-
-	_, err = SendTextMessage(ctx, bot, chatID, "Заказы яндекс за вчерашний день были внесены")
 	if err != nil {
 		log.Printf("%v", err)
 		return
