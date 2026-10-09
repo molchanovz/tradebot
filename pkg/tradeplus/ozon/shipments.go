@@ -287,13 +287,16 @@ func filterRowsByDateColumn(header []string, rows [][]string, colName string, fr
 	return out, nil
 }
 
-// ShipmentsManager заливает FBS-отгрузки кабинета за выбранную дату в один
-// лист Google Sheets. ID склада пишется в отдельный столбец в каждой строке.
+// ShipmentsSheetPrefix — дневные листы отгрузок Ozon в складской таблице: «Отправлено на Ozon FBS-<число>».
+const ShipmentsSheetPrefix = "Отправлено на Ozon FBS-"
+
+// ShipmentsManager собирает FBS-отгрузки кабинета за день для складской таблицы и
+// ведёт агрегированный лист «Все заказы Ozon». ID склада пишется в отдельный
+// столбец в каждой строке.
 type ShipmentsManager struct {
 	api              ozonReportAPI
 	ozonClient       ozon.Client
 	sheets           google.SheetsService
-	spreadsheetID    string
 	allSpreadsheetID string
 	excludedWHs      map[int]struct{}
 	cabinetID        int
@@ -318,7 +321,6 @@ func NewShipmentsManager(cabinet tradeplus.Cabinet) (*ShipmentsManager, error) {
 		api:              newOzonReportAPI(*cabinet.ClientID, cabinet.Key),
 		ozonClient:       ozon.NewClient(*cabinet.ClientID, cabinet.Key),
 		sheets:           google.NewSheetsService("pkg/client/google/token.json", "pkg/client/google/credentials.json"),
-		spreadsheetID:    cabinet.Settings.ShipmentsSheetID,
 		allSpreadsheetID: cabinet.Settings.ShipmentsAllSheetID,
 		excludedWHs:      excluded,
 		cabinetID:        cabinet.ID,
@@ -391,9 +393,12 @@ func (m *ShipmentsManager) fetchWarehouseCSVs(ctx context.Context, reportFromUTC
 	return results, nil
 }
 
-// WriteForDate качает по отчёту на каждый склад кабинета за окно [day, day+1) MSK
-// и пишет все строки в один лист, добавляя колонку с ID склада.
-func (m *ShipmentsManager) WriteForDate(ctx context.Context, day time.Time) error {
+// ShipmentsBlock качает по отчёту на каждый склад кабинета за окно [day, day+1) MSK
+// и собирает блок кабинета для листа дня, добавляя колонку с ID склада. Если отчёт
+// хотя бы одного склада не получен, день не собирается: иначе на листе навсегда
+// остались бы неполные отгрузки.
+func (m *ShipmentsManager) ShipmentsBlock(ctx context.Context, day time.Time) (tradeplus.ShipmentsBlock, error) {
+	block := tradeplus.ShipmentsBlock{Cabinet: m.cabinetName}
 	msk := day.Location()
 	shipFrom := time.Date(day.Year(), day.Month(), day.Day(), 0, 0, 0, 0, msk)
 	shipTo := shipFrom.AddDate(0, 0, 1)
@@ -402,50 +407,51 @@ func (m *ShipmentsManager) WriteForDate(ctx context.Context, day time.Time) erro
 
 	results, err := m.fetchWarehouseCSVs(ctx, reportFromUTC, reportToUTC)
 	if err != nil {
-		return err
+		return block, fmt.Errorf("cabinet=%d: %w", m.cabinetID, err)
 	}
 	if len(results) == 0 {
-		log.Printf("ozonShipments: cabinet=%d no warehouses, skip", m.cabinetID)
-		return nil
+		log.Printf("ozonShipments: cabinet=%d no warehouses", m.cabinetID)
+		return block, nil
 	}
 
-	var (
-		header  []string
-		allRows [][]string
-		errs    []string
-	)
+	var header []string
 	for _, r := range results {
 		if r.err != nil {
-			errs = append(errs, r.err.Error())
+			return block, fmt.Errorf("cabinet=%d: %w", m.cabinetID, r.err)
+		}
+		if r.header == nil {
+			// пустой отчёт: у склада нет отправлений
 			continue
 		}
 		shipmentRows, err := filterRowsByDateColumn(r.header, r.rows, shipmentsDateColumn, shipFrom, shipTo, msk)
 		if err != nil {
-			errs = append(errs, fmt.Sprintf("warehouse %d %q: filter shipment: %v", r.warehouseID, r.warehouseName, err))
-			continue
+			return block, fmt.Errorf("cabinet=%d: warehouse %d %q: filter shipment: %w", m.cabinetID, r.warehouseID, r.warehouseName, err)
 		}
-		log.Printf("ozonShipments: cabinet=%d warehouse=%d %q shipped=%d", m.cabinetID, r.warehouseID, r.warehouseName, len(shipmentRows))
-		if header == nil && r.header != nil {
+		log.Printf("ozonShipments: cabinet=%d warehouse=%d %q %s shipped=%d", m.cabinetID, r.warehouseID, r.warehouseName, day.Format("02.01"), len(shipmentRows))
+		if header == nil {
 			header = r.header
 		}
 		whID := "'" + strconv.Itoa(r.warehouseID)
 		for _, row := range shipmentRows {
-			allRows = append(allRows, append([]string{whID}, row...))
+			block.Rows = append(block.Rows, append([]string{whID}, row...))
 		}
 	}
 
 	if header != nil {
-		title := fmt.Sprintf("Отправлено на Ozon FBS-%d", shipFrom.Day())
-		fullHeader := append([]string{shipmentsWarehouseColumn}, header...)
-		if err := m.upload(title, fullHeader, allRows); err != nil {
-			errs = append(errs, err.Error())
-		}
+		block.Header = append([]string{shipmentsWarehouseColumn}, header...)
 	}
+	return block, nil
+}
 
-	if len(errs) > 0 {
-		return fmt.Errorf("cabinet=%d: %s", m.cabinetID, strings.Join(errs, "; "))
-	}
-	return nil
+// NewShipmentsWriters — запись отгрузок Ozon в складскую таблицу: блок на каждый кабинет.
+func NewShipmentsWriters(ctx context.Context, cabinets tradeplus.Cabinets) ([]tradeplus.ShipmentsWriter, error) {
+	return tradeplus.NewShipmentsWriters(ctx, cabinets, ShipmentsSheetPrefix, func(_ context.Context, cabinet tradeplus.Cabinet) (tradeplus.ShipmentsSource, error) {
+		m, err := NewShipmentsManager(cabinet)
+		if err != nil {
+			return nil, err
+		}
+		return m, nil
+	})
 }
 
 // WriteAggregatedForDate синхронизирует общий лист «Все заказы Ozon»:
@@ -531,27 +537,6 @@ func (m *ShipmentsManager) WriteAggregatedForDate(ctx context.Context, day time.
 	if len(errs) > 0 {
 		return fmt.Errorf("cabinet=%d: %s", m.cabinetID, strings.Join(errs, "; "))
 	}
-	return nil
-}
-
-func (m *ShipmentsManager) upload(title string, header []string, rows [][]string) error {
-	if len(rows) == 0 {
-		return nil
-	}
-	if _, err := m.sheets.EnsureSheet(m.spreadsheetID, title); err != nil {
-		return fmt.Errorf("ensure sheet %q: %w", title, err)
-	}
-
-	values := make([][]interface{}, 0, len(rows)+2)
-	values = append(values, toIface([]string{m.cabinetName}))
-	values = append(values, toIface(header))
-	for _, r := range rows {
-		values = append(values, toIface(r))
-	}
-	if err := m.sheets.Append(m.spreadsheetID, title+"!A1", values); err != nil {
-		return fmt.Errorf("append %q: %w", title, err)
-	}
-	log.Printf("ozonShipments: cabinet=%d sheet=%q rows=%d", m.cabinetID, title, len(rows))
 	return nil
 }
 

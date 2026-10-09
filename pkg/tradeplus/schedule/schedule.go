@@ -11,7 +11,6 @@ import (
 	"tradebot/pkg/tradeplus"
 	"tradebot/pkg/tradeplus/ozon"
 	"tradebot/pkg/tradeplus/wb"
-	"tradebot/pkg/tradeplus/yandex"
 
 	"github.com/vmkteam/embedlog"
 )
@@ -35,34 +34,7 @@ func (s *Manager) WriteOzon(ctx context.Context) error {
 }
 
 func (s *Manager) WriteOzonShipments(ctx context.Context) error {
-	cabinets, err := s.tm.GetCabinetsByMp(ctx, db.MarketOzon)
-	if err != nil {
-		return err
-	}
-
-	msk := time.FixedZone("MSK", 3*3600)
-	now := time.Now().In(msk).AddDate(0, 0, -tradeplus.OrdersDaysAgo)
-	yesterday := time.Date(now.Year(), now.Month(), now.Day(), 0, 0, 0, 0, msk)
-
-	var failed []string
-	for _, cab := range cabinets {
-		if cab.Settings.ShipmentsSheetID == "" {
-			s.Print(ctx, fmt.Sprintf("ozonShipments: cabinet=%d skipped (no shipmentsSheetId)", cab.ID))
-			continue
-		}
-		m, err := ozon.NewShipmentsManager(cab)
-		if err != nil {
-			failed = append(failed, fmt.Sprintf("cab=%d init: %v", cab.ID, err))
-			continue
-		}
-		if err := m.WriteForDate(ctx, yesterday); err != nil {
-			failed = append(failed, err.Error())
-		}
-	}
-	if len(failed) > 0 {
-		return fmt.Errorf("ozonShipments: %s", strings.Join(failed, "; "))
-	}
-	return nil
+	return s.writeShipments(ctx, db.MarketOzon)
 }
 
 func (s *Manager) WriteOzonShipmentsAll(ctx context.Context) error {
@@ -96,34 +68,7 @@ func (s *Manager) WriteOzonShipmentsAll(ctx context.Context) error {
 }
 
 func (s *Manager) WriteWBShipments(ctx context.Context) error {
-	cabinets, err := s.tm.GetCabinetsByMp(ctx, db.MarketWB)
-	if err != nil {
-		return err
-	}
-
-	msk := time.FixedZone("MSK", 3*3600)
-	now := time.Now().In(msk).AddDate(0, 0, -tradeplus.OrdersDaysAgo)
-	yesterday := time.Date(now.Year(), now.Month(), now.Day(), 0, 0, 0, 0, msk)
-
-	var failed []string
-	for _, cab := range cabinets {
-		if cab.Settings.ShipmentsSheetID == "" {
-			s.Print(ctx, fmt.Sprintf("wbShipments: cabinet=%d skipped (no shipmentsSheetId)", cab.ID))
-			continue
-		}
-		m, err := wb.NewShipmentsManager(cab)
-		if err != nil {
-			failed = append(failed, fmt.Sprintf("cab=%d init: %v", cab.ID, err))
-			continue
-		}
-		if err := m.WriteForDate(ctx, yesterday); err != nil {
-			failed = append(failed, err.Error())
-		}
-	}
-	if len(failed) > 0 {
-		return fmt.Errorf("wbShipments: %s", strings.Join(failed, "; "))
-	}
-	return nil
+	return s.writeShipments(ctx, db.MarketWB)
 }
 
 func (s *Manager) WriteWBShipmentsAll(ctx context.Context) error {
@@ -157,37 +102,7 @@ func (s *Manager) WriteWBShipmentsAll(ctx context.Context) error {
 }
 
 func (s *Manager) WriteYandexShipments(ctx context.Context) error {
-	cabinets, err := s.tm.GetCabinetsByMp(ctx, db.MarketYandex)
-	if err != nil {
-		return err
-	}
-
-	msk := time.FixedZone("MSK", 3*3600)
-	now := time.Now().In(msk).AddDate(0, 0, -tradeplus.OrdersDaysAgo)
-	yesterday := time.Date(now.Year(), now.Month(), now.Day(), 0, 0, 0, 0, msk)
-
-	var failed []string
-	for _, cab := range cabinets {
-		if cab.Type != "fbs" {
-			continue
-		}
-		if cab.Settings.ShipmentsSheetID == "" {
-			s.Print(ctx, fmt.Sprintf("ymShipments: cabinet=%d skipped (no shipmentsSheetId)", cab.ID))
-			continue
-		}
-		m, err := yandex.NewShipmentsManager(ctx, cab)
-		if err != nil {
-			failed = append(failed, fmt.Sprintf("cab=%d init: %v", cab.ID, err))
-			continue
-		}
-		if err := m.WriteForDate(ctx, yesterday); err != nil {
-			failed = append(failed, err.Error())
-		}
-	}
-	if len(failed) > 0 {
-		return fmt.Errorf("ymShipments: %s", strings.Join(failed, "; "))
-	}
-	return nil
+	return s.writeShipments(ctx, db.MarketYandex)
 }
 
 func (s *Manager) WriteYandex(ctx context.Context) error {
@@ -203,6 +118,19 @@ func (s *Manager) writeOrders(ctx context.Context, mp string) error {
 	}
 	if err != nil {
 		return fmt.Errorf("write %s orders: %w", mp, err)
+	}
+	return nil
+}
+
+// writeShipments заполняет в складской таблице листы отгрузок маркетплейса за дни
+// этого месяца по вчера, которых там нет или которые пустые (см. tradeplus.ShipmentsWriter).
+func (s *Manager) writeShipments(ctx context.Context, mp string) error {
+	written, err := s.bs.Manager().SyncShipments(ctx, mp)
+	if len(written) > 0 {
+		s.Print(ctx, fmt.Sprintf("%s shipments written: %s", mp, tradeplus.FormatDays(written)))
+	}
+	if err != nil {
+		return fmt.Errorf("write %s shipments: %w", mp, err)
 	}
 	return nil
 }

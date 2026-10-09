@@ -73,6 +73,15 @@ func (m Manager) GetCabinetsByMp(ctx context.Context, mp string) ([]Cabinet, err
 	return NewCabinets(dbCabinets), nil
 }
 
+// GetCabinets возвращает кабинеты всех маркетплейсов.
+func (m Manager) GetCabinets(ctx context.Context) (Cabinets, error) {
+	dbCabinets, err := m.repo.CabinetsByFilters(ctx, &db.CabinetSearch{}, db.PagerNoLimit)
+	if err != nil {
+		return nil, err
+	}
+	return NewCabinets(dbCabinets), nil
+}
+
 func (m Manager) GetCabinetByID(ctx context.Context, id int) (Cabinet, error) {
 	cabinet, err := m.repo.CabinetByID(ctx, id)
 	if err != nil {
@@ -149,6 +158,23 @@ func (m Manager) SetOrdersSheet(ctx context.Context, mp, spreadsheetID string) e
 		}
 		return nil
 	})
+}
+
+// SetShipmentsSheet делает spreadsheetID таблицей отгрузок (settings.shipmentsSheetId)
+// всех кабинетов: она одна на все маркетплейсы. Меняется только этот ключ: в settings
+// бывают ключи, о которых CabinetSettings не знает, и запись всей структуры их бы стёрла.
+func (m Manager) SetShipmentsSheet(ctx context.Context, spreadsheetID string) error {
+	res, err := m.db.ModelContext(ctx, (*db.Cabinet)(nil)).
+		Set(`"settings" = jsonb_set("settings", '{shipmentsSheetId}', to_jsonb(?::text))`, spreadsheetID).
+		Where(`"statusId" IN (?)`, pg.In([]int{db.StatusEnabled, db.StatusDisabled})).
+		Update()
+	if err != nil {
+		return err
+	}
+	if res.RowsAffected() == 0 {
+		return errors.New("нет кабинетов")
+	}
+	return nil
 }
 
 func (m Manager) GetReviewByID(ctx context.Context, reviewID string) (*Review, error) {

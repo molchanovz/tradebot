@@ -71,6 +71,8 @@ func (m *Manager) RegisterBotHandlers() {
 	m.b.RegisterHandler(botlib.HandlerTypeCallbackQueryData, CallbackChangeAPIHandler, botlib.MatchTypePrefix, m.ChangeApiHandler)
 	m.b.RegisterHandler(botlib.HandlerTypeCallbackQueryData, CallbackChangeSheetHandler, botlib.MatchTypePrefix, m.ChangeSheetHandler)
 	m.b.RegisterHandler(botlib.HandlerTypeCallbackQueryData, CallbackOrdersSyncHandler, botlib.MatchTypePrefix, m.ordersSyncHandler)
+	m.b.RegisterHandler(botlib.HandlerTypeCallbackQueryData, CallbackShipmentsSheetHandler, botlib.MatchTypeExact, m.shipmentsSheetHandler)
+	m.b.RegisterHandler(botlib.HandlerTypeCallbackQueryData, CallbackShipmentsSyncHandler, botlib.MatchTypeExact, m.shipmentsSyncHandler)
 
 	m.b.RegisterHandler(botlib.HandlerTypeCallbackQueryData, CallbackShipmentsAllHandler, botlib.MatchTypeExact, m.shipmentsAllHandler)
 

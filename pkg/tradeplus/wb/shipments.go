@@ -362,12 +362,14 @@ func (a wbShipmentsAPI) statuses(ctx context.Context, ids []int) (supplierRu map
 	return supplierRu, wb, nil
 }
 
-// ShipmentsManager заливает FBS-отгрузки WB кабинета за выбранную дату в один
-// лист Google Sheets. ID склада пишется в отдельный столбец.
+// ShipmentsSheetPrefix — дневные листы отгрузок WB в складской таблице: «Отправлено на WB FBS-<число>».
+const ShipmentsSheetPrefix = "Отправлено на WB FBS-"
+
+// ShipmentsManager собирает FBS-отгрузки WB кабинета за день для складской таблицы
+// и ведёт агрегированный лист «Все заказы WB». ID склада пишется в отдельный столбец.
 type ShipmentsManager struct {
 	api              wbShipmentsAPI
 	sheets           google.SheetsService
-	spreadsheetID    string
 	allSpreadsheetID string
 	excludedWHs      map[int]struct{}
 	cabinetID        int
@@ -390,7 +392,6 @@ func NewShipmentsManager(cabinet tradeplus.Cabinet) (*ShipmentsManager, error) {
 	return &ShipmentsManager{
 		api:              newWBShipmentsAPI(cabinet.Key),
 		sheets:           google.NewSheetsService("pkg/client/google/token.json", "pkg/client/google/credentials.json"),
-		spreadsheetID:    cabinet.Settings.ShipmentsSheetID,
 		allSpreadsheetID: cabinet.Settings.ShipmentsAllSheetID,
 		excludedWHs:      excluded,
 		cabinetID:        cabinet.ID,
@@ -398,18 +399,19 @@ func NewShipmentsManager(cabinet tradeplus.Cabinet) (*ShipmentsManager, error) {
 	}, nil
 }
 
-// WriteForDate берёт supplies со scanDt = day (MSK), достаёт заказы/стикеры/статусы
-// и пишет все строки в один лист. ID склада находится в столбце "ID склада".
-func (m *ShipmentsManager) WriteForDate(ctx context.Context, day time.Time) error {
+// ShipmentsBlock берёт supplies со scanDt = day (MSK), достаёт заказы/стикеры/статусы
+// и собирает блок кабинета для листа дня. ID склада — в столбце "ID склада".
+func (m *ShipmentsManager) ShipmentsBlock(ctx context.Context, day time.Time) (tradeplus.ShipmentsBlock, error) {
+	block := tradeplus.ShipmentsBlock{Cabinet: m.cabinetName, Header: wbHeader}
 	msk := day.Location()
 
 	supplies, err := m.api.listSuppliesOnDate(ctx, msk, day)
 	if err != nil {
-		return fmt.Errorf("list supplies: %w", err)
+		return block, fmt.Errorf("cabinet=%d: list supplies: %w", m.cabinetID, err)
 	}
 	if len(supplies) == 0 {
-		log.Printf("wbShipments: cabinet=%d no supplies, skip", m.cabinetID)
-		return nil
+		log.Printf("wbShipments: cabinet=%d %s no supplies", m.cabinetID, day.Format("02.01"))
+		return block, nil
 	}
 
 	orderToSupply := map[int]*wbSupply{}
@@ -417,7 +419,7 @@ func (m *ShipmentsManager) WriteForDate(ctx context.Context, day time.Time) erro
 	for i := range supplies {
 		ids, err := m.api.orderIDsBySupply(ctx, supplies[i].ID)
 		if err != nil {
-			return fmt.Errorf("order-ids %s: %w", supplies[i].ID, err)
+			return block, fmt.Errorf("cabinet=%d: order-ids %s: %w", m.cabinetID, supplies[i].ID, err)
 		}
 		for _, id := range ids {
 			orderToSupply[id] = &supplies[i]
@@ -425,8 +427,8 @@ func (m *ShipmentsManager) WriteForDate(ctx context.Context, day time.Time) erro
 		}
 	}
 	if len(allOrderIDs) == 0 {
-		log.Printf("wbShipments: cabinet=%d no orders, skip", m.cabinetID)
-		return nil
+		log.Printf("wbShipments: cabinet=%d %s no orders", m.cabinetID, day.Format("02.01"))
+		return block, nil
 	}
 
 	wanted := make(map[int]struct{}, len(allOrderIDs))
@@ -437,16 +439,16 @@ func (m *ShipmentsManager) WriteForDate(ctx context.Context, day time.Time) erro
 	to := day.AddDate(0, 0, wbOrdersWindowFw)
 	orders, err := m.api.listOrdersInWindow(ctx, from, to, wanted)
 	if err != nil {
-		return fmt.Errorf("list orders: %w", err)
+		return block, fmt.Errorf("cabinet=%d: list orders: %w", m.cabinetID, err)
 	}
 
 	stickerMap, err := m.api.stickers(ctx, allOrderIDs)
 	if err != nil {
-		return fmt.Errorf("stickers: %w", err)
+		return block, fmt.Errorf("cabinet=%d: stickers: %w", m.cabinetID, err)
 	}
 	statusMap, _, err := m.api.statuses(ctx, allOrderIDs)
 	if err != nil {
-		return fmt.Errorf("statuses: %w", err)
+		return block, fmt.Errorf("cabinet=%d: statuses: %w", m.cabinetID, err)
 	}
 
 	byWh := map[int][]int{}
@@ -460,16 +462,21 @@ func (m *ShipmentsManager) WriteForDate(ctx context.Context, day time.Time) erro
 	}
 	sort.Ints(whIDs)
 
-	var rows [][]string
 	for _, wh := range whIDs {
-		rows = append(rows, buildWBRows(byWh[wh], orderToSupply, orders, stickerMap, statusMap, msk)...)
+		block.Rows = append(block.Rows, buildWBRows(byWh[wh], orderToSupply, orders, stickerMap, statusMap, msk)...)
 	}
+	return block, nil
+}
 
-	title := fmt.Sprintf("Отправлено на WB FBS-%d", day.Day())
-	if err := m.upload(title, wbHeader, rows); err != nil {
-		return fmt.Errorf("cabinet=%d: %w", m.cabinetID, err)
-	}
-	return nil
+// NewShipmentsWriters — запись отгрузок WB в складскую таблицу: блок на каждый кабинет.
+func NewShipmentsWriters(ctx context.Context, cabinets tradeplus.Cabinets) ([]tradeplus.ShipmentsWriter, error) {
+	return tradeplus.NewShipmentsWriters(ctx, cabinets, ShipmentsSheetPrefix, func(_ context.Context, cabinet tradeplus.Cabinet) (tradeplus.ShipmentsSource, error) {
+		m, err := NewShipmentsManager(cabinet)
+		if err != nil {
+			return nil, err
+		}
+		return m, nil
+	})
 }
 
 // WriteAggregatedForDate синхронизирует общий лист «Все заказы WB»:
@@ -634,26 +641,6 @@ func buildWBRows(orderIDs []int, orderToSupply map[int]*wbSupply, orders map[int
 		})
 	}
 	return rows
-}
-
-func (m *ShipmentsManager) upload(title string, header []string, rows [][]string) error {
-	if len(rows) == 0 {
-		return nil
-	}
-	if _, err := m.sheets.EnsureSheet(m.spreadsheetID, title); err != nil {
-		return fmt.Errorf("ensure sheet %q: %w", title, err)
-	}
-	values := make([][]interface{}, 0, len(rows)+2)
-	values = append(values, toIface([]string{m.cabinetName}))
-	values = append(values, toIface(header))
-	for _, r := range rows {
-		values = append(values, toIface(r))
-	}
-	if err := m.sheets.Append(m.spreadsheetID, title+"!A1", values); err != nil {
-		return fmt.Errorf("append %q: %w", title, err)
-	}
-	log.Printf("wbShipments: cabinet=%d sheet=%q rows=%d", m.cabinetID, title, len(rows))
-	return nil
 }
 
 func (m *ShipmentsManager) uploadAggregated(rows [][]string, clearKeys []string, day time.Time) error {

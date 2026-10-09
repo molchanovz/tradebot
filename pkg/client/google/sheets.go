@@ -391,6 +391,16 @@ func (gs SheetsService) BatchClear(spreadsheetID string, ranges []string) error 
 // BatchWrite записывает несколько диапазонов одним запросом. Значения пишутся
 // как есть (RAW), как и в Write.
 func (gs SheetsService) BatchWrite(spreadsheetID string, data []ValueRange) error {
+	return gs.batchWrite(spreadsheetID, data, "RAW")
+}
+
+// BatchWriteUserEntered — как BatchWrite, но значения разбираются так, будто их
+// ввели руками (USER_ENTERED, как в Append): числа становятся числами.
+func (gs SheetsService) BatchWriteUserEntered(spreadsheetID string, data []ValueRange) error {
+	return gs.batchWrite(spreadsheetID, data, "USER_ENTERED")
+}
+
+func (gs SheetsService) batchWrite(spreadsheetID string, data []ValueRange, valueInputOption string) error {
 	if len(data) == 0 {
 		return nil
 	}
@@ -404,7 +414,7 @@ func (gs SheetsService) BatchWrite(spreadsheetID string, data []ValueRange) erro
 		vrs = append(vrs, &sheets.ValueRange{Range: d.Range, Values: d.Values})
 	}
 	_, err = srv.Spreadsheets.Values.BatchUpdate(spreadsheetID, &sheets.BatchUpdateValuesRequest{
-		ValueInputOption: "RAW",
+		ValueInputOption: valueInputOption,
 		Data:             vrs,
 	}).Do()
 	if err != nil {
@@ -434,6 +444,11 @@ func (gs SheetsService) AddSheets(spreadsheetID string, titles []string) error {
 		return fmt.Errorf("add sheets %q: %w", titles, err)
 	}
 	return nil
+}
+
+// ColumnLetter — буква колонки по 0-based индексу: 0 → A, 25 → Z, 26 → AA.
+func ColumnLetter(idx int) string {
+	return columnIndexToLetter(idx)
 }
 
 // SheetRange собирает A1-диапазон на листе title, например 'Заказы WB-9'!A2:B.

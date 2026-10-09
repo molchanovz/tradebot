@@ -3,6 +3,7 @@ package tradeplus
 import (
 	"context"
 	"errors"
+	"fmt"
 	"strings"
 	"testing"
 	"time"
@@ -123,6 +124,25 @@ func TestOrdersWriter_Sync(t *testing.T) {
 		}, sheets.writtenTitles())
 	})
 
+	// У WB между днями пауза: каждый день пишется сразу, не дожидаясь остальных.
+	t.Run("slow source writes each day as it loads", func(t *testing.T) {
+		sheets := newSheets()
+		source := &fakeSource{fail: map[string]bool{"04.10": true}}
+		var progress []string
+		w := OrdersWriter{spreadsheetID: "book", prefix: "Заказы WB-", dayInterval: time.Millisecond, source: source, sheets: sheets}
+		w.Progress = func(written []time.Time, total int) {
+			progress = append(progress, fmt.Sprintf("%d/%d", len(written), total))
+		}
+
+		written, err := w.Sync(t.Context(), now)
+		require.ErrorContains(t, err, "04.10")
+
+		assert.Equal(t, "03.10, 05.10, 08.10", FormatDays(written))
+		assert.Equal(t, 3, sheets.writes)
+		assert.Equal(t, []string{"Заказы WB-5"}, sheets.added)
+		assert.Equal(t, []string{"0/4", "1/4", "2/4", "3/4"}, progress)
+	})
+
 	t.Run("nothing to write when the table is complete", func(t *testing.T) {
 		sheets := newSheets()
 		sheets.a1["заказы wb-3"] = "Отчет за 03.10.2026"
@@ -199,10 +219,22 @@ func TestCabinets_OrdersSpreadsheetIDs(t *testing.T) {
 		withID(cabinet(id2, db.StatusDisabled), 4),
 		withID(cabinet(id1, db.StatusEnabled), 5),
 	}
-	got := mixed.OrdersCabinets()
+	got := mixed.Enabled()
 	require.Len(t, got, 2)
 	assert.Equal(t, []int{5, 6}, []int{got[0].ID, got[1].ID})
 	assert.Equal(t, []string{id1}, got.OrdersSpreadsheetIDs())
+}
+
+func TestCabinets_ShipmentsSpreadsheetIDs(t *testing.T) {
+	const id = "1WOUHE2qs-c2idJN4pduWkT6PqJzX8XioI-I3ZoeGxMo"
+	cabinet := func(shipmentsSheetID string) Cabinet {
+		c := Cabinet{}
+		c.Settings.ShipmentsSheetID = shipmentsSheetID
+		return c
+	}
+
+	assert.Equal(t, []string{id}, Cabinets{cabinet(""), cabinet(id), cabinet(id)}.ShipmentsSpreadsheetIDs())
+	assert.Empty(t, Cabinets{cabinet("")}.ShipmentsSpreadsheetIDs())
 }
 
 // fakeSheets — таблица в памяти: лист → значение A1 (нет ключа — нет листа).
@@ -212,6 +244,7 @@ type fakeSheets struct {
 	added   []string
 	cleared []string
 	written []google.ValueRange
+	writes  int
 }
 
 func (f *fakeSheets) Spreadsheet(string) (string, []google.SheetStat, error) {
@@ -246,6 +279,7 @@ func (f *fakeSheets) BatchClear(_ string, ranges []string) error {
 
 func (f *fakeSheets) BatchWrite(_ string, data []google.ValueRange) error {
 	f.written = append(f.written, data...)
+	f.writes++
 	return nil
 }
 

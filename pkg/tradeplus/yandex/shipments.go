@@ -12,7 +12,6 @@ import (
 	"strconv"
 	"time"
 
-	"tradebot/pkg/client/google"
 	"tradebot/pkg/tradeplus"
 )
 
@@ -323,16 +322,18 @@ func (a ymShipmentsAPI) shipmentWarehouses(ctx context.Context, orders []ymOrder
 	return out, nil
 }
 
-// ShipmentsManager заливает FBS-отгрузки Yandex кабинета за выбранную дату
-// в один лист Google Sheets (без разделения main/ФФ).
+// ShipmentsSheetPrefix — дневные листы отгрузок Яндекс Маркета в складской таблице:
+// «Отправлено на Яндекс FBS-<число>».
+const ShipmentsSheetPrefix = "Отправлено на Яндекс FBS-"
+
+// ShipmentsManager собирает FBS-отгрузки Yandex кабинета за день для складской
+// таблицы (без разделения main/ФФ).
 type ShipmentsManager struct {
-	api           ymShipmentsAPI
-	sheets        google.SheetsService
-	spreadsheetID string
-	campaignID    string
-	businessID    int64
-	cabinetID     int
-	cabinetName   string
+	api         ymShipmentsAPI
+	campaignID  string
+	businessID  int64
+	cabinetID   int
+	cabinetName string
 }
 
 func NewShipmentsManager(ctx context.Context, cabinet tradeplus.Cabinet) (*ShipmentsManager, error) {
@@ -351,24 +352,25 @@ func NewShipmentsManager(ctx context.Context, cabinet tradeplus.Cabinet) (*Shipm
 		return nil, fmt.Errorf("cabinet %d: resolve businessId: %w", cabinet.ID, err)
 	}
 	return &ShipmentsManager{
-		api:           api,
-		sheets:        google.NewSheetsService("pkg/client/google/token.json", "pkg/client/google/credentials.json"),
-		spreadsheetID: cabinet.Settings.ShipmentsSheetID,
-		campaignID:    *cabinet.ClientID,
-		businessID:    businessID,
-		cabinetID:     cabinet.ID,
-		cabinetName:   cabinet.Name,
+		api:         api,
+		campaignID:  *cabinet.ClientID,
+		businessID:  businessID,
+		cabinetID:   cabinet.ID,
+		cabinetName: cabinet.Name,
 	}, nil
 }
 
-func (m *ShipmentsManager) WriteForDate(ctx context.Context, day time.Time) error {
+// ShipmentsBlock собирает FBS-отгрузки кабинета с датой отгрузки day для листа дня.
+func (m *ShipmentsManager) ShipmentsBlock(ctx context.Context, day time.Time) (tradeplus.ShipmentsBlock, error) {
+	block := tradeplus.ShipmentsBlock{Cabinet: m.cabinetName, Header: ymShipmentsHeader}
+
 	orders, err := m.api.listOrdersByShipmentDate(ctx, m.businessID, day)
 	if err != nil {
-		return fmt.Errorf("list orders: %w", err)
+		return block, fmt.Errorf("cabinet=%d: list orders: %w", m.cabinetID, err)
 	}
 	if len(orders) == 0 {
-		log.Printf("ymShipments: cabinet=%d no orders, skip", m.cabinetID)
-		return nil
+		log.Printf("ymShipments: cabinet=%d %s no orders", m.cabinetID, day.Format("02.01"))
+		return block, nil
 	}
 
 	// Для CANCELLED заказов дёргаем /v2/campaigns/{cid}/stats/orders — только там есть
@@ -410,23 +412,26 @@ func (m *ShipmentsManager) WriteForDate(ctx context.Context, day time.Time) erro
 		whNames = map[int64]string{}
 	}
 
-	rows := buildYMShipmentRows(filtered, whNames, day)
-	title := fmt.Sprintf("Отправлено на Яндекс FBS-%d", day.Day())
-	if _, err := m.sheets.EnsureSheet(m.spreadsheetID, title); err != nil {
-		return fmt.Errorf("ensure sheet %q: %w", title, err)
-	}
+	block.Rows = buildYMShipmentRows(filtered, whNames, day)
+	return block, nil
+}
 
-	values := make([][]interface{}, 0, len(rows)+2)
-	values = append(values, toIfaceYM([]string{m.cabinetName}))
-	values = append(values, toIfaceYM(ymShipmentsHeader))
-	for _, r := range rows {
-		values = append(values, toIfaceYM(r))
+// NewShipmentsWriters — запись отгрузок Яндекс Маркета в складскую таблицу. Отгрузки
+// есть только у FBS-кабинетов, остальные пропускаются.
+func NewShipmentsWriters(ctx context.Context, cabinets tradeplus.Cabinets) ([]tradeplus.ShipmentsWriter, error) {
+	fbs := make(tradeplus.Cabinets, 0, len(cabinets))
+	for _, c := range cabinets {
+		if c.Type == "fbs" {
+			fbs = append(fbs, c)
+		}
 	}
-	if err := m.sheets.Append(m.spreadsheetID, title+"!A1", values); err != nil {
-		return fmt.Errorf("append %q: %w", title, err)
-	}
-	log.Printf("ymShipments: cabinet=%d sheet=%q rows=%d", m.cabinetID, title, len(rows))
-	return nil
+	return tradeplus.NewShipmentsWriters(ctx, fbs, ShipmentsSheetPrefix, func(ctx context.Context, cabinet tradeplus.Cabinet) (tradeplus.ShipmentsSource, error) {
+		m, err := NewShipmentsManager(ctx, cabinet)
+		if err != nil {
+			return nil, err
+		}
+		return m, nil
+	})
 }
 
 func buildYMShipmentRows(orders []ymOrder, whNames map[int64]string, day time.Time) [][]string {
@@ -522,12 +527,4 @@ func ymRegionOf(o ymOrder) string {
 		return o.Delivery.Courier.Region.Parent.Name
 	}
 	return o.Delivery.Pickup.Region.Parent.Name
-}
-
-func toIfaceYM(row []string) []interface{} {
-	out := make([]interface{}, len(row))
-	for i, v := range row {
-		out[i] = v
-	}
-	return out
 }

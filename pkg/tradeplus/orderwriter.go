@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"log"
 	"maps"
 	"slices"
 	"strconv"
@@ -56,6 +57,10 @@ type ordersSheets interface {
 // На каждое число месяца в таблице свой лист «<prefix><число>», в его A1 —
 // «Отчет за 02.01.2006»: по этой отметке видно, за какую дату лист заполнен.
 type OrdersWriter struct {
+	// Progress, если задан, вызывается перед загрузкой (written пуст) и после
+	// каждой записи в таблицу: сколько дней уже внесено из total.
+	Progress func(written []time.Time, total int)
+
 	spreadsheetID string
 	prefix        string
 	// dayInterval — пауза между запросами к маркетплейсу за разные дни.
@@ -101,11 +106,34 @@ func (w OrdersWriter) Sync(ctx context.Context, now time.Time) ([]time.Time, err
 	if err != nil {
 		return nil, err
 	}
+	if len(days) > 0 {
+		log.Printf("orders %s<число>: заношу %s", w.prefix, FormatDays(days))
+	}
+	w.progress(nil, len(days))
 
-	var reports []OrdersReport
+	var written []time.Time
+	var pending []OrdersReport
 	var errs []error
+	flush := func() {
+		if len(pending) == 0 {
+			return
+		}
+		if err := w.write(pending, existing); err != nil {
+			errs = append(errs, err)
+		} else {
+			for _, r := range pending {
+				written = append(written, r.Day)
+				log.Printf("orders %s<число>: внесено %s", w.prefix, r.Day.Format("02.01"))
+			}
+			w.progress(written, len(days))
+		}
+		pending = nil
+	}
+
 	for i, day := range days {
 		if i > 0 && w.dayInterval > 0 {
+			// Источник медленный (WB): пока ждём, собранное уже лежит в таблице.
+			flush()
 			if err := sleep(ctx, w.dayInterval); err != nil {
 				errs = append(errs, err)
 				break
@@ -116,18 +144,17 @@ func (w OrdersWriter) Sync(ctx context.Context, now time.Time) ([]time.Time, err
 			errs = append(errs, fmt.Errorf("%s: %w", day.Format("02.01"), err))
 			continue
 		}
-		reports = append(reports, r)
+		pending = append(pending, r)
 	}
+	flush()
 
-	if err := w.write(reports, existing); err != nil {
-		return nil, errors.Join(append(errs, err)...)
-	}
-
-	written := make([]time.Time, 0, len(reports))
-	for _, r := range reports {
-		written = append(written, r.Day)
-	}
 	return written, errors.Join(errs...)
+}
+
+func (w OrdersWriter) progress(written []time.Time, total int) {
+	if w.Progress != nil {
+		w.Progress(written, total)
+	}
 }
 
 // daysToWrite оставляет дни, на листах которых нет отметки «Отчет за <дата>»:
@@ -161,8 +188,9 @@ func (w OrdersWriter) daysToWrite(days []time.Time, existing map[string]string) 
 	return todo, nil
 }
 
-// write стирает старые данные на листах дней и записывает отчёты. Запросов два
-// на все дни сразу, чтобы не упираться в лимит Google на запись.
+// write стирает старые данные на листах дней и записывает отчёты: два запроса на
+// все переданные дни, чтобы не упираться в лимит Google на запись. Созданные
+// листы добавляет в existing.
 func (w OrdersWriter) write(reports []OrdersReport, existing map[string]string) error {
 	if len(reports) == 0 {
 		return nil
@@ -181,6 +209,9 @@ func (w OrdersWriter) write(reports []OrdersReport, existing map[string]string) 
 
 	if err := w.sheets.AddSheets(w.spreadsheetID, newSheets); err != nil {
 		return err
+	}
+	for _, title := range newSheets {
+		existing[strings.ToLower(title)] = title
 	}
 	// A1 стирается вместе с данными: если запись ниже не пройдёт, у дня не будет
 	// отметки, и он допишется при следующем запуске.
@@ -287,10 +318,10 @@ func (b OrdersBlock) values() [][]interface{} {
 	return out
 }
 
-// OrdersCabinets — кабинеты, которые попадают в отчёт по заказам: включённые,
-// по возрастанию ID. Порядок важен: по нему идут секции на листе Ozon, а без
-// сортировки база отдаёт строки как придётся.
-func (cc Cabinets) OrdersCabinets() Cabinets {
+// Enabled — кабинеты, которые попадают в отчёты по заказам и отгрузкам: включённые,
+// по возрастанию ID. Порядок важен: по нему идут секции и блоки кабинетов на
+// листах, а без сортировки база отдаёт строки как придётся.
+func (cc Cabinets) Enabled() Cabinets {
 	out := make(Cabinets, 0, len(cc))
 	for _, c := range cc {
 		if c.StatusID == db.StatusEnabled {
