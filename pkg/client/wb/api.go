@@ -11,6 +11,8 @@ import (
 	"net/url"
 	"strconv"
 	"time"
+
+	"tradebot/pkg/client/apierr"
 )
 
 type Client struct {
@@ -359,7 +361,7 @@ func (c Client) statisticsOnDate(ctx context.Context, path string, date time.Tim
 			case <-time.After(statisticsRetryAfter(resp.Header)):
 			}
 		default:
-			return nil, fmt.Errorf("wb %s: %s: %s", path, resp.Status, body)
+			return nil, &apierr.Error{Market: apierr.MarketWB, Method: path, Status: resp.StatusCode, Body: string(body)}
 		}
 	}
 }

@@ -5,14 +5,18 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"math/rand/v2"
 	"net/http"
 	"strconv"
 	"time"
+
+	"tradebot/pkg/client/apierr"
 )
 
 type Client struct {
 	hc               *http.Client
 	clientID, apiKey string
+	onRateLimit      func(retry int, delay time.Duration)
 }
 
 func NewClient(clientID, apiKey string) Client {
@@ -25,40 +29,80 @@ func NewClient(clientID, apiKey string) Client {
 	}
 }
 
+// WithRateLimitHook возвращает копию клиента, которая перед каждым повтором после 429
+// вызывает f с номером повтора (с единицы) и паузой до него.
+func (c Client) WithRateLimitHook(f func(retry int, delay time.Duration)) Client {
+	c.onRateLimit = f
+	return c
+}
+
+const (
+	// RateLimitRetries — сколько раз повторяем запрос после 429: Озон ограничивает
+	// число запросов в секунду на кабинет, и через секунду-две запрос обычно проходит.
+	RateLimitRetries = 3
+	// rateLimitJitter — случайная добавка к паузе, чтобы параллельные запросы
+	// не повторялись в одну и ту же секунду.
+	rateLimitJitter = 500 * time.Millisecond
+)
+
+// sleep подменяется в тестах, чтобы не ждать паузы между повторами.
+var sleep = time.Sleep
+
+// RateLimitDelay — пауза перед повтором номер attempt (с нуля) после 429:
+// сколько просит Озон в Retry-After, иначе 1, 2, 3 секунды.
+func RateLimitDelay(attempt int, h http.Header) time.Duration {
+	jitter := rand.N(rateLimitJitter)
+	if s, err := strconv.Atoi(h.Get("Retry-After")); err == nil && s > 0 {
+		return time.Duration(s)*time.Second + jitter
+	}
+	return time.Duration(attempt+1)*time.Second + jitter
+}
+
 func (c Client) request(reqType, baseURL string, headers map[string]string, params map[string]string, body []byte) (string, error) {
-	req, err := http.NewRequest(reqType, baseURL, bytes.NewBuffer(body))
+	for attempt := 0; ; attempt++ {
+		req, err := http.NewRequest(reqType, baseURL, bytes.NewBuffer(body))
+		if err != nil {
+			return "", fmt.Errorf("ошибка создания запроса: %w", err)
+		}
 
-	if err != nil {
-		return "", fmt.Errorf("ошибка создания запроса: %w", err)
+		for s := range headers {
+			req.Header.Set(s, headers[s])
+		}
+
+		q := req.URL.Query()
+		for s := range params {
+			q.Add(s, params[s])
+		}
+
+		req.URL.RawQuery = q.Encode()
+
+		resp, err := c.hc.Do(req)
+		if err != nil {
+			return "", fmt.Errorf("ошибка выполнения запроса: %w", err)
+		}
+
+		switch {
+		case resp.StatusCode == http.StatusOK:
+			jsonString, err := io.ReadAll(resp.Body)
+			_ = resp.Body.Close()
+			if err != nil {
+				return "", err
+			}
+			return string(jsonString), nil
+		case resp.StatusCode == http.StatusTooManyRequests && attempt < RateLimitRetries:
+			_ = resp.Body.Close()
+			delay := RateLimitDelay(attempt, resp.Header)
+			if c.onRateLimit != nil {
+				c.onRateLimit(attempt+1, delay)
+			}
+			sleep(delay)
+		default:
+			apiErr := apierr.FromResponse(apierr.MarketOzon, resp)
+			apiErr.Attempts = attempt + 1
+			_ = resp.Body.Close()
+			return "", apiErr
+		}
 	}
-
-	for s := range headers {
-		req.Header.Set(s, headers[s])
-	}
-
-	q := req.URL.Query()
-	for s := range params {
-		q.Add(s, params[s])
-	}
-
-	req.URL.RawQuery = q.Encode()
-
-	resp, err := c.hc.Do(req)
-	if err != nil {
-		return "", fmt.Errorf("ошибка выполнения запроса: %w", err)
-	}
-	defer resp.Body.Close()
-
-	if resp.StatusCode != http.StatusOK {
-		respBody, _ := io.ReadAll(resp.Body)
-		return "", fmt.Errorf("get status: %v: %s", resp.Status, respBody)
-	}
-
-	jsonString, err := io.ReadAll(resp.Body)
-	if err != nil {
-		return "", err
-	}
-	return string(jsonString), nil
 }
 
 func (c Client) get(obj any, baseURL string, headers map[string]string, params map[string]string, body []byte) error {

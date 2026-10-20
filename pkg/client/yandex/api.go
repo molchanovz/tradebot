@@ -9,6 +9,8 @@ import (
 	"net/url"
 	"strconv"
 	"time"
+
+	"tradebot/pkg/client/apierr"
 )
 
 var campaignID = 90788543
@@ -36,7 +38,7 @@ func ShipmentInfo(token, supplyID string) (string, error) {
 
 	// Проверяем статус ответа
 	if resp.StatusCode != http.StatusOK {
-		return "", fmt.Errorf("ошибка ShipmentInfo: получен статус %v", resp.StatusCode)
+		return "", apierr.FromResponse(apierr.MarketYandex, resp)
 	}
 
 	// Читаем тело ответа
@@ -69,7 +71,7 @@ func OrderInfo(token string, orderID int64) (string, error) {
 
 	// Проверяем статус ответа
 	if resp.StatusCode != http.StatusOK {
-		return "", fmt.Errorf("ошибка: получен статус %v", resp.StatusCode)
+		return "", apierr.FromResponse(apierr.MarketYandex, resp)
 	}
 
 	// Читаем тело ответа
@@ -102,7 +104,7 @@ func GetStickers(token string, orderID int64) (string, error) {
 
 	// Проверяем статус ответа
 	if resp.StatusCode != http.StatusOK {
-		return "", fmt.Errorf("ошибка: получен статус %v", resp.StatusCode)
+		return "", apierr.FromResponse(apierr.MarketYandex, resp)
 	}
 
 	// Читаем тело ответа
@@ -155,7 +157,7 @@ func getOrders(ctx context.Context, campaignID, yandexKey string, date time.Time
 		return "", err
 	}
 	if resp.StatusCode != http.StatusOK {
-		return "", fmt.Errorf("ошибка: получен статус %v: %s", resp.StatusCode, jsonString)
+		return "", &apierr.Error{Market: apierr.MarketYandex, Method: req.URL.Path, Status: resp.StatusCode, Body: string(jsonString)}
 	}
 
 	return string(jsonString), nil

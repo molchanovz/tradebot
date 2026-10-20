@@ -125,6 +125,10 @@ func (m *Manager) getWbStickers(ctx context.Context, bot *botlib.Bot, chatID int
 
 	err = WaitReadyFile(ctx, bot, chatID, progressChan, done, errChan)
 	if err != nil {
+		log.Printf("getWbStickers: supply=%s: %v", supplyID, err)
+		if _, sendErr := SendTextMessage(ctx, bot, chatID, userError(err)); sendErr != nil {
+			log.Println(sendErr)
+		}
 		return err
 	}
 	return nil
@@ -151,7 +155,7 @@ func (m *Manager) wbStocksHandler(ctx context.Context, bot *botlib.Bot, update *
 
 	stocks, lostWarehouses, err := manager.GetStocks()
 	if err != nil {
-		_, err = SendTextMessage(ctx, bot, chatID, fmt.Sprintf("Ошибка при анализе остатков: %v", err))
+		_, err = SendTextMessage(ctx, bot, chatID, fmt.Sprintf("Ошибка при анализе остатков: %v", userError(err)))
 		if err != nil {
 			m.sl.Errorf("send msg failed: %v", err)
 			return
@@ -200,7 +204,7 @@ func (m *Manager) returnsHandler(ctx context.Context, bot *botlib.Bot, update *m
 
 	filePath, err := wb.NewReturnsManager(cabinets[0].Key).WriteReturns()
 	if err != nil {
-		_, err = SendTextMessage(ctx, bot, chatID, fmt.Sprintf("Ошибка при анализе остатков: %v", err))
+		_, err = SendTextMessage(ctx, bot, chatID, fmt.Sprintf("Ошибка при анализе остатков: %v", userError(err)))
 		if err != nil {
 			m.sl.Errorf("send msg failed: %v", err)
 			return

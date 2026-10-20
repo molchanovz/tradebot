@@ -14,6 +14,7 @@ import (
 	"sync"
 	"time"
 
+	"tradebot/pkg/client/apierr"
 	"tradebot/pkg/client/google"
 	"tradebot/pkg/client/ozon"
 	"tradebot/pkg/tradeplus"
@@ -57,26 +58,34 @@ func (a ozonReportAPI) post(path string, body, out any) error {
 	if err != nil {
 		return err
 	}
-	req, err := http.NewRequest(http.MethodPost, "https://api-seller.ozon.ru"+path, bytes.NewReader(b))
-	if err != nil {
-		return err
-	}
-	req.Header.Set("Content-Type", "application/json")
-	req.Header.Set("Client-Id", a.clientID)
-	req.Header.Set("Api-Key", a.apiKey)
+	var data []byte
+	for attempt := 0; ; attempt++ {
+		req, err := http.NewRequest(http.MethodPost, "https://api-seller.ozon.ru"+path, bytes.NewReader(b))
+		if err != nil {
+			return err
+		}
+		req.Header.Set("Content-Type", "application/json")
+		req.Header.Set("Client-Id", a.clientID)
+		req.Header.Set("Api-Key", a.apiKey)
 
-	resp, err := a.hc.Do(req)
-	if err != nil {
-		return err
-	}
-	defer func() { _ = resp.Body.Close() }()
+		resp, err := a.hc.Do(req)
+		if err != nil {
+			return err
+		}
+		data, err = io.ReadAll(resp.Body)
+		_ = resp.Body.Close()
+		if err != nil {
+			return err
+		}
 
-	data, err := io.ReadAll(resp.Body)
-	if err != nil {
-		return err
-	}
-	if resp.StatusCode != http.StatusOK {
-		return fmt.Errorf("ozon %s %d: %s", path, resp.StatusCode, string(data))
+		if resp.StatusCode == http.StatusTooManyRequests && attempt < ozon.RateLimitRetries {
+			time.Sleep(ozon.RateLimitDelay(attempt, resp.Header))
+			continue
+		}
+		if resp.StatusCode != http.StatusOK {
+			return &apierr.Error{Market: apierr.MarketOzon, Method: path, Status: resp.StatusCode, Body: string(data), Attempts: attempt + 1}
+		}
+		break
 	}
 	if out == nil {
 		return nil

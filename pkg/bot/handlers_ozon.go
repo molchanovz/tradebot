@@ -255,11 +255,10 @@ func (m *Manager) ozonPrintStickers(ctx context.Context, bot *botlib.Bot, update
 			go func() {
 				filePaths, err = manager.GetAllLabels(progressChan)
 				if errors.Is(err, ozon.ErrNoRows) {
-					_, err = bot.AnswerCallbackQuery(ctx, &botlib.AnswerCallbackQueryParams{Text: "Заказов в сборке нет", ShowAlert: true, CallbackQueryID: update.CallbackQuery.ID})
-					if err != nil {
-						log.Println(err)
-						return
+					if _, cbErr := bot.AnswerCallbackQuery(ctx, &botlib.AnswerCallbackQueryParams{Text: "Заказов в сборке нет", ShowAlert: true, CallbackQueryID: update.CallbackQuery.ID}); cbErr != nil {
+						log.Println(cbErr)
 					}
+					errChan <- err
 					return
 				} else if err != nil {
 					log.Println("Ошибка при получении файла:", err)
@@ -276,11 +275,10 @@ func (m *Manager) ozonPrintStickers(ctx context.Context, bot *botlib.Bot, update
 			go func() {
 				filePaths, newOrders, err = manager.GetNewLabels(progressChan)
 				if errors.Is(err, ozon.ErrNoRows) {
-					_, err = bot.AnswerCallbackQuery(ctx, &botlib.AnswerCallbackQueryParams{Text: "Новых заказов нет", ShowAlert: true, CallbackQueryID: update.CallbackQuery.ID})
-					if err != nil {
-						log.Println(err)
-						return
+					if _, cbErr := bot.AnswerCallbackQuery(ctx, &botlib.AnswerCallbackQueryParams{Text: "Новых заказов нет", ShowAlert: true, CallbackQueryID: update.CallbackQuery.ID}); cbErr != nil {
+						log.Println(cbErr)
 					}
+					errChan <- err
 					return
 				} else if err != nil {
 					log.Println("Ошибка при получении файла:", err)
@@ -305,8 +303,12 @@ func (m *Manager) ozonPrintStickers(ctx context.Context, bot *botlib.Bot, update
 	}
 
 	err = WaitReadyFile(ctx, bot, chatID, progressChan, done, errChan)
+	if errors.Is(err, ozon.ErrNoRows) {
+		return // пользователю уже ответили всплывающим уведомлением
+	}
 	if err != nil {
-		_, err = SendTextMessage(ctx, bot, chatID, err.Error())
+		log.Printf("ozonPrintStickers: cabinet=%d warehouse=%d flag=%s: %v", cabinetID, warehouseID, flag, err)
+		_, err = SendTextMessage(ctx, bot, chatID, userError(err))
 		if err != nil {
 			log.Println(err)
 			return

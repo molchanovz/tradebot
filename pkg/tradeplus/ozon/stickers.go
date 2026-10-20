@@ -46,7 +46,8 @@ func (m StickerManager) GetAllLabels(progressChan chan tradeplus.Progress) ([]st
 
 	log.Printf("ozonStickers: clientID=%s warehouse=%d GetAllLabels: start", m.clientID, m.warehouseID)
 
-	orderIds, err := m.getSortedFbsOrders()
+	progress := tradeplus.NewProgressReporter(progressChan)
+	orderIds, err := m.getSortedFbsOrders(progress)
 	if err != nil {
 		log.Printf("ozonStickers: clientID=%s warehouse=%d GetAllLabels: getSortedFbsOrders err=%v", m.clientID, m.warehouseID, err)
 		return []string{}, err
@@ -54,9 +55,10 @@ func (m StickerManager) GetAllLabels(progressChan chan tradeplus.Progress) ([]st
 
 	log.Printf("ozonStickers: clientID=%s warehouse=%d GetAllLabels: будет напечатано %d заказов", m.clientID, m.warehouseID, len(orderIds.Result.PostingsFBS))
 
-	readyPdfPath, err := m.getReadyPdf(orderIds, progressChan)
+	readyPdfPath, err := m.getReadyPdf(orderIds, progress)
 	if err != nil {
-		log.Println("Ошибка при получении файла:", err)
+		log.Printf("ozonStickers: clientID=%s warehouse=%d GetAllLabels: getReadyPdf err=%v", m.clientID, m.warehouseID, err)
+		return []string{}, err
 	}
 
 	return readyPdfPath, nil
@@ -67,7 +69,8 @@ func (m StickerManager) GetNewLabels(progressChan chan tradeplus.Progress) ([]st
 
 	log.Printf("ozonStickers: clientID=%s warehouse=%d GetNewLabels: start printedOrders=%d", m.clientID, m.warehouseID, len(m.printedOrders))
 
-	orders, err := m.getSortedFbsOrders()
+	progress := tradeplus.NewProgressReporter(progressChan)
+	orders, err := m.getSortedFbsOrders(progress)
 	if err != nil {
 		log.Printf("ozonStickers: clientID=%s warehouse=%d GetNewLabels: getSortedFbsOrders err=%v", m.clientID, m.warehouseID, err)
 		return []string{}, ozon.PostingslistFbs{}, err
@@ -94,7 +97,7 @@ func (m StickerManager) GetNewLabels(progressChan chan tradeplus.Progress) ([]st
 
 	log.Printf("ozonStickers: clientID=%s warehouse=%d GetNewLabels: будет напечатано %d новых заказов", m.clientID, m.warehouseID, len(newOrders.Result.PostingsFBS))
 
-	readyPdfPaths, err := m.getReadyPdf(newOrders, progressChan)
+	readyPdfPaths, err := m.getReadyPdf(newOrders, progress)
 	if err != nil {
 		return []string{}, newOrders, err
 	}
@@ -109,17 +112,27 @@ func firstN(s []string, n int) []string {
 	return s[:n]
 }
 
-func (m StickerManager) getReadyPdf(orderIds ozon.PostingslistFbs, progressChan chan tradeplus.Progress) ([]string, error) {
+// client — клиент Озона, который пишет в прогресс о паузах перед повтором после 429.
+func (m StickerManager) client(progress *tradeplus.ProgressReporter) ozon.Client {
+	return ozon.NewClient(m.clientID, m.token).WithRateLimitHook(func(retry int, delay time.Duration) {
+		seconds := max(1, int(delay.Round(time.Second)/time.Second))
+		progress.Note(fmt.Sprintf("Озон ограничил частоту запросов, повтор %d из %d через %d с…", retry, ozon.RateLimitRetries, seconds))
+	})
+}
+
+func (m StickerManager) getReadyPdf(orderIds ozon.PostingslistFbs, progress *tradeplus.ProgressReporter) ([]string, error) {
 	tradeplus.CreateDirectories()
 
+	client := m.client(progress)
 	totalOrders := len(orderIds.Result.PostingsFBS)
+	progress.Stage("Готовлю стикеры", 0, totalOrders)
 	var resultFiles []string
 	var combinedPDFs []string
 	batchCount := 0
 
 	for i, order := range orderIds.Result.PostingsFBS {
 		// 1. Скачиваем этикетку Ozon
-		labelPDF, err := ozon.NewClient(m.clientID, m.token).Labels(order.PostingNumber)
+		labelPDF, err := client.Labels(order.PostingNumber)
 		if err != nil {
 			return nil, fmt.Errorf("get labels failed: %w", err)
 		}
@@ -159,6 +172,7 @@ func (m StickerManager) getReadyPdf(orderIds ozon.PostingslistFbs, progressChan 
 			}
 
 			// 6. Объединяем PDF текущего батча
+			progress.Stage("Собираю PDF", i+1, totalOrders)
 			readyPdfPath := fmt.Sprintf("%s/ozon_%d.pdf", tradeplus.BatchesPath, batchCount)
 			if err = mergePDFsInDirectory(combinedPDFs, readyPdfPath); err != nil {
 				return nil, fmt.Errorf("ошибка объединения PDF для батча %d: %v", batchCount, err)
@@ -173,8 +187,8 @@ func (m StickerManager) getReadyPdf(orderIds ozon.PostingslistFbs, progressChan 
 			combinedPDFs = []string{}
 		}
 
-		if i%5 == 0 {
-			progressChan <- tradeplus.Progress{Current: i, Total: totalOrders}
+		if done := i + 1; done%5 == 0 && done != totalOrders {
+			progress.Stage("Готовлю стикеры", done, totalOrders)
 		}
 	}
 
@@ -185,18 +199,21 @@ func (m StickerManager) getReadyPdf(orderIds ozon.PostingslistFbs, progressChan 
 	return resultFiles, nil
 }
 
-func (m StickerManager) getSortedFbsOrders() (ozon.PostingslistFbs, error) {
+func (m StickerManager) getSortedFbsOrders(progress *tradeplus.ProgressReporter) (ozon.PostingslistFbs, error) {
 	since := time.Now().AddDate(0, 0, -7).Format("2006-01-02T15:04:05.000Z")
 	to := time.Now().AddDate(0, 0, 1).Format("2006-01-02T15:04:05.000Z")
 
 	log.Printf("ozonStickers: clientID=%s warehouse=%d fetch awaiting_deliver since=%s to=%s", m.clientID, m.warehouseID, since, to)
 
 	// Обработка FBS заказов
+	progress.Stage("Получаю список заказов из Озона", 0, 0)
+	client := m.client(progress)
+
 	var orders ozon.PostingslistFbs
 	offset := 0
 	limit := 1000
 	for {
-		postingsListFbs, err := ozon.NewClient(m.clientID, m.token).PostingsListFbs(since, to, offset, "awaiting_deliver")
+		postingsListFbs, err := client.PostingsListFbs(since, to, offset, "awaiting_deliver")
 		if err != nil {
 			log.Printf("ozonStickers: clientID=%s warehouse=%d PostingsListFbs offset=%d err=%v", m.clientID, m.warehouseID, offset, err)
 			return postingsListFbs, err

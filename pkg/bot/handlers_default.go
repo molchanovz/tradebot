@@ -2,11 +2,13 @@ package bot
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"log"
 	"math"
 	"os"
 	"strconv"
+	"strings"
 	"sync"
 
 	"tradebot/pkg/client/chatgptsrv"
@@ -261,33 +263,82 @@ func (m *Manager) startHandler(ctx context.Context, bot *botlib.Bot, update *mod
 	}
 }
 
+// WaitReadyFile показывает прогресс одним обновляемым сообщением и отправляет готовые
+// файлы. Ошибку пользователю не пишет: это делает вызывающий, иначе сообщение приходит
+// дважды. Сообщение о прогрессе при ошибке остаётся с этапом, на котором всё остановилось.
 func WaitReadyFile(ctx context.Context, bot *botlib.Bot, chatID int64, progressChan chan tradeplus.Progress, done chan []string, errChan chan error) error {
 	var progressMsgID int
-	var lastReportedCurrent int
-	var lastTotal int
-	var err error
+	var lastText string
+	show := func(text string) {
+		if text != lastText {
+			progressMsgID = showProgress(ctx, bot, chatID, progressMsgID, text)
+			lastText = text
+		}
+	}
+
 	for {
 		select {
 		case progress := <-progressChan:
-			progressMsgID, err = sendProgress(ctx, bot, chatID, progress, lastReportedCurrent, lastTotal, progressMsgID)
-			if err != nil {
-				return err
-			}
+			show(progressText(progress))
 
 		case filePath := <-done:
-			err = sendFiles(ctx, bot, chatID, filePath, progressMsgID)
-			if err != nil {
-				errChan <- err
+			if progressMsgID != 0 {
+				show("⏳ Отправляю файлы…")
 			}
-			return nil
+			return sendFiles(ctx, bot, chatID, filePath, progressMsgID)
 
 		case e := <-errChan:
-			if _, sendErr := bot.SendMessage(ctx, &botlib.SendMessageParams{ChatID: chatID, Text: e.Error()}); sendErr != nil {
-				log.Println(sendErr)
+			switch {
+			case progressMsgID == 0:
+			case errors.Is(e, ozon.ErrNoRows):
+				// печатать нечего — пользователю ответят отдельно, прогресс не нужен
+				if _, err := bot.DeleteMessage(ctx, &botlib.DeleteMessageParams{ChatID: chatID, MessageID: progressMsgID}); err != nil {
+					log.Println(err)
+				}
+			default:
+				show("⛔ Остановлено: " + strings.TrimPrefix(lastText, progressRunning))
 			}
 			return e
 		}
 	}
+}
+
+const progressRunning = "⏳ "
+
+// progressText — текст сообщения о прогрессе.
+func progressText(p tradeplus.Progress) string {
+	if p.Stage == "" {
+		return fmt.Sprintf("Обработано заказов: %d из %d", p.Current, p.Total)
+	}
+
+	text := progressRunning + p.Stage
+	if p.Total > 0 {
+		text += fmt.Sprintf(": %d из %d", p.Current, p.Total)
+	} else {
+		text += "…"
+	}
+	if p.Note != "" {
+		text += "\n⚠️ " + p.Note
+	}
+	return text
+}
+
+// showProgress отправляет сообщение о прогрессе или обновляет уже отправленное и
+// возвращает его ID. Ошибки Telegram только логирует: из-за прогресса печать не прерываем.
+func showProgress(ctx context.Context, bot *botlib.Bot, chatID int64, msgID int, text string) int {
+	if msgID == 0 {
+		msg, err := bot.SendMessage(ctx, &botlib.SendMessageParams{ChatID: chatID, Text: text})
+		if err != nil {
+			log.Println(err)
+			return 0
+		}
+		return msg.ID
+	}
+
+	if _, err := bot.EditMessageText(ctx, &botlib.EditMessageTextParams{ChatID: chatID, MessageID: msgID, Text: text}); err != nil {
+		log.Println(err)
+	}
+	return msgID
 }
 
 func sendFiles(ctx context.Context, bot *botlib.Bot, chatID int64, filePath []string, progressMsgID int) error {
@@ -331,39 +382,6 @@ func sendFiles(ctx context.Context, bot *botlib.Bot, chatID int64, filePath []st
 		return err
 	}
 	return nil
-}
-
-func sendProgress(ctx context.Context, bot *botlib.Bot, chatID int64, progress tradeplus.Progress, lastReportedCurrent int, lastTotal int, progressMsgID int) (int, error) {
-	if progress.Current != lastReportedCurrent || progress.Total != lastTotal {
-		lastReportedCurrent = progress.Current
-		lastTotal = progress.Total
-
-		text := fmt.Sprintf("Обработано заказов: %d из %d", progress.Current, progress.Total)
-
-		if progressMsgID == 0 {
-			msg, err := bot.SendMessage(ctx, &botlib.SendMessageParams{
-				ChatID: chatID,
-				Text:   text,
-			})
-			if err != nil {
-				log.Println(err)
-				return 0, err
-			} else {
-				progressMsgID = msg.ID
-			}
-		} else {
-			_, err := bot.EditMessageText(ctx, &botlib.EditMessageTextParams{
-				ChatID:    chatID,
-				MessageID: progressMsgID,
-				Text:      text,
-			})
-			if err != nil {
-				log.Println(err)
-				return 0, err
-			}
-		}
-	}
-	return progressMsgID, nil
 }
 
 type CallbacksForCabinetMarkup struct {
