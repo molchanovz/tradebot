@@ -78,6 +78,9 @@ func (a ozonReportAPI) post(path string, body, out any) error {
 			return err
 		}
 
+		if resp.StatusCode == http.StatusTooManyRequests {
+			log.Printf("ozon %s: 429, попытка %d, заголовки лимита: %s", path, attempt+1, ozon.RateLimitHeaders(resp.Header))
+		}
 		if resp.StatusCode == http.StatusTooManyRequests && attempt < ozon.RateLimitRetries {
 			time.Sleep(ozon.RateLimitDelay(attempt, resp.Header))
 			continue

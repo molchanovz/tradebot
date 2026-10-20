@@ -5,9 +5,12 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"log"
 	"math/rand/v2"
 	"net/http"
+	"slices"
 	"strconv"
+	"strings"
 	"time"
 
 	"tradebot/pkg/client/apierr"
@@ -58,6 +61,29 @@ func RateLimitDelay(attempt int, h http.Header) time.Duration {
 	return time.Duration(attempt+1)*time.Second + jitter
 }
 
+// RateLimitHeaders — заголовки ответа, похожие на сведения о лимите (Retry-After,
+// X-RateLimit-* и т.п.), одной строкой для лога. Озон в документации их не описывает,
+// так что по логу 429 видно, присылает ли он что-нибудь. Если таких нет, перечисляет
+// имена всех заголовков.
+func RateLimitHeaders(h http.Header) string {
+	var found []string
+	names := make([]string, 0, len(h))
+	for name, values := range h {
+		names = append(names, name)
+		n := strings.ToLower(name)
+		if strings.Contains(n, "limit") || strings.Contains(n, "retry") || strings.Contains(n, "reset") ||
+			strings.Contains(n, "quota") || strings.Contains(n, "throttl") {
+			found = append(found, name+"="+strings.Join(values, ","))
+		}
+	}
+	if len(found) == 0 {
+		slices.Sort(names)
+		return "нет, заголовки ответа: " + strings.Join(names, ", ")
+	}
+	slices.Sort(found)
+	return strings.Join(found, "; ")
+}
+
 func (c Client) request(reqType, baseURL string, headers map[string]string, params map[string]string, body []byte) (string, error) {
 	for attempt := 0; ; attempt++ {
 		req, err := http.NewRequest(reqType, baseURL, bytes.NewBuffer(body))
@@ -79,6 +105,10 @@ func (c Client) request(reqType, baseURL string, headers map[string]string, para
 		resp, err := c.hc.Do(req)
 		if err != nil {
 			return "", fmt.Errorf("ошибка выполнения запроса: %w", err)
+		}
+
+		if resp.StatusCode == http.StatusTooManyRequests {
+			log.Printf("ozon %s: 429, попытка %d, заголовки лимита: %s", req.URL.Path, attempt+1, RateLimitHeaders(resp.Header))
 		}
 
 		switch {

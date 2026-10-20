@@ -98,3 +98,16 @@ func TestClientRateLimitHook(t *testing.T) {
 	require.NoError(t, err)
 	assert.Equal(t, []int{1, 2}, retries)
 }
+
+func TestRateLimitHeaders(t *testing.T) {
+	h := http.Header{}
+	h.Set("Content-Type", "application/json")
+	h.Set("X-Ratelimit-Remaining", "0")
+	h.Set("Retry-After", "2")
+	assert.Equal(t, "Retry-After=2; X-Ratelimit-Remaining=0", RateLimitHeaders(h))
+
+	h = http.Header{}
+	h.Set("Content-Type", "application/json")
+	h.Set("Date", "Tue, 20 Oct 2026 13:59:10 GMT")
+	assert.Equal(t, "нет, заголовки ответа: Content-Type, Date", RateLimitHeaders(h))
+}
