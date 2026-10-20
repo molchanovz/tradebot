@@ -115,7 +115,7 @@ func (m Manager) CreateOrders(ctx context.Context, cabinetID int, newOrders ozon
 			dbOrder := db.Order{
 				PostingNumber: order.PostingNumber,
 				CabinetID:     cabinetID,
-				Article:       order.Products[0].OfferID,
+				Article:       order.FirstArticle(),
 				CreatedAt:     time.Now(),
 				StatusID:      db.StatusEnabled,
 			}

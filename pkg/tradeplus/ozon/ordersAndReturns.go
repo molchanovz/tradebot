@@ -66,51 +66,37 @@ func (m OrdersManager) section(day time.Time) (tradeplus.OrdersSection, error) {
 }
 
 func (m OrdersManager) getPostingsMapFBS(since, to string) (map[string]int, error) {
+	postingsListFbs, err := ozon.NewClient(m.clientID, m.token).PostingsListFbs(ozon.FbsFilter{Since: since, To: to})
+	if err != nil {
+		return nil, err
+	}
+
 	postingsWithCountFBS := make(map[string]int)
-
-	client := ozon.NewClient(m.clientID, m.token)
-	for offset := 0; ; offset += ozon.PostingsListLimit {
-		postingsListFbs, err := client.PostingsListFbs(since, to, offset, "")
-		if err != nil {
-			return nil, err
-		}
-
-		for _, posting := range postingsListFbs.Result.PostingsFBS {
-			if posting.Status != "cancelled" {
-				for _, product := range posting.Products {
-					postingsWithCountFBS[product.OfferID] += product.Quantity
-				}
+	for _, posting := range postingsListFbs.Result.PostingsFBS {
+		if posting.Status != "cancelled" {
+			for _, product := range posting.Products {
+				postingsWithCountFBS[product.OfferID] += product.Quantity
 			}
 		}
-
-		if !postingsListFbs.Result.HasNext {
-			return postingsWithCountFBS, nil
-		}
 	}
+	return postingsWithCountFBS, nil
 }
 
 func (m OrdersManager) getPostingsMapFBO(since, to string) (map[string]int, error) {
+	postingsListFbo, err := ozon.NewClient(m.clientID, m.token).PostingsListFbo(since, to)
+	if err != nil {
+		return nil, err
+	}
+
 	postingsWithCountFBO := make(map[string]int)
-
-	client := ozon.NewClient(m.clientID, m.token)
-	for offset := 0; ; offset += ozon.PostingsListLimit {
-		postingsListFbo, err := client.PostingsListFbo(since, to, offset)
-		if err != nil {
-			return nil, err
-		}
-
-		for _, posting := range postingsListFbo.Result {
-			if posting.Status != "cancelled" {
-				for _, product := range posting.Products {
-					postingsWithCountFBO[product.OfferID] += product.Quantity
-				}
+	for _, posting := range postingsListFbo.Result {
+		if posting.Status != "cancelled" {
+			for _, product := range posting.Products {
+				postingsWithCountFBO[product.OfferID] += product.Quantity
 			}
 		}
-
-		if len(postingsListFbo.Result) < ozon.PostingsListLimit {
-			return postingsWithCountFBO, nil
-		}
 	}
+	return postingsWithCountFBO, nil
 }
 
 func (m OrdersManager) GetReturnsMap(clientID, token, since, to string) (map[string]int, error) {

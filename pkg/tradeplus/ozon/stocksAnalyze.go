@@ -1,6 +1,7 @@
 package ozon
 
 import (
+	"log"
 	"strconv"
 	"time"
 
@@ -45,61 +46,41 @@ func (m AnalyzeManager) GetPostings() map[string]map[string]map[string]int {
 	}
 
 	for date, period := range dates {
+		client := ozon.NewClient(m.clientID, m.token)
+
 		// Обработка FBS заказов
-		offset := 0
-		limit := 1000
-		for {
-			postingsListFbs, _ := ozon.NewClient(m.clientID, m.token).PostingsListFbs(period.since, period.to, offset, "")
-
-			for _, order := range postingsListFbs.Result.PostingsFBS {
-				cluster := order.FinancialData.ClusterTo
-				if _, exists := postingsMap[cluster]; !exists {
-					postingsMap[cluster] = make(map[string]map[string]int)
-				}
-
-				for _, product := range order.Products {
-					if _, exists := postingsMap[cluster][product.OfferID]; !exists {
-						postingsMap[cluster][product.OfferID] = make(map[string]int)
-					}
-
-					postingsMap[cluster][product.OfferID][date] += product.Quantity
-				}
-			}
-
-			if !postingsListFbs.Result.HasNext || len(postingsListFbs.Result.PostingsFBS) < limit {
-				break
-			}
-			offset += limit
+		postingsListFbs, err := client.PostingsListFbs(ozon.FbsFilter{Since: period.since, To: period.to})
+		if err != nil {
+			log.Printf("ozonStocks: clientID=%s FBS за %s: %v", m.clientID, date, err)
+		}
+		for _, order := range postingsListFbs.Result.PostingsFBS {
+			addPostings(postingsMap, order.FinancialData.ClusterTo, order.Products, date)
 		}
 
 		// Обработка FBO заказов
-		offset = 0
-		for {
-			postingsListFbo, _ := ozon.NewClient(m.clientID, m.token).PostingsListFbo(period.since, period.to, offset)
-
-			for _, order := range postingsListFbo.Result {
-				cluster := order.FinancialData.ClusterTo
-				if _, exists := postingsMap[cluster]; !exists {
-					postingsMap[cluster] = make(map[string]map[string]int)
-				}
-
-				for _, product := range order.Products {
-					if _, exists := postingsMap[cluster][product.OfferID]; !exists {
-						postingsMap[cluster][product.OfferID] = make(map[string]int)
-					}
-
-					postingsMap[cluster][product.OfferID][date] += product.Quantity
-				}
-			}
-
-			if len(postingsListFbo.Result) < limit {
-				break
-			}
-			offset += limit
+		postingsListFbo, err := client.PostingsListFbo(period.since, period.to)
+		if err != nil {
+			log.Printf("ozonStocks: clientID=%s FBO за %s: %v", m.clientID, date, err)
+		}
+		for _, order := range postingsListFbo.Result {
+			addPostings(postingsMap, order.FinancialData.ClusterTo, order.Products, date)
 		}
 	}
 
 	return postingsMap
+}
+
+// addPostings добавляет количество товаров отправления в postingsMap[кластер][артикул][дата].
+func addPostings(postingsMap map[string]map[string]map[string]int, cluster string, products []ozon.PostingProduct, date string) {
+	if _, exists := postingsMap[cluster]; !exists {
+		postingsMap[cluster] = make(map[string]map[string]int)
+	}
+	for _, product := range products {
+		if _, exists := postingsMap[cluster][product.OfferID]; !exists {
+			postingsMap[cluster][product.OfferID] = make(map[string]int)
+		}
+		postingsMap[cluster][product.OfferID][date] += product.Quantity
+	}
 }
 
 type CustomStocks struct {

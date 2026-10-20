@@ -74,7 +74,7 @@ func CleanFiles() {
 	if err != nil {
 		log.Println(err)
 	}
-	err = os.Mkdir(BatchesPath, 0755)
+	err = os.MkdirAll(BatchesPath, 0755)
 	if err != nil {
 		log.Println(err)
 	}
@@ -111,7 +111,7 @@ func CreateDirectories() {
 	if err != nil {
 		log.Println(err)
 	}
-	err = os.Mkdir(BatchesPath, 0755)
+	err = os.MkdirAll(BatchesPath, 0755)
 	if err != nil {
 		log.Println(err)
 	}

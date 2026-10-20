@@ -16,8 +16,12 @@ import (
 	"tradebot/pkg/client/apierr"
 )
 
+// apiURL — адрес Seller API; в тестах клиента подменяется адресом тестового сервера.
+const apiURL = "https://api-seller.ozon.ru"
+
 type Client struct {
 	hc               *http.Client
+	baseURL          string
 	clientID, apiKey string
 	onRateLimit      func(retry int, delay time.Duration)
 }
@@ -27,9 +31,17 @@ func NewClient(clientID, apiKey string) Client {
 		hc: &http.Client{
 			Timeout: time.Second * 10,
 		},
+		baseURL:  apiURL,
 		clientID: clientID,
 		apiKey:   apiKey,
 	}
+}
+
+// WithBaseURL возвращает копию клиента, которая ходит на baseURL вместо Seller API.
+// Нужен тестам, которые поднимают свой сервер вместо Озона.
+func (c Client) WithBaseURL(baseURL string) Client {
+	c.baseURL = baseURL
+	return c
 }
 
 // WithRateLimitHook возвращает копию клиента, которая перед каждым повтором после 429
@@ -302,109 +314,6 @@ func (c Client) PostingFbs(postingNumber string) (PostingFBS, error) {
 	return p, err
 }
 
-// PostingsListLimit — сколько отправлений отдают PostingsListFbs и PostingsListFbo
-// за запрос; следующую страницу запрашивают с offset, увеличенным на это число.
-const PostingsListLimit = 1000
-
-// v3PostingFbsList метод получения ФБС заказов
-func (c Client) PostingsListFbs(since, to string, offset int, status string) (PostingslistFbs, error) {
-	baseURL := "https://api-seller.ozon.ru/v3/posting/fbs/list"
-
-	body := []byte(fmt.Sprintf(`{
-  "dir": "ASC",
-  "filter": {
-    "since": "%v",
-    "to": "%v",
-	"status": "%v"
-},
-  "limit": %v,
-  "offset": %v,
-  "with": {
-    "analytics_data": false,
-    "barcodes": false,
-    "financial_data": true,
-    "translit": false
-  }
-}`, since, to, status, PostingsListLimit, offset))
-
-	headers := map[string]string{
-		"Content-Type": "application/json",
-		"Client-Id":    c.clientID,
-		"Api-Key":      c.apiKey,
-	}
-
-	params := map[string]string{}
-
-	var p PostingslistFbs
-	response, err := c.post(baseURL, headers, params, body)
-	if err != nil {
-		return p, err
-	}
-	err = json.Unmarshal([]byte(response), &p)
-	return p, err
-}
-
-func (c Client) Labels(postingNumber string) (string, error) {
-	baseURL := "https://api-seller.ozon.ru/v2/posting/fbs/package-label"
-
-	body := []byte(fmt.Sprintf(`{
-  "posting_number": [
-    "%v"
-  ]
-}`, postingNumber))
-
-	headers := map[string]string{
-		"Content-Type": "application/json",
-		"Client-Id":    c.clientID,
-		"Api-Key":      c.apiKey,
-	}
-
-	params := map[string]string{}
-
-	response, err := c.post(baseURL, headers, params, body)
-	if err != nil {
-		return "", err
-	}
-	return response, err
-
-}
-
-// v2PostingFboList метод получения ФБО заказов
-func (c Client) PostingsListFbo(since, to string, offset int) (PostingslistFbo, error) {
-	baseURL := "https://api-seller.ozon.ru/v2/posting/fbo/list"
-
-	body := []byte(fmt.Sprintf(`{
-  		"dir": "ASC",
-  		"filter": {
-    		"since": "%v",
-    		"to": "%v"
-  		},
-  		"limit": %v,
-  		"offset": %v,
-  		"translit": false,
-  		"with": {
-			"analytics_data": false,
-			"financial_data": true
-  		}
-	}`, since, to, PostingsListLimit, offset))
-
-	headers := map[string]string{
-		"Content-Type": "application/json",
-		"Client-Id":    c.clientID,
-		"Api-Key":      c.apiKey,
-	}
-
-	params := map[string]string{}
-
-	var p PostingslistFbo
-	response, err := c.post(baseURL, headers, params, body)
-	if err != nil {
-		return p, err
-	}
-	err = json.Unmarshal([]byte(response), &p)
-	return p, err
-
-}
 func (c Client) Stocks() (StocksList, error) {
 	baseURL := "https://api-seller.ozon.ru/v2/analytics/stock_on_warehouses"
 
