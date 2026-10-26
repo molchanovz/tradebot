@@ -2,6 +2,7 @@ package bot
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"log"
 	"os"
@@ -196,19 +197,31 @@ func (m *Manager) wbStocksHandler(ctx context.Context, bot *botlib.Bot, update *
 func (m *Manager) returnsHandler(ctx context.Context, bot *botlib.Bot, update *models.Update) {
 	chatID := update.CallbackQuery.From.ID
 
+	reply := func(text string) {
+		if _, err := SendTextMessage(ctx, bot, chatID, text); err != nil {
+			m.sl.Errorf("send msg failed: %v", err)
+		}
+	}
+
 	cabinets, err := m.tm.GetCabinetsByMp(ctx, db.MarketWB)
 	if err != nil {
 		m.sl.Errorf("%v", err)
+		reply(fmt.Sprintf("Ошибка при получении кабинета WB: %v", userError(err)))
+		return
+	}
+	if len(cabinets) == 0 {
+		reply("Кабинет WB не настроен. Добавьте его в /settings.")
 		return
 	}
 
 	filePath, err := wb.NewReturnsManager(cabinets[0].Key).WriteReturns()
-	if err != nil {
-		_, err = SendTextMessage(ctx, bot, chatID, fmt.Sprintf("Ошибка при анализе остатков: %v", userError(err)))
-		if err != nil {
-			m.sl.Errorf("send msg failed: %v", err)
-			return
-		}
+	switch {
+	case errors.Is(err, wb.ErrNoReturns):
+		reply("Возвраты в ПВЗ: " + err.Error())
+		return
+	case err != nil:
+		m.sl.Errorf("write returns failed: %v", err)
+		reply(fmt.Sprintf("Ошибка при формировании отчёта по возвратам: %v", userError(err)))
 		return
 	}
 
@@ -217,6 +230,7 @@ func (m *Manager) returnsHandler(ctx context.Context, bot *botlib.Bot, update *m
 	err = SendMediaMessage(ctx, bot, chatID, filePath)
 	if err != nil {
 		m.sl.Errorf("send media failed: %v", err)
+		reply(fmt.Sprintf("Не удалось отправить отчёт по возвратам: %v", err))
 		return
 	}
 }

@@ -1,6 +1,7 @@
 package wb
 
 import (
+	"errors"
 	"fmt"
 	"time"
 	"unicode/utf8"
@@ -12,6 +13,9 @@ import (
 )
 
 const StatusReadyForPickup = "Готов к выдаче"
+
+// ErrNoReturns — за период нет возвратов, готовых к выдаче в ПВЗ.
+var ErrNoReturns = errors.New("нет возвратов, готовых к выдаче в ПВЗ")
 
 type ReturnsManager struct {
 	client wb.Client
@@ -28,20 +32,23 @@ type customCardData struct {
 }
 
 func (m ReturnsManager) WriteReturns() (string, error) {
-	dateFrom := time.Now().AddDate(0, 0, -30)
 	dateTo := time.Now()
-	dateFrom.Format("2006-01-02")
-	dateTo.Format("2006-01-02")
-	r, err := m.client.GetReturns(dateFrom.String(), dateTo.String())
+	dateFrom := dateTo.AddDate(0, 0, -30)
+	r, err := m.client.GetReturns(dateFrom.Format(time.DateOnly), dateTo.Format(time.DateOnly))
 	if err != nil {
-		fmt.Println(err)
 		return "", err
 	}
 
 	returns := tradeplus.NewReturns(r)
 
-	if len(returns) == 0 {
-		return "", nil
+	ready := 0
+	for _, item := range returns {
+		if item.Status == StatusReadyForPickup {
+			ready++
+		}
+	}
+	if ready == 0 {
+		return "", fmt.Errorf("%w (всего возвратов за 30 дней: %d)", ErrNoReturns, len(returns))
 	}
 
 	limit := 100
@@ -54,6 +61,9 @@ func (m ReturnsManager) WriteReturns() (string, error) {
 		c, err := m.client.GetCards(nmID, updatedAt, tradeplus.Pointer(limit))
 		if err != nil {
 			return "", err
+		}
+		if c == nil {
+			break
 		}
 
 		nmID = &c.Cursor.NmID
@@ -90,13 +100,7 @@ func (m ReturnsManager) WriteReturns() (string, error) {
 		}
 	}
 
-	path, err := generateExcel(result)
-	if err != nil {
-		fmt.Println(err)
-		return "", err
-	}
-
-	return path, nil
+	return generateExcel(result)
 }
 
 func generateExcel(returns map[string]map[string]customCardData) (string, error) {

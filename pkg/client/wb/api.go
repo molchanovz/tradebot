@@ -122,9 +122,12 @@ func (c Client) getReturns(dateFrom, dateTo string) (string, error) {
 		"Authorization": c.token,
 	}
 
-	_, response, err := c.get(fullURL, headers, make(map[string]string), body)
+	status, response, err := c.get(fullURL, headers, make(map[string]string), body)
 	if err != nil {
 		return "", err
+	}
+	if status != http.StatusOK {
+		return "", &apierr.Error{Market: apierr.MarketWB, Method: "/api/v1/analytics/goods-return", Status: status, Body: response}
 	}
 
 	return response, nil
@@ -279,9 +282,12 @@ func (c Client) getCards(nmID *int, updatedAt *time.Time, limit *int) (string, e
 		"Authorization": c.token,
 	}
 
-	_, response, err := c.post(baseURL, headers, make(map[string]string), body)
+	status, response, err := c.post(baseURL, headers, make(map[string]string), body)
 	if err != nil {
 		return "", err
+	}
+	if status != http.StatusOK {
+		return "", &apierr.Error{Market: apierr.MarketWB, Method: "/content/v2/get/cards/list", Status: status, Body: response}
 	}
 
 	return response, nil
