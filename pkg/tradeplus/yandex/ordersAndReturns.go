@@ -1,68 +1,46 @@
 package yandex
 
 import (
-	"strconv"
+	"context"
+	"errors"
+	"fmt"
 	"time"
 
 	"tradebot/pkg/client/yandex"
 	"tradebot/pkg/tradeplus"
 )
 
+// OrdersSheetPrefix — листы ежедневного отчёта Яндекс Маркета: «Заказы YM-<число>».
+const OrdersSheetPrefix = "Заказы YM-"
+
 type OrdersManager struct {
-	tradeplus.OrderManager
 	yandexCampaignIDFBO, yandexCampaignIDFBS, token string
 }
 
-func NewOrdersManager(yandexCampaignIDFBO, yandexCampaignIDFBS, token, spreadsheetID string) OrdersManager {
-	manager := OrdersManager{tradeplus.NewOrdersManager(spreadsheetID), yandexCampaignIDFBO, yandexCampaignIDFBS, token}
+func NewOrdersManager(yandexCampaignIDFBO, yandexCampaignIDFBS, token string) OrdersManager {
+	manager := OrdersManager{yandexCampaignIDFBO, yandexCampaignIDFBS, token}
 	return manager
 }
 
-func (m OrdersManager) Write() error {
-	date := time.Now().AddDate(0, 0, -m.DaysAgo)
-	sheetsName := "Заказы YM-" + strconv.Itoa(date.Day())
-
-	var values [][]interface{}
-	values = append(values, []interface{}{"Отчет за " + date.Format("02.01.2006")})
-
-	writeRange := sheetsName + "!A1"
-	err := m.GoogleService.Write(m.SpreadsheetID, writeRange, values)
-	if err != nil {
-		return err
+// NewOrdersWriter — запись отчётов Яндекс Маркета в таблицу заказов: FBO- и
+// FBS-кампании в одной секции.
+func NewOrdersWriter(cabinets tradeplus.Cabinets) (tradeplus.OrdersWriter, error) {
+	if len(cabinets) == 0 {
+		return tradeplus.OrdersWriter{}, errors.New("нет кабинетов Яндекс Маркета")
 	}
+	return tradeplus.NewOrdersWriter(cabinets.OrdersSpreadsheetID(), OrdersSheetPrefix, 0, NewService(cabinets...).GetOrdersAndReturnsManager()), nil
+}
 
-	// Запись FBO заказов
-	postingsWithCountFBO, err := m.ordersMap(m.yandexCampaignIDFBO)
+// OrdersReport — заказы FBO и FBS за сутки day.
+func (m OrdersManager) OrdersReport(ctx context.Context, day time.Time) (tradeplus.OrdersReport, error) {
+	postingsWithCountFBO, err := m.ordersMap(ctx, m.yandexCampaignIDFBO, day)
 	if err != nil {
-		return err
-	}
-	writeRange = sheetsName + "!A2:B100"
-	colName := "Заказы FBO"
-	values = [][]interface{}{}
-	values = append(values, []interface{}{colName})
-	for article, count := range postingsWithCountFBO {
-		values = append(values, []interface{}{article, count})
-	}
-	err = m.GoogleService.Write(m.SpreadsheetID, writeRange, values)
-	if err != nil {
-		return err
+		return tradeplus.OrdersReport{}, fmt.Errorf("fbo: %w", err)
 	}
 
-	//Запись FBS заказов
-	postingsWithCountFBS, err := m.ordersMap(m.yandexCampaignIDFBS)
+	postingsWithCountFBS, err := m.ordersMap(ctx, m.yandexCampaignIDFBS, day)
 	if err != nil {
-		return err
-	}
-	writeRange = sheetsName + "!D2:E100"
-	colName = "Заказы FBS"
-	values = [][]interface{}{}
-	values = append(values, []interface{}{colName})
-	for article, count := range postingsWithCountFBS {
-		values = append(values, []interface{}{article, count})
-	}
-	err = m.GoogleService.Write(m.SpreadsheetID, writeRange, values)
-	if err != nil {
-		return err
+		return tradeplus.OrdersReport{}, fmt.Errorf("fbs: %w", err)
 	}
 
 	////Запись возвратов
@@ -74,7 +52,10 @@ func (m OrdersManager) Write() error {
 	//	return err
 	//}
 
-	return nil
+	return tradeplus.OrdersReport{Day: day, Sections: []tradeplus.OrdersSection{{Blocks: []tradeplus.OrdersBlock{
+		{Title: "Заказы FBO", Counts: postingsWithCountFBO},
+		{Title: "Заказы FBS", Counts: postingsWithCountFBS},
+	}}}}, nil
 }
 
 //func ordersMapFBS(apiKey string) map[string]int {
@@ -104,9 +85,12 @@ func (m OrdersManager) Write() error {
 //	return postingsWithCountFBS
 //}
 
-func (m OrdersManager) ordersMap(yandexCampaignID string) (map[string]int, error) {
+func (m OrdersManager) ordersMap(ctx context.Context, yandexCampaignID string, day time.Time) (map[string]int, error) {
 	postingsWithCountALL := make(map[string]int)
-	ordersFbo, err := yandex.GetOrdersFbo(yandexCampaignID, m.token, m.DaysAgo)
+	if yandexCampaignID == "" {
+		return nil, errors.New("нет кабинета с ID кампании")
+	}
+	ordersFbo, err := yandex.GetOrdersStats(ctx, yandexCampaignID, m.token, day)
 	if err != nil {
 		return postingsWithCountALL, err
 	}

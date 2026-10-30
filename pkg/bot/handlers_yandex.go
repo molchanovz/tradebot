@@ -17,7 +17,6 @@ import (
 const (
 	CallbackYandexHandler              = "YANDEX"
 	CallbackYandexStickersHandler      = "YANDEX-STICKERS_"
-	CallbackYandexOrdersHandler        = "YANDEX-ORDERS_"
 	CallbackYandexCabinetsHandler      = "YANDEX-CABINETS"
 	CallbackSelectYandexCabinetHandler = "CABINET-YANDEX_"
 )
@@ -105,33 +104,6 @@ func (m *Manager) yandexFbsHandler(ctx context.Context, bot *botlib.Bot, update 
 	}
 }
 
-func (m *Manager) yandexOrdersHandler(ctx context.Context, bot *botlib.Bot, update *models.Update) {
-	chatID := update.CallbackQuery.From.ID
-
-	cabinets, err := m.tm.GetCabinetsByMp(ctx, db.MarketYandex)
-	if err != nil {
-		log.Println(err)
-		return
-	}
-
-	err = yandex.NewService(cabinets...).GetOrdersAndReturnsManager().Write()
-	if err != nil {
-		log.Printf("%v", err)
-		_, err = SendTextMessage(ctx, bot, chatID, err.Error())
-		if err != nil {
-			log.Printf("%v", err)
-			return
-		}
-		return
-	}
-
-	_, err = SendTextMessage(ctx, bot, chatID, "Заказы яндекс за вчерашний день были внесены")
-	if err != nil {
-		log.Printf("%v", err)
-		return
-	}
-}
-
 func (m *Manager) getYandexFbs(ctx context.Context, bot *botlib.Bot, chatID int64, supplyID string) {
 	done := make(chan []string)
 	progressChan := make(chan tradeplus.Progress)
@@ -170,7 +142,8 @@ func (m *Manager) getYandexFbs(ctx context.Context, bot *botlib.Bot, chatID int6
 
 	err = WaitReadyFile(ctx, bot, chatID, progressChan, done, errChan)
 	if err != nil {
-		_, err = SendTextMessage(ctx, bot, chatID, err.Error())
+		log.Printf("getYandexFbs: supply=%s: %v", supplyID, err)
+		_, err = SendTextMessage(ctx, bot, chatID, userError(err))
 		if err != nil {
 			return
 		}

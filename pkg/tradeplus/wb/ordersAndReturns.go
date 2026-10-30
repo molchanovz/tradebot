@@ -1,8 +1,9 @@
 package wb
 
 import (
+	"context"
+	"errors"
 	"fmt"
-	"strconv"
 	"strings"
 	"time"
 
@@ -10,85 +11,58 @@ import (
 	"tradebot/pkg/tradeplus"
 )
 
+const (
+	// OrdersSheetPrefix — листы ежедневного отчёта WB: «Заказы WB-<число>».
+	OrdersSheetPrefix = "Заказы WB-"
+	// ordersDayInterval — пауза между днями: статистика WB отдаёт не больше
+	// одного запроса в минуту на метод, а за каждый день нужны заказы и продажи.
+	ordersDayInterval = time.Minute + 5*time.Second
+)
+
+// OrdersManager собирает ежедневный отчёт WB: заказы FBO, FBS и возвраты.
 type OrdersManager struct {
-	tradeplus.OrderManager
 	client wb.Client
 }
 
-func NewOrdersManager(token, spreadsheetID string) OrdersManager {
-	manager := OrdersManager{tradeplus.NewOrdersManager(spreadsheetID), wb.NewClient(token)}
-	return manager
+func NewOrdersManager(token string) OrdersManager {
+	return OrdersManager{client: wb.NewClient(token)}
 }
 
-func (m OrdersManager) Write() error {
-	date := time.Now().AddDate(0, 0, -m.DaysAgo)
-	sheetsName := "Заказы WB-" + strconv.Itoa(date.Day())
-
-	var values [][]interface{}
-
-	values = append(values, []interface{}{"Отчет за " + date.Format("02.01.2006")})
-
-	writeRange := sheetsName + "!A1"
-
-	err := m.GoogleService.Write(m.SpreadsheetID, writeRange, values)
-	if err != nil {
-		return err
+// NewOrdersWriter — запись отчётов WB в таблицу заказов. Отчёт, как и раньше,
+// строится по первому кабинету WB.
+func NewOrdersWriter(cabinets tradeplus.Cabinets) (tradeplus.OrdersWriter, error) {
+	if len(cabinets) == 0 {
+		return tradeplus.OrdersWriter{}, errors.New("нет кабинетов WB")
 	}
-
-	// Запись ALL заказов
-	postingsWithCountFBO, postingsWithCountFBS, err := m.getPostingsMap()
-	if err != nil {
-		return err
-	}
-	writeRange = sheetsName + "!A2:B100"
-	colName := "Заказы FBO"
-	values = [][]interface{}{}
-	values = append(values, []interface{}{colName})
-	for article, count := range postingsWithCountFBO {
-		values = append(values, []interface{}{article, count})
-	}
-	err = m.GoogleService.Write(m.SpreadsheetID, writeRange, values)
-	if err != nil {
-		return err
-	}
-
-	// Запись FBS заказов
-	writeRange = sheetsName + "!D2:E100"
-	colName = "Заказы FBS"
-	values = [][]interface{}{}
-	values = append(values, []interface{}{colName})
-	for article, count := range postingsWithCountFBS {
-		values = append(values, []interface{}{article, count})
-	}
-	err = m.GoogleService.Write(m.SpreadsheetID, writeRange, values)
-	if err != nil {
-		return err
-	}
-
-	// Запись возвратов
-	returnsWithCount := m.getReturnsMap()
-	writeRange = sheetsName + "!G2:H100"
-	colName = "Возвраты"
-	values = [][]interface{}{}
-	values = append(values, []interface{}{colName})
-	for article, count := range returnsWithCount {
-		values = append(values, []interface{}{article, count})
-	}
-	err = m.GoogleService.Write(m.SpreadsheetID, writeRange, values)
-	if err != nil {
-		return err
-	}
-
-	return nil
+	return tradeplus.NewOrdersWriter(cabinets.OrdersSpreadsheetID(), OrdersSheetPrefix, ordersDayInterval, NewOrdersManager(cabinets[0].Key)), nil
 }
 
-func (m OrdersManager) getPostingsMap() (map[string]int, map[string]int, error) {
+// OrdersReport — заказы и возвраты WB за сутки day.
+func (m OrdersManager) OrdersReport(ctx context.Context, day time.Time) (tradeplus.OrdersReport, error) {
+	postingsWithCountFBO, postingsWithCountFBS, err := m.getPostingsMap(ctx, day)
+	if err != nil {
+		return tradeplus.OrdersReport{}, err
+	}
+
+	returnsWithCount, err := m.getReturnsMap(ctx, day)
+	if err != nil {
+		return tradeplus.OrdersReport{}, err
+	}
+
+	return tradeplus.OrdersReport{Day: day, Sections: []tradeplus.OrdersSection{{Blocks: []tradeplus.OrdersBlock{
+		{Title: "Заказы FBO", Counts: postingsWithCountFBO},
+		{Title: "Заказы FBS", Counts: postingsWithCountFBS},
+		{Title: "Возвраты", Counts: returnsWithCount},
+	}}}}, nil
+}
+
+func (m OrdersManager) getPostingsMap(ctx context.Context, day time.Time) (map[string]int, map[string]int, error) {
 	postingsWithCountFBO := make(map[string]int)
 	postingsWithCountFBS := make(map[string]int)
 
-	postingsList, err := m.client.GetAllOrders(m.DaysAgo, 1)
+	postingsList, err := m.client.OrdersOnDate(ctx, day)
 	if err != nil {
-		return nil, nil, fmt.Errorf("wb getAllOrders failed: %w", err)
+		return nil, nil, fmt.Errorf("wb orders failed: %w", err)
 	}
 
 	for _, posting := range postingsList {
@@ -111,15 +85,19 @@ func (m OrdersManager) getPostingsMap() (map[string]int, map[string]int, error) 
 	return postingsWithCountFBO, postingsWithCountFBS, nil
 }
 
-func (m OrdersManager) getReturnsMap() map[string]int {
+func (m OrdersManager) getReturnsMap(ctx context.Context, day time.Time) (map[string]int, error) {
 	returnsWithCount := make(map[string]int)
 
-	returnsList, _ := m.client.GetSalesAndReturns(m.DaysAgo)
+	returnsList, err := m.client.SalesOnDate(ctx, day)
+	if err != nil {
+		return nil, fmt.Errorf("wb sales failed: %w", err)
+	}
+
 	for _, someReturn := range returnsList {
 		if strings.HasPrefix(someReturn.SaleID, "R") {
 			returnsWithCount[someReturn.SupplierArticle]++
 		}
 	}
 
-	return returnsWithCount
+	return returnsWithCount, nil
 }

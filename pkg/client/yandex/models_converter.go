@@ -1,21 +1,41 @@
 package yandex
 
 import (
+	"context"
 	"encoding/json"
 	"log"
+	"time"
 )
 
-func GetOrdersFbo(campaignID, apiKey string, daysAgo int) (OrdersFbo, error) {
+// GetOrdersStats возвращает заказы кампании, оформленные в день date, со всех страниц ответа.
+func GetOrdersStats(ctx context.Context, campaignID, apiKey string, date time.Time) (OrdersFbo, error) {
 	var orders OrdersFbo
-	jsonString, err := getOrders(campaignID, apiKey, daysAgo)
-	if err != nil {
-		return orders, err
+	var pageToken string
+	seen := make(map[int64]bool)
+	for {
+		jsonString, err := getOrders(ctx, campaignID, apiKey, date, pageToken)
+		if err != nil {
+			return orders, err
+		}
+		var page OrdersFbo
+		if err := json.Unmarshal([]byte(jsonString), &page); err != nil {
+			return orders, err
+		}
+		orders.Status = page.Status
+		// страницы не должны пересекаться, но один заказ не считаем дважды
+		for _, o := range page.Result.Orders {
+			if !seen[o.ID] {
+				seen[o.ID] = true
+				orders.Result.Orders = append(orders.Result.Orders, o)
+			}
+		}
+
+		next := page.Result.Paging.NextPageToken
+		if next == "" || next == pageToken {
+			return orders, nil
+		}
+		pageToken = next
 	}
-	err = json.Unmarshal([]byte(jsonString), &orders)
-	if err != nil {
-		return orders, err
-	}
-	return orders, nil
 }
 
 // func ordersFBS(apiKey string, daysAgo int) OrdersListFBS {

@@ -2,21 +2,24 @@ package bot
 
 import (
 	"context"
+	"errors"
 	"fmt"
-	"github.com/vmkteam/embedlog"
 	"log"
 	"math"
 	"os"
 	"strconv"
+	"strings"
 	"sync"
-	"tradebot/pkg/client/chatgptsrv"
-	"tradebot/pkg/tradeplus/ozon"
 
+	"tradebot/pkg/client/chatgptsrv"
+	"tradebot/pkg/client/google"
 	"tradebot/pkg/db"
 	"tradebot/pkg/tradeplus"
+	"tradebot/pkg/tradeplus/ozon"
 
 	botlib "github.com/go-telegram/bot"
 	"github.com/go-telegram/bot/models"
+	"github.com/vmkteam/embedlog"
 	"github.com/xuri/excelize/v2"
 )
 
@@ -27,27 +30,29 @@ const (
 )
 
 type Manager struct {
-	dbc       db.DB
-	sl        embedlog.Logger
-	b         *botlib.Bot
-	tm        *tradeplus.Manager
-	chatgpt   *chatgptsrv.Client
-	myChatID  int
-	SheetMap  *sync.Map
-	APIMap    *sync.Map
-	ReviewMap *sync.Map
+	dbc          db.DB
+	sl           embedlog.Logger
+	b            *botlib.Bot
+	tm           *tradeplus.Manager
+	chatgpt      *chatgptsrv.Client
+	reviewChatID int
+	sheets       google.SheetsService
+	SheetMap     *sync.Map
+	APIMap       *sync.Map
+	ReviewMap    *sync.Map
 }
 
 func NewManager(dbc db.DB, cfg Config, chatgpt *chatgptsrv.Client, logger embedlog.Logger) *Manager {
 	return &Manager{
-		dbc:       dbc,
-		tm:        tradeplus.NewManager(dbc),
-		chatgpt:   chatgpt,
-		myChatID:  cfg.MyChatID,
-		SheetMap:  new(sync.Map),
-		APIMap:    new(sync.Map),
-		ReviewMap: new(sync.Map),
-		sl:        logger,
+		dbc:          dbc,
+		tm:           tradeplus.NewManager(dbc),
+		chatgpt:      chatgpt,
+		reviewChatID: cfg.ReviewChatID,
+		sheets:       tradeplus.NewSheetsService(),
+		SheetMap:     new(sync.Map),
+		APIMap:       new(sync.Map),
+		ReviewMap:    new(sync.Map),
+		sl:           logger,
 	}
 }
 
@@ -67,23 +72,29 @@ func (m *Manager) RegisterBotHandlers() {
 	m.b.RegisterHandler(botlib.HandlerTypeCallbackQueryData, CallbackSettingsSelectCabinetHandler, botlib.MatchTypePrefix, m.settingsMPHandler)
 	m.b.RegisterHandler(botlib.HandlerTypeCallbackQueryData, CallbackChangeAPIHandler, botlib.MatchTypePrefix, m.ChangeApiHandler)
 	m.b.RegisterHandler(botlib.HandlerTypeCallbackQueryData, CallbackChangeSheetHandler, botlib.MatchTypePrefix, m.ChangeSheetHandler)
+	m.b.RegisterHandler(botlib.HandlerTypeCallbackQueryData, CallbackOrdersSyncHandler, botlib.MatchTypePrefix, m.ordersSyncHandler)
+	m.b.RegisterHandler(botlib.HandlerTypeCallbackQueryData, CallbackShipmentsSheetHandler, botlib.MatchTypeExact, m.shipmentsSheetHandler)
+	m.b.RegisterHandler(botlib.HandlerTypeCallbackQueryData, CallbackShipmentsSyncHandler, botlib.MatchTypeExact, m.shipmentsSyncHandler)
+
+	m.b.RegisterHandler(botlib.HandlerTypeCallbackQueryData, CallbackShipmentsAllHandler, botlib.MatchTypeExact, m.shipmentsAllHandler)
 
 	m.b.RegisterHandler(botlib.HandlerTypeCallbackQueryData, CallbackWbHandler, botlib.MatchTypeExact, wbHandler)
 	m.b.RegisterHandler(botlib.HandlerTypeCallbackQueryData, CallbackYandexHandler, botlib.MatchTypeExact, m.yandexHandler)
 	m.b.RegisterHandler(botlib.HandlerTypeCallbackQueryData, CallbackOzonHandler, botlib.MatchTypeExact, m.ozonHandler)
 
 	m.b.RegisterHandler(botlib.HandlerTypeCallbackQueryData, CallbackWbFbsHandler, botlib.MatchTypeExact, m.stickersHandler)
+
 	m.b.RegisterHandler(botlib.HandlerTypeCallbackQueryData, CallbackWbAnswerReview, botlib.MatchTypePrefix, m.wbAnswerReview)
-	m.b.RegisterHandler(botlib.HandlerTypeCallbackQueryData, CallbackWbRegenReview, botlib.MatchTypePrefix, m.wbRegenReview)
 	m.b.RegisterHandler(botlib.HandlerTypeCallbackQueryData, CallbackWbEditReview, botlib.MatchTypePrefix, m.wbEditReview)
+	m.b.RegisterHandler(botlib.HandlerTypeCallbackQueryData, CallbackWbCancelEditReview, botlib.MatchTypePrefix, m.wbCancelEditReview)
 	m.b.RegisterHandler(botlib.HandlerTypeCallbackQueryData, CallbackWbDeleteReview, botlib.MatchTypePrefix, m.wbDeleteReview)
+
 	m.b.RegisterHandler(botlib.HandlerTypeCallbackQueryData, CallbackYandexStickersHandler, botlib.MatchTypePrefix, m.yandexFbsHandler)
-	m.b.RegisterHandler(botlib.HandlerTypeCallbackQueryData, CallbackWbOrdersHandler, botlib.MatchTypePrefix, m.wbOrdersHandler)
-	m.b.RegisterHandler(botlib.HandlerTypeCallbackQueryData, CallbackYandexOrdersHandler, botlib.MatchTypePrefix, m.yandexOrdersHandler)
 	m.b.RegisterHandler(botlib.HandlerTypeCallbackQueryData, CallbackOzonStocksHandler, botlib.MatchTypePrefix, m.ozonStocksHandler)
 	m.b.RegisterHandler(botlib.HandlerTypeCallbackQueryData, CallbackWbStocksHandler, botlib.MatchTypePrefix, m.wbStocksHandler)
 	m.b.RegisterHandler(botlib.HandlerTypeCallbackQueryData, CallbackWbReturnsHandler, botlib.MatchTypePrefix, m.returnsHandler)
 	m.b.RegisterHandler(botlib.HandlerTypeCallbackQueryData, CallbackOzonStickersHandler, botlib.MatchTypePrefix, m.ozonStickersHandler)
+	m.b.RegisterHandler(botlib.HandlerTypeCallbackQueryData, CallbackOzonSelectWarehouseHandler, botlib.MatchTypePrefix, m.ozonWarehouseStickersHandler)
 	m.b.RegisterHandler(botlib.HandlerTypeCallbackQueryData, CallbackOzonPrintStickersHandler, botlib.MatchTypePrefix, m.ozonPrintStickers)
 
 	m.b.RegisterHandler(botlib.HandlerTypeCallbackQueryData, CallbackSelectOzonCabinetHandler, botlib.MatchTypePrefix, m.ozonCabinetHandler)
@@ -94,49 +105,58 @@ func (m *Manager) RegisterBotHandlers() {
 
 // DefaultHandler ловит сообщения без команд, проверяет статус пользователя, после обновляет статус на enabled
 func (m *Manager) DefaultHandler(ctx context.Context, bot *botlib.Bot, update *models.Update) {
-	chatID := update.Message.From.ID
+	if update.Message == nil {
+		return
+	}
+
+	chatUserID := update.Message.From.ID
+	chatID := update.Message.Chat.ID
 	message := update.Message.Text
 
-	user, err := m.tm.UserByChatID(ctx, chatID)
+	user, err := m.tm.UserByChatID(ctx, chatUserID)
 	if err != nil {
 		log.Println(err)
 		return
 	} else if user == nil {
-		log.Println("user not found", chatID)
+		text := fmt.Sprintf("Привет, я тебя не знаю. Нажми /start, чтобы я добавил тебя в базу!")
+		_, err = bot.SendMessage(ctx, &botlib.SendMessageParams{ChatID: chatUserID, Text: text})
+		if err != nil {
+			log.Printf("ошибка отправки сообщения %v", err)
+			return
+		}
+		log.Println("user not found", chatUserID)
 		return
 	}
 
 	switch user.StatusID {
 	case db.StatusEnabled:
 		{
-			_, err := SendTextMessage(ctx, bot, chatID, "Не понял тебя. Нажми /start еще раз")
-			if err != nil {
-				log.Println("ошибка отправки сообщения")
+			if chatUserID != chatID {
 				return
 			}
 		}
 	case db.StatusWaitingWbState:
 		{
-			err = m.getWbStickers(ctx, bot, chatID, message)
+			err = m.getWbStickers(ctx, bot, chatUserID, message)
 			if err != nil {
 				return
 			}
 		}
 	case db.StatusWaitingYaState:
 		{
-			m.getYandexFbs(ctx, bot, chatID, message)
+			m.getYandexFbs(ctx, bot, chatUserID, message)
 		}
 	case db.StatusWaitingAPI:
 		{
-			m.changeAPI(ctx, bot, chatID, update.Message)
+			m.changeAPI(ctx, bot, chatUserID, update.Message)
 		}
 	case db.StatusWaitingSheet:
 		{
-			m.changeSheet(ctx, bot, chatID, update.Message)
+			m.changeSheet(ctx, bot, chatUserID, update.Message)
 		}
 	case db.StatusWaitingReview:
 		{
-			m.updateReview(ctx, bot, chatID, update.Message)
+			m.updateReview(ctx, bot, chatUserID, chatID, update.Message)
 		}
 	default:
 		log.Println("Такого статуса пользователя нет")
@@ -156,7 +176,10 @@ func createStartAdminMarkup() (string, models.InlineKeyboardMarkup) {
 	buttonsRow = append(buttonsRow, models.InlineKeyboardButton{Text: "ВБ", CallbackData: CallbackWbHandler})
 	buttonsRow = append(buttonsRow, models.InlineKeyboardButton{Text: "ЯНДЕКС", CallbackData: CallbackYandexHandler})
 	buttonsRow = append(buttonsRow, models.InlineKeyboardButton{Text: "ОЗОН", CallbackData: CallbackOzonHandler})
-	allButtons := [][]models.InlineKeyboardButton{buttonsRow}
+	shipmentsRow := []models.InlineKeyboardButton{
+		{Text: "Заполнить заказы WB+Ozon", CallbackData: CallbackShipmentsAllHandler},
+	}
+	allButtons := [][]models.InlineKeyboardButton{buttonsRow, shipmentsRow}
 	markup := models.InlineKeyboardMarkup{InlineKeyboard: allButtons}
 	return startMessage, markup
 }
@@ -179,6 +202,7 @@ func (m *Manager) startHandler(ctx context.Context, bot *botlib.Bot, update *mod
 
 	if update.Message != nil {
 		chatID = update.Message.From.ID
+		fmt.Println(update.Message.Chat.ID)
 	} else {
 		chatID = update.CallbackQuery.From.ID
 	}
@@ -207,7 +231,7 @@ func (m *Manager) startHandler(ctx context.Context, bot *botlib.Bot, update *mod
 
 	user, err := m.tm.CreateUser(ctx, chatID)
 	if err != nil {
-		log.Println("Ошибка создания меню: ", err)
+		log.Println("Ошибка создания пользователя: ", err)
 		return
 	}
 
@@ -239,31 +263,82 @@ func (m *Manager) startHandler(ctx context.Context, bot *botlib.Bot, update *mod
 	}
 }
 
+// WaitReadyFile показывает прогресс одним обновляемым сообщением и отправляет готовые
+// файлы. Ошибку пользователю не пишет: это делает вызывающий, иначе сообщение приходит
+// дважды. Сообщение о прогрессе при ошибке остаётся с этапом, на котором всё остановилось.
 func WaitReadyFile(ctx context.Context, bot *botlib.Bot, chatID int64, progressChan chan tradeplus.Progress, done chan []string, errChan chan error) error {
 	var progressMsgID int
-	var lastReportedCurrent int
-	var lastTotal int
-	var err error
+	var lastText string
+	show := func(text string) {
+		if text != lastText {
+			progressMsgID = showProgress(ctx, bot, chatID, progressMsgID, text)
+			lastText = text
+		}
+	}
+
 	for {
 		select {
 		case progress := <-progressChan:
-			progressMsgID, err = sendProgress(ctx, bot, chatID, progress, lastReportedCurrent, lastTotal, progressMsgID)
-			if err != nil {
-				return err
-			}
+			show(progressText(progress))
 
 		case filePath := <-done:
-			err = sendFiles(ctx, bot, chatID, filePath, progressMsgID)
-			if err != nil {
-				errChan <- err
+			if progressMsgID != 0 {
+				show("⏳ Отправляю файлы…")
 			}
-			return nil
+			return sendFiles(ctx, bot, chatID, filePath, progressMsgID)
 
-		case err = <-errChan:
-			_, err = bot.SendMessage(ctx, &botlib.SendMessageParams{ChatID: chatID, Text: err.Error()})
-			return err
+		case e := <-errChan:
+			switch {
+			case progressMsgID == 0:
+			case errors.Is(e, ozon.ErrNoRows):
+				// печатать нечего — пользователю ответят отдельно, прогресс не нужен
+				if _, err := bot.DeleteMessage(ctx, &botlib.DeleteMessageParams{ChatID: chatID, MessageID: progressMsgID}); err != nil {
+					log.Println(err)
+				}
+			default:
+				show("⛔ Остановлено: " + strings.TrimPrefix(lastText, progressRunning))
+			}
+			return e
 		}
 	}
+}
+
+const progressRunning = "⏳ "
+
+// progressText — текст сообщения о прогрессе.
+func progressText(p tradeplus.Progress) string {
+	if p.Stage == "" {
+		return fmt.Sprintf("Обработано заказов: %d из %d", p.Current, p.Total)
+	}
+
+	text := progressRunning + p.Stage
+	if p.Total > 0 {
+		text += fmt.Sprintf(": %d из %d", p.Current, p.Total)
+	} else {
+		text += "…"
+	}
+	if p.Note != "" {
+		text += "\n⚠️ " + p.Note
+	}
+	return text
+}
+
+// showProgress отправляет сообщение о прогрессе или обновляет уже отправленное и
+// возвращает его ID. Ошибки Telegram только логирует: из-за прогресса печать не прерываем.
+func showProgress(ctx context.Context, bot *botlib.Bot, chatID int64, msgID int, text string) int {
+	if msgID == 0 {
+		msg, err := bot.SendMessage(ctx, &botlib.SendMessageParams{ChatID: chatID, Text: text})
+		if err != nil {
+			log.Println(err)
+			return 0
+		}
+		return msg.ID
+	}
+
+	if _, err := bot.EditMessageText(ctx, &botlib.EditMessageTextParams{ChatID: chatID, MessageID: msgID, Text: text}); err != nil {
+		log.Println(err)
+	}
+	return msgID
 }
 
 func sendFiles(ctx context.Context, bot *botlib.Bot, chatID int64, filePath []string, progressMsgID int) error {
@@ -307,39 +382,6 @@ func sendFiles(ctx context.Context, bot *botlib.Bot, chatID int64, filePath []st
 		return err
 	}
 	return nil
-}
-
-func sendProgress(ctx context.Context, bot *botlib.Bot, chatID int64, progress tradeplus.Progress, lastReportedCurrent int, lastTotal int, progressMsgID int) (int, error) {
-	if progress.Current != lastReportedCurrent || progress.Total != lastTotal {
-		lastReportedCurrent = progress.Current
-		lastTotal = progress.Total
-
-		text := fmt.Sprintf("Обработано заказов: %d из %d", progress.Current, progress.Total)
-
-		if progressMsgID == 0 {
-			msg, err := bot.SendMessage(ctx, &botlib.SendMessageParams{
-				ChatID: chatID,
-				Text:   text,
-			})
-			if err != nil {
-				log.Println(err)
-				return 0, err
-			} else {
-				progressMsgID = msg.ID
-			}
-		} else {
-			_, err := bot.EditMessageText(ctx, &botlib.EditMessageTextParams{
-				ChatID:    chatID,
-				MessageID: progressMsgID,
-				Text:      text,
-			})
-			if err != nil {
-				log.Println(err)
-				return 0, err
-			}
-		}
-	}
-	return progressMsgID, nil
 }
 
 type CallbacksForCabinetMarkup struct {

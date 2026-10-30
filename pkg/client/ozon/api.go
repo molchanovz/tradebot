@@ -5,14 +5,25 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"log"
+	"math/rand/v2"
 	"net/http"
+	"slices"
 	"strconv"
+	"strings"
 	"time"
+
+	"tradebot/pkg/client/apierr"
 )
+
+// apiURL — адрес Seller API; в тестах клиента подменяется адресом тестового сервера.
+const apiURL = "https://api-seller.ozon.ru"
 
 type Client struct {
 	hc               *http.Client
+	baseURL          string
 	clientID, apiKey string
+	onRateLimit      func(retry int, delay time.Duration)
 }
 
 func NewClient(clientID, apiKey string) Client {
@@ -20,44 +31,120 @@ func NewClient(clientID, apiKey string) Client {
 		hc: &http.Client{
 			Timeout: time.Second * 10,
 		},
+		baseURL:  apiURL,
 		clientID: clientID,
 		apiKey:   apiKey,
 	}
 }
 
+// WithBaseURL возвращает копию клиента, которая ходит на baseURL вместо Seller API.
+// Нужен тестам, которые поднимают свой сервер вместо Озона.
+func (c Client) WithBaseURL(baseURL string) Client {
+	c.baseURL = baseURL
+	return c
+}
+
+// WithRateLimitHook возвращает копию клиента, которая перед каждым повтором после 429
+// вызывает f с номером повтора (с единицы) и паузой до него.
+func (c Client) WithRateLimitHook(f func(retry int, delay time.Duration)) Client {
+	c.onRateLimit = f
+	return c
+}
+
+const (
+	// RateLimitRetries — сколько раз повторяем запрос после 429: Озон ограничивает
+	// число запросов в секунду на кабинет, и через секунду-две запрос обычно проходит.
+	RateLimitRetries = 3
+	// rateLimitJitter — случайная добавка к паузе, чтобы параллельные запросы
+	// не повторялись в одну и ту же секунду.
+	rateLimitJitter = 500 * time.Millisecond
+)
+
+// sleep подменяется в тестах, чтобы не ждать паузы между повторами.
+var sleep = time.Sleep
+
+// RateLimitDelay — пауза перед повтором номер attempt (с нуля) после 429:
+// сколько просит Озон в Retry-After, иначе 1, 2, 3 секунды.
+func RateLimitDelay(attempt int, h http.Header) time.Duration {
+	jitter := rand.N(rateLimitJitter)
+	if s, err := strconv.Atoi(h.Get("Retry-After")); err == nil && s > 0 {
+		return time.Duration(s)*time.Second + jitter
+	}
+	return time.Duration(attempt+1)*time.Second + jitter
+}
+
+// RateLimitHeaders — заголовки ответа, похожие на сведения о лимите (Retry-After,
+// X-RateLimit-* и т.п.), одной строкой для лога. Озон в документации их не описывает,
+// так что по логу 429 видно, присылает ли он что-нибудь. Если таких нет, перечисляет
+// имена всех заголовков.
+func RateLimitHeaders(h http.Header) string {
+	var found []string
+	names := make([]string, 0, len(h))
+	for name, values := range h {
+		names = append(names, name)
+		n := strings.ToLower(name)
+		if strings.Contains(n, "limit") || strings.Contains(n, "retry") || strings.Contains(n, "reset") ||
+			strings.Contains(n, "quota") || strings.Contains(n, "throttl") {
+			found = append(found, name+"="+strings.Join(values, ","))
+		}
+	}
+	if len(found) == 0 {
+		slices.Sort(names)
+		return "нет, заголовки ответа: " + strings.Join(names, ", ")
+	}
+	slices.Sort(found)
+	return strings.Join(found, "; ")
+}
+
 func (c Client) request(reqType, baseURL string, headers map[string]string, params map[string]string, body []byte) (string, error) {
-	req, err := http.NewRequest(reqType, baseURL, bytes.NewBuffer(body))
+	for attempt := 0; ; attempt++ {
+		req, err := http.NewRequest(reqType, baseURL, bytes.NewBuffer(body))
+		if err != nil {
+			return "", fmt.Errorf("ошибка создания запроса: %w", err)
+		}
 
-	if err != nil {
-		return "", fmt.Errorf("ошибка создания запроса: %w", err)
+		for s := range headers {
+			req.Header.Set(s, headers[s])
+		}
+
+		q := req.URL.Query()
+		for s := range params {
+			q.Add(s, params[s])
+		}
+
+		req.URL.RawQuery = q.Encode()
+
+		resp, err := c.hc.Do(req)
+		if err != nil {
+			return "", fmt.Errorf("ошибка выполнения запроса: %w", err)
+		}
+
+		if resp.StatusCode == http.StatusTooManyRequests {
+			log.Printf("ozon %s: 429, попытка %d, заголовки лимита: %s", req.URL.Path, attempt+1, RateLimitHeaders(resp.Header))
+		}
+
+		switch {
+		case resp.StatusCode == http.StatusOK:
+			jsonString, err := io.ReadAll(resp.Body)
+			_ = resp.Body.Close()
+			if err != nil {
+				return "", err
+			}
+			return string(jsonString), nil
+		case resp.StatusCode == http.StatusTooManyRequests && attempt < RateLimitRetries:
+			_ = resp.Body.Close()
+			delay := RateLimitDelay(attempt, resp.Header)
+			if c.onRateLimit != nil {
+				c.onRateLimit(attempt+1, delay)
+			}
+			sleep(delay)
+		default:
+			apiErr := apierr.FromResponse(apierr.MarketOzon, resp)
+			apiErr.Attempts = attempt + 1
+			_ = resp.Body.Close()
+			return "", apiErr
+		}
 	}
-
-	for s := range headers {
-		req.Header.Set(s, headers[s])
-	}
-
-	q := req.URL.Query()
-	for s := range params {
-		q.Add(s, params[s])
-	}
-
-	req.URL.RawQuery = q.Encode()
-
-	resp, err := c.hc.Do(req)
-	if err != nil {
-		return "", fmt.Errorf("ошибка выполнения запроса: %w", err)
-	}
-	defer resp.Body.Close()
-
-	if resp.StatusCode != http.StatusOK {
-		return "", fmt.Errorf("get status: %v", resp.Status)
-	}
-
-	jsonString, err := io.ReadAll(resp.Body)
-	if err != nil {
-		return "", err
-	}
-	return string(jsonString), nil
 }
 
 func (c Client) get(obj any, baseURL string, headers map[string]string, params map[string]string, body []byte) error {
@@ -225,108 +312,8 @@ func (c Client) PostingFbs(postingNumber string) (PostingFBS, error) {
 	}
 	err = json.Unmarshal([]byte(response), &p)
 	return p, err
-
 }
 
-// v3PostingFbsList метод получения ФБС заказов
-func (c Client) PostingsListFbs(since, to string, offset int, status string) (PostingslistFbs, error) {
-	baseURL := "https://api-seller.ozon.ru/v3/posting/fbs/list"
-
-	body := []byte(fmt.Sprintf(`{
-  "dir": "ASC",
-  "filter": {
-    "since": "%v",
-    "to": "%v",
-	"status": "%v"
-},
-  "limit": 1000,
-  "offset": %v,
-  "with": {
-    "analytics_data": false,
-    "barcodes": false,
-    "financial_data": true,
-    "translit": false
-  }
-}`, since, to, status, offset))
-
-	headers := map[string]string{
-		"Content-Type": "application/json",
-		"Client-Id":    c.clientID,
-		"Api-Key":      c.apiKey,
-	}
-
-	params := map[string]string{}
-
-	var p PostingslistFbs
-	response, err := c.post(baseURL, headers, params, body)
-	if err != nil {
-		return p, err
-	}
-	err = json.Unmarshal([]byte(response), &p)
-	return p, err
-
-}
-func (c Client) Labels(postingNumber string) (string, error) {
-	baseURL := "https://api-seller.ozon.ru/v2/posting/fbs/package-label"
-
-	body := []byte(fmt.Sprintf(`{
-  "posting_number": [
-    "%v"
-  ]
-}`, postingNumber))
-
-	headers := map[string]string{
-		"Content-Type": "application/json",
-		"Client-Id":    c.clientID,
-		"Api-Key":      c.apiKey,
-	}
-
-	params := map[string]string{}
-
-	response, err := c.post(baseURL, headers, params, body)
-	if err != nil {
-		return "", err
-	}
-	return response, err
-
-}
-
-// v2PostingFboList метод получения ФБО заказов
-func (c Client) PostingsListFbo(since, to string, offset int) (PostingslistFbo, error) {
-	baseURL := "https://api-seller.ozon.ru/v2/posting/fbo/list"
-
-	body := []byte(fmt.Sprintf(`{
-  		"dir": "ASC",
-  		"filter": {
-    		"since": "%v",
-    		"to": "%v"
-  		},
-  		"limit": 1000,
-  		"offset": %v,
-  		"translit": false,
-  		"with": {
-			"analytics_data": false,
-			"financial_data": true
-  		}
-	}`, since, to, offset))
-
-	headers := map[string]string{
-		"Content-Type": "application/json",
-		"Client-Id":    c.clientID,
-		"Api-Key":      c.apiKey,
-	}
-
-	params := map[string]string{}
-
-	var p PostingslistFbo
-	response, err := c.post(baseURL, headers, params, body)
-	if err != nil {
-		return p, err
-	}
-	err = json.Unmarshal([]byte(response), &p)
-	return p, err
-
-}
 func (c Client) Stocks() (StocksList, error) {
 	baseURL := "https://api-seller.ozon.ru/v2/analytics/stock_on_warehouses"
 
@@ -405,6 +392,28 @@ func (c Client) StocksAnalytics(skus []string) (StocksNew, error) {
 	err = json.Unmarshal([]byte(response), &s)
 	return s, err
 
+}
+
+func (c Client) Warehouses(cursor string) (WarehouseList, error) {
+	baseURL := "https://api-seller.ozon.ru/v2/warehouse/list"
+
+	body := []byte(fmt.Sprintf(`{"cursor": "%v"}`, cursor))
+
+	headers := map[string]string{
+		"Content-Type": "application/json",
+		"Client-Id":    c.clientID,
+		"Api-Key":      c.apiKey,
+	}
+
+	params := map[string]string{}
+
+	var w WarehouseList
+	response, err := c.post(baseURL, headers, params, body)
+	if err != nil {
+		return w, err
+	}
+	err = json.Unmarshal([]byte(response), &w)
+	return w, err
 }
 
 func (c Client) Products() (ProductList, error) {

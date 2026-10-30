@@ -1,15 +1,25 @@
 package wb
 
 import (
+	"context"
+	"errors"
 	"fmt"
-	"github.com/xuri/excelize/v2"
+	"maps"
+	"slices"
+	"strings"
 	"time"
+	"unicode/utf8"
+
 	"tradebot/pkg/client/wb"
 	"tradebot/pkg/tradeplus"
-	"unicode/utf8"
+
+	"github.com/xuri/excelize/v2"
 )
 
 const StatusReadyForPickup = "Готов к выдаче"
+
+// ErrNoReturns — за период нет возвратов, готовых к выдаче в ПВЗ.
+var ErrNoReturns = errors.New("нет возвратов, готовых к выдаче в ПВЗ")
 
 type ReturnsManager struct {
 	client wb.Client
@@ -25,21 +35,22 @@ type customCardData struct {
 	count  int
 }
 
-func (m ReturnsManager) WriteReturns() (string, error) {
-	dateFrom := time.Now().AddDate(0, 0, -30)
+func (m ReturnsManager) WriteReturns(ctx context.Context) (string, error) {
 	dateTo := time.Now()
-	dateFrom.Format("2006-01-02")
-	dateTo.Format("2006-01-02")
-	r, err := m.client.GetReturns(dateFrom.String(), dateTo.String())
+	dateFrom := dateTo.AddDate(0, 0, -30)
+	r, err := m.client.GetReturns(ctx, dateFrom, dateTo, wb.ReturnsActive)
 	if err != nil {
-		fmt.Println(err)
 		return "", err
 	}
 
 	returns := tradeplus.NewReturns(r)
 
-	if len(returns) == 0 {
-		return "", nil
+	byStatus := make(map[string]int)
+	for _, item := range returns {
+		byStatus[item.Status]++
+	}
+	if byStatus[StatusReadyForPickup] == 0 {
+		return "", fmt.Errorf("%w (активных возвратов за 30 дней: %d%s)", ErrNoReturns, len(returns), statusSummary(byStatus))
 	}
 
 	limit := 100
@@ -52,6 +63,9 @@ func (m ReturnsManager) WriteReturns() (string, error) {
 		c, err := m.client.GetCards(nmID, updatedAt, tradeplus.Pointer(limit))
 		if err != nil {
 			return "", err
+		}
+		if c == nil {
+			break
 		}
 
 		nmID = &c.Cursor.NmID
@@ -88,13 +102,19 @@ func (m ReturnsManager) WriteReturns() (string, error) {
 		}
 	}
 
-	path, err := generateExcel(result)
-	if err != nil {
-		fmt.Println(err)
-		return "", err
-	}
+	return generateExcel(result)
+}
 
-	return path, nil
+// statusSummary перечисляет статусы возвратов с количеством: «, статусы: В пути в пвз — 3».
+func statusSummary(byStatus map[string]int) string {
+	if len(byStatus) == 0 {
+		return ""
+	}
+	parts := make([]string, 0, len(byStatus))
+	for _, status := range slices.Sorted(maps.Keys(byStatus)) {
+		parts = append(parts, fmt.Sprintf("%s — %d", status, byStatus[status]))
+	}
+	return ", статусы: " + strings.Join(parts, "; ")
 }
 
 func generateExcel(returns map[string]map[string]customCardData) (string, error) {

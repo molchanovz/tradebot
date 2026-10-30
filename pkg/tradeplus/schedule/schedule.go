@@ -2,15 +2,17 @@ package schedule
 
 import (
 	"context"
-	"errors"
 	"fmt"
-	"github.com/vmkteam/embedlog"
+	"strings"
+	"time"
+
 	"tradebot/pkg/bot"
 	"tradebot/pkg/db"
 	"tradebot/pkg/tradeplus"
 	"tradebot/pkg/tradeplus/ozon"
 	"tradebot/pkg/tradeplus/wb"
-	"tradebot/pkg/tradeplus/yandex"
+
+	"github.com/vmkteam/embedlog"
 )
 
 type Manager struct {
@@ -24,68 +26,112 @@ func NewManager(dbc db.DB, logger embedlog.Logger, bs *bot.Service) Manager {
 }
 
 func (s *Manager) WriteWB(ctx context.Context) error {
-	cabinets, err := s.tm.GetCabinetsByMp(ctx, db.MarketWB)
-	if err != nil {
-		return fmt.Errorf("fetch cabinet failed: %w", err)
-	}
-
-	if cabinets[0].SheetLink == nil {
-		return errors.New("sheet link is null")
-	}
-
-	manager := wb.NewOrdersManager(cabinets[0].Key, *cabinets[0].SheetLink)
-
-	err = manager.Write()
-	if err != nil {
-		return fmt.Errorf("write orders failed: %w", err)
-	}
-
-	return nil
+	return s.writeOrders(ctx, db.MarketWB)
 }
 
 func (s *Manager) WriteOzon(ctx context.Context) error {
+	return s.writeOrders(ctx, db.MarketOzon)
+}
+
+func (s *Manager) WriteOzonShipments(ctx context.Context) error {
+	return s.writeShipments(ctx, db.MarketOzon)
+}
+
+func (s *Manager) WriteOzonShipmentsAll(ctx context.Context) error {
 	cabinets, err := s.tm.GetCabinetsByMp(ctx, db.MarketOzon)
 	if err != nil {
 		return err
 	}
 
-	titleRange := "!A1"
-	fbsRange := "!A2:B1000"
-	fboRange := "!D2:E1000"
-	returnsRange := "!G2:H1000"
+	msk := time.FixedZone("MSK", 3*3600)
+	now := time.Now().In(msk).AddDate(0, 0, -tradeplus.OrdersDaysAgo)
+	yesterday := time.Date(now.Year(), now.Month(), now.Day(), 0, 0, 0, 0, msk)
 
-	maxValuesCount, err := ozon.NewService(cabinets[0]).GetOrdersAndReturnsManager().WriteToGoogleSheets(titleRange, fbsRange, fboRange, returnsRange)
-	if err != nil {
-		return err
+	var failed []string
+	for _, cab := range cabinets {
+		if cab.Settings.ShipmentsAllSheetID == "" {
+			continue
+		}
+		m, err := ozon.NewShipmentsManager(cab)
+		if err != nil {
+			failed = append(failed, fmt.Sprintf("cab=%d init: %v", cab.ID, err))
+			continue
+		}
+		if err := m.WriteAggregatedForDate(ctx, yesterday); err != nil {
+			failed = append(failed, err.Error())
+		}
 	}
-
-	maxValuesCount += 3
-	titleRange = fmt.Sprintf("!A%v", maxValuesCount)
-
-	maxValuesCount++
-	fbsRange = fmt.Sprintf("!A%v:B%v", maxValuesCount, maxValuesCount+1000)
-	fboRange = fmt.Sprintf("!D%v:E%v", maxValuesCount, maxValuesCount+1000)
-	returnsRange = fmt.Sprintf("!G%v:H%v", maxValuesCount, maxValuesCount+1000)
-
-	_, err = ozon.NewService(cabinets[1]).GetOrdersAndReturnsManager().WriteToGoogleSheets(titleRange, fbsRange, fboRange, returnsRange)
-	if err != nil {
-		return err
+	if len(failed) > 0 {
+		return fmt.Errorf("ozonShipmentsAll: %s", strings.Join(failed, "; "))
 	}
-
 	return nil
 }
 
+func (s *Manager) WriteWBShipments(ctx context.Context) error {
+	return s.writeShipments(ctx, db.MarketWB)
+}
+
+func (s *Manager) WriteWBShipmentsAll(ctx context.Context) error {
+	cabinets, err := s.tm.GetCabinetsByMp(ctx, db.MarketWB)
+	if err != nil {
+		return err
+	}
+
+	msk := time.FixedZone("MSK", 3*3600)
+	now := time.Now().In(msk).AddDate(0, 0, -tradeplus.OrdersDaysAgo)
+	yesterday := time.Date(now.Year(), now.Month(), now.Day(), 0, 0, 0, 0, msk)
+
+	var failed []string
+	for _, cab := range cabinets {
+		if cab.Settings.ShipmentsAllSheetID == "" {
+			continue
+		}
+		m, err := wb.NewShipmentsManager(cab)
+		if err != nil {
+			failed = append(failed, fmt.Sprintf("cab=%d init: %v", cab.ID, err))
+			continue
+		}
+		if err := m.WriteAggregatedForDate(ctx, yesterday); err != nil {
+			failed = append(failed, err.Error())
+		}
+	}
+	if len(failed) > 0 {
+		return fmt.Errorf("wbShipmentsAll: %s", strings.Join(failed, "; "))
+	}
+	return nil
+}
+
+func (s *Manager) WriteYandexShipments(ctx context.Context) error {
+	return s.writeShipments(ctx, db.MarketYandex)
+}
+
 func (s *Manager) WriteYandex(ctx context.Context) error {
-	cabinets, err := s.tm.GetCabinetsByMp(ctx, db.MarketYandex)
-	if err != nil {
-		return err
-	}
+	return s.writeOrders(ctx, db.MarketYandex)
+}
 
-	err = yandex.NewService(cabinets...).GetOrdersAndReturnsManager().Write()
-	if err != nil {
-		return err
+// writeOrders заносит в таблицу заказов маркетплейса дни этого месяца по вчера,
+// которых в ней ещё нет (см. tradeplus.OrdersDays).
+func (s *Manager) writeOrders(ctx context.Context, mp string) error {
+	written, err := s.bs.Manager().SyncOrders(ctx, mp)
+	if len(written) > 0 {
+		s.Print(ctx, fmt.Sprintf("%s orders written: %s", mp, tradeplus.FormatDays(written)))
 	}
+	if err != nil {
+		return fmt.Errorf("write %s orders: %w", mp, err)
+	}
+	return nil
+}
 
+// writeShipments заполняет в складской таблице листы отгрузок маркетплейса за дни
+// этого месяца по вчера, которых там нет или которые пустые (см. tradeplus.ShipmentsWriter).
+func (s *Manager) writeShipments(ctx context.Context, mp string) error {
+	written, err := s.bs.Manager().SyncShipments(ctx, mp)
+	if len(written) > 0 {
+		s.Print(ctx, fmt.Sprintf("%s shipments written: %s", mp, tradeplus.FormatDays(written)))
+	}
+	if err != nil {
+		return fmt.Errorf("write %s shipments: %w", mp, err)
+	}
 	return nil
 }
 
@@ -93,6 +139,10 @@ func (s *Manager) ClearOrders(ctx context.Context) error {
 	return s.tm.DeleteOrders(ctx)
 }
 
-func (s *Manager) SendNewReviews(ctx context.Context) error {
-	return s.bs.Manager().SendNewReviews(ctx)
+func (s *Manager) FetchReviews(ctx context.Context) error {
+	return s.bs.Manager().FetchReviews(ctx)
+}
+
+func (s *Manager) ProcessReviews(ctx context.Context) error {
+	return s.bs.Manager().ProcessReviews(ctx)
 }
