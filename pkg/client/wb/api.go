@@ -16,8 +16,9 @@ import (
 )
 
 type Client struct {
-	hc    *http.Client
-	token string
+	hc           *http.Client
+	token        string
+	analyticsURL string
 }
 
 func NewClient(token string) Client {
@@ -25,8 +26,16 @@ func NewClient(token string) Client {
 		hc: &http.Client{
 			Timeout: time.Second * 10,
 		},
-		token: token,
+		token:        token,
+		analyticsURL: "https://seller-analytics-api.wildberries.ru",
 	}
+}
+
+// WithAnalyticsURL возвращает копию клиента, которая ходит на analyticsURL вместо
+// seller-analytics-api. Нужен тестам, которые поднимают свой сервер вместо WB.
+func (c Client) WithAnalyticsURL(analyticsURL string) Client {
+	c.analyticsURL = analyticsURL
+	return c
 }
 
 func (c Client) request(reqType, baseURL string, headers, params map[string]string, body []byte) (int, string, error) {
@@ -105,32 +114,17 @@ func (c Client) getOrdersBySupplyID(supplyID string) (string, error) {
 	return response, nil
 }
 
-func (c Client) getReturns(dateFrom, dateTo string) (string, error) {
+// returnsPage запрашивает страницу отчёта о возвратах товаров продавцу за [dateFrom, dateTo]
+// (не больше 31 дня). На 204 (за период ничего нет) возвращает nil.
+func (c Client) returnsPage(ctx context.Context, dateFrom, dateTo time.Time, status string, limit, offset int) ([]byte, error) {
 	params := url.Values{}
-	params.Add("dateFrom", dateFrom)
-	params.Add("dateTo", dateTo)
+	params.Set("dateFrom", dateFrom.Format(time.DateOnly))
+	params.Set("dateTo", dateTo.Format(time.DateOnly))
+	params.Set("status", status)
+	params.Set("limit", strconv.Itoa(limit))
+	params.Set("offset", strconv.Itoa(offset))
 
-	// Основной URL
-	baseURL := "https://seller-analytics-api.wildberries.ru/api/v1/analytics/goods-return"
-
-	// Добавление параметров к URL
-	fullURL := fmt.Sprintf("%s?%s", baseURL, params.Encode())
-
-	body := []byte(``)
-
-	headers := map[string]string{
-		"Authorization": c.token,
-	}
-
-	status, response, err := c.get(fullURL, headers, make(map[string]string), body)
-	if err != nil {
-		return "", err
-	}
-	if status != http.StatusOK {
-		return "", &apierr.Error{Market: apierr.MarketWB, Method: "/api/v1/analytics/goods-return", Status: status, Body: response}
-	}
-
-	return response, nil
+	return c.getRetrying(ctx, returnsPath, c.analyticsURL+returnsPath+"?"+params.Encode())
 }
 
 func (c Client) getCodesByOrderID(orderID int) (string, error) {
@@ -322,23 +316,29 @@ func (c Client) apiOrdersALL(daysAgo, flag int) (string, error) {
 
 const (
 	statisticsURL = "https://statistics-api.wildberries.ru"
-	// statisticsRetries — сколько раз повторяем запрос к статистике после 429.
-	statisticsRetries = 3
-	// statisticsRetryDefault — пауза после 429, если WB не прислал X-Ratelimit-Retry:
-	// методы статистики отдают не больше одного запроса в минуту.
-	statisticsRetryDefault = time.Minute
-	// statisticsTimeout — статистика WB отвечает медленнее остальных методов клиента (у них 10 секунд).
-	statisticsTimeout = time.Minute
+	returnsPath   = "/api/analytics/v1/item-returns"
+	// rateLimitRetries — сколько раз повторяем запрос после 429.
+	rateLimitRetries = 3
+	// rateLimitRetryDefault — пауза после 429, если WB не прислал X-Ratelimit-Retry:
+	// методы статистики и отчёт о возвратах отдают не больше одного запроса в минуту.
+	rateLimitRetryDefault = time.Minute
+	// slowTimeout — статистика и отчёты WB отвечают медленнее остальных методов клиента (у них 10 секунд).
+	slowTimeout = time.Minute
 )
 
 // statisticsOnDate запрашивает метод statistics-api с flag=1 — все записи с датой
-// date (время значения не имеет). На 429 ждёт столько, сколько просит WB, и повторяет.
+// date (время значения не имеет).
 func (c Client) statisticsOnDate(ctx context.Context, path string, date time.Time) ([]byte, error) {
 	params := url.Values{}
 	params.Set("dateFrom", date.Format("2006-01-02"))
 	params.Set("flag", "1")
-	u := statisticsURL + path + "?" + params.Encode()
-	hc := &http.Client{Timeout: statisticsTimeout}
+	return c.getRetrying(ctx, path, statisticsURL+path+"?"+params.Encode())
+}
+
+// getRetrying делает GET u. На 429 ждёт столько, сколько просит WB, и повторяет.
+// 200 и 204 (нет данных) — успех, иначе *apierr.Error с path в Method.
+func (c Client) getRetrying(ctx context.Context, path, u string) ([]byte, error) {
+	hc := &http.Client{Timeout: slowTimeout}
 
 	for attempt := 0; ; attempt++ {
 		req, err := http.NewRequestWithContext(ctx, http.MethodGet, u, nil)
@@ -360,11 +360,13 @@ func (c Client) statisticsOnDate(ctx context.Context, path string, date time.Tim
 		switch {
 		case resp.StatusCode == http.StatusOK:
 			return body, nil
-		case resp.StatusCode == http.StatusTooManyRequests && attempt < statisticsRetries:
+		case resp.StatusCode == http.StatusNoContent:
+			return nil, nil
+		case resp.StatusCode == http.StatusTooManyRequests && attempt < rateLimitRetries:
 			select {
 			case <-ctx.Done():
 				return nil, ctx.Err()
-			case <-time.After(statisticsRetryAfter(resp.Header)):
+			case <-time.After(retryAfter(resp.Header)):
 			}
 		default:
 			return nil, &apierr.Error{Market: apierr.MarketWB, Method: path, Status: resp.StatusCode, Body: string(body)}
@@ -372,12 +374,12 @@ func (c Client) statisticsOnDate(ctx context.Context, path string, date time.Tim
 	}
 }
 
-// statisticsRetryAfter — сколько ждать после 429: WB пишет это в X-Ratelimit-Retry (секунды).
-func statisticsRetryAfter(h http.Header) time.Duration {
+// retryAfter — сколько ждать после 429: WB пишет это в X-Ratelimit-Retry (секунды).
+func retryAfter(h http.Header) time.Duration {
 	if s, err := strconv.Atoi(h.Get("X-Ratelimit-Retry")); err == nil && s > 0 {
 		return time.Duration(s)*time.Second + time.Second
 	}
-	return statisticsRetryDefault
+	return rateLimitRetryDefault
 }
 
 // reviewPageSize is the WB feedbacks page size. Reviews() pages through all

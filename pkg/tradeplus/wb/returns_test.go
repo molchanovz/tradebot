@@ -1,6 +1,7 @@
 package wb
 
 import (
+	"errors"
 	"testing"
 
 	"tradebot/pkg/db"
@@ -19,5 +20,8 @@ func TestReturnsManager_WriteReturns(t *testing.T) {
 	require.NoError(t, err)
 
 	m := NewReturnsManager(cabinet.Key)
-	_, err = m.WriteReturns()
+	_, err = m.WriteReturns(t.Context())
+	if !errors.Is(err, ErrNoReturns) {
+		require.NoError(t, err)
+	}
 }

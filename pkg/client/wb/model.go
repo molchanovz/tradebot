@@ -169,24 +169,27 @@ type Stock struct {
 	SCCode          string `json:"SCCode"`
 }
 
+// ReturnList — отчёт о возвратах товаров продавцу (/api/analytics/v1/item-returns).
 type ReturnList struct {
+	// Count — сколько возвратов за период всего, на всех страницах.
+	Count  int `json:"count"`
 	Report []struct {
-		Barcode          string `json:"barcode"`
+		Sku              string `json:"sku"`
 		Brand            string `json:"brand"`
 		CompletedDt      string `json:"completedDt"`
 		DstOfficeAddress string `json:"dstOfficeAddress"`
 		DstOfficeId      int    `json:"dstOfficeId"`
 		ExpiredDt        string `json:"expiredDt"`
-		IsStatusActive   int    `json:"isStatusActive"`
+		Kiz              string `json:"kiz"`
 		NmId             int    `json:"nmId"`
 		OrderDt          string `json:"orderDt"`
 		OrderId          int    `json:"orderId"`
 		ReadyToReturnDt  string `json:"readyToReturnDt"`
-		Reason           string `json:"reason"`
+		ReturnReason     string `json:"returnReason"`
 		ReturnType       string `json:"returnType"`
 		ShkId            int64  `json:"shkId"`
 		Srid             string `json:"srid"`
-		Status           string `json:"status"`
+		ReturnStatus     string `json:"returnStatus"`
 		StickerId        string `json:"stickerId"`
 		SubjectName      string `json:"subjectName"`
 		TechSize         string `json:"techSize"`

@@ -413,7 +413,7 @@ type Return struct {
 	DstOfficeAddress string `json:"dstOfficeAddress"`
 	DstOfficeId      int    `json:"dstOfficeId"`
 	ExpiredDt        string `json:"expiredDt"`
-	IsStatusActive   int    `json:"isStatusActive"`
+	Kiz              string `json:"kiz"`
 	NmId             int    `json:"nmId"`
 	OrderDt          string `json:"orderDt"`
 	OrderId          int    `json:"orderId"`
@@ -436,22 +436,22 @@ func NewReturns(in *wbc.ReturnList) []Return {
 	returns := make([]Return, 0, len(in.Report))
 	for i := range in.Report {
 		returns = append(returns, Return{
-			Barcode:          in.Report[i].Barcode,
+			Barcode:          in.Report[i].Sku,
 			Brand:            in.Report[i].Brand,
 			CompletedDt:      in.Report[i].CompletedDt,
 			DstOfficeAddress: in.Report[i].DstOfficeAddress,
 			DstOfficeId:      in.Report[i].DstOfficeId,
 			ExpiredDt:        in.Report[i].ExpiredDt,
-			IsStatusActive:   in.Report[i].IsStatusActive,
+			Kiz:              in.Report[i].Kiz,
 			NmId:             in.Report[i].NmId,
 			OrderDt:          in.Report[i].OrderDt,
 			OrderId:          in.Report[i].OrderId,
 			ReadyToReturnDt:  in.Report[i].ReadyToReturnDt,
-			Reason:           in.Report[i].Reason,
+			Reason:           in.Report[i].ReturnReason,
 			ReturnType:       in.Report[i].ReturnType,
 			ShkId:            in.Report[i].ShkId,
 			Srid:             in.Report[i].Srid,
-			Status:           in.Report[i].Status,
+			Status:           in.Report[i].ReturnStatus,
 			StickerId:        in.Report[i].StickerId,
 			SubjectName:      in.Report[i].SubjectName,
 			TechSize:         in.Report[i].TechSize,

@@ -38,19 +38,42 @@ func (c Client) GetCards(nmID *int, updatedAt *time.Time, limit *int) (*CardList
 	return &cards, nil
 }
 
-func (c Client) GetReturns(dateFrom, dateTo string) (*ReturnList, error) {
-	var returns ReturnList
-	jsonString, err := c.getReturns(dateFrom, dateTo)
-	if err != nil || jsonString == "" {
-		return nil, err
+// Статусы возврата для GetReturns.
+const (
+	ReturnsActive  = "active"
+	ReturnsArchive = "archive"
+)
+
+// returnsPageSize — максимальный limit метода item-returns.
+const returnsPageSize = 1000
+
+// GetReturns возвращает все возвраты товаров продавцу со статусом status
+// (ReturnsActive/ReturnsArchive) за [dateFrom, dateTo], собирая страницы отчёта.
+func (c Client) GetReturns(ctx context.Context, dateFrom, dateTo time.Time, status string) (*ReturnList, error) {
+	var all ReturnList
+	for offset := 0; ; {
+		body, err := c.returnsPage(ctx, dateFrom, dateTo, status, returnsPageSize, offset)
+		if err != nil {
+			return nil, err
+		}
+		if len(bytes.TrimSpace(body)) == 0 {
+			break
+		}
+
+		var page ReturnList
+		if err := json.Unmarshal(body, &page); err != nil {
+			return nil, fmt.Errorf("decode %s: %w", returnsPath, err)
+		}
+		all.Count = page.Count
+		all.Report = append(all.Report, page.Report...)
+
+		offset += len(page.Report)
+		if len(page.Report) < returnsPageSize || offset >= page.Count {
+			break
+		}
 	}
 
-	err = json.Unmarshal([]byte(jsonString), &returns)
-	if err != nil {
-		return nil, err
-	}
-
-	return &returns, nil
+	return &all, nil
 }
 
 func (c Client) GetStickersFbs(orderID int) (StickerWB, error) {

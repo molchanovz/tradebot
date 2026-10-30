@@ -1,8 +1,12 @@
 package wb
 
 import (
+	"context"
 	"errors"
 	"fmt"
+	"maps"
+	"slices"
+	"strings"
 	"time"
 	"unicode/utf8"
 
@@ -31,24 +35,22 @@ type customCardData struct {
 	count  int
 }
 
-func (m ReturnsManager) WriteReturns() (string, error) {
+func (m ReturnsManager) WriteReturns(ctx context.Context) (string, error) {
 	dateTo := time.Now()
 	dateFrom := dateTo.AddDate(0, 0, -30)
-	r, err := m.client.GetReturns(dateFrom.Format(time.DateOnly), dateTo.Format(time.DateOnly))
+	r, err := m.client.GetReturns(ctx, dateFrom, dateTo, wb.ReturnsActive)
 	if err != nil {
 		return "", err
 	}
 
 	returns := tradeplus.NewReturns(r)
 
-	ready := 0
+	byStatus := make(map[string]int)
 	for _, item := range returns {
-		if item.Status == StatusReadyForPickup {
-			ready++
-		}
+		byStatus[item.Status]++
 	}
-	if ready == 0 {
-		return "", fmt.Errorf("%w (всего возвратов за 30 дней: %d)", ErrNoReturns, len(returns))
+	if byStatus[StatusReadyForPickup] == 0 {
+		return "", fmt.Errorf("%w (активных возвратов за 30 дней: %d%s)", ErrNoReturns, len(returns), statusSummary(byStatus))
 	}
 
 	limit := 100
@@ -101,6 +103,18 @@ func (m ReturnsManager) WriteReturns() (string, error) {
 	}
 
 	return generateExcel(result)
+}
+
+// statusSummary перечисляет статусы возвратов с количеством: «, статусы: В пути в пвз — 3».
+func statusSummary(byStatus map[string]int) string {
+	if len(byStatus) == 0 {
+		return ""
+	}
+	parts := make([]string, 0, len(byStatus))
+	for _, status := range slices.Sorted(maps.Keys(byStatus)) {
+		parts = append(parts, fmt.Sprintf("%s — %d", status, byStatus[status]))
+	}
+	return ", статусы: " + strings.Join(parts, "; ")
 }
 
 func generateExcel(returns map[string]map[string]customCardData) (string, error) {

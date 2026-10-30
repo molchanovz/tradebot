@@ -214,7 +214,7 @@ func (m *Manager) returnsHandler(ctx context.Context, bot *botlib.Bot, update *m
 		return
 	}
 
-	filePath, err := wb.NewReturnsManager(cabinets[0].Key).WriteReturns()
+	filePath, err := wb.NewReturnsManager(cabinets[0].Key).WriteReturns(ctx)
 	switch {
 	case errors.Is(err, wb.ErrNoReturns):
 		reply("Возвраты в ПВЗ: " + err.Error())
